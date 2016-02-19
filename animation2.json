@@ -1,0 +1,1412 @@
+{
+    "bounce": [
+        {
+            "offset": 0,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 0.2,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 0.4,
+            "easing": "cubic-bezier(0.755, 0.050, 0.855, 0.060)",
+            "transform": "translate3d(0, -30 px, 0)"
+        },
+        {
+            "offset": 0.43,
+            "easing": "cubic-bezier(0.755, 0.050, 0.855, 0.060)",
+            "transform": "translate3d(0, -30 px, 0)"
+        },
+        {
+            "offset": 0.53,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 0.7,
+            "easing": "cubic-bezier(0.755, 0.050, 0.855, 0.060)",
+            "transform": "translate3d(0, -15 px, 0)"
+        },
+        {
+            "offset": 0.8,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 0.9,
+            "transform": "translate3d(0, -4 px, 0)"
+        },
+        {
+            "offset": 1,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
+            "transform": "translate3d(0, 0, 0)"
+        }
+    ],
+    "flash": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 0.25,
+            "opacity": "0"
+        },
+        {
+            "offset": 0.5,
+            "opacity": "1"
+        },
+        {
+            "offset": 0.75,
+            "opacity": "0"
+        },
+        {
+            "offset": 1,
+            "opacity": "1"
+        }
+    ],
+    "pulse": [
+        {
+            "offset": 0,
+            "transform": "scale3d(1, 1, 1)"
+        },
+        {
+            "offset": 0.5,
+            "transform": "scale3d(1.05, 1.05, 1.05)"
+        },
+        {
+            "offset": 1,
+            "transform": "scale3d(1, 1, 1)"
+        }
+    ],
+    "rubberBand": [
+        {
+            "offset": 0,
+            "transform": "scale3d(1, 1, 1)"
+        },
+        {
+            "offset": 0.3,
+            "transform": "scale3d(1.25, 0.75, 1)"
+        },
+        {
+            "offset": 0.4,
+            "transform": "scale3d(0.75, 1.25, 1)"
+        },
+        {
+            "offset": 0.5,
+            "transform": "scale3d(1.15, 0.85, 1)"
+        },
+        {
+            "offset": 0.65,
+            "transform": "scale3d(.95, 1.05, 1)"
+        },
+        {
+            "offset": 0.75,
+            "transform": "scale3d(1.05, .95, 1)"
+        },
+        {
+            "offset": 1,
+            "transform": "scale3d(1, 1, 1)"
+        }
+    ],
+    "shake": [
+        {
+            "offset": 0,
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 0.1,
+            "transform": "translate3d(-10 px, 0, 0)"
+        },
+        {
+            "offset": 0.2,
+            "transform": "translate3d(10 px, 0, 0)"
+        },
+        {
+            "offset": 0.3,
+            "transform": "translate3d(-10 px, 0, 0)"
+        },
+        {
+            "offset": 0.4,
+            "transform": "translate3d(10 px, 0, 0)"
+        },
+        {
+            "offset": 0.5,
+            "transform": "translate3d(-10 px, 0, 0)"
+        },
+        {
+            "offset": 0.6,
+            "transform": "translate3d(10 px, 0, 0)"
+        },
+        {
+            "offset": 0.7,
+            "transform": "translate3d(-10 px, 0, 0)"
+        },
+        {
+            "offset": 0.8,
+            "transform": "translate3d(10 px, 0, 0)"
+        },
+        {
+            "offset": 0.9,
+            "transform": "translate3d(-10 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "transform": "translate3d(0, 0, 0)"
+        }
+    ],
+    "headShake": [
+        {
+            "offset": 0,
+            "transform": "translateX(0)"
+        },
+        {
+            "offset": 0.065,
+            "transform": "translateX(-6 px) rotateY(-9 deg)"
+        },
+        {
+            "offset": 0.185,
+            "transform": "translateX(5 px) rotateY(7 deg)"
+        },
+        {
+            "offset": 0.315,
+            "transform": "translateX(-3 px) rotateY(-5 deg)"
+        },
+        {
+            "offset": 0.435,
+            "transform": "translateX(2 px) rotateY(3 deg)"
+        },
+        {
+            "offset": 0.5,
+            "transform": "translateX(0)"
+        }
+    ],
+    "swing": [
+        {
+            "offset": 0.2,
+            "transform": "rotate3d(0, 0, 1, 15 deg)"
+        },
+        {
+            "offset": 0.4,
+            "transform": "rotate3d(0, 0, 1, -10 deg)"
+        },
+        {
+            "offset": 0.6,
+            "transform": "rotate3d(0, 0, 1, 5 deg)"
+        },
+        {
+            "offset": 0.8,
+            "transform": "rotate3d(0, 0, 1, -5 deg)"
+        },
+        {
+            "offset": 1,
+            "transform": "rotate3d(0, 0, 1, 0 deg)"
+        }
+    ],
+    "tada": [
+        {
+            "offset": 0,
+            "transform": "scale3d(1, 1, 1)"
+        },
+        {
+            "offset": 0.1,
+            "transform": "scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3 deg)"
+        },
+        {
+            "offset": 0.2,
+            "transform": "scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3 deg)"
+        },
+        {
+            "offset": 0.3,
+            "transform": "scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3 deg)"
+        },
+        {
+            "offset": 0.4,
+            "transform": "scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3 deg)"
+        },
+        {
+            "offset": 0.5,
+            "transform": "scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3 deg)"
+        },
+        {
+            "offset": 0.6,
+            "transform": "scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3 deg)"
+        },
+        {
+            "offset": 0.7,
+            "transform": "scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3 deg)"
+        },
+        {
+            "offset": 0.8,
+            "transform": "scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3 deg)"
+        },
+        {
+            "offset": 0.9,
+            "transform": "scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3 deg)"
+        },
+        {
+            "offset": 1,
+            "transform": "scale3d(1, 1, 1)"
+        }
+    ],
+    "wobble": [
+        {
+            "offset": 0,
+            "transform": "none"
+        },
+        {
+            "offset": 0.15,
+            "transform": "translate3d(-25% , 0, 0) rotate3d(0, 0, 1, -5 deg)"
+        },
+        {
+            "offset": 0.3,
+            "transform": "translate3d(20% , 0, 0) rotate3d(0, 0, 1, 3 deg)"
+        },
+        {
+            "offset": 0.45,
+            "transform": "translate3d(-15% , 0, 0) rotate3d(0, 0, 1, -3 deg)"
+        },
+        {
+            "offset": 0.6,
+            "transform": "translate3d(10% , 0, 0) rotate3d(0, 0, 1, 2 deg)"
+        },
+        {
+            "offset": 0.75,
+            "transform": "translate3d(-5% , 0, 0) rotate3d(0, 0, 1, -1 deg)"
+        },
+        {
+            "offset": 1,
+            "transform": "none"
+        }
+    ],
+    "jello": [
+        {
+            "offset": 0,
+            "transform": "none"
+        },
+        {
+            "offset": 0.111,
+            "transform": "none"
+        },
+        {
+            "offset": 0.222,
+            "transform": "skewX(-12.5 deg) skewY(-12.5 deg)"
+        },
+        {
+            "offset": 0.33299999999999996,
+            "transform": "skewX(6.25 deg) skewY(6.25 deg)"
+        },
+        {
+            "offset": 0.444,
+            "transform": "skewX(-3.125 deg) skewY(-3.125 deg)"
+        },
+        {
+            "offset": 0.555,
+            "transform": "skewX(1.5625 deg) skewY(1.5625 deg)"
+        },
+        {
+            "offset": 0.6659999999999999,
+            "transform": "skewX(-0.78125 deg) skewY(-0.78125 deg)"
+        },
+        {
+            "offset": 0.777,
+            "transform": "skewX(0.390625 deg) skewY(0.390625 deg)"
+        },
+        {
+            "offset": 0.888,
+            "transform": "skewX(-0.1953125 deg) skewY(-0.1953125 deg)"
+        },
+        {
+            "offset": 1,
+            "transform": "none"
+        }
+    ],
+    "bounceIn": [
+        {
+            "offset": 0,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "scale3d(.3, .3, .3)"
+        },
+        {
+            "offset": 0.2,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.2,
+            "transform": "scale3d(1.1, 1.1, 1.1)"
+        },
+        {
+            "offset": 0.4,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.4,
+            "transform": "scale3d(.9, .9, .9)"
+        },
+        {
+            "offset": 0.6,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "scale3d(1.03, 1.03, 1.03)"
+        },
+        {
+            "offset": 0.8,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.8,
+            "transform": "scale3d(.97, .97, .97)"
+        },
+        {
+            "offset": 1,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "scale3d(1, 1, 1)"
+        }
+    ],
+    "bounceInDown": [
+        {
+            "offset": 0,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(0, -3000 px, 0)"
+        },
+        {
+            "offset": 0.6,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "translate3d(0, 25 px, 0)"
+        },
+        {
+            "offset": 0.75,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.75,
+            "transform": "translate3d(0, -10 px, 0)"
+        },
+        {
+            "offset": 0.9,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.9,
+            "transform": "translate3d(0, 5 px, 0)"
+        },
+        {
+            "offset": 1,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 1,
+            "transform": "none"
+        }
+    ],
+    "bounceInLeft": [
+        {
+            "offset": 0,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(-3000 px, 0, 0)"
+        },
+        {
+            "offset": 0.6,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "translate3d(25 px, 0, 0)"
+        },
+        {
+            "offset": 0.75,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.75,
+            "transform": "translate3d(-10 px, 0, 0)"
+        },
+        {
+            "offset": 0.9,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.9,
+            "transform": "translate3d(5 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 1,
+            "transform": "none"
+        }
+    ],
+    "bounceInRight": [
+        {
+            "offset": 0,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(3000 px, 0, 0)"
+        },
+        {
+            "offset": 0.6,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "translate3d(-25 px, 0, 0)"
+        },
+        {
+            "offset": 0.75,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.75,
+            "transform": "translate3d(10 px, 0, 0)"
+        },
+        {
+            "offset": 0.9,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.9,
+            "transform": "translate3d(-5 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 1,
+            "transform": "none"
+        }
+    ],
+    "bounceInUp": [
+        {
+            "offset": 0,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(0, 3000 px, 0)"
+        },
+        {
+            "offset": 0.6,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "translate3d(0, -20 px, 0)"
+        },
+        {
+            "offset": 0.75,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.75,
+            "transform": "translate3d(0, 10 px, 0)"
+        },
+        {
+            "offset": 0.9,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 0.9,
+            "transform": "translate3d(0, -5 px, 0)"
+        },
+        {
+            "offset": 1,
+            "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
+        },
+        {
+            "offset": 1,
+            "transform": "translate3d(0, 0, 0)"
+        }
+    ],
+    "bounceOut": [
+        {
+            "offset": 0.2,
+            "transform": "scale3d(.9, .9, .9)"
+        },
+        {
+            "offset": 0.5,
+            "opacity": "1",
+            "transform": "scale3d(1.1, 1.1, 1.1)"
+        },
+        {
+            "offset": 0.55,
+            "opacity": "1",
+            "transform": "scale3d(1.1, 1.1, 1.1)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "scale3d(.3, .3, .3)"
+        }
+    ],
+    "bounceOutDown": [
+        {
+            "offset": 0.2,
+            "transform": "translate3d(0, 10 px, 0)"
+        },
+        {
+            "offset": 0.4,
+            "opacity": "1",
+            "transform": "translate3d(0, -20 px, 0)"
+        },
+        {
+            "offset": 0.45,
+            "opacity": "1",
+            "transform": "translate3d(0, -20 px, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(0, 2000 px, 0)"
+        }
+    ],
+    "bounceOutLeft": [
+        {
+            "offset": 0.2,
+            "opacity": "1",
+            "transform": "translate3d(20 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(-2000 px, 0, 0)"
+        }
+    ],
+    "bounceOutRight": [
+        {
+            "offset": 0.2,
+            "opacity": "1",
+            "transform": "translate3d(-20 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(2000 px, 0, 0)"
+        }
+    ],
+    "bounceOutUp": [
+        {
+            "offset": 0.2,
+            "transform": "translate3d(0, -10 px, 0)"
+        },
+        {
+            "offset": 0.4,
+            "opacity": "1",
+            "transform": "translate3d(0, 20 px, 0)"
+        },
+        {
+            "offset": 0.45,
+            "opacity": "1",
+            "transform": "translate3d(0, 20 px, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(0, -2000 px, 0)"
+        }
+    ],
+    "fadeIn": [
+        {
+            "offset": 0,
+            "opacity": "0"
+        },
+        {
+            "offset": 1,
+            "opacity": "1"
+        }
+    ],
+    "fadeInDown": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(0, -100% , 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "fadeInDownBig": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(0, -2000 px, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "fadeInLeft": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(-100% , 0, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "fadeInLeftBig": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(-2000 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "fadeInRight": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(100% , 0, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "fadeInRightBig": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(2000 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "fadeInUp": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(0, 100% , 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "fadeInUpBig": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(0, 2000 px, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "fadeOut": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0"
+        }
+    ],
+    "fadeOutDown": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(0, 100% , 0)"
+        }
+    ],
+    "fadeOutDownBig": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(0, 2000 px, 0)"
+        }
+    ],
+    "fadeOutLeft": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(-100% , 0, 0)"
+        }
+    ],
+    "fadeOutLeftBig": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(-2000 px, 0, 0)"
+        }
+    ],
+    "fadeOutRight": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(100% , 0, 0)"
+        }
+    ],
+    "fadeOutRightBig": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(2000 px, 0, 0)"
+        }
+    ],
+    "fadeOutUp": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(0, -100% , 0)"
+        }
+    ],
+    "fadeOutUpBig": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(0, -2000 px, 0)"
+        }
+    ],
+    "flip": [
+        {
+            "offset": 0,
+            "transform": "perspective(400 px) rotate3d(0, 1, 0, -360 deg)",
+            "easing": "ease-out"
+        },
+        {
+            "offset": 0.4,
+            "transform": "perspective(400 px) translate3d(0, 0, 150 px) rotate3d(0, 1, 0, -190 deg)",
+            "easing": "ease-out"
+        },
+        {
+            "offset": 0.5,
+            "transform": "perspective(400 px) translate3d(0, 0, 150 px) rotate3d(0, 1, 0, -170 deg)",
+            "easing": "ease-in "
+        },
+        {
+            "offset": 0.8,
+            "transform": "perspective(400 px) scale3d(.95, .95, .95)",
+            "easing": "ease-in "
+        },
+        {
+            "offset": 1,
+            "transform": "perspective(400 px)",
+            "easing": "ease-in "
+        }
+    ],
+    "flipInX": [
+        {
+            "offset": 0,
+            "transform": "perspective(400 px) rotate3d(1, 0, 0, 90 deg)",
+            "easing": "ease-in ",
+            "opacity": "0"
+        },
+        {
+            "offset": 0.4,
+            "transform": "perspective(400 px) rotate3d(1, 0, 0, -20 deg)",
+            "easing": "ease-in "
+        },
+        {
+            "offset": 0.6,
+            "transform": "perspective(400 px) rotate3d(1, 0, 0, 10 deg)",
+            "opacity": "1"
+        },
+        {
+            "offset": 0.8,
+            "transform": "perspective(400 px) rotate3d(1, 0, 0, -5 deg)"
+        },
+        {
+            "offset": 1,
+            "transform": "perspective(400 px)"
+        }
+    ],
+    "flipInY": [
+        {
+            "offset": 0,
+            "transform": "perspective(400 px) rotate3d(0, 1, 0, 90 deg)",
+            "easing": "ease-in ",
+            "opacity": "0"
+        },
+        {
+            "offset": 0.4,
+            "transform": "perspective(400 px) rotate3d(0, 1, 0, -20 deg)",
+            "easing": "ease-in "
+        },
+        {
+            "offset": 0.6,
+            "transform": "perspective(400 px) rotate3d(0, 1, 0, 10 deg)",
+            "opacity": "1"
+        },
+        {
+            "offset": 0.8,
+            "transform": "perspective(400 px) rotate3d(0, 1, 0, -5 deg)"
+        },
+        {
+            "offset": 1,
+            "transform": "perspective(400 px)"
+        }
+    ],
+    "flipOutX": [
+        {
+            "offset": 0,
+            "transform": "perspective(400 px)"
+        },
+        {
+            "offset": 0.3,
+            "transform": "perspective(400 px) rotate3d(1, 0, 0, -20 deg)",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform": "perspective(400 px) rotate3d(1, 0, 0, 90 deg)",
+            "opacity": "0"
+        }
+    ],
+    "flipOutY": [
+        {
+            "offset": 0,
+            "transform": "perspective(400 px)"
+        },
+        {
+            "offset": 0.3,
+            "transform": "perspective(400 px) rotate3d(0, 1, 0, -15 deg)",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform": "perspective(400 px) rotate3d(0, 1, 0, 90 deg)",
+            "opacity": "0"
+        }
+    ],
+    "lightSpeedIn": [
+        {
+            "offset": 0,
+            "transform": "translate3d(100% , 0, 0) skewX(-30 deg)",
+            "opacity": "0"
+        },
+        {
+            "offset": 0.6,
+            "transform": "skewX(20 deg)",
+            "opacity": "1"
+        },
+        {
+            "offset": 0.8,
+            "transform": "skewX(-5 deg)",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform": "none",
+            "opacity": "1"
+        }
+    ],
+    "lightSpeedOut": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform": "translate3d(100% , 0, 0) skewX(30 deg)",
+            "opacity": "0"
+        }
+    ],
+    "rotateIn": [
+        {
+            "offset": 0,
+            "transform-origin": "center",
+            "transform": "rotate3d(0, 0, 1, -200 deg)",
+            "opacity": "0"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "center",
+            "transform": "none",
+            "opacity": "1"
+        }
+    ],
+    "rotateInDownLeft": [
+        {
+            "offset": 0,
+            "transform-origin": "left bottom",
+            "transform": "rotate3d(0, 0, 1, -45 deg)",
+            "opacity": "0"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "left bottom",
+            "transform": "none",
+            "opacity": "1"
+        }
+    ],
+    "rotateInDownRight": [
+        {
+            "offset": 0,
+            "transform-origin": "right bottom",
+            "transform": "rotate3d(0, 0, 1, 45 deg)",
+            "opacity": "0"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "right bottom",
+            "transform": "none",
+            "opacity": "1"
+        }
+    ],
+    "rotateInUpLeft": [
+        {
+            "offset": 0,
+            "transform-origin": "left bottom",
+            "transform": "rotate3d(0, 0, 1, 45 deg)",
+            "opacity": "0"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "left bottom",
+            "transform": "none",
+            "opacity": "1"
+        }
+    ],
+    "rotateInUpRight": [
+        {
+            "offset": 0,
+            "transform-origin": "right bottom",
+            "transform": "rotate3d(0, 0, 1, -90 deg)",
+            "opacity": "0"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "right bottom",
+            "transform": "none",
+            "opacity": "1"
+        }
+    ],
+    "rotateOut": [
+        {
+            "offset": 0,
+            "transform-origin": "center",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "center",
+            "transform": "rotate3d(0, 0, 1, 200 deg)",
+            "opacity": "0"
+        }
+    ],
+    "rotateOutDownLeft": [
+        {
+            "offset": 0,
+            "transform-origin": "left bottom",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "left bottom",
+            "transform": "rotate3d(0, 0, 1, 45 deg)",
+            "opacity": "0"
+        }
+    ],
+    "rotateOutDownRight": [
+        {
+            "offset": 0,
+            "transform-origin": "right bottom",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "right bottom",
+            "transform": "rotate3d(0, 0, 1, -45 deg)",
+            "opacity": "0"
+        }
+    ],
+    "rotateOutUpLeft": [
+        {
+            "offset": 0,
+            "transform-origin": "left bottom",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "left bottom",
+            "transform": "rotate3d(0, 0, 1, -45 deg)",
+            "opacity": "0"
+        }
+    ],
+    "rotateOutUpRight": [
+        {
+            "offset": 0,
+            "transform-origin": "right bottom",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform-origin": "right bottom",
+            "transform": "rotate3d(0, 0, 1, 90 deg)",
+            "opacity": "0"
+        }
+    ],
+    "hinge": [
+        {
+            "offset": 0,
+            "transform-origin": "top left",
+            "easing": "ease-in -out"
+        },
+        {
+            "offset": 0.2,
+            "transform": "rotate3d(0, 0, 1, 80 deg)",
+            "transform-origin": "top left",
+            "easing": "ease-in -out"
+        },
+        {
+            "offset": 0.4,
+            "transform": "rotate3d(0, 0, 1, 60 deg)",
+            "transform-origin": "top left",
+            "easing": "ease-in -out",
+            "opacity": "1"
+        },
+        {
+            "offset": 0.6,
+            "transform": "rotate3d(0, 0, 1, 80 deg)",
+            "transform-origin": "top left",
+            "easing": "ease-in -out"
+        },
+        {
+            "offset": 0.8,
+            "transform": "rotate3d(0, 0, 1, 60 deg)",
+            "transform-origin": "top left",
+            "easing": "ease-in -out",
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "transform": "translate3d(0, 700 px, 0)",
+            "opacity": "0"
+        }
+    ],
+    "rollIn": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "translate3d(-100% , 0, 0) rotate3d(0, 0, 1, -120 deg)"
+        },
+        {
+            "offset": 1,
+            "opacity": "1",
+            "transform": "none"
+        }
+    ],
+    "rollOut": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "translate3d(100% , 0, 0) rotate3d(0, 0, 1, 120 deg)"
+        }
+    ],
+    "zoomIn": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "scale3d(.3, .3, .3)"
+        },
+        {
+            "offset": 0.5,
+            "opacity": "1"
+        }
+    ],
+    "zoomInDown": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "scale3d(.1, .1, .1) translate3d(0, -1000 px, 0)",
+            "easing": "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "scale3d(.475, .475, .475) translate3d(0, 60 px, 0)",
+            "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+        }
+    ],
+    "zoomInLeft": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "scale3d(.1, .1, .1) translate3d(-1000 px, 0, 0)",
+            "easing": "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "scale3d(.475, .475, .475) translate3d(10 px, 0, 0)",
+            "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+        }
+    ],
+    "zoomInRight": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "scale3d(.1, .1, .1) translate3d(1000 px, 0, 0)",
+            "easing": "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "scale3d(.475, .475, .475) translate3d(-10 px, 0, 0)",
+            "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+        }
+    ],
+    "zoomInUp": [
+        {
+            "offset": 0,
+            "opacity": "0",
+            "transform": "scale3d(.1, .1, .1) translate3d(0, 1000 px, 0)",
+            "easing": "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
+        },
+        {
+            "offset": 0.6,
+            "opacity": "1",
+            "transform": "scale3d(.475, .475, .475) translate3d(0, -60 px, 0)",
+            "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+        }
+    ],
+    "zoomOut": [
+        {
+            "offset": 0,
+            "opacity": "1"
+        },
+        {
+            "offset": 0.5,
+            "opacity": "0",
+            "transform": "scale3d(.3, .3, .3)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0"
+        }
+    ],
+    "zoomOutDown": [
+        {
+            "offset": 0.4,
+            "opacity": "1",
+            "transform": "scale3d(.475, .475, .475) translate3d(0, -60 px, 0)",
+            "easing": "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "scale3d(.1, .1, .1) translate3d(0, 2000 px, 0)",
+            "transform-origin": "center bottom",
+            "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+        }
+    ],
+    "zoomOutLeft": [
+        {
+            "offset": 0.4,
+            "opacity": "1",
+            "transform": "scale3d(.475, .475, .475) translate3d(42 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "scale(.1) translate3d(-2000 px, 0, 0)",
+            "transform-origin": "left center"
+        }
+    ],
+    "zoomOutRight": [
+        {
+            "offset": 0.4,
+            "opacity": "1",
+            "transform": "scale3d(.475, .475, .475) translate3d(-42 px, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "scale(.1) translate3d(2000 px, 0, 0)",
+            "transform-origin": "right center"
+        }
+    ],
+    "zoomOutUp": [
+        {
+            "offset": 0.4,
+            "opacity": "1",
+            "transform": "scale3d(.475, .475, .475) translate3d(0, 60 px, 0)",
+            "easing": "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
+        },
+        {
+            "offset": 1,
+            "opacity": "0",
+            "transform": "scale3d(.1, .1, .1) translate3d(0, -2000 px, 0)",
+            "transform-origin": "center bottom",
+            "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+        }
+    ],
+    "slideInDown": [
+        {
+            "offset": 0,
+            "transform": "translate3d(0, -100% , 0)",
+            "visibility": "visible"
+        },
+        {
+            "offset": 1,
+            "transform": "translate3d(0, 0, 0)"
+        }
+    ],
+    "slideInLeft": [
+        {
+            "offset": 0,
+            "transform": "translate3d(-100% , 0, 0)",
+            "visibility": "visible"
+        },
+        {
+            "offset": 1,
+            "transform": "translate3d(0, 0, 0)"
+        }
+    ],
+    "slideInRight": [
+        {
+            "offset": 0,
+            "transform": "translate3d(100% , 0, 0)",
+            "visibility": "visible"
+        },
+        {
+            "offset": 1,
+            "transform": "translate3d(0, 0, 0)"
+        }
+    ],
+    "slideInUp": [
+        {
+            "offset": 0,
+            "transform": "translate3d(0, 100% , 0)",
+            "visibility": "visible"
+        },
+        {
+            "offset": 1,
+            "transform": "translate3d(0, 0, 0)"
+        }
+    ],
+    "slideOutDown": [
+        {
+            "offset": 0,
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "visibility": "hidden",
+            "transform": "translate3d(0, 100% , 0)"
+        }
+    ],
+    "slideOutLeft": [
+        {
+            "offset": 0,
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "visibility": "hidden",
+            "transform": "translate3d(-100% , 0, 0)"
+        }
+    ],
+    "slideOutRight": [
+        {
+            "offset": 0,
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "visibility": "hidden",
+            "transform": "translate3d(100% , 0, 0)"
+        }
+    ],
+    "slideOutUp": [
+        {
+            "offset": 0,
+            "transform": "translate3d(0, 0, 0)"
+        },
+        {
+            "offset": 1,
+            "visibility": "hidden",
+            "transform": "translate3d(0, -100% , 0)"
+        }
+    ]
+}
