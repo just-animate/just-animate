@@ -3,11 +3,17 @@
 <head>
     <title>Just Animate Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <style>
+        .form-control {
+            max-width: 200px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container text-center">
         <h1 id="animateLabel">Just Animate</h1>
+        <hr/>
         <div class="form-group">
             <div class="input-group">
                 <select id="animateSelect" class="form-control">
@@ -94,6 +100,7 @@
             </div>
         </div>
     </div>
+    <script src="../../vendor/es6-promise-min.js"></script>
     <script src="../../vendor/web-animations.min.js"></script>
     <script src="../../src/animations/animation3.js"></script>
     <script src="../../src/just-animate.js"></script>

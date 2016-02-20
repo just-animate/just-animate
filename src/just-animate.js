@@ -7,17 +7,27 @@ var Just;
 
     Animator.prototype = {
         animate: function (name, el, options) {
+            //var promise = Promise();
+            
             if (typeof name === 'undefined') {
-                throw Error("Just.animate() requires an animation name as the first argument")
+                //promise.reject("Just.animate() requires an animation name as the first argument")
+                return //promise;
             }
 
             var definition = this._definitions[name];
             if (typeof definition === 'undefined') {
-                throw Error("animation \"" + name + "\" was not found")
+                //promise.reject("animation \"" + name + "\" was not found")
+                return //promise;
             }
 
             var options2 = options || definition.options;
-            el.animate(definition.keyframes, options2);
+            var player = el.animate(definition.keyframes, options2);
+            
+            player.onfinish = function() {
+                //promise.resolve();
+            };
+            
+            return //promise;
         },
         register: function (name, keyframes, options) {
             var definition = {

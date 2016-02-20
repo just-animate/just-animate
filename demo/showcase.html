@@ -1,0 +1,64 @@
+<html>
+
+<head>
+    <title>Just Animate Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+</head>
+
+<body>
+    <div class="container text-center">
+        <h1>Showcase</h1>
+        <hr/>
+
+        <div id="animation-container"></div>
+
+    </div>
+    <script src="../vendor/es6-promise-min.js"></script>
+    <script src="../vendor/web-animations.min.js"></script>
+    <script src="../src/animations/animation3.js"></script>
+    <script src="../src/just-animate.js"></script>
+    <script>
+        (function() {
+            function playAllAnimations(container) {
+                var animations = Object.keys(Just)
+                    .filter(function(name) {
+                        return name.indexOf("_") !== 0 && name !== "animate" && name !== "register";
+                    });
+                
+                var position = -1;
+                
+                function nextAnimation() {
+                    ++position;
+                    
+                    // end recursive function
+                    if (position >= animations.length) {
+                        return;
+                    }
+                    
+                    setTimeout(function() {
+                        var animationName = animations[position];
+                        
+                        var newEl = document.createElement('h2');
+                        try {
+                            newEl.innerHTML = animationName;
+                            Just[animationName](newEl);
+                        } catch (err) {
+                            newEl = document.createElement('pre');
+                            newEl.innerHTML = animationName + ": " + err;
+                            newEl.style.color = "red";
+                        }
+                        container.insertBefore(newEl, container.firstChild);
+                        
+                        nextAnimation();
+                    }, 100);
+                }
+                
+                nextAnimation();
+            }
+            
+            playAllAnimations(document.getElementById('animation-container'));
+        })();
+    </script>
+</body>
+
+</html>
