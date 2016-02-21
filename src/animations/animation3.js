@@ -220,7 +220,8 @@ var allAnimations = {
         ],
         "timings": {
             "duration": 1000,
-            "fill": "both"
+            "fill": "both",
+            "ease": "ease-in-out"
         }
     },
     "swing": {
@@ -446,7 +447,7 @@ var allAnimations = {
             }
         ],
         "timings": {
-            "duration": 1000,
+            "duration": 750,
             "fill": "both"
         }
     },
@@ -647,7 +648,7 @@ var allAnimations = {
             }
         ],
         "timings": {
-            "duration": 1000,
+            "duration": 750,
             "fill": "both"
         }
     },
@@ -1200,7 +1201,7 @@ var allAnimations = {
             }
         ],
         "timings": {
-            "duration": 1000,
+            "duration": 750,
             "fill": "both"
         }
     },
@@ -1223,7 +1224,7 @@ var allAnimations = {
             }
         ],
         "timings": {
-            "duration": 1000,
+            "duration": 750,
             "fill": "both"
         }
     },
@@ -1519,7 +1520,7 @@ var allAnimations = {
             }
         ],
         "timings": {
-            "duration": 1000,
+            "duration": 2000,
             "fill": "both"
         }
     },

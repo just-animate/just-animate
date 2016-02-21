@@ -9,8 +9,8 @@ var Just;
                     target[propName] = source[propName];
                 }
             }
-            return source;
         }
+        return target;
     }
     
     function AnimationManager() {
@@ -35,10 +35,13 @@ var Just;
                 //promise.reject("animation \"" + name + "\" was not found")
                 return //promise;
             }
-
-            var timings2 = timings || definition.timings || {};
-            var keyframes = definition.keyframes;
             
+            var timings2 = extend({}, definition.timings);
+            if (timings) {
+                timings2 = extend(timings2, timings);
+            }
+            
+            var keyframes = definition.keyframes;
             var player = el.animate(keyframes, timings2)
             
             player.onfinish = function() {
