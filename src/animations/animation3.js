@@ -585,44 +585,32 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-            },
-            {
-                "offset": 0,
                 "opacity": 0,
+                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
                 "transform": "translate3d(0, 3000px, 0)"
             },
             {
                 "offset": 0.6,
-                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-            },
-            {
-                "offset": 0.6,
+                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
                 "opacity": 1,
                 "transform": "translate3d(0, -20px, 0)"
             },
             {
                 "offset": 0.75,
-                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-            },
-            {
-                "offset": 0.75,
+                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
+                "opacity": 1,
                 "transform": "translate3d(0, 10px, 0)"
             },
             {
                 "offset": 0.9,
-                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-            },
-            {
-                "offset": 0.9,
+                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
+                "opacity": 1,
                 "transform": "translate3d(0, -5px, 0)"
             },
             {
                 "offset": 1,
-                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-            },
-            {
-                "offset": 1,
+                "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)",
+                "opacity": 1,
                 "transform": "translate3d(0, 0, 0)"
             }
         ],
@@ -633,6 +621,11 @@ var allAnimations = {
     },
     "bounceOut": {
         "keyframes": [
+            {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none"  
+            },
             {
                 "offset": 0.2,
                 "transform": "scale3d(.9, .9, .9)"
@@ -661,6 +654,11 @@ var allAnimations = {
     "bounceOutDown": {
         "keyframes": [
             {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none"  
+            },
+            {
                 "offset": 0.2,
                 "transform": "translate3d(0, 10px, 0)"
             },
@@ -688,6 +686,11 @@ var allAnimations = {
     "bounceOutLeft": {
         "keyframes": [
             {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none"  
+            },
+            {
                 "offset": 0.2,
                 "opacity": 1,
                 "transform": "translate3d(20px, 0, 0)"
@@ -705,6 +708,11 @@ var allAnimations = {
     },
     "bounceOutRight": {
         "keyframes": [
+            {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none"  
+            },
             {
                 "offset": 0.2,
                 "opacity": 1,
@@ -724,7 +732,13 @@ var allAnimations = {
     "bounceOutUp": {
         "keyframes": [
             {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none"
+            },
+            {
                 "offset": 0.2,
+                "opacity": 1,
                 "transform": "translate3d(0, -10px, 0)"
             },
             {
@@ -928,7 +942,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -945,7 +960,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -962,7 +978,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -979,7 +996,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -1050,7 +1068,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -1120,6 +1139,7 @@ var allAnimations = {
             },
             {
                 "offset": 1,
+                "opacity": 1,
                 "transform": "perspective(400px)"
             }
         ],
@@ -1152,7 +1172,8 @@ var allAnimations = {
             },
             {
                 "offset": 1,
-                "transform": "perspective(400px)"
+                "transform": "perspective(400px)",
+                "opacity": 1
             }
         ],
         "timings": {
@@ -1164,7 +1185,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "transform": "perspective(400px)"
+                "transform": "perspective(400px)",
+                "opacity": 1
             },
             {
                 "offset": 0.3,
@@ -1186,7 +1208,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "transform": "perspective(400px)"
+                "transform": "perspective(400px)",
+                "opacity": 1
             },
             {
                 "offset": 0.3,
@@ -1236,6 +1259,7 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
+                "transform": "none",
                 "opacity": 1
             },
             {
@@ -1354,6 +1378,7 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform-origin": "center",
+                "transform": "none",
                 "opacity": 1
             },
             {
@@ -1373,6 +1398,7 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform-origin": "left bottom",
+                "transform": "none",
                 "opacity": 1
             },
             {
@@ -1392,6 +1418,7 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform-origin": "right bottom",
+                "transform": "none",
                 "opacity": 1
             },
             {
@@ -1411,6 +1438,7 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform-origin": "left bottom",
+                "transform": "none",
                 "opacity": 1
             },
             {
@@ -1430,6 +1458,7 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform-origin": "right bottom",
+                "transform": "none",
                 "opacity": 1
             },
             {
