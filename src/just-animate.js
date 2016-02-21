@@ -1,12 +1,28 @@
 'use strict';
 var Just;
 (function () {
-    function Animator() {
+    function extend(target) {
+        for (var i = 1, len = arguments.length; i < len; i++) {
+            var source = arguments[i];
+            for (var propName in source) {
+                if (source.hasOwnProperty(propName)) {
+                    target[propName] = source[propName];
+                }
+            }
+            return source;
+        }
+    }
+    
+    function AnimationManager() {
         this._definitions = {};
+        this._timings = {
+            "duration": 1000,
+            "fill": "both"
+        };
     }
 
-    Animator.prototype = {
-        animate: function (name, el, options) {
+    AnimationManager.prototype = {
+        animate: function (name, el, timings) {
             //var promise = Promise();
             
             if (typeof name === 'undefined') {
@@ -20,8 +36,10 @@ var Just;
                 return //promise;
             }
 
-            var options2 = options || definition.options;
-            var player = el.animate(definition.keyframes, options2);
+            var timings2 = timings || definition.timings || {};
+            var keyframes = definition.keyframes;
+            
+            var player = el.animate(keyframes, timings2)
             
             player.onfinish = function() {
                 //promise.resolve();
@@ -29,27 +47,28 @@ var Just;
             
             return //promise;
         },
-        register: function (name, keyframes, options) {
+        configure: function (timings) {
+            extend(this._timings, timings);
+        },
+        register: function (name, keyframes, timings) {
             var definition = {
                 keyframes: keyframes,
-                options: options
+                timings: timings
             };
             this._definitions[name] = definition;
 
             var self = this;
-            this[name] = function (el, options) {
-                return self.animate(name, el, options);
+            this[name] = function (el, timings) {
+                return self.animate(name, el, timings);
             };
             return this;
         }
     };
 
-    Just = new Animator();
-})();
-
-(function () {
+    Just = new AnimationManager();
+    
     for (var animationName in allAnimations) {
-        var animation = allAnimations[animationName];
-        Just.register(animationName, animation.keyframes, animation.options)
+        var a = allAnimations[animationName];
+        Just.register(animationName, a.keyframes, a.timings)
     }
 })();

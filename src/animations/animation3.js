@@ -46,7 +46,7 @@ var allAnimations = {
                 "transform": "translate3d(0, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -74,7 +74,7 @@ var allAnimations = {
                 "opacity": 1
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -94,7 +94,7 @@ var allAnimations = {
                 "transform": "scale3d(1, 1, 1)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -130,7 +130,7 @@ var allAnimations = {
                 "transform": "scale3d(1, 1, 1)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -182,7 +182,7 @@ var allAnimations = {
                 "transform": "translate3d(0, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -218,7 +218,7 @@ var allAnimations = {
                 "transform": "translateX(0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -250,7 +250,7 @@ var allAnimations = {
                 "transform": "rotate3d(0, 0, 1, 0deg)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -302,7 +302,7 @@ var allAnimations = {
                 "transform": "scale3d(1, 1, 1)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -338,7 +338,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -386,7 +386,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -445,7 +445,7 @@ var allAnimations = {
                 "transform": "scale3d(1, 1, 1)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -483,7 +483,7 @@ var allAnimations = {
                  "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -540,7 +540,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -576,7 +576,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -626,7 +626,7 @@ var allAnimations = {
                 "transform": "translate3d(0, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -653,7 +653,7 @@ var allAnimations = {
                 "transform": "scale3d(.3, .3, .3)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -680,7 +680,7 @@ var allAnimations = {
                 "transform": "translate3d(0, 2000px, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -698,7 +698,7 @@ var allAnimations = {
                 "transform": "translate3d(-2000px, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -716,7 +716,7 @@ var allAnimations = {
                 "transform": "translate3d(2000px, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -743,7 +743,7 @@ var allAnimations = {
                 "transform": "translate3d(0, -2000px, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -759,7 +759,7 @@ var allAnimations = {
                 "opacity": 1
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -777,7 +777,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -795,7 +795,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -813,7 +813,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -831,7 +831,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -849,7 +849,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -867,7 +867,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -885,7 +885,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -903,7 +903,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -919,7 +919,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -936,7 +936,7 @@ var allAnimations = {
                 "transform": "translate3d(0, 100%, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -953,7 +953,7 @@ var allAnimations = {
                 "transform": "translate3d(0, 2000px, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -970,7 +970,7 @@ var allAnimations = {
                 "transform": "translate3d(-100%, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -987,7 +987,7 @@ var allAnimations = {
                 "transform": "translate3d(-2000px, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -996,7 +996,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -1004,7 +1005,7 @@ var allAnimations = {
                 "transform": "translate3d(100%, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1013,7 +1014,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -1021,7 +1023,7 @@ var allAnimations = {
                 "transform": "translate3d(2000px, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1030,7 +1032,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -1038,7 +1041,7 @@ var allAnimations = {
                 "transform": "translate3d(0, -100%, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1055,7 +1058,7 @@ var allAnimations = {
                 "transform": "translate3d(0, -2000px, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1088,7 +1091,7 @@ var allAnimations = {
                 "easing": "ease-in "
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1120,7 +1123,7 @@ var allAnimations = {
                 "transform": "perspective(400px)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1152,7 +1155,7 @@ var allAnimations = {
                 "transform": "perspective(400px)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1174,7 +1177,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1196,7 +1199,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1224,7 +1227,7 @@ var allAnimations = {
                 "opacity": 1
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1241,7 +1244,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1261,7 +1264,7 @@ var allAnimations = {
                 "opacity": 1
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1281,7 +1284,7 @@ var allAnimations = {
                 "opacity": 1
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1301,7 +1304,7 @@ var allAnimations = {
                 "opacity": 1
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1321,7 +1324,7 @@ var allAnimations = {
                 "opacity": 1
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1341,7 +1344,7 @@ var allAnimations = {
                 "opacity": 1
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1360,7 +1363,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1379,7 +1382,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1398,7 +1401,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1417,7 +1420,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1436,7 +1439,7 @@ var allAnimations = {
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1445,14 +1448,17 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
+                "transform": "none",
                 "transform-origin": "top left",
-                "easing": "ease-in -out"
+                "easing": "ease-in -out",
+                "opacity": 1
             },
             {
                 "offset": 0.2,
                 "transform": "rotate3d(0, 0, 1, 80deg)",
                 "transform-origin": "top left",
-                "easing": "ease-in -out"
+                "easing": "ease-in -out",
+                "opacity": 1
             },
             {
                 "offset": 0.4,
@@ -1465,7 +1471,8 @@ var allAnimations = {
                 "offset": 0.6,
                 "transform": "rotate3d(0, 0, 1, 80deg)",
                 "transform-origin": "top left",
-                "easing": "ease-in -out"
+                "easing": "ease-in -out",
+                "opacity": 0
             },
             {
                 "offset": 0.8,
@@ -1477,10 +1484,12 @@ var allAnimations = {
             {
                 "offset": 1,
                 "transform": "translate3d(0, 700px, 0)",
+                "transform-origin": "top left",
+                "easing": "ease-in -out",
                 "opacity": 0
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1498,7 +1507,7 @@ var allAnimations = {
                 "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1507,7 +1516,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none"
             },
             {
                 "offset": 1,
@@ -1515,7 +1525,7 @@ var allAnimations = {
                 "transform": "translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1530,9 +1540,14 @@ var allAnimations = {
             {
                 "offset": 0.5,
                 "opacity": 1
+            },
+            {
+                "offset": 1,
+                "opacity": 1,
+                "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1550,9 +1565,14 @@ var allAnimations = {
                 "opacity": 1,
                 "transform": "scale3d(.475, .475, .475) translate3d(0, 60px, 0)",
                 "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+            },
+            {
+                "offset": 1,
+                "opacity": 1,
+                "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1570,9 +1590,14 @@ var allAnimations = {
                 "opacity": 1,
                 "transform": "scale3d(.475, .475, .475) translate3d(10px, 0, 0)",
                 "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+            },
+            {
+                "offset": 1,
+                "opacity": 1,
+                "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1590,9 +1615,14 @@ var allAnimations = {
                 "opacity": 1,
                 "transform": "scale3d(.475, .475, .475) translate3d(-10px, 0, 0)",
                 "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+            },
+            {
+                "offset": 1,
+                "opacity": 1,
+                "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1610,9 +1640,14 @@ var allAnimations = {
                 "opacity": 1,
                 "transform": "scale3d(.475, .475, .475) translate3d(0, -60px, 0)",
                 "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
+            },
+            {
+                "offset": 1,
+                "opacity": 1,
+                "transform": "none"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1621,19 +1656,24 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "opacity": 1
+                "opacity": 1,
+                "transform": "none",
+                "transform-origin": "center middle"
             },
             {
                 "offset": 0.5,
                 "opacity": 0,
-                "transform": "scale3d(.3, .3, .3)"
+                "transform": "scale3d(.3, .3, .3)",
+                "transform-origin": "center middle"
             },
             {
                 "offset": 1,
-                "opacity": 0
+                "opacity": 0,
+                "transform": "none",
+                "transform-origin": "center middle"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1641,9 +1681,16 @@ var allAnimations = {
     "zoomOutDown": {
         "keyframes": [
             {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none",
+                "transform-origin": "center bottom"
+            },
+            {
                 "offset": 0.4,
                 "opacity": 1,
                 "transform": "scale3d(.475, .475, .475) translate3d(0, -60px, 0)",
+                "transform-origin": "center bottom",
                 "easing": "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
             },
             {
@@ -1654,13 +1701,19 @@ var allAnimations = {
                 "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
     },
     "zoomOutLeft": {
         "keyframes": [
+            {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none",
+                "transform-origin": "left center"
+            },
             {
                 "offset": 0.4,
                 "opacity": 1,
@@ -1673,13 +1726,19 @@ var allAnimations = {
                 "transform-origin": "left center"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
     },
     "zoomOutRight": {
         "keyframes": [
+            {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none",
+                "transform-origin": "right center"
+            },
             {
                 "offset": 0.4,
                 "opacity": 1,
@@ -1692,13 +1751,19 @@ var allAnimations = {
                 "transform-origin": "right center"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
     },
     "zoomOutUp": {
         "keyframes": [
+            {
+                "offset": 0,
+                "opacity": 1,
+                "transform": "none",
+                "transform-origin": "center bottom"
+            },
             {
                 "offset": 0.4,
                 "opacity": 1,
@@ -1713,7 +1778,7 @@ var allAnimations = {
                 "easing": "cubic-bezier(0.175, 0.885, 0.320, 1)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1723,14 +1788,15 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform": "translate3d(0, -100%, 0)",
-                "visibility": "visible"
+                "visibility": "hidden"
             },
             {
                 "offset": 1,
-                "transform": "translate3d(0, 0, 0)"
+                "transform": "translate3d(0, 0, 0)",
+                "visibility": "visible"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1740,14 +1806,15 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform": "translate3d(-100%, 0, 0)",
-                "visibility": "visible"
+                "visibility": "hidden"
             },
             {
                 "offset": 1,
-                "transform": "translate3d(0, 0, 0)"
+                "transform": "translate3d(0, 0, 0)",
+                "visibility": "visible"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1757,14 +1824,15 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform": "translate3d(100%, 0, 0)",
-                "visibility": "visible"
+                "visibility": "hidden"
             },
             {
                 "offset": 1,
-                "transform": "translate3d(0, 0, 0)"
+                "transform": "translate3d(0, 0, 0)",
+                "visibility": "visible"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1774,14 +1842,15 @@ var allAnimations = {
             {
                 "offset": 0,
                 "transform": "translate3d(0, 100%, 0)",
-                "visibility": "visible"
+                "visibility": "hidden"
             },
             {
                 "offset": 1,
-                "transform": "translate3d(0, 0, 0)"
+                "transform": "translate3d(0, 0, 0)",
+                "visibility": "visible"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1790,7 +1859,8 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
-                "transform": "translate3d(0, 0, 0)"
+                "transform": "translate3d(0, 0, 0)",
+                "visibility": "visible"
             },
             {
                 "offset": 1,
@@ -1798,7 +1868,7 @@ var allAnimations = {
                 "transform": "translate3d(0, 100%, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1807,6 +1877,7 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
+                "visibility": "visible",
                 "transform": "translate3d(0, 0, 0)"
             },
             {
@@ -1815,7 +1886,7 @@ var allAnimations = {
                 "transform": "translate3d(-100%, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1824,6 +1895,7 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
+                "visibility": "visible",
                 "transform": "translate3d(0, 0, 0)"
             },
             {
@@ -1832,7 +1904,7 @@ var allAnimations = {
                 "transform": "translate3d(100%, 0, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }
@@ -1841,6 +1913,7 @@ var allAnimations = {
         "keyframes": [
             {
                 "offset": 0,
+                "visibility": "visible",
                 "transform": "translate3d(0, 0, 0)"
             },
             {
@@ -1849,7 +1922,7 @@ var allAnimations = {
                 "transform": "translate3d(0, -100%, 0)"
             }
         ],
-        "options": {
+        "timings": {
             "duration": 1000,
             "fill": "both"
         }

@@ -26,12 +26,26 @@
                     });
                 
                 var position = -1;
+                var errors = 0;
+                var passing = 0;
                 
                 function nextAnimation() {
                     ++position;
                     
                     // end recursive function
                     if (position >= animations.length) {
+                        var summary = document.createElement('div');
+                        summary.classList.add('alert');
+                        
+                        if (errors) {
+                            summary.classList.add('alert-danger');
+                            summary.innerHTML = 'There were ' + errors + ' errors. There were ' + passing + ' passing tests.';
+                        } else {
+                            summary.classList.add('alert-success');
+                            summary.innerHTML = 'Everything is awesome. Everything is cool when your tests are all green!';
+                        }
+                        
+                        container.insertBefore(summary, container.firstChild);
                         return;
                     }
                     
@@ -42,7 +56,9 @@
                         try {
                             newEl.innerHTML = animationName;
                             Just[animationName](newEl);
+                            ++passing;
                         } catch (err) {
+                            ++errors;
                             newEl = document.createElement('pre');
                             newEl.innerHTML = animationName + ": " + err;
                             newEl.style.color = "red";
@@ -50,7 +66,7 @@
                         container.insertBefore(newEl, container.firstChild);
                         
                         nextAnimation();
-                    }, 100);
+                    }, 0);
                 }
                 
                 nextAnimation();
