@@ -92,16 +92,9 @@
   <script src="web-animations.min.js"></script>
   <script src="just-animate-jquery.js"></script>
   ```
-
-4. Select the element you want to animate and call
-
-  ```javascript
-  var element = angular.element('#animate-me')[0];
-  ```
   
-5. Select the element you want to animate and call .justAnimate('animate.name.here')
+2. Select the element you want to animate and call .justAnimate('animate.name.here')
 
-  **Full example:**
   ```javascript
   $('#animate-me').justAnimate('fadeIn');
   ```
