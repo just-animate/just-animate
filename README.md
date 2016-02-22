@@ -36,8 +36,6 @@
   Each animation name has a shorthand function that can be called instead of .animate('animation.name.here')
 
 
-The animations in Just Animate are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
-
 ##AngularJS 1.x Usage
 1. Include these scripts on your document
 
@@ -87,7 +85,30 @@ The animations in Just Animate are based on Animate.css.  [Check out all the ani
   
   Each animation name has a shorthand function that can be called instead of .animate('animation.name.here')
 
+##JQuery Usage
+1. Include these scripts on your document
+
+  ```html
+  <script src="web-animations.min.js"></script>
+  <script src="just-animate-jquery.js"></script>
+  ```
+
+4. Select the element you want to animate and call
+
+  ```javascript
+  var element = angular.element('#animate-me')[0];
+  ```
+  
+5. Select the element you want to animate and call .justAnimate('animate.name.here')
+
+  **Full example:**
+  ```javascript
+  $('#animate-me').justAnimate('fadeIn');
+  ```
+
 ## Built animations
+
+  The animations in JustAnimate are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
 
   * `bounce`
   * `flash`
