@@ -5,7 +5,8 @@
 
 ## Demos
 
-  [Basic Demo](http://codepen.io/notoriousb1t/pen/BjgGmY)
+  * [Basic Demo](http://codepen.io/notoriousb1t/pen/BjgGmY)
+  * [JQuery Demo](http://codepen.io/notoriousb1t/pen/Rrzvjb)
 
 ##Basic Usage
 1. Include these scripts on your document
