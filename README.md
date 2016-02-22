@@ -13,7 +13,7 @@
 1. Include these scripts on your document
 
   ```html
-  <script src="web-animations.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
   <script src="just-animate.js"></script>
   ```
   Just Animate uses the new Animations API in JavaScript.  For maximum browser compatibility, this should be included even
@@ -46,7 +46,7 @@
 1. Include these scripts on your document
 
   ```html
-  <script src="web-animations.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
   <script src="just-animate-angular.js"></script>
   ```
   
@@ -95,7 +95,7 @@
 1. Include these scripts on your document
 
   ```html
-  <script src="web-animations.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
   <script src="just-animate-jquery.js"></script>
   ```
   
