@@ -6,7 +6,8 @@
 ## Demos
 
   * [Basic Demo](http://codepen.io/notoriousb1t/pen/BjgGmY)
-  * [JQuery Demo](http://codepen.io/notoriousb1t/pen/Rrzvjb)
+  * [Angular 1.x Demo](http://codepen.io/notoriousb1t/pen/Rrzvjb)
+  * [JQuery Demo](http://codepen.io/notoriousb1t/pen/obrmMr)
 
 ##Basic Usage
 1. Include these scripts on your document
