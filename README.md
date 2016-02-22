@@ -3,6 +3,10 @@
 
 `JustAnimate is an easy to use Animation library that lets you add animations and *just* move on.
 
+## Demos
+
+  [Basic Demo](http://codepen.io/notoriousb1t/pen/BjgGmY)
+
 ##Basic Usage
 1. Include these scripts on your document
 
