@@ -1,0 +1,27 @@
+{
+  "keyframes": [
+    {
+      "offset": 0,
+      "opacity": 1,
+      "transform": "none",
+      "transform-origin": "center middle"
+    },
+    {
+      "offset": 0.5,
+      "opacity": 0,
+      "transform": "scale3d(.3, .3, .3)",
+      "transform-origin": "center middle"
+    },
+    {
+      "offset": 1,
+      "opacity": 0,
+      "transform": "none",
+      "transform-origin": "center middle"
+    }
+  ],
+  "timings": {
+    "duration": 1000,
+    "fill": "both"
+  },
+  "name": "zoomOut"
+}

@@ -1,0 +1,17 @@
+{
+  "keyframes": [
+    {
+      "offset": 0,
+      "opacity": 0
+    },
+    {
+      "offset": 1,
+      "opacity": 1
+    }
+  ],
+  "timings": {
+    "duration": 1000,
+    "fill": "both"
+  },
+  "name": "fadeIn"
+}

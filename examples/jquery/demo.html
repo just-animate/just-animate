@@ -1,0 +1,124 @@
+<html>
+
+<head>
+  <title>Just Animate Demo</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+</head>
+
+<body>
+  <div class="container text-center">
+    <h1 id="animateLabel">Just Animate</h1>
+    <hr/>
+    <div class="row">
+      <div class="col-md-offset-4 col-md-4 col-xs-12">
+        <div class="form-group">
+          <div class="input-group">
+            <select id="animateSelect" class="form-control">
+              <option>bounce</option>
+              <option>flash</option>
+              <option>pulse</option>
+              <option>rubberBand</option>
+              <option>shake</option>
+              <option>headShake</option>
+              <option>swing</option>
+              <option>tada</option>
+              <option>wobble</option>
+              <option>jello</option>
+              <option>bounceIn</option>
+              <option>bounceInDown</option>
+              <option>bounceInLeft</option>
+              <option>bounceInRight</option>
+              <option>bounceInUp</option>
+              <option>bounceOut</option>
+              <option>bounceOutDown</option>
+              <option>bounceOutLeft</option>
+              <option>bounceOutRight</option>
+              <option>bounceOutUp</option>
+              <option>fadeIn</option>
+              <option>fadeInDown</option>
+              <option>fadeInDownBig</option>
+              <option>fadeInLeft</option>
+              <option>fadeInLeftBig</option>
+              <option>fadeInRight</option>
+              <option>fadeInRightBig</option>
+              <option>fadeInUp</option>
+              <option>fadeInUpBig</option>
+              <option>fadeOut</option>
+              <option>fadeOutDown</option>
+              <option>fadeOutDownBig</option>
+              <option>fadeOutLeft</option>
+              <option>fadeOutLeftBig</option>
+              <option>fadeOutRight</option>
+              <option>fadeOutRightBig</option>
+              <option>fadeOutUp</option>
+              <option>fadeOutUpBig</option>
+              <option>flip</option>
+              <option>flipInX</option>
+              <option>flipInY</option>
+              <option>flipOutX</option>
+              <option>flipOutY</option>
+              <option>lightSpeedIn</option>
+              <option>lightSpeedOut</option>
+              <option>rotateIn</option>
+              <option>rotateInDownLeft</option>
+              <option>rotateInDownRight</option>
+              <option>rotateInUpLeft</option>
+              <option>rotateInUpRight</option>
+              <option>rotateOut</option>
+              <option>rotateOutDownLeft</option>
+              <option>rotateOutDownRight</option>
+              <option>rotateOutUpLeft</option>
+              <option>rotateOutUpRight</option>
+              <option>hinge</option>
+              <option>rollIn</option>
+              <option>rollOut</option>
+              <option>zoomIn</option>
+              <option>zoomInDown</option>
+              <option>zoomInLeft</option>
+              <option>zoomInRight</option>
+              <option>zoomInUp</option>
+              <option>zoomOut</option>
+              <option>zoomOutDown</option>
+              <option>zoomOutLeft</option>
+              <option>zoomOutRight</option>
+              <option>zoomOutUp</option>
+              <option>slideInDown</option>
+              <option>slideInLeft</option>
+              <option>slideInRight</option>
+              <option>slideInUp</option>
+              <option>slideOutDown</option>
+              <option>slideOutLeft</option>
+              <option>slideOutRight</option>
+              <option>slideOutUp</option>
+            </select>
+            <span class="input-group-btn">
+                    <button class="btn btn-default" id="animateButton">Animate</button>
+                </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="../../vendor/es6-promise-min.js"></script>
+  <script src="../../vendor/web-animations.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script src="../../dist/just-animate-jquery.js"></script>
+  <script>
+    $(document).ready(function() {
+      var $button = $('#animateButton');
+      var $label = $('#animateLabel');
+      var $select = $('#animateSelect');
+      
+      function animateTheLabel() {
+          var animationType = $select.val();
+          $label.justAnimate(animationType);
+      }
+      
+      $button.on('click', animateTheLabel);
+      $select.on('change', animateTheLabel);
+    });
+  </script>
+</body>
+
+</html>
