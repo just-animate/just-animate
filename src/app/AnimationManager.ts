@@ -8,7 +8,7 @@ function flattenElements(source: Element|Element[]|JQueryType|IElementProvider) 
     if (source instanceof Element) {
         return [source];
     }
-    if (isArray(source) || source instanceof jQuery) {
+    if (isArray(source) || (typeof jQuery === 'function' && source instanceof jQuery)) {
         var elements = [];
         each(source as any[], i => {
             elements.push.apply(elements, flattenElements(i));
