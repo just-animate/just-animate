@@ -8,9 +8,8 @@ for (var animationName in animations) {
 window['Just'] = animationManager;
 (function ($) {
     $.fn.justAnimate = function (name, timings) {
-        this.each(function (index, el) {
-            animationManager.animate(name, el, timings);
-        });
+        animationManager.animate(name, this, timings);
         return this;
     };
+    $.just = animationManager;
 }(jQuery));

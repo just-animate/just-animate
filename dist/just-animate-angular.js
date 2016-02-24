@@ -2188,6 +2188,25 @@ module.exports={
 }
 },{}],78:[function(require,module,exports){
 var helpers_1 = require('./helpers');
+var AnimationRelay_1 = require('./AnimationRelay');
+function flattenElements(source) {
+    if (source instanceof Element) {
+        return [source];
+    }
+    if (helpers_1.isArray(source) || source instanceof jQuery) {
+        var elements = [];
+        helpers_1.each(source, function (i) {
+            elements.push.apply(elements, flattenElements(i));
+        });
+        return elements;
+    }
+    if (helpers_1.isFunction(source)) {
+        var provider = source;
+        var result = provider();
+        return flattenElements(result);
+    }
+    return [];
+}
 var AnimationManager = (function () {
     function AnimationManager() {
         this._definitions = {};
@@ -2197,26 +2216,21 @@ var AnimationManager = (function () {
         };
     }
     AnimationManager.prototype.animate = function (name, el, timings) {
-        //var promise = Promise();
         if (typeof name === 'undefined') {
-            //promise.reject("Just.animate() requires an animation name as the first argument")
-            return; //promise;
+            return;
         }
         var definition = this._definitions[name];
         if (typeof definition === 'undefined') {
-            //promise.reject("animation \"" + name + "\" was not found")
-            return; //promise;
+            return;
         }
         var timings2 = helpers_1.extend({}, definition.timings);
         if (timings) {
             timings2 = helpers_1.extend(timings2, timings);
         }
         var keyframes = definition.keyframes;
-        var player = el['animate'](keyframes, timings2);
-        player.onfinish = function () {
-            //promise.resolve();
-        };
-        return; //promise;
+        var elements = flattenElements(el);
+        var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings2]);
+        return new AnimationRelay_1.AnimationRelay(players);
     };
     AnimationManager.prototype.configure = function (timings) {
         helpers_1.extend(this._timings, timings);
@@ -2237,7 +2251,63 @@ var AnimationManager = (function () {
 })();
 exports.AnimationManager = AnimationManager;
 
-},{"./helpers":79}],79:[function(require,module,exports){
+},{"./AnimationRelay":79,"./helpers":80}],79:[function(require,module,exports){
+var helpers_1 = require('./helpers');
+var AnimationRelay = (function () {
+    function AnimationRelay(animations) {
+        this.animations = animations;
+    }
+    AnimationRelay.prototype.finish = function (fn) {
+        helpers_1.multiapply(this.animations, 'finish', [], fn);
+        return this;
+    };
+    AnimationRelay.prototype.play = function (fn) {
+        helpers_1.multiapply(this.animations, 'play', [], fn);
+        return this;
+    };
+    AnimationRelay.prototype.pause = function (fn) {
+        helpers_1.multiapply(this.animations, 'pause', [], fn);
+        return this;
+    };
+    AnimationRelay.prototype.reverse = function (fn) {
+        helpers_1.multiapply(this.animations, 'reverse', [], fn);
+        return this;
+    };
+    AnimationRelay.prototype.cancel = function (fn) {
+        helpers_1.multiapply(this.animations, 'cancel', [], fn);
+        return this;
+    };
+    return AnimationRelay;
+})();
+exports.AnimationRelay = AnimationRelay;
+
+},{"./helpers":80}],80:[function(require,module,exports){
+var ostring = Object.prototype.toString;
+function isArray(a) {
+    return ostring.call(a) === '[object Array]';
+}
+exports.isArray = isArray;
+function isFunction(a) {
+    return ostring.call(a) === '[object Function]';
+}
+exports.isFunction = isFunction;
+function each(items, fn) {
+    for (var i = 0, len = items.length; i < len; i++) {
+        fn(items[i]);
+    }
+}
+exports.each = each;
+function map(items, fn) {
+    var results = [];
+    for (var i = 0, len = items.length; i < len; i++) {
+        var result = fn(items[i]);
+        if (result !== undefined) {
+            results.push(result);
+        }
+    }
+    return results;
+}
+exports.map = map;
 function extend(target) {
     var sources = [];
     for (var _i = 1; _i < arguments.length; _i++) {
@@ -2254,8 +2324,29 @@ function extend(target) {
     return target;
 }
 exports.extend = extend;
+function multiapply(targets, fnName, args, cb) {
+    var errors = [];
+    var results = [];
+    for (var i = 0, len = targets.length; i < len; i++) {
+        try {
+            var target = targets[i];
+            var result = target[fnName].apply(target, args);
+            if (result !== undefined) {
+                results.push(result);
+            }
+        }
+        catch (err) {
+            errors.push(err);
+        }
+    }
+    if (typeof cb === 'function') {
+        cb(errors);
+    }
+    return results;
+}
+exports.multiapply = multiapply;
 
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 var AnimationManager_1 = require('./app/AnimationManager');
 var animations = require('./animations/_all');
 angular.module('just.animate', [])
@@ -2268,4 +2359,4 @@ angular.module('just.animate', [])
     return animationManager;
 });
 
-},{"./animations/_all":1,"./app/AnimationManager":78}]},{},[80])
+},{"./animations/_all":1,"./app/AnimationManager":78}]},{},[81])

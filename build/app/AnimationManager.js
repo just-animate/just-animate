@@ -1,4 +1,23 @@
 var helpers_1 = require('./helpers');
+var AnimationRelay_1 = require('./AnimationRelay');
+function flattenElements(source) {
+    if (source instanceof Element) {
+        return [source];
+    }
+    if (helpers_1.isArray(source) || source instanceof jQuery) {
+        var elements = [];
+        helpers_1.each(source, function (i) {
+            elements.push.apply(elements, flattenElements(i));
+        });
+        return elements;
+    }
+    if (helpers_1.isFunction(source)) {
+        var provider = source;
+        var result = provider();
+        return flattenElements(result);
+    }
+    return [];
+}
 var AnimationManager = (function () {
     function AnimationManager() {
         this._definitions = {};
@@ -8,26 +27,21 @@ var AnimationManager = (function () {
         };
     }
     AnimationManager.prototype.animate = function (name, el, timings) {
-        //var promise = Promise();
         if (typeof name === 'undefined') {
-            //promise.reject("Just.animate() requires an animation name as the first argument")
-            return; //promise;
+            return;
         }
         var definition = this._definitions[name];
         if (typeof definition === 'undefined') {
-            //promise.reject("animation \"" + name + "\" was not found")
-            return; //promise;
+            return;
         }
         var timings2 = helpers_1.extend({}, definition.timings);
         if (timings) {
             timings2 = helpers_1.extend(timings2, timings);
         }
         var keyframes = definition.keyframes;
-        var player = el['animate'](keyframes, timings2);
-        player.onfinish = function () {
-            //promise.resolve();
-        };
-        return; //promise;
+        var elements = flattenElements(el);
+        var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings2]);
+        return new AnimationRelay_1.AnimationRelay(players);
     };
     AnimationManager.prototype.configure = function (timings) {
         helpers_1.extend(this._timings, timings);

@@ -1,26 +1,26 @@
-import {extend} from './helpers';
+declare var jQuery;
 
-export interface IAnimationTiming {
-    duration?: number;
-    fill?: string;
-    iterations?: number;
-}
+import {extend, isArray, isFunction, each, multiapply} from './helpers';
+import {IAnimation, IAnimationTiming, IElementProvider, IKeyframe, IKeyframeGroupDict, jQuery as JQueryType} from './interfaces';
+import {AnimationRelay} from './AnimationRelay';
 
-export interface IKeyframe {
-
-}
-
-interface IKeyframeGroup {
-    keyframes: IKeyframe[];
-    timings?: IAnimationTiming;
-}
-
-interface IKeyframeGroupDict {
-    [name: string]: IKeyframeGroup
-}
-
-interface IAnimationManager {
-    animate(name: string, el: Element, timing?: IAnimationTiming);
+function flattenElements(source: Element|Element[]|JQueryType|IElementProvider) : Element[] {
+    if (source instanceof Element) {
+        return [source];
+    }
+    if (isArray(source) || source instanceof jQuery) {
+        var elements = [];
+        each(source as any[], i => {
+            elements.push.apply(elements, flattenElements(i));
+        });
+        return elements;
+    }
+    if (isFunction(source)) {
+        var provider = source as IElementProvider;
+        var result = provider();
+        return flattenElements(result);
+    }
+    return [];
 }
 
 export class AnimationManager {
@@ -34,18 +34,15 @@ export class AnimationManager {
             "fill": "both"
         };
     }
-    animate(name: string, el: Element, timings?: IAnimationTiming) {
-        //var promise = Promise();
-            
+    
+    animate(name: string, el: Element|Element[]|JQueryType|IElementProvider, timings?: IAnimationTiming): IAnimation {
         if (typeof name === 'undefined') {
-            //promise.reject("Just.animate() requires an animation name as the first argument")
-            return //promise;
+            return;
         }
 
         var definition = this._definitions[name];
         if (typeof definition === 'undefined') {
-            //promise.reject("animation \"" + name + "\" was not found")
-            return //promise;
+            return;
         }
 
         var timings2 = extend({}, definition.timings);
@@ -54,13 +51,11 @@ export class AnimationManager {
         }
 
         var keyframes = definition.keyframes;
-        var player = el['animate'](keyframes, timings2)
-
-        player.onfinish = function() {
-            //promise.resolve();
-        };
-
-        return //promise;
+        var elements = flattenElements(el);
+        var players = multiapply(elements, 'animate', [ keyframes, timings2]) as IAnimation[];
+        
+        return new AnimationRelay(players);
+        
     }
     configure(timings?: IAnimationTiming) {
         extend(this._timings, timings);
