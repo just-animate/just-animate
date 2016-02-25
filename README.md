@@ -53,11 +53,11 @@
 
 4. Use the player returned from animate to do more advanced things with these functions:
 
- a. finish
- b. play
- c. pause
- d. reverse
- e. cancel
+  * `finish`
+  * `play`
+  * `pause`
+  * `reverse`
+  * `cancel`
 
 
 ##Getting Started with Angular 1.x
