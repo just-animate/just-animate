@@ -4,7 +4,7 @@ function flattenElements(source) {
     if (source instanceof Element) {
         return [source];
     }
-    if (helpers_1.isArray(source) || source instanceof jQuery) {
+    if (helpers_1.isArray(source) || (typeof jQuery === 'function' && source instanceof jQuery)) {
         var elements = [];
         helpers_1.each(source, function (i) {
             elements.push.apply(elements, flattenElements(i));

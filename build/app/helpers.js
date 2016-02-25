@@ -1,6 +1,6 @@
 var ostring = Object.prototype.toString;
 function isArray(a) {
-    return ostring.call(a) === '[object Array]';
+    return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 }
 exports.isArray = isArray;
 function isFunction(a) {

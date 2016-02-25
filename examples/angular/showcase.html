@@ -58,7 +58,7 @@
                         var $el = $('<h2></h2>')
                         try {
                             $el.html(animationName);
-                            just[animationName]($el[0]);
+                            just[animationName]($el);
                             ++passing;
                         } catch (err) {
                             ++errors;
@@ -69,7 +69,7 @@
                         $container.prepend($el);
                         
                         nextAnimation();
-                    }, 350);
+                    }, 1200);
                 }
                 
                 nextAnimation();

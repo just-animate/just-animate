@@ -1,0 +1,65 @@
+<html>
+
+<head>
+    <title>Just Animate Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <style>
+        .container {
+            margin-top: 1em;
+        }
+        
+        .badger {
+            display: inline-block;
+            font-size: 2em;
+            padding-left: 2.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center">
+        <div class="well">
+            <span class="badger">Badger</span>
+            <strong class="badger">Badger</strong>
+            <span class="badger">Badger</span>
+            <span class="badger">Badger</span>
+            <strong class="badger">Badger</strong>
+            <span class="badger">Badger</span>
+            <span class="badger">Badger</span>
+            <strong class="badger">Badger</strong>
+            <span class="badger">Badger</span>
+            <span class="badger">Badger</span>
+            <strong class="badger">Badger</strong>
+            <span class="badger">Badger</span>
+            <span class="badger">Badger</span>
+            <strong class="badger">Badger</strong>
+            <span class="badger">Badger</span>
+            <span class="badger">Badger</span>
+
+        </div>
+        <button class="btn btn-primary" id="animate-button">
+            Animate
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="../../dist/just-animate-jquery.js"></script>
+    <script>
+        (function() {
+            var button = $('#animate-button');
+            var target = $('.badger');
+
+            button.on('click', function() {
+                var player = Just.bounceIn(target);  
+            
+                setTimeout(function(){ 
+                    player.reverse(); 
+                }, 1500); 
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

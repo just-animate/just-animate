@@ -2193,7 +2193,7 @@ function flattenElements(source) {
     if (source instanceof Element) {
         return [source];
     }
-    if (helpers_1.isArray(source) || source instanceof jQuery) {
+    if (helpers_1.isArray(source) || (typeof jQuery === 'function' && source instanceof jQuery)) {
         var elements = [];
         helpers_1.each(source, function (i) {
             elements.push.apply(elements, flattenElements(i));
@@ -2284,7 +2284,7 @@ exports.AnimationRelay = AnimationRelay;
 },{"./helpers":80}],80:[function(require,module,exports){
 var ostring = Object.prototype.toString;
 function isArray(a) {
-    return ostring.call(a) === '[object Array]';
+    return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 }
 exports.isArray = isArray;
 function isFunction(a) {

@@ -3,7 +3,7 @@ import {ICallbackHandler, IConsumer, IMapper, IIndexed} from './interfaces';
 const ostring = Object.prototype.toString;
 
 export function isArray(a) {
-    return ostring.call(a) === '[object Array]'
+    return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 }
 
 export function isFunction(a) {
