@@ -16,7 +16,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
   <script src="just-animate.js"></script>
   ```
-  Just Animate uses the new Animations API in JavaScript.  For maximum browser compatibility, this should be included even
+  Just Animate uses the new Web Animations API in JavaScript.  For maximum browser compatibility, this should be included even
   if your browser supports this new standard.
   
 2. Call the animation function any of these ways
