@@ -9,7 +9,7 @@
   * [Angular 1.x Demo](http://codepen.io/notoriousb1t/pen/Rrzvjb)
   * [JQuery Demo](http://codepen.io/notoriousb1t/pen/obrmMr)
 
-##Basic Usage
+##Getting Started
 1. Include these scripts on your document
 
   ```html
@@ -19,27 +19,46 @@
   Just Animate uses the new Animations API in JavaScript.  For maximum browser compatibility, this should be included even
   if your browser supports this new standard.
   
-2. Select the element you want to animate.
-
-  ```javascript
-  var element = document.getElementById('animate-me');
+2. Call the animation function any of these ways
+ 
+ a. Providing a css selector
+    ```javascript
+  Just.animate('fadeIn', '#animate-me')
   ```
-
-3. Finally you need to call the animation function
-
-  **Full example:**
-  ```javascript
+  
+ b. Providing an element
+    ```javascript
   var element = document.getElementById('animate-me');
   Just.animate('fadeIn', element)
   ```
+ c. Providing a jQuery object
+   ```javascript
+  Just.animate('fadeIn', $('#animate-me'))
+  ```
+ d. Providing an Function that returns any other element source
+   ```javascript
+  Just.animate('fadeIn', function() {
+      return document.getElementById('animate-me');
+  });
+  ```
+ d. Providing an Array that returns any other element source
+   ```javascript
+  Just.animate('fadeIn', [$('input:checkbox'), document.getElementById('#animate-me')]);
+  ```
+
+  
   
   **Shorthand example:**
-  ```javascript
-  var element = document.getElementById('animate-me');
-  Just.fadeIn(element)
-  ```
+  Each registered animation has a shorthand function that can be called instead of .animate('animation.name.here')
   
-  Each animation name has a shorthand function that can be called instead of .animate('animation.name.here')
+  ```javascript
+  Just.fadeIn('#animate-me')
+  ```
+     is the same as
+    ```javascript
+  Just.animate('fadeIn', '#animate-me')
+  ```
+
 
 
 ##AngularJS 1.x Usage
