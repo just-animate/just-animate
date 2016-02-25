@@ -60,7 +60,7 @@
  e. cancel
 
 
-##AngularJS 1.x Usage
+##Getting Started with Angular 1.x
 1. Include these scripts on your document
 
   ```html
@@ -80,50 +80,23 @@
     /* logic here */
   });
   ```
-
-4. Select the element you want to animate.
-
-  ```javascript
-  var element = angular.element('#animate-me');
-  ```
   
-5. Finally you need to call the animation function
+4. Finally you need to call the animate function
+ 
+  ```javascript
+  just.animate('fadeIn', '#animate-me');
+  ```
 
-  **Full example:**
+**Full Example**
   ```javascript
   angular.module('myApp', ['just.animate'])
     .controller('myCtrl', function(just) {
-      var element = angular.element('#animate-me');
-      just.animate('fadeIn', element);
+      just.animate('fadeIn', '#animate-me');
     });
   ```
-  
-  **Shorthand example:**
-  ```javascript
-  angular.module('myApp', ['just.animate'])
-    .controller('myCtrl', function(just) {
-      var element = angular.element('#animate-me');
-      just.fadeIn(element);
-    });
-  ```
-  
-  Each animation name has a shorthand function that can be called instead of .animate('animation.name.here')
+  See **Getting Started** above for more information
 
-##JQuery Usage
-1. Include these scripts on your document
-
-  ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="just-animate-jquery.js"></script>
-  ```
-  
-2. Select the element you want to animate and call .justAnimate('animate.name.here')
-
-  ```javascript
-  $('#animate-me').justAnimate('fadeIn');
-  ```
-
-## Built animations
+## Included animations
 
   The animations in JustAnimate are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
 
