@@ -52,13 +52,15 @@
   ```
 
 4. Use the player returned from animate to do more advanced things with these functions:
-
-  * `finish`
-  * `play`
-  * `pause`
-  * `reverse`
-  * `cancel`
-
+ 
+ ```javascript
+ var player = Just.fadeIn('#animate-me');
+ player.play();
+ player.pause();
+ player.finish();
+ player.reverse();
+ player.cancel();
+ ```
 
 ##Getting Started with Angular 1.x
 1. Include these scripts on your document
