@@ -25,8 +25,7 @@
  ```
 
  ```javascript
-  var element = document.getElementById('animate-me');
-  Just.animate('fadeIn', element)
+  Just.animate('fadeIn', document.getElementById('animate-me'))
  ```
 
    ```javascript
