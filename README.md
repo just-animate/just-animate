@@ -51,7 +51,7 @@
   /* ... */
   ```
 
-4. Use the player returned from animate to do more advanced things with these functions:
+4. Use the player returned from animate to do more advanced things:
  
  ```javascript
  var player = Just.fadeIn('#animate-me');
