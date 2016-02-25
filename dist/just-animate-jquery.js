@@ -2189,21 +2189,27 @@ module.exports={
 },{}],78:[function(require,module,exports){
 var helpers_1 = require('./helpers');
 var AnimationRelay_1 = require('./AnimationRelay');
-function flattenElements(source) {
+function getElements(source) {
+    if (!source) {
+        throw Error("Cannot find elements.  Source is undefined");
+    }
     if (source instanceof Element) {
         return [source];
+    }
+    if (typeof source === 'string') {
+        return helpers_1.toArray(document.querySelectorAll(source));
     }
     if (helpers_1.isArray(source) || (typeof jQuery === 'function' && source instanceof jQuery)) {
         var elements = [];
         helpers_1.each(source, function (i) {
-            elements.push.apply(elements, flattenElements(i));
+            elements.push.apply(elements, getElements(i));
         });
         return elements;
     }
     if (helpers_1.isFunction(source)) {
         var provider = source;
         var result = provider();
-        return flattenElements(result);
+        return getElements(result);
     }
     return [];
 }
@@ -2228,7 +2234,7 @@ var AnimationManager = (function () {
             timings2 = helpers_1.extend(timings2, timings);
         }
         var keyframes = definition.keyframes;
-        var elements = flattenElements(el);
+        var elements = getElements(el);
         var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings2]);
         return new AnimationRelay_1.AnimationRelay(players);
     };
@@ -2283,6 +2289,7 @@ exports.AnimationRelay = AnimationRelay;
 
 },{"./helpers":80}],80:[function(require,module,exports){
 var ostring = Object.prototype.toString;
+var slice = Array.prototype.slice;
 function isArray(a) {
     return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 }
@@ -2291,6 +2298,10 @@ function isFunction(a) {
     return ostring.call(a) === '[object Function]';
 }
 exports.isFunction = isFunction;
+function toArray(indexed) {
+    return slice.call(indexed, 0);
+}
+exports.toArray = toArray;
 function each(items, fn) {
     for (var i = 0, len = items.length; i < len; i++) {
         fn(items[i]);

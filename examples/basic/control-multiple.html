@@ -47,10 +47,9 @@
     <script>
         (function() {
             var button = document.getElementById('animate-button');
-            var target = document.querySelectorAll('.badger');
 
             button.addEventListener('click', function() {
-                var player = Just.bounceIn(target);  
+                var player = Just.bounceIn('.badger');  
                 
                 setTimeout(function(){ 
                     player.reverse(); 

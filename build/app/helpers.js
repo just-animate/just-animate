@@ -1,4 +1,5 @@
 var ostring = Object.prototype.toString;
+var slice = Array.prototype.slice;
 function isArray(a) {
     return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 }
@@ -7,6 +8,10 @@ function isFunction(a) {
     return ostring.call(a) === '[object Function]';
 }
 exports.isFunction = isFunction;
+function toArray(indexed) {
+    return slice.call(indexed, 0);
+}
+exports.toArray = toArray;
 function each(items, fn) {
     for (var i = 0, len = items.length; i < len; i++) {
         fn(items[i]);

@@ -1,6 +1,7 @@
 import {ICallbackHandler, IConsumer, IMapper, IIndexed} from './interfaces';
 
 const ostring = Object.prototype.toString;
+const slice = Array.prototype.slice;
 
 export function isArray(a) {
     return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
@@ -8,6 +9,10 @@ export function isArray(a) {
 
 export function isFunction(a) {
     return ostring.call(a) === '[object Function]'
+}
+
+export function toArray<T>(indexed: IIndexed<T>): T[] {
+    return slice.call(indexed, 0);
 }
 
 export function each<T1>(items: IIndexed<T1>, fn: IConsumer<T1>): void {

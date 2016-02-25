@@ -1,24 +1,32 @@
 declare var jQuery;
 
-import {extend, isArray, isFunction, each, multiapply} from './helpers';
+import {extend, isArray, isFunction, each, multiapply, toArray} from './helpers';
 import {IAnimation, IAnimationTiming, IElementProvider, IKeyframe, IKeyframeGroupDict, jQuery as JQueryType} from './interfaces';
 import {AnimationRelay} from './AnimationRelay';
 
-function flattenElements(source: Element|Element[]|JQueryType|IElementProvider) : Element[] {
+export type ElementSource = Element | Element[] | string | JQueryType | IElementProvider;
+
+function getElements(source: ElementSource): Element[] {
+    if (!source) {
+        throw Error("Cannot find elements.  Source is undefined");
+    }
     if (source instanceof Element) {
         return [source];
+    }
+    if (typeof source === 'string') {
+        return toArray(document.querySelectorAll(source));
     }
     if (isArray(source) || (typeof jQuery === 'function' && source instanceof jQuery)) {
         var elements = [];
         each(source as any[], i => {
-            elements.push.apply(elements, flattenElements(i));
+            elements.push.apply(elements, getElements(i));
         });
         return elements;
     }
     if (isFunction(source)) {
         var provider = source as IElementProvider;
         var result = provider();
-        return flattenElements(result);
+        return getElements(result);
     }
     return [];
 }
@@ -35,11 +43,17 @@ export class AnimationManager {
         };
     }
     
-    animate(name: string, el: Element|Element[]|JQueryType|IElementProvider, timings?: IAnimationTiming): IAnimation {
+    
+    animate(name: string, el: Element, timings?: IAnimationTiming): IAnimation;
+    animate(name: string, el: Element[], timings?: IAnimationTiming): IAnimation;
+    animate(name: string, el: string, timings?: IAnimationTiming): IAnimation;
+    animate(name: string, el: JQueryType, timings?: IAnimationTiming): IAnimation;
+    animate(name: string, el: IElementProvider, timings?: IAnimationTiming): IAnimation;
+    animate(name: string, el: ElementSource, timings?: IAnimationTiming): IAnimation {
         if (typeof name === 'undefined') {
             return;
         }
-
+        
         var definition = this._definitions[name];
         if (typeof definition === 'undefined') {
             return;
@@ -51,7 +65,7 @@ export class AnimationManager {
         }
 
         var keyframes = definition.keyframes;
-        var elements = flattenElements(el);
+        var elements = getElements(el);
         var players = multiapply(elements, 'animate', [ keyframes, timings2]) as IAnimation[];
         
         return new AnimationRelay(players);

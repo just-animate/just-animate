@@ -1,20 +1,26 @@
 var helpers_1 = require('./helpers');
 var AnimationRelay_1 = require('./AnimationRelay');
-function flattenElements(source) {
+function getElements(source) {
+    if (!source) {
+        throw Error("Cannot find elements.  Source is undefined");
+    }
     if (source instanceof Element) {
         return [source];
+    }
+    if (typeof source === 'string') {
+        return helpers_1.toArray(document.querySelectorAll(source));
     }
     if (helpers_1.isArray(source) || (typeof jQuery === 'function' && source instanceof jQuery)) {
         var elements = [];
         helpers_1.each(source, function (i) {
-            elements.push.apply(elements, flattenElements(i));
+            elements.push.apply(elements, getElements(i));
         });
         return elements;
     }
     if (helpers_1.isFunction(source)) {
         var provider = source;
         var result = provider();
-        return flattenElements(result);
+        return getElements(result);
     }
     return [];
 }
@@ -39,7 +45,7 @@ var AnimationManager = (function () {
             timings2 = helpers_1.extend(timings2, timings);
         }
         var keyframes = definition.keyframes;
-        var elements = flattenElements(el);
+        var elements = getElements(el);
         var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings2]);
         return new AnimationRelay_1.AnimationRelay(players);
     };
