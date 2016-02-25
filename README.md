@@ -41,24 +41,24 @@
       return document.getElementById('animate-me');
   });
   ```
- d. Providing an Array that returns any other element source
+ e. Providing an Array that returns any other element source
    ```javascript
   Just.animate('fadeIn', [$('input:checkbox'), document.getElementById('#animate-me')]);
   ```
 
-  
-  
-  **Shorthand example:**
-  Each registered animation has a shorthand function that can be called instead of .animate('animation.name.here')
-  
+3. Use shorthand functions to make it easy to read.  All animations can be called as functions 
+
   ```javascript
   Just.fadeIn('#animate-me')
   ```
-     is the same as
-    ```javascript
-  Just.animate('fadeIn', '#animate-me')
-  ```
 
+4. Use the player returned from animate to do more advanced things with these functions:
+
+ a. finish
+ b. play
+ c. pause
+ d. reverse
+ e. cancel
 
 
 ##AngularJS 1.x Usage
