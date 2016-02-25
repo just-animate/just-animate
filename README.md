@@ -20,28 +20,25 @@
   if your browser supports this new standard.
   
 2. Call the animation function any of these ways
- 
- a. Providing a css selector
-    ```javascript
+ ```javascript
   Just.animate('fadeIn', '#animate-me')
-  ```
-  
- b. Providing an element
-    ```javascript
+ ```
+
+ ```javascript
   var element = document.getElementById('animate-me');
   Just.animate('fadeIn', element)
-  ```
- c. Providing a jQuery object
+ ```
+
    ```javascript
   Just.animate('fadeIn', $('#animate-me'))
   ```
- d. Providing an Function that returns any other element source
+
    ```javascript
   Just.animate('fadeIn', function() {
       return document.getElementById('animate-me');
   });
   ```
- e. Providing an Array that returns any other element source
+
    ```javascript
   Just.animate('fadeIn', [$('input:checkbox'), document.getElementById('#animate-me')]);
   ```
@@ -49,7 +46,10 @@
 3. Use shorthand functions to make it easy to read.  All animations can be called as functions 
 
   ```javascript
-  Just.fadeIn('#animate-me')
+  Just.fadeIn('#animate-me');
+  Just.fadeOut('#animate-me');
+  Just.bounceIn('#animate-me');
+  /* ... */
   ```
 
 4. Use the player returned from animate to do more advanced things with these functions:
