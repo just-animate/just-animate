@@ -66,7 +66,7 @@
 4. Select the element you want to animate.
 
   ```javascript
-  var element = angular.element('#animate-me')[0];
+  var element = angular.element('#animate-me');
   ```
   
 5. Finally you need to call the animation function
@@ -75,7 +75,7 @@
   ```javascript
   angular.module('myApp', ['just.animate'])
     .controller('myCtrl', function(just) {
-      var element = angular.element('#animate-me')[0];
+      var element = angular.element('#animate-me');
       just.animate('fadeIn', element);
     });
   ```
@@ -84,7 +84,7 @@
   ```javascript
   angular.module('myApp', ['just.animate'])
     .controller('myCtrl', function(just) {
-      var element = angular.element('#animate-me')[0];
+      var element = angular.element('#animate-me');
       just.fadeIn(element);
     });
   ```
