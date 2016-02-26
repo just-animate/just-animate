@@ -5,10 +5,11 @@
 
 ## Demos
 
-  * [Basic Demo](http://codepen.io/notoriousb1t/pen/BjgGmY)
-  * [Angular 1.x Demo](http://codepen.io/notoriousb1t/pen/Rrzvjb)
-  * [JQuery Demo](http://codepen.io/notoriousb1t/pen/obrmMr)
-
+  * [Basic Animatinon](http://codepen.io/notoriousb1t/pen/BjgGmY)
+  * [Basic Animation with Angular 1.x](http://codepen.io/notoriousb1t/pen/Rrzvjb)
+  * [Basic Animation with JQuery](http://codepen.io/notoriousb1t/pen/obrmMr)
+  * [Basic Animation with JQuery](http://codepen.io/notoriousb1t/pen/obrmMr)
+  
 ##Getting Started
 1. Include these scripts on your document
 
