@@ -102,7 +102,7 @@
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-  <script src="../../dist/just-animate-jquery.js"></script>
+  <script src="../../dist/just-animate.js"></script>
   <script>
     $(document).ready(function() {
       var $button = $('#animateButton');
@@ -111,7 +111,7 @@
       
       function animateTheLabel() {
           var animationType = $select.val();
-          $label.justAnimate(animationType);
+          Just.animate(animationType, $label);
       }
       
       $button.on('click', animateTheLabel);

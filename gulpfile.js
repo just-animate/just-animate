@@ -47,18 +47,6 @@ gulp.task('just-animate-angular', ['build'], function () {
     .pipe(notify('just-animate-angular bundled'));
 });
 
-gulp.task('just-animate-jquery', ['build'], function () {
-  return browserify({
-    entries: [
-      './build/just-animate-jquery.js'
-    ],
-  })
-    .bundle()
-    .pipe(source('just-animate-jquery.js'))
-    .pipe(gulp.dest('./dist'))
-    .pipe(notify('just-animate-jquery bundled'));
-});
-
-gulp.task('default', ['just-animate', 'just-animate-angular', 'just-animate-jquery'], function () {
+gulp.task('default', ['just-animate', 'just-animate-angular'], function () {
 
 });
