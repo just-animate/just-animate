@@ -28,8 +28,8 @@ var AnimationManager = (function () {
     function AnimationManager() {
         this._definitions = {};
         this._timings = {
-            "duration": 1000,
-            "fill": "both"
+            duration: 1000,
+            fill: "both"
         };
     }
     AnimationManager.prototype.animate = function (name, el, timings) {
@@ -52,17 +52,13 @@ var AnimationManager = (function () {
     AnimationManager.prototype.configure = function (timings) {
         helpers_1.extend(this._timings, timings);
     };
-    AnimationManager.prototype.register = function (name, keyframes, timings) {
-        var definition = {
-            keyframes: keyframes,
-            timings: timings
-        };
-        this._definitions[name] = definition;
+    AnimationManager.prototype.register = function (name, animationOptions) {
+        this._definitions[name] = animationOptions;
         var self = this;
-        this[name] = function (el, timings) {
+        self[name] = function (el, timings) {
             return self.animate(name, el, timings);
         };
-        return this;
+        return self;
     };
     return AnimationManager;
 })();

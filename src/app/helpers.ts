@@ -16,15 +16,15 @@ export function toArray<T>(indexed: IIndexed<T>): T[] {
 }
 
 export function each<T1>(items: IIndexed<T1>, fn: IConsumer<T1>): void {
-    for (var i = 0, len = items.length; i < len; i++) {
+    for (let i = 0, len = items.length; i < len; i++) {
         fn(items[i]);
     }
 }
 
 export function map<T1, T2>(items: IIndexed<T1>, fn: IMapper<T1, T2>): T2[] {
-    var results = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-        var result = fn(items[i]);
+    const results = [];
+    for (let i = 0, len = items.length; i < len; i++) {
+        const result = fn(items[i]);
         if (result !== undefined) {
             results.push(result);
         }
@@ -33,9 +33,9 @@ export function map<T1, T2>(items: IIndexed<T1>, fn: IMapper<T1, T2>): T2[] {
 }
 
 export function extend(target: any, ...sources: any[]) {
-    for (var i = 1, len = arguments.length; i < len; i++) {
-        var source = arguments[i];
-        for (var propName in source) {
+    for (let i = 1, len = arguments.length; i < len; i++) {
+        const source = arguments[i];
+        for (let propName in source) {
             if (source.hasOwnProperty(propName)) {
                 target[propName] = source[propName];
             }
@@ -45,12 +45,12 @@ export function extend(target: any, ...sources: any[]) {
 }
 
 export function multiapply(targets, fnName, args, cb?: ICallbackHandler): any[] {
-    var errors = [];
-    var results = [];
-    for (var i = 0, len = targets.length; i < len; i++) {
+    const errors = [];
+    const results = [];
+    for (let i = 0, len = targets.length; i < len; i++) {
         try {
-            var target = targets[i];
-            var result = target[fnName].apply(target, args);
+            const target = targets[i];
+            const result = target[fnName].apply(target, args);
             if (result !== undefined) {
                 results.push(result);
             }
