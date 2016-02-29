@@ -1,5 +1,6 @@
 import {IAnimation, IAnimationSequenceStep, ICallbackHandler} from './types';
 import {AnimationManager} from './Animationmanager';
+import {multiapply} from './helpers';
 
 export class AnimationSequence implements IAnimation {
     private currentIndex: number;
@@ -46,7 +47,7 @@ export class AnimationSequence implements IAnimation {
         animator.play(this.errorCallback);
     }
     finish(fn?: ICallbackHandler) {
-        // TODO: figure out behavior for finish
+        multiapply(this.steps, 'finish', [], fn);
         return this;
     }
     play(fn?: ICallbackHandler) {
@@ -69,7 +70,7 @@ export class AnimationSequence implements IAnimation {
         return this;
     }
     cancel(fn?: ICallbackHandler) {
-        // TODO: figure out behavior for cancel
+        multiapply(this.steps, 'cancel', [], fn);
         return this;
     }
 }
