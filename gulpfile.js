@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var del = require('del');
 var gutil = require('gulp-util');
 var notify = require('gulp-notify');
 var rename = require('gulp-rename');
@@ -54,8 +55,13 @@ gulp.task('just-animate-angular', ['build'], function () {
         .pipe(notify('just-animate bundled'));
 });
 
+gulp.task('clean-min', function () {
+    return del([
+        './dist/*.min.js'
+    ]);
+});
 
-gulp.task('dist', ['just-animate', 'just-animate-angular'], function () {
+gulp.task('dist', ['just-animate', 'just-animate-angular', 'clean-min'], function () {
     return gulp.src('dist/*.js')
         .pipe(uglify({
             mangle: true,

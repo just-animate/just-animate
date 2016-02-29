@@ -287,8 +287,9 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var helpers_1 = __webpack_require__(2);
 	var AnimationSequence = (function () {
 	    function AnimationSequence(manager, steps) {
 	        this.isReversed = false;
@@ -329,7 +330,7 @@
 	        animator.play(this.errorCallback);
 	    };
 	    AnimationSequence.prototype.finish = function (fn) {
-	        // TODO: figure out behavior for finish
+	        helpers_1.multiapply(this.steps, 'finish', [], fn);
 	        return this;
 	    };
 	    AnimationSequence.prototype.play = function (fn) {
@@ -352,7 +353,7 @@
 	        return this;
 	    };
 	    AnimationSequence.prototype.cancel = function (fn) {
-	        // TODO: figure out behavior for cancel
+	        helpers_1.multiapply(this.steps, 'cancel', [], fn);
 	        return this;
 	    };
 	    return AnimationSequence;

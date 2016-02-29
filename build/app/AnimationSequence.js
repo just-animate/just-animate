@@ -1,3 +1,4 @@
+var helpers_1 = require('./helpers');
 var AnimationSequence = (function () {
     function AnimationSequence(manager, steps) {
         this.isReversed = false;
@@ -38,7 +39,7 @@ var AnimationSequence = (function () {
         animator.play(this.errorCallback);
     };
     AnimationSequence.prototype.finish = function (fn) {
-        // TODO: figure out behavior for finish
+        helpers_1.multiapply(this.steps, 'finish', [], fn);
         return this;
     };
     AnimationSequence.prototype.play = function (fn) {
@@ -61,7 +62,7 @@ var AnimationSequence = (function () {
         return this;
     };
     AnimationSequence.prototype.cancel = function (fn) {
-        // TODO: figure out behavior for cancel
+        helpers_1.multiapply(this.steps, 'cancel', [], fn);
         return this;
     };
     return AnimationSequence;
