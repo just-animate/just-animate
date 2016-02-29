@@ -1,6 +1,9 @@
 var helpers_1 = require('./helpers');
 var AnimationRelay = (function () {
     function AnimationRelay(animations) {
+        if (!helpers_1.isArray(animations)) {
+            throw Error('AnimationRelay requires an array of animations');
+        }
         this.animations = animations;
     }
     AnimationRelay.prototype.finish = function (fn) {
@@ -23,6 +26,19 @@ var AnimationRelay = (function () {
         helpers_1.multiapply(this.animations, 'cancel', [], fn);
         return this;
     };
+    Object.defineProperty(AnimationRelay.prototype, "onfinish", {
+        get: function () {
+            if (this.animations.length === 0) {
+                return undefined;
+            }
+            return this.animations[0].onfinish;
+        },
+        set: function (val) {
+            helpers_1.each(this.animations, function (a) { a.onfinish = val; });
+        },
+        enumerable: true,
+        configurable: true
+    });
     return AnimationRelay;
 })();
 exports.AnimationRelay = AnimationRelay;

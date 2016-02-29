@@ -22,7 +22,6 @@ gulp.task('build', ['copy-animations'], function () {
         .pipe(notify('TypeScript compiled'));
 });
 
-
 gulp.task('just-animate', ['build'], function () {
     return gulp.src('build/just-animate.js')
         .pipe(webpack({

@@ -12,6 +12,13 @@ function toArray(indexed) {
     return slice.call(indexed, 0);
 }
 exports.toArray = toArray;
+function first(items) {
+    if (!items || items.length === 0) {
+        return undefined;
+    }
+    return items[0];
+}
+exports.first = first;
 function each(items, fn) {
     for (var i = 0, len = items.length; i < len; i++) {
         fn(items[i]);
@@ -51,7 +58,13 @@ function multiapply(targets, fnName, args, cb) {
     for (var i = 0, len = targets.length; i < len; i++) {
         try {
             var target = targets[i];
-            var result = target[fnName].apply(target, args);
+            var result = void 0;
+            if (fnName) {
+                result = target[fnName].apply(target, args);
+            }
+            else {
+                result = target.apply(null, args);
+            }
             if (result !== undefined) {
                 results.push(result);
             }

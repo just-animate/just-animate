@@ -1,5 +1,6 @@
 var helpers_1 = require('./helpers');
 var AnimationRelay_1 = require('./AnimationRelay');
+var AnimationSequence_1 = require('./AnimationSequence');
 function getElements(source) {
     if (!source) {
         throw Error("Cannot find elements.  Source is undefined");
@@ -32,21 +33,21 @@ var AnimationManager = (function () {
             fill: "both"
         };
     }
-    AnimationManager.prototype.animate = function (name, el, timings) {
-        if (typeof name === 'undefined') {
+    AnimationManager.prototype.animate = function (keyframesOrName, el, timings) {
+        if (typeof keyframesOrName === 'undefined') {
             return;
         }
-        var definition = this._definitions[name];
-        if (typeof definition === 'undefined') {
-            return;
+        var keyframes;
+        if (helpers_1.isArray(keyframesOrName)) {
+            keyframes = keyframesOrName;
         }
-        var timings2 = helpers_1.extend({}, definition.timings);
-        if (timings) {
-            timings2 = helpers_1.extend(timings2, timings);
+        else {
+            var definition = this._definitions[keyframesOrName];
+            keyframes = definition.keyframes;
+            timings = helpers_1.extend({}, definition.timings, timings);
         }
-        var keyframes = definition.keyframes;
         var elements = getElements(el);
-        var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings2]);
+        var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
         return new AnimationRelay_1.AnimationRelay(players);
     };
     AnimationManager.prototype.configure = function (timings) {
@@ -59,6 +60,28 @@ var AnimationManager = (function () {
             return self.animate(name, el, timings);
         };
         return self;
+    };
+    AnimationManager.prototype.sequence = function (steps) {
+        var _this = this;
+        var animationSteps = helpers_1.map(steps, function (step) {
+            if (step.command) {
+                return step;
+            }
+            if (!step.name) {
+                return step;
+            }
+            var definition = _this._definitions[step.name];
+            var timings = helpers_1.extend({}, definition.timings);
+            if (step.timings) {
+                timings = helpers_1.extend(timings, step.timings);
+            }
+            return {
+                keyframes: definition.keyframes,
+                timings: timings,
+                el: step.el
+            };
+        });
+        return new AnimationSequence_1.AnimationSequence(this, animationSteps);
     };
     return AnimationManager;
 })();

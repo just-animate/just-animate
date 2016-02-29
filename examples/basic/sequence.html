@@ -1,0 +1,79 @@
+<html>
+
+<head>
+    <title>Just Animate Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <style>
+        .container {
+            margin-top: 1em;
+        }
+        
+        .step {
+            display: inline-block;
+            font-size: 2em;
+            padding-left: 2.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center">
+        <div class="well">
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+
+        </div>
+        <button class="btn btn-primary" id="play">
+            Play
+        </button>
+        <button class="btn btn-primary" id="pause">
+            Pause
+        </button>
+        <button class="btn btn-primary" id="rewind">
+            Rewind
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
+    <script src="../../dist/just-animate.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script>
+        var steps = $('.step').map(function(){ 
+            return {
+                el: this,
+                name: 'zoomIn',
+                timings: {
+                    duration: 450
+                }
+            }
+        });
+        
+        var player = Just.sequence(steps);
+        $('#play').click(function() {
+            player.play();
+        });
+        $('#pause').click(function() {
+            player.pause();
+        });
+        $('#rewind').click(function() {
+            player.reverse();
+        });
+    </script>
+
+</body>
+
+</html>

@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var AnimationManager_1 = __webpack_require__(1);
-	var animations = __webpack_require__(4);
+	var animations = __webpack_require__(5);
 	var animationManager = new AnimationManager_1.AnimationManager();
 	for (var animationName in animations) {
 	    var animationOptions = animations[animationName];
@@ -60,6 +60,7 @@
 
 	var helpers_1 = __webpack_require__(2);
 	var AnimationRelay_1 = __webpack_require__(3);
+	var AnimationSequence_1 = __webpack_require__(4);
 	function getElements(source) {
 	    if (!source) {
 	        throw Error("Cannot find elements.  Source is undefined");
@@ -92,21 +93,21 @@
 	            fill: "both"
 	        };
 	    }
-	    AnimationManager.prototype.animate = function (name, el, timings) {
-	        if (typeof name === 'undefined') {
+	    AnimationManager.prototype.animate = function (keyframesOrName, el, timings) {
+	        if (typeof keyframesOrName === 'undefined') {
 	            return;
 	        }
-	        var definition = this._definitions[name];
-	        if (typeof definition === 'undefined') {
-	            return;
+	        var keyframes;
+	        if (helpers_1.isArray(keyframesOrName)) {
+	            keyframes = keyframesOrName;
 	        }
-	        var timings2 = helpers_1.extend({}, definition.timings);
-	        if (timings) {
-	            timings2 = helpers_1.extend(timings2, timings);
+	        else {
+	            var definition = this._definitions[keyframesOrName];
+	            keyframes = definition.keyframes;
+	            timings = helpers_1.extend({}, definition.timings, timings);
 	        }
-	        var keyframes = definition.keyframes;
 	        var elements = getElements(el);
-	        var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings2]);
+	        var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
 	        return new AnimationRelay_1.AnimationRelay(players);
 	    };
 	    AnimationManager.prototype.configure = function (timings) {
@@ -119,6 +120,28 @@
 	            return self.animate(name, el, timings);
 	        };
 	        return self;
+	    };
+	    AnimationManager.prototype.sequence = function (steps) {
+	        var _this = this;
+	        var animationSteps = helpers_1.map(steps, function (step) {
+	            if (step.command) {
+	                return step;
+	            }
+	            if (!step.name) {
+	                return step;
+	            }
+	            var definition = _this._definitions[step.name];
+	            var timings = helpers_1.extend({}, definition.timings);
+	            if (step.timings) {
+	                timings = helpers_1.extend(timings, step.timings);
+	            }
+	            return {
+	                keyframes: definition.keyframes,
+	                timings: timings,
+	                el: step.el
+	            };
+	        });
+	        return new AnimationSequence_1.AnimationSequence(this, animationSteps);
 	    };
 	    return AnimationManager;
 	})();
@@ -143,6 +166,13 @@
 	    return slice.call(indexed, 0);
 	}
 	exports.toArray = toArray;
+	function first(items) {
+	    if (!items || items.length === 0) {
+	        return undefined;
+	    }
+	    return items[0];
+	}
+	exports.first = first;
 	function each(items, fn) {
 	    for (var i = 0, len = items.length; i < len; i++) {
 	        fn(items[i]);
@@ -182,7 +212,13 @@
 	    for (var i = 0, len = targets.length; i < len; i++) {
 	        try {
 	            var target = targets[i];
-	            var result = target[fnName].apply(target, args);
+	            var result = void 0;
+	            if (fnName) {
+	                result = target[fnName].apply(target, args);
+	            }
+	            else {
+	                result = target.apply(null, args);
+	            }
 	            if (result !== undefined) {
 	                results.push(result);
 	            }
@@ -206,6 +242,9 @@
 	var helpers_1 = __webpack_require__(2);
 	var AnimationRelay = (function () {
 	    function AnimationRelay(animations) {
+	        if (!helpers_1.isArray(animations)) {
+	            throw Error('AnimationRelay requires an array of animations');
+	        }
 	        this.animations = animations;
 	    }
 	    AnimationRelay.prototype.finish = function (fn) {
@@ -228,6 +267,19 @@
 	        helpers_1.multiapply(this.animations, 'cancel', [], fn);
 	        return this;
 	    };
+	    Object.defineProperty(AnimationRelay.prototype, "onfinish", {
+	        get: function () {
+	            if (this.animations.length === 0) {
+	                return undefined;
+	            }
+	            return this.animations[0].onfinish;
+	        },
+	        set: function (val) {
+	            helpers_1.each(this.animations, function (a) { a.onfinish = val; });
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    return AnimationRelay;
 	})();
 	exports.AnimationRelay = AnimationRelay;
@@ -235,88 +287,163 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	exports.bounce = __webpack_require__(5);
-	exports.bounceIn = __webpack_require__(6);
-	exports.bounceInDown = __webpack_require__(7);
-	exports.bounceInLeft = __webpack_require__(8);
-	exports.bounceInRight = __webpack_require__(9);
-	exports.bounceInUp = __webpack_require__(10);
-	exports.bounceOut = __webpack_require__(11);
-	exports.bounceOutDown = __webpack_require__(12);
-	exports.bounceOutLeft = __webpack_require__(13);
-	exports.bounceOutRight = __webpack_require__(14);
-	exports.bounceOutUp = __webpack_require__(15);
-	exports.fadeIn = __webpack_require__(16);
-	exports.fadeInDown = __webpack_require__(17);
-	exports.fadeInDownBig = __webpack_require__(18);
-	exports.fadeInLeft = __webpack_require__(19);
-	exports.fadeInLeftBig = __webpack_require__(20);
-	exports.fadeInRight = __webpack_require__(21);
-	exports.fadeInRightBig = __webpack_require__(22);
-	exports.fadeInUp = __webpack_require__(23);
-	exports.fadeInUpBig = __webpack_require__(24);
-	exports.fadeOut = __webpack_require__(25);
-	exports.fadeOutDown = __webpack_require__(26);
-	exports.fadeOutDownBig = __webpack_require__(27);
-	exports.fadeOutLeft = __webpack_require__(28);
-	exports.fadeOutLeftBig = __webpack_require__(29);
-	exports.fadeOutRight = __webpack_require__(30);
-	exports.fadeOutRightBig = __webpack_require__(31);
-	exports.fadeOutUp = __webpack_require__(32);
-	exports.fadeOutUpBig = __webpack_require__(33);
-	exports.flash = __webpack_require__(34);
-	exports.flip = __webpack_require__(35);
-	exports.flipInX = __webpack_require__(36);
-	exports.flipInY = __webpack_require__(37);
-	exports.flipOutX = __webpack_require__(38);
-	exports.flipOutY = __webpack_require__(39);
-	exports.headShake = __webpack_require__(40);
-	exports.hinge = __webpack_require__(41);
-	exports.jello = __webpack_require__(42);
-	exports.lightSpeedIn = __webpack_require__(43);
-	exports.lightSpeedOut = __webpack_require__(44);
-	exports.pulse = __webpack_require__(45);
-	exports.rollIn = __webpack_require__(46);
-	exports.rollOut = __webpack_require__(47);
-	exports.rotateIn = __webpack_require__(48);
-	exports.rotateInDownLeft = __webpack_require__(49);
-	exports.rotateInDownRight = __webpack_require__(50);
-	exports.rotateInUpLeft = __webpack_require__(51);
-	exports.rotateInUpRight = __webpack_require__(52);
-	exports.rotateOut = __webpack_require__(53);
-	exports.rotateOutDownLeft = __webpack_require__(54);
-	exports.rotateOutDownRight = __webpack_require__(55);
-	exports.rotateOutUpLeft = __webpack_require__(56);
-	exports.rotateOutUpRight = __webpack_require__(57);
-	exports.rubberBand = __webpack_require__(58);
-	exports.shake = __webpack_require__(59);
-	exports.slideInDown = __webpack_require__(60);
-	exports.slideInLeft = __webpack_require__(61);
-	exports.slideInRight = __webpack_require__(62);
-	exports.slideInUp = __webpack_require__(63);
-	exports.slideOutDown = __webpack_require__(64);
-	exports.slideOutLeft = __webpack_require__(65);
-	exports.slideOutRight = __webpack_require__(66);
-	exports.slideOutUp = __webpack_require__(67);
-	exports.swing = __webpack_require__(68);
-	exports.tada = __webpack_require__(69);
-	exports.wobble = __webpack_require__(70);
-	exports.zoomIn = __webpack_require__(71);
-	exports.zoomInDown = __webpack_require__(72);
-	exports.zoomInLeft = __webpack_require__(73);
-	exports.zoomInRight = __webpack_require__(74);
-	exports.zoomInUp = __webpack_require__(75);
-	exports.zoomOut = __webpack_require__(76);
-	exports.zoomOutDown = __webpack_require__(77);
-	exports.zoomOutLeft = __webpack_require__(78);
-	exports.zoomOutRight = __webpack_require__(79);
-	exports.zoomOutUp = __webpack_require__(80);
+	var AnimationSequence = (function () {
+	    function AnimationSequence(manager, steps) {
+	        this.isReversed = false;
+	        this.manager = manager;
+	        this.steps = steps;
+	    }
+	    AnimationSequence.prototype.isActive = function () {
+	        return this.currentIndex > -1 && this.currentIndex < this.steps.length;
+	    };
+	    AnimationSequence.prototype.getAnimator = function () {
+	        var it = this.steps[this.currentIndex];
+	        if (it._animator) {
+	            return it._animator;
+	        }
+	        it._animator = this.manager.animate(it.keyframes, it.el, it.timings);
+	        return it._animator;
+	    };
+	    AnimationSequence.prototype.playNextStep = function (evt) {
+	        if (this.isReversed) {
+	            this.currentIndex--;
+	        }
+	        else {
+	            this.currentIndex++;
+	        }
+	        if (this.isActive()) {
+	            this.playThisStep();
+	        }
+	    };
+	    AnimationSequence.prototype.playThisStep = function () {
+	        var _this = this;
+	        if (!this.isActive()) {
+	            this.currentIndex = this.isReversed ? this.steps.length - 1 : 0;
+	        }
+	        var animator = this.getAnimator();
+	        animator.onfinish = function (evt) {
+	            _this.playNextStep(evt);
+	        };
+	        animator.play(this.errorCallback);
+	    };
+	    AnimationSequence.prototype.finish = function (fn) {
+	        // TODO: figure out behavior for finish
+	        return this;
+	    };
+	    AnimationSequence.prototype.play = function (fn) {
+	        this.isReversed = false;
+	        this.playThisStep();
+	        return this;
+	    };
+	    AnimationSequence.prototype.pause = function (fn) {
+	        // ignore pause if not relevant
+	        if (!this.isActive()) {
+	            return this;
+	        }
+	        var animator = this.getAnimator();
+	        animator.pause(fn);
+	        return this;
+	    };
+	    AnimationSequence.prototype.reverse = function (fn) {
+	        this.isReversed = true;
+	        this.playThisStep();
+	        return this;
+	    };
+	    AnimationSequence.prototype.cancel = function (fn) {
+	        // TODO: figure out behavior for cancel
+	        return this;
+	    };
+	    return AnimationSequence;
+	})();
+	exports.AnimationSequence = AnimationSequence;
 
 
 /***/ },
 /* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports.bounce = __webpack_require__(6);
+	exports.bounceIn = __webpack_require__(7);
+	exports.bounceInDown = __webpack_require__(8);
+	exports.bounceInLeft = __webpack_require__(9);
+	exports.bounceInRight = __webpack_require__(10);
+	exports.bounceInUp = __webpack_require__(11);
+	exports.bounceOut = __webpack_require__(12);
+	exports.bounceOutDown = __webpack_require__(13);
+	exports.bounceOutLeft = __webpack_require__(14);
+	exports.bounceOutRight = __webpack_require__(15);
+	exports.bounceOutUp = __webpack_require__(16);
+	exports.fadeIn = __webpack_require__(17);
+	exports.fadeInDown = __webpack_require__(18);
+	exports.fadeInDownBig = __webpack_require__(19);
+	exports.fadeInLeft = __webpack_require__(20);
+	exports.fadeInLeftBig = __webpack_require__(21);
+	exports.fadeInRight = __webpack_require__(22);
+	exports.fadeInRightBig = __webpack_require__(23);
+	exports.fadeInUp = __webpack_require__(24);
+	exports.fadeInUpBig = __webpack_require__(25);
+	exports.fadeOut = __webpack_require__(26);
+	exports.fadeOutDown = __webpack_require__(27);
+	exports.fadeOutDownBig = __webpack_require__(28);
+	exports.fadeOutLeft = __webpack_require__(29);
+	exports.fadeOutLeftBig = __webpack_require__(30);
+	exports.fadeOutRight = __webpack_require__(31);
+	exports.fadeOutRightBig = __webpack_require__(32);
+	exports.fadeOutUp = __webpack_require__(33);
+	exports.fadeOutUpBig = __webpack_require__(34);
+	exports.flash = __webpack_require__(35);
+	exports.flip = __webpack_require__(36);
+	exports.flipInX = __webpack_require__(37);
+	exports.flipInY = __webpack_require__(38);
+	exports.flipOutX = __webpack_require__(39);
+	exports.flipOutY = __webpack_require__(40);
+	exports.headShake = __webpack_require__(41);
+	exports.hinge = __webpack_require__(42);
+	exports.jello = __webpack_require__(43);
+	exports.lightSpeedIn = __webpack_require__(44);
+	exports.lightSpeedOut = __webpack_require__(45);
+	exports.pulse = __webpack_require__(46);
+	exports.rollIn = __webpack_require__(47);
+	exports.rollOut = __webpack_require__(48);
+	exports.rotateIn = __webpack_require__(49);
+	exports.rotateInDownLeft = __webpack_require__(50);
+	exports.rotateInDownRight = __webpack_require__(51);
+	exports.rotateInUpLeft = __webpack_require__(52);
+	exports.rotateInUpRight = __webpack_require__(53);
+	exports.rotateOut = __webpack_require__(54);
+	exports.rotateOutDownLeft = __webpack_require__(55);
+	exports.rotateOutDownRight = __webpack_require__(56);
+	exports.rotateOutUpLeft = __webpack_require__(57);
+	exports.rotateOutUpRight = __webpack_require__(58);
+	exports.rubberBand = __webpack_require__(59);
+	exports.shake = __webpack_require__(60);
+	exports.slideInDown = __webpack_require__(61);
+	exports.slideInLeft = __webpack_require__(62);
+	exports.slideInRight = __webpack_require__(63);
+	exports.slideInUp = __webpack_require__(64);
+	exports.slideOutDown = __webpack_require__(65);
+	exports.slideOutLeft = __webpack_require__(66);
+	exports.slideOutRight = __webpack_require__(67);
+	exports.slideOutUp = __webpack_require__(68);
+	exports.swing = __webpack_require__(69);
+	exports.tada = __webpack_require__(70);
+	exports.wobble = __webpack_require__(71);
+	exports.zoomIn = __webpack_require__(72);
+	exports.zoomInDown = __webpack_require__(73);
+	exports.zoomInLeft = __webpack_require__(74);
+	exports.zoomInRight = __webpack_require__(75);
+	exports.zoomInUp = __webpack_require__(76);
+	exports.zoomOut = __webpack_require__(77);
+	exports.zoomOutDown = __webpack_require__(78);
+	exports.zoomOutLeft = __webpack_require__(79);
+	exports.zoomOutRight = __webpack_require__(80);
+	exports.zoomOutUp = __webpack_require__(81);
+
+
+/***/ },
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -374,7 +501,7 @@
 	};
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -439,7 +566,7 @@
 	};
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -483,7 +610,7 @@
 	};
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -546,7 +673,7 @@
 	};
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -588,7 +715,7 @@
 	};
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -632,7 +759,7 @@
 	};
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -670,7 +797,7 @@
 	};
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -708,7 +835,7 @@
 	};
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -737,7 +864,7 @@
 	};
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -766,7 +893,7 @@
 	};
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -805,7 +932,7 @@
 	};
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -827,7 +954,7 @@
 	};
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -851,7 +978,7 @@
 	};
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -875,7 +1002,7 @@
 	};
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -899,7 +1026,7 @@
 	};
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -923,7 +1050,7 @@
 	};
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -947,7 +1074,7 @@
 	};
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -971,7 +1098,7 @@
 	};
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -995,7 +1122,7 @@
 	};
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1019,7 +1146,7 @@
 	};
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1041,7 +1168,7 @@
 	};
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1065,7 +1192,7 @@
 	};
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1089,7 +1216,7 @@
 	};
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1113,7 +1240,7 @@
 	};
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1137,7 +1264,7 @@
 	};
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1161,7 +1288,7 @@
 	};
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1185,7 +1312,7 @@
 	};
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1209,7 +1336,7 @@
 	};
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1233,7 +1360,7 @@
 	};
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1267,7 +1394,7 @@
 	};
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1306,7 +1433,7 @@
 	};
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1345,7 +1472,7 @@
 	};
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1384,7 +1511,7 @@
 	};
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1413,7 +1540,7 @@
 	};
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1442,7 +1569,7 @@
 	};
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1485,7 +1612,7 @@
 	};
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1541,7 +1668,7 @@
 	};
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1595,7 +1722,7 @@
 	};
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1629,7 +1756,7 @@
 	};
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1653,7 +1780,7 @@
 	};
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1679,7 +1806,7 @@
 	};
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1703,7 +1830,7 @@
 	};
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1727,7 +1854,7 @@
 	};
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1753,7 +1880,7 @@
 	};
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1779,7 +1906,7 @@
 	};
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1805,7 +1932,7 @@
 	};
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1831,7 +1958,7 @@
 	};
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1857,7 +1984,7 @@
 	};
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1883,7 +2010,7 @@
 	};
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1909,7 +2036,7 @@
 	};
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1935,7 +2062,7 @@
 	};
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1961,7 +2088,7 @@
 	};
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1987,7 +2114,7 @@
 	};
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2029,7 +2156,7 @@
 	};
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2087,7 +2214,7 @@
 	};
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2111,7 +2238,7 @@
 	};
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2135,7 +2262,7 @@
 	};
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2159,7 +2286,7 @@
 	};
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2183,7 +2310,7 @@
 	};
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2207,7 +2334,7 @@
 	};
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2231,7 +2358,7 @@
 	};
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2255,7 +2382,7 @@
 	};
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2279,7 +2406,7 @@
 	};
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2317,7 +2444,7 @@
 	};
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2375,7 +2502,7 @@
 	};
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2417,7 +2544,7 @@
 	};
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2445,7 +2572,7 @@
 	};
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2476,7 +2603,7 @@
 	};
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2507,7 +2634,7 @@
 	};
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2538,7 +2665,7 @@
 	};
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2569,7 +2696,7 @@
 	};
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2601,7 +2728,7 @@
 	};
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2635,7 +2762,7 @@
 	};
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2666,7 +2793,7 @@
 	};
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2697,7 +2824,7 @@
 	};
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports) {
 
 	module.exports = {

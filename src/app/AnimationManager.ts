@@ -1,12 +1,11 @@
 declare const jQuery;
 
-import {extend, isArray, isFunction, each, multiapply, toArray} from './helpers';
-import {IAnimation, IAnimationTiming, IElementProvider, IKeyframe, IAnimationOptions, IAnimationOptionsMap, jQuery as JQueryType} from './interfaces';
+import {extend, isArray, isFunction, each, multiapply, toArray, map} from './helpers';
+import * as types from './types';
 import {AnimationRelay} from './AnimationRelay';
+import {AnimationSequence} from './AnimationSequence';
 
-export type ElementSource = Element | Element[] | string | JQueryType | IElementProvider;
-
-function getElements(source: ElementSource): Element[] {
+function getElements(source: types.ElementSource): Element[] {
     if (!source) {
         throw Error("Cannot find elements.  Source is undefined");
     }
@@ -24,7 +23,7 @@ function getElements(source: ElementSource): Element[] {
         return elements;
     }
     if (isFunction(source)) {
-        const provider = source as IElementProvider;
+        const provider = source as types.IElementProvider;
         const result = provider();
         return getElements(result);
     }
@@ -32,8 +31,8 @@ function getElements(source: ElementSource): Element[] {
 }
 
 export class AnimationManager {
-    private _definitions: IAnimationOptionsMap;
-    private _timings: IAnimationTiming;
+    private _definitions: types.IAnimationOptionsMap;
+    private _timings: types.IAnimationTiming;
 
     constructor() {
         this._definitions = {};
@@ -43,37 +42,40 @@ export class AnimationManager {
         };
     }
 
-    animate(name: string, el: Element, timings?: IAnimationTiming): IAnimation;
-    animate(name: string, el: Element[], timings?: IAnimationTiming): IAnimation;
-    animate(name: string, el: string, timings?: IAnimationTiming): IAnimation;
-    animate(name: string, el: JQueryType, timings?: IAnimationTiming): IAnimation;
-    animate(name: string, el: IElementProvider, timings?: IAnimationTiming): IAnimation;
-    animate(name: string, el: ElementSource, timings?: IAnimationTiming): IAnimation {
-        if (typeof name === 'undefined') {
+    animate(name: string, el: string, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(name: string, el: Element, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(name: string, el: types.jQuery, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(name: string, el: types.IElementProvider, timings?: types.IAnimationTiming): types.IAnimation;
+    animate(name: string, el: types.ElementSource[], timings?: types.IAnimationTiming): types.IAnimation; 
+    animate(keyframes: types.IKeyframe[], el: string, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(keyframes: types.IKeyframe[], el: Element, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(keyframes: types.IKeyframe[], el: types.jQuery, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(keyframes: types.IKeyframe[], el: types.IElementProvider, timings?: types.IAnimationTiming): types.IAnimation;
+    animate(keyframes: types.IKeyframe[], el: types.ElementSource[], timings?: types.IAnimationTiming): types.IAnimation;  
+    animate(keyframesOrName: string|types.IKeyframe[], el: types.ElementSource, timings?: types.IAnimationTiming): types.IAnimation {
+        if (typeof keyframesOrName === 'undefined') {
             return;
         }
 
-        const definition = this._definitions[name];
-        if (typeof definition === 'undefined') {
-            return;
+        let keyframes;
+        if (isArray(keyframesOrName)) {
+            keyframes = keyframesOrName;
+        } else {
+            const definition = this._definitions[keyframesOrName as string];
+            keyframes = definition.keyframes
+            timings = extend({}, definition.timings, timings);
         }
-
-        let timings2 = extend({}, definition.timings);
-        if (timings) {
-            timings2 = extend(timings2, timings);
-        }
-
-        const keyframes = definition.keyframes;
+        
         const elements = getElements(el);
-        const players = multiapply(elements, 'animate', [keyframes, timings2]) as IAnimation[];
+        const players = multiapply(elements, 'animate', [keyframes, timings]) as types.IAnimation[];
 
         return new AnimationRelay(players);
 
     }
-    configure(timings?: IAnimationTiming) {
+    configure(timings?: types.IAnimationTiming) {
         extend(this._timings, timings);
     }
-    register(name: string, animationOptions: IAnimationOptions) {
+    register(name: string, animationOptions: types.IAnimationOptions) {
         this._definitions[name] = animationOptions;
 
         const self = this;
@@ -81,5 +83,28 @@ export class AnimationManager {
             return self.animate(name, el, timings);
         };
         return self;
+    }
+    sequence(steps: types.IAnimationSequenceStep[]) : types.IAnimation {
+        const animationSteps = map(steps, step => {
+            if (step.command) {
+                return step;
+            }
+            if (!step.name) {
+                return step;
+            }
+
+            const definition = this._definitions[step.name];
+            let timings = extend({}, definition.timings);
+            if (step.timings) {
+                timings = extend(timings, step.timings);
+            }
+            return {
+                keyframes: definition.keyframes,
+                timings: timings,
+                el: step.el
+            };
+        }) as types.IAnimationSequenceStep[];
+        
+        return new AnimationSequence(this, animationSteps);
     }
 }
