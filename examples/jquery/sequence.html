@@ -59,45 +59,33 @@
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <script>
         (function() {
-            var stepElements = document.querySelectorAll('.step');
-            var steps = [];
-            for (var i = 0; i < stepElements.length; i++) {
-                steps.push({
-                    el: stepElements[i],
+            var steps = $('.step').map(function(){ 
+                return {
+                    el: this,
                     name: 'zoomIn',
                     timings: {
                         duration: 450
                     }
-                })
-            }
+                }
+            });
             
             var player = Just.sequence(steps);
-            var playButton = document.getElementById('play');
-            playButton.addEventListener('click', function() {
+            $('#play').click(function() {
                 player.play();
             });
-            
-            var pauseButton = document.getElementById('pause');
-            pauseButton.addEventListener('click', function() {
+            $('#pause').click(function() {
                 player.pause();
             });
-            
-            var reverseButton = document.getElementById('reverse');
-            reverseButton.addEventListener('click', function() {
+            $('#reverse').click(function() {
                 player.reverse();
             });
-            
-            var cancelButton = document.getElementById('cancel');
-            cancelButton.addEventListener('click', function() {
+            $('#cancel').click(function() {
                 player.cancel();
             });
-            
-            var finishButton = document.getElementById('finish');
-            finishButton.addEventListener('click', function() {
+            $('#finish').click(function() {
                 player.finish();
             });
         })();
-        
     </script>
 
 </body>

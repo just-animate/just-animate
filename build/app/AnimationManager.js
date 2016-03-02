@@ -38,7 +38,7 @@ var AnimationManager = (function () {
             return;
         }
         var keyframes;
-        if (typeof keyframes === 'string') {
+        if (typeof keyframesOrName === 'string') {
             var definition = this._definitions[keyframesOrName];
             keyframes = definition.keyframes;
             timings = helpers_1.extend({}, definition.timings, timings);

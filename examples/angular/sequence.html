@@ -1,0 +1,82 @@
+<html>
+
+<head>
+    <title>Just Animate Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <style>
+        .container {
+            margin-top: 1em;
+        }
+        
+        .step {
+            display: inline-block;
+            font-size: 2em;
+            padding-left: 2.5rem;
+        }
+    </style>
+</head>
+
+<body ng-app="app" ng-controller="MyController as vm">
+    <div class="container text-center">
+        <div class="well">
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+            <strong class="step">step</strong>
+            <em class="step">step</em>
+            <span class="step">step</span>
+        </div>
+        
+        <button class="btn btn-primary" ng-click="vm.player.play()">
+            Play
+        </button>
+        <button class="btn btn-primary" ng-click="vm.player.pause()">
+            Pause
+        </button>
+        <button class="btn btn-primary" ng-click="vm.player.reverse()">
+            Reverse
+        </button>
+        <button class="btn btn-primary" ng-click="vm.player.cancel()">
+            Cancel
+        </button>
+        <button class="btn btn-primary" ng-click="vm.player.finish()">
+            Finish
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="../../dist/just-animate-angular.js"></script>
+    <script>
+        angular.module('app', ['just.animate'])
+            .controller('MyController', function(just) {
+                var steps = angular
+                    .element('.step')
+                    .map(function(){ 
+                        return {
+                            el: this,
+                            name: 'zoomIn',
+                            timings: {
+                                duration: 450
+                            }
+                        }
+                    });
+                    
+                this.player = just.sequence(steps);
+            });
+    </script>
+
+</body>
+
+</html>

@@ -47,18 +47,18 @@ export class AnimationManager {
     animate(name: string, el: types.jQuery, timings?: types.IAnimationTiming): types.IAnimation;    
     animate(name: string, el: types.IElementProvider, timings?: types.IAnimationTiming): types.IAnimation;
     animate(name: string, el: types.ElementSource[], timings?: types.IAnimationTiming): types.IAnimation; 
-    animate(keyframes: types.IKeyframe[], el: string, timings?: types.IAnimationTiming): types.IAnimation;    
-    animate(keyframes: types.IKeyframe[], el: Element, timings?: types.IAnimationTiming): types.IAnimation;    
-    animate(keyframes: types.IKeyframe[], el: types.jQuery, timings?: types.IAnimationTiming): types.IAnimation;    
-    animate(keyframes: types.IKeyframe[], el: types.IElementProvider, timings?: types.IAnimationTiming): types.IAnimation;
-    animate(keyframes: types.IKeyframe[], el: types.ElementSource[], timings?: types.IAnimationTiming): types.IAnimation;  
-    animate(keyframesOrName: string|types.IKeyframe[], el: types.ElementSource, timings?: types.IAnimationTiming): types.IAnimation {
+    animate(keyframes: types.IKeyframeProvider, el: string, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(keyframes: types.IKeyframeProvider, el: Element, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(keyframes: types.IKeyframeProvider, el: types.jQuery, timings?: types.IAnimationTiming): types.IAnimation;    
+    animate(keyframes: types.IKeyframeProvider, el: types.IElementProvider, timings?: types.IAnimationTiming): types.IAnimation;
+    animate(keyframes: types.IKeyframeProvider, el: types.ElementSource[], timings?: types.IAnimationTiming): types.IAnimation;  
+    animate(keyframesOrName: string|types.IKeyframeProvider, el: types.ElementSource, timings?: types.IAnimationTiming): types.IAnimation {
         if (typeof keyframesOrName === 'undefined') {
             return;
         }
 
         let keyframes;
-        if (typeof keyframes === 'string') {
+        if (typeof keyframesOrName === 'string') {
             const definition = this._definitions[keyframesOrName as string];
             keyframes = definition.keyframes
             timings = extend({}, definition.timings, timings);
