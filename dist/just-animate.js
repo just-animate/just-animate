@@ -98,13 +98,13 @@
 	            return;
 	        }
 	        var keyframes;
-	        if (helpers_1.isArray(keyframesOrName)) {
-	            keyframes = keyframesOrName;
-	        }
-	        else {
+	        if (typeof keyframes === 'string') {
 	            var definition = this._definitions[keyframesOrName];
 	            keyframes = definition.keyframes;
 	            timings = helpers_1.extend({}, definition.timings, timings);
+	        }
+	        else {
+	            keyframes = keyframesOrName;
 	        }
 	        var elements = getElements(el);
 	        var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
@@ -154,6 +154,9 @@
 
 	var ostring = Object.prototype.toString;
 	var slice = Array.prototype.slice;
+	function noop() {
+	}
+	exports.noop = noop;
 	function isArray(a) {
 	    return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 	}
@@ -295,6 +298,8 @@
 	        this.isReversed = false;
 	        this.manager = manager;
 	        this.steps = steps;
+	        this.currentIndex = -1;
+	        this.onfinish = helpers_1.noop;
 	    }
 	    AnimationSequence.prototype.isActive = function () {
 	        return this.currentIndex > -1 && this.currentIndex < this.steps.length;
@@ -317,6 +322,9 @@
 	        if (this.isActive()) {
 	            this.playThisStep();
 	        }
+	        else {
+	            this.onfinish(evt);
+	        }
 	    };
 	    AnimationSequence.prototype.playThisStep = function () {
 	        var _this = this;
@@ -330,7 +338,14 @@
 	        animator.play(this.errorCallback);
 	    };
 	    AnimationSequence.prototype.finish = function (fn) {
-	        helpers_1.multiapply(this.steps, 'finish', [], fn);
+	        this.currentIndex = this.isReversed ? this.steps.length : -1;
+	        for (var x = 0; x < this.steps.length; x++) {
+	            var step = this.steps[x];
+	            if (step._animator !== undefined) {
+	                step._animator.cancel(fn);
+	            }
+	        }
+	        this.onfinish(undefined);
 	        return this;
 	    };
 	    AnimationSequence.prototype.play = function (fn) {
@@ -353,7 +368,14 @@
 	        return this;
 	    };
 	    AnimationSequence.prototype.cancel = function (fn) {
-	        helpers_1.multiapply(this.steps, 'cancel', [], fn);
+	        this.isReversed = false;
+	        this.currentIndex = -1;
+	        for (var x = 0; x < this.steps.length; x++) {
+	            var step = this.steps[x];
+	            if (step._animator !== undefined) {
+	                step._animator.cancel(fn);
+	            }
+	        }
 	        return this;
 	    };
 	    return AnimationSequence;

@@ -4,6 +4,8 @@ var AnimationSequence = (function () {
         this.isReversed = false;
         this.manager = manager;
         this.steps = steps;
+        this.currentIndex = -1;
+        this.onfinish = helpers_1.noop;
     }
     AnimationSequence.prototype.isActive = function () {
         return this.currentIndex > -1 && this.currentIndex < this.steps.length;
@@ -26,6 +28,9 @@ var AnimationSequence = (function () {
         if (this.isActive()) {
             this.playThisStep();
         }
+        else {
+            this.onfinish(evt);
+        }
     };
     AnimationSequence.prototype.playThisStep = function () {
         var _this = this;
@@ -39,7 +44,14 @@ var AnimationSequence = (function () {
         animator.play(this.errorCallback);
     };
     AnimationSequence.prototype.finish = function (fn) {
-        helpers_1.multiapply(this.steps, 'finish', [], fn);
+        this.currentIndex = this.isReversed ? this.steps.length : -1;
+        for (var x = 0; x < this.steps.length; x++) {
+            var step = this.steps[x];
+            if (step._animator !== undefined) {
+                step._animator.cancel(fn);
+            }
+        }
+        this.onfinish(undefined);
         return this;
     };
     AnimationSequence.prototype.play = function (fn) {
@@ -62,7 +74,14 @@ var AnimationSequence = (function () {
         return this;
     };
     AnimationSequence.prototype.cancel = function (fn) {
-        helpers_1.multiapply(this.steps, 'cancel', [], fn);
+        this.isReversed = false;
+        this.currentIndex = -1;
+        for (var x = 0; x < this.steps.length; x++) {
+            var step = this.steps[x];
+            if (step._animator !== undefined) {
+                step._animator.cancel(fn);
+            }
+        }
         return this;
     };
     return AnimationSequence;

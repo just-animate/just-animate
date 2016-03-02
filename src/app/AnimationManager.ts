@@ -58,12 +58,12 @@ export class AnimationManager {
         }
 
         let keyframes;
-        if (isArray(keyframesOrName)) {
-            keyframes = keyframesOrName;
-        } else {
+        if (typeof keyframes === 'string') {
             const definition = this._definitions[keyframesOrName as string];
             keyframes = definition.keyframes
             timings = extend({}, definition.timings, timings);
+        } else {
+            keyframes = keyframesOrName;
         }
         
         const elements = getElements(el);

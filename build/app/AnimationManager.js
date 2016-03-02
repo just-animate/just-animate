@@ -38,13 +38,13 @@ var AnimationManager = (function () {
             return;
         }
         var keyframes;
-        if (helpers_1.isArray(keyframesOrName)) {
-            keyframes = keyframesOrName;
-        }
-        else {
+        if (typeof keyframes === 'string') {
             var definition = this._definitions[keyframesOrName];
             keyframes = definition.keyframes;
             timings = helpers_1.extend({}, definition.timings, timings);
+        }
+        else {
+            keyframes = keyframesOrName;
         }
         var elements = getElements(el);
         var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);

@@ -1,6 +1,6 @@
-import {IAnimation, IAnimationSequenceStep, ICallbackHandler} from './types';
+import {IAnimation, IAnimationSequenceStep, ICallbackHandler, IConsumer} from './types';
 import {AnimationManager} from './Animationmanager';
-import {multiapply} from './helpers';
+import {noop} from './helpers';
 
 export class AnimationSequence implements IAnimation {
     private currentIndex: number;
@@ -9,9 +9,13 @@ export class AnimationSequence implements IAnimation {
     private isReversed = false;
     private errorCallback: ICallbackHandler;
     
+    onfinish: IConsumer<AnimationEvent>;
+    
     constructor(manager: AnimationManager, steps: IAnimationSequenceStep[]) {
         this.manager = manager;
         this.steps = steps;
+        this.currentIndex = -1;
+        this.onfinish = noop;
     } 
     
     private isActive() {
@@ -33,6 +37,8 @@ export class AnimationSequence implements IAnimation {
         }
         if (this.isActive()) {
             this.playThisStep();
+        } else {
+            this.onfinish(evt);
         }
     }
     private playThisStep() {
@@ -47,7 +53,15 @@ export class AnimationSequence implements IAnimation {
         animator.play(this.errorCallback);
     }
     finish(fn?: ICallbackHandler) {
-        multiapply(this.steps, 'finish', [], fn);
+        this.currentIndex = this.isReversed ? this.steps.length : -1;
+        
+        for (let x = 0; x < this.steps.length; x++) {
+            const step = this.steps[x];
+            if (step._animator !== undefined) {
+                step._animator.cancel(fn);
+            }
+        }
+        this.onfinish(undefined);
         return this;
     }
     play(fn?: ICallbackHandler) {
@@ -70,7 +84,14 @@ export class AnimationSequence implements IAnimation {
         return this;
     }
     cancel(fn?: ICallbackHandler) {
-        multiapply(this.steps, 'cancel', [], fn);
+        this.isReversed = false;
+        this.currentIndex = -1;
+        for (let x = 0; x < this.steps.length; x++) {
+            const step = this.steps[x];
+            if (step._animator !== undefined) {
+                step._animator.cancel(fn);
+            }
+        }
         return this;
     }
 }

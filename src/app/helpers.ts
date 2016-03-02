@@ -3,6 +3,10 @@ import {ICallbackHandler, IConsumer, IMapper, IIndexed} from './types';
 const ostring = Object.prototype.toString;
 const slice = Array.prototype.slice;
 
+export function noop() {
+    
+}
+
 export function isArray(a) {
     return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 }

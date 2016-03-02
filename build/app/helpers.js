@@ -1,5 +1,8 @@
 var ostring = Object.prototype.toString;
 var slice = Array.prototype.slice;
+function noop() {
+}
+exports.noop = noop;
 function isArray(a) {
     return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 }

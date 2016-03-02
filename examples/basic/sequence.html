@@ -43,8 +43,14 @@
         <button class="btn btn-primary" id="pause">
             Pause
         </button>
-        <button class="btn btn-primary" id="rewind">
-            Rewind
+        <button class="btn btn-primary" id="reverse">
+            Reverse
+        </button>
+        <button class="btn btn-primary" id="cancel">
+            Cancel
+        </button>
+        <button class="btn btn-primary" id="finish">
+            Finish
         </button>
     </div>
 
@@ -69,8 +75,14 @@
         $('#pause').click(function() {
             player.pause();
         });
-        $('#rewind').click(function() {
+        $('#reverse').click(function() {
             player.reverse();
+        });
+        $('#cancel').click(function() {
+            player.cancel();
+        });
+        $('#finish').click(function() {
+            player.finish();
         });
     </script>
 
