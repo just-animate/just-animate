@@ -1,6 +1,5 @@
 var gulp = require('gulp');
 var del = require('del');
-var gutil = require('gulp-util');
 var notify = require('gulp-notify');
 var rename = require('gulp-rename');
 var ts = require('gulp-typescript');
@@ -19,13 +18,13 @@ gulp.task('build', ['copy-animations'], function () {
         .pipe(ts(tsProject));
 
     return tsResult.js
-        .pipe(gulp.dest('build'))
-        .pipe(notify('TypeScript compiled'));
+        .pipe(gulp.dest('build'));
 });
 
 gulp.task('just-animate', ['build'], function () {
     return gulp.src('build/just-animate.js')
         .pipe(webpack({
+            watch: true,
             module: {
                 loaders: [
                     { test: /\.json$/, loader: "json" }

@@ -1,6 +1,8 @@
+"use strict";
 var ostring = Object.prototype.toString;
 var slice = Array.prototype.slice;
 function noop() {
+    // do nothing
 }
 exports.noop = noop;
 function isArray(a) {
@@ -11,6 +13,14 @@ function isFunction(a) {
     return ostring.call(a) === '[object Function]';
 }
 exports.isFunction = isFunction;
+function isJQuery(a) {
+    return isFunction(jQuery) && a instanceof jQuery;
+}
+exports.isJQuery = isJQuery;
+function isString(a) {
+    return typeof a === 'string';
+}
+exports.isString = isString;
 function toArray(indexed) {
     return slice.call(indexed, 0);
 }
@@ -66,7 +76,7 @@ function multiapply(targets, fnName, args, cb) {
                 result = target[fnName].apply(target, args);
             }
             else {
-                result = target.apply(null, args);
+                result = target.apply(undefined, args);
             }
             if (result !== undefined) {
                 results.push(result);

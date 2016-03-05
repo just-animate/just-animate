@@ -1,18 +1,28 @@
+declare var jQuery;
+
 import {ICallbackHandler, IConsumer, IMapper, IIndexed} from './types';
 
 const ostring = Object.prototype.toString;
 const slice = Array.prototype.slice;
 
-export function noop() {
-    
+export function noop(): void {
+    // do nothing
 }
 
-export function isArray(a) {
+export function isArray(a: any): boolean {
     return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
 }
 
-export function isFunction(a) {
-    return ostring.call(a) === '[object Function]'
+export function isFunction(a: any): boolean {
+    return ostring.call(a) === '[object Function]';
+}
+
+export function isJQuery(a: any): boolean {
+    return isFunction(jQuery) && a instanceof jQuery;
+}
+
+export function isString(a: any): boolean {
+    return typeof a === 'string';
 }
 
 export function toArray<T>(indexed: IIndexed<T>): T[] {
@@ -43,7 +53,7 @@ export function map<T1, T2>(items: IIndexed<T1>, fn: IMapper<T1, T2>): T2[] {
     return results;
 }
 
-export function extend(target: any, ...sources: any[]) {
+export function extend(target: any, ...sources: any[]): any {
     for (let i = 1, len = arguments.length; i < len; i++) {
         const source = arguments[i];
         for (let propName in source) {
@@ -55,7 +65,7 @@ export function extend(target: any, ...sources: any[]) {
     return target;
 }
 
-export function multiapply(targets, fnName, args, cb?: ICallbackHandler): any[] {
+export function multiapply(targets: IIndexed<any>, fnName: string, args: IIndexed<any>, cb?: ICallbackHandler): any[] {
     const errors = [];
     const results = [];
     for (let i = 0, len = targets.length; i < len; i++) {
@@ -65,7 +75,7 @@ export function multiapply(targets, fnName, args, cb?: ICallbackHandler): any[] 
             if (fnName) {
                 result = target[fnName].apply(target, args);
             } else {
-                result = target.apply(null, args);
+                result = target.apply(undefined, args);
             }
             if (result !== undefined) {
                 results.push(result);
@@ -79,4 +89,3 @@ export function multiapply(targets, fnName, args, cb?: ICallbackHandler): any[] 
     }
     return results;
 }
-

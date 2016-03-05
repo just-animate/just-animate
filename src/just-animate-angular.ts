@@ -4,13 +4,13 @@ import {AnimationManager} from './app/AnimationManager';
 import * as animations from './animations/_all';
 
 angular.module('just.animate', [])
-    .service('just', function() {
+    .service('just', function(): AnimationManager {
         const animationManager = new AnimationManager();
-
         for (let animationName in animations) {
-            const animationOptions = animations[animationName];
-            animationManager.register(animationName, animationOptions)
+            if (animations.hasOwnProperty(animationName)) {
+                const animationOptions = animations[animationName];
+                animationManager.register(animationName, animationOptions)
+            }
         }
-
         return animationManager;
     });

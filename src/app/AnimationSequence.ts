@@ -1,62 +1,28 @@
-import {IAnimation, IAnimationSequenceStep, ICallbackHandler, IConsumer} from './types';
-import {AnimationManager} from './Animationmanager';
+import {IAnimation, IAnimationManager, IAnimationSequenceStep, ICallbackHandler, IConsumer} from './types';
 import {noop} from './helpers';
 
 export class AnimationSequence implements IAnimation {
-    private currentIndex: number;
-    private manager: AnimationManager;
-    private steps: IAnimationSequenceStep[];
-    private isReversed = false;
-    private errorCallback: ICallbackHandler;
-    
-    onfinish: IConsumer<AnimationEvent>;
-    
-    constructor(manager: AnimationManager, steps: IAnimationSequenceStep[]) {
-        this.manager = manager;
-        this.steps = steps;
-        this.currentIndex = -1;
+    public onfinish: IConsumer<AnimationEvent>;
+    private _currentIndex: number;
+    private _isReversed: boolean;
+    private _errorCallback: ICallbackHandler;
+    private _manager: IAnimationManager;
+    private _steps: IAnimationSequenceStep[];
+
+    constructor(manager: IAnimationManager, steps: IAnimationSequenceStep[]) {
         this.onfinish = noop;
-    } 
+        this._currentIndex = -1;
+        this._isReversed = false;
+        this._manager = manager;
+        this._steps = steps;
+    }
     
-    private isActive() {
-        return this.currentIndex > -1 && this.currentIndex < this.steps.length;
-    }
-    private getAnimator() {
-        const it = this.steps[this.currentIndex];
-        if (it._animator) {
-            return it._animator;
-        }
-        it._animator = this.manager.animate(it.keyframes, it.el, it.timings)
-        return it._animator;
-    }
-    private playNextStep(evt: AnimationEvent) {
-        if (this.isReversed) {
-            this.currentIndex--;
-        } else {
-            this.currentIndex++;
-        }
-        if (this.isActive()) {
-            this.playThisStep();
-        } else {
-            this.onfinish(evt);
-        }
-    }
-    private playThisStep() {
-        if (!this.isActive()) {
-            this.currentIndex = this.isReversed ? this.steps.length - 1 : 0;
-        }
-        const animator = this.getAnimator();
-        animator.onfinish = evt => {
-            this.playNextStep(evt);
-        };
+    public finish(fn?: ICallbackHandler): IAnimation {
+        this._errorCallback = fn;
+        this._currentIndex = this._isReversed ? this._steps.length : -1;
         
-        animator.play(this.errorCallback);
-    }
-    finish(fn?: ICallbackHandler) {
-        this.currentIndex = this.isReversed ? this.steps.length : -1;
-        
-        for (let x = 0; x < this.steps.length; x++) {
-            const step = this.steps[x];
+        for (let x = 0; x < this._steps.length; x++) {
+            const step = this._steps[x];
             if (step._animator !== undefined) {
                 step._animator.cancel(fn);
             }
@@ -64,34 +30,72 @@ export class AnimationSequence implements IAnimation {
         this.onfinish(undefined);
         return this;
     }
-    play(fn?: ICallbackHandler) {
-        this.isReversed = false;
-        this.playThisStep();
+    public play(fn?: ICallbackHandler): IAnimation {
+        this._errorCallback = fn;
+        this._isReversed = false;
+        this._playThisStep();
         return this;
     }
-    pause(fn?: ICallbackHandler) {
+    public pause(fn?: ICallbackHandler): IAnimation {
+        this._errorCallback = fn;
         // ignore pause if not relevant
-        if (!this.isActive()) {
+        if (!this._isInEffect()) {
             return this;
         }
-        const animator = this.getAnimator();
+        const animator = this._getAnimator();
         animator.pause(fn);
         return this;
     }
-    reverse(fn?: ICallbackHandler) {
-        this.isReversed = true;
-        this.playThisStep();
+    public reverse(fn?: ICallbackHandler): IAnimation {
+        this._errorCallback = fn;
+        this._isReversed = true;
+        this._playThisStep();
         return this;
     }
-    cancel(fn?: ICallbackHandler) {
-        this.isReversed = false;
-        this.currentIndex = -1;
-        for (let x = 0; x < this.steps.length; x++) {
-            const step = this.steps[x];
+    public cancel(fn?: ICallbackHandler): IAnimation {
+        this._errorCallback = fn;
+        this._isReversed = false;
+        this._currentIndex = -1;
+        for (let x = 0; x < this._steps.length; x++) {
+            const step = this._steps[x];
             if (step._animator !== undefined) {
                 step._animator.cancel(fn);
             }
         }
         return this;
+    }
+    private _isInEffect(): boolean {
+        return this._currentIndex > -1 && this._currentIndex < this._steps.length;
+    }
+    private _getAnimator(): IAnimation {
+        const it = this._steps[this._currentIndex];
+        if (it._animator) {
+            return it._animator;
+        }
+        it._animator = this._manager.animate(it.keyframes, it.el, it.timings);
+        return it._animator;
+    }
+    private _playNextStep(evt: AnimationEvent): void {
+        if (this._isReversed) {
+            this._currentIndex--;
+        } else {
+            this._currentIndex++;
+        }
+        if (this._isInEffect()) {
+            this._playThisStep();
+        } else {
+            this.onfinish(evt);
+        }
+    }
+    private _playThisStep(): void {
+        if (!this._isInEffect()) {
+            this._currentIndex = this._isReversed ? this._steps.length - 1 : 0;
+        }
+        const animator = this._getAnimator();
+        animator.onfinish = (evt: AnimationEvent) => {
+            this._playNextStep(evt);
+        };
+        
+        animator.play(this._errorCallback);
     }
 }

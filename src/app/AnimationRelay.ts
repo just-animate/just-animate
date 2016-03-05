@@ -1,41 +1,41 @@
-import {IAnimation, ICallbackHandler, IConsumer} from './types'
-import {multiapply, each, first, isArray} from './helpers';
+import {IAnimation, ICallbackHandler, IConsumer} from './types';
+import {multiapply, each, isArray, noop} from './helpers';
 
 export class AnimationRelay implements IAnimation {
-    animations: IAnimation[];
+    private _animations: IAnimation[];
     constructor(animations: IAnimation[]) {
         if (!isArray(animations)) {
             throw Error('AnimationRelay requires an array of animations');
         }
-        this.animations = animations;
+        this._animations = animations;
     } 
-    finish(fn?: ICallbackHandler) {
-        multiapply(this.animations, 'finish', [], fn);
+    public finish(fn?: ICallbackHandler): IAnimation {
+        multiapply(this._animations, 'finish', [], fn);
         return this;
     }
-    play(fn?: ICallbackHandler) {
-        multiapply(this.animations, 'play', [], fn);
+    public play(fn?: ICallbackHandler): IAnimation {
+        multiapply(this._animations, 'play', [], fn);
         return this;
     }
-    pause(fn?: ICallbackHandler) {
-        multiapply(this.animations, 'pause', [], fn);
+    public pause(fn?: ICallbackHandler): IAnimation {
+        multiapply(this._animations, 'pause', [], fn);
         return this;
     }
-    reverse(fn?: ICallbackHandler) {
-        multiapply(this.animations, 'reverse', [], fn);
+    public reverse(fn?: ICallbackHandler): IAnimation {
+        multiapply(this._animations, 'reverse', [], fn);
         return this;
     }
-    cancel(fn?: ICallbackHandler) {
-        multiapply(this.animations, 'cancel', [], fn);
+    public cancel(fn?: ICallbackHandler): IAnimation {
+        multiapply(this._animations, 'cancel', [], fn);
         return this;
     }
-    get onfinish() {
-        if (this.animations.length === 0) {
+    get onfinish(): IConsumer<AnimationEvent> {
+        if (this._animations.length === 0) {
             return undefined;
         }
-        return this.animations[0].onfinish;
+        return this._animations[0].onfinish as IConsumer<AnimationEvent> || noop;
     }
     set onfinish(val: IConsumer<AnimationEvent>) {
-        each(this.animations, a => { a.onfinish = val; });
+        each(this._animations, (a: IAnimation) => { a.onfinish = val; });
     }
 }

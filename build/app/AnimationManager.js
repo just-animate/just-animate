@@ -1,22 +1,23 @@
+"use strict";
 var helpers_1 = require('./helpers');
 var AnimationRelay_1 = require('./AnimationRelay');
 var AnimationSequence_1 = require('./AnimationSequence');
 function getElements(source) {
     if (!source) {
-        throw Error("Cannot find elements.  Source is undefined");
+        throw Error('Cannot find elements.  Source is undefined');
     }
     if (source instanceof Element) {
         return [source];
     }
-    if (typeof source === 'string') {
+    if (helpers_1.isString(source)) {
         return helpers_1.toArray(document.querySelectorAll(source));
     }
-    if (helpers_1.isArray(source) || (typeof jQuery === 'function' && source instanceof jQuery)) {
-        var elements = [];
+    if (helpers_1.isArray(source) || helpers_1.isJQuery(source)) {
+        var elements_1 = [];
         helpers_1.each(source, function (i) {
-            elements.push.apply(elements, getElements(i));
+            elements_1.push.apply(elements_1, getElements(i));
         });
-        return elements;
+        return elements_1;
     }
     if (helpers_1.isFunction(source)) {
         var provider = source;
@@ -30,7 +31,7 @@ var AnimationManager = (function () {
         this._definitions = {};
         this._timings = {
             duration: 1000,
-            fill: "both"
+            fill: 'both'
         };
     }
     AnimationManager.prototype.animate = function (keyframesOrName, el, timings) {
@@ -38,7 +39,7 @@ var AnimationManager = (function () {
             return;
         }
         var keyframes;
-        if (typeof keyframesOrName === 'string') {
+        if (helpers_1.isString(keyframesOrName)) {
             var definition = this._definitions[keyframesOrName];
             keyframes = definition.keyframes;
             timings = helpers_1.extend({}, definition.timings, timings);
@@ -52,6 +53,7 @@ var AnimationManager = (function () {
     };
     AnimationManager.prototype.configure = function (timings) {
         helpers_1.extend(this._timings, timings);
+        return this;
     };
     AnimationManager.prototype.register = function (name, animationOptions) {
         this._definitions[name] = animationOptions;
@@ -76,13 +78,13 @@ var AnimationManager = (function () {
                 timings = helpers_1.extend(timings, step.timings);
             }
             return {
+                el: step.el,
                 keyframes: definition.keyframes,
-                timings: timings,
-                el: step.el
+                timings: timings
             };
         });
         return new AnimationSequence_1.AnimationSequence(this, animationSteps);
     };
     return AnimationManager;
-})();
+}());
 exports.AnimationManager = AnimationManager;
