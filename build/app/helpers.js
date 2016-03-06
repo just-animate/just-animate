@@ -6,7 +6,7 @@ function noop() {
 }
 exports.noop = noop;
 function isArray(a) {
-    return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
+    return !isString(a) && isNumber(a.length);
 }
 exports.isArray = isArray;
 function isFunction(a) {
@@ -17,6 +17,10 @@ function isJQuery(a) {
     return isFunction(jQuery) && a instanceof jQuery;
 }
 exports.isJQuery = isJQuery;
+function isNumber(a) {
+    return typeof a === 'number';
+}
+exports.isNumber = isNumber;
 function isString(a) {
     return typeof a === 'string';
 }
@@ -25,13 +29,6 @@ function toArray(indexed) {
     return slice.call(indexed, 0);
 }
 exports.toArray = toArray;
-function first(items) {
-    if (!items || items.length === 0) {
-        return undefined;
-    }
-    return items[0];
-}
-exports.first = first;
 function each(items, fn) {
     for (var i = 0, len = items.length; i < len; i++) {
         fn(items[i]);
@@ -86,7 +83,7 @@ function multiapply(targets, fnName, args, cb) {
             errors.push(err);
         }
     }
-    if (typeof cb === 'function') {
+    if (isFunction(cb)) {
         cb(errors);
     }
     return results;

@@ -5,15 +5,17 @@ import {extend, isArray, isFunction, isJQuery, isString, each, multiapply, toArr
 import {AnimationRelay} from './AnimationRelay';
 import {AnimationSequence} from './AnimationSequence';
 
+
+
 function getElements(source: ElementSource): Element[] {
     if (!source) {
-        throw Error('Cannot find elements.  Source is undefined');
-    }
-    if (source instanceof Element) {
-        return [source];
+        throw Error('source is undefined');
     }
     if (isString(source)) {
         return toArray(document.querySelectorAll(source as string));
+    }
+    if (source instanceof Element) {
+        return [source];
     }
     if (isArray(source) || isJQuery(source)) {
         const elements = [];
@@ -43,7 +45,7 @@ export class AnimationManager implements IAnimationManager {
     }
 
     public animate(keyframesOrName: string|IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimation {
-        if (typeof keyframesOrName === 'undefined') {
+        if (!keyframesOrName) {
             return;
         }
 

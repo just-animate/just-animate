@@ -10,7 +10,7 @@ export function noop(): void {
 }
 
 export function isArray(a: any): boolean {
-    return a !== undefined && typeof a !== 'string' && typeof a.length === 'number';
+    return !isString(a) && isNumber(a.length);
 }
 
 export function isFunction(a: any): boolean {
@@ -21,19 +21,16 @@ export function isJQuery(a: any): boolean {
     return isFunction(jQuery) && a instanceof jQuery;
 }
 
+export function isNumber(a: any): boolean {
+    return typeof a === 'number';
+}
+
 export function isString(a: any): boolean {
     return typeof a === 'string';
 }
 
 export function toArray<T>(indexed: IIndexed<T>): T[] {
     return slice.call(indexed, 0);
-}
-
-export function first<T1>(items: IIndexed<T1>): T1 {
-    if (!items || items.length === 0) {
-        return undefined;
-    }
-    return items[0];
 }
 
 export function each<T1>(items: IIndexed<T1>, fn: IConsumer<T1>): void {
@@ -84,7 +81,7 @@ export function multiapply(targets: IIndexed<any>, fnName: string, args: IIndexe
             errors.push(err);
         }
     }
-    if (typeof cb === 'function') {
+    if (isFunction(cb)) {
         cb(errors);
     }
     return results;

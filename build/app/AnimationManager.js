@@ -4,13 +4,13 @@ var AnimationRelay_1 = require('./AnimationRelay');
 var AnimationSequence_1 = require('./AnimationSequence');
 function getElements(source) {
     if (!source) {
-        throw Error('Cannot find elements.  Source is undefined');
-    }
-    if (source instanceof Element) {
-        return [source];
+        throw Error('source is undefined');
     }
     if (helpers_1.isString(source)) {
         return helpers_1.toArray(document.querySelectorAll(source));
+    }
+    if (source instanceof Element) {
+        return [source];
     }
     if (helpers_1.isArray(source) || helpers_1.isJQuery(source)) {
         var elements_1 = [];
@@ -35,7 +35,7 @@ var AnimationManager = (function () {
         };
     }
     AnimationManager.prototype.animate = function (keyframesOrName, el, timings) {
-        if (typeof keyframesOrName === 'undefined') {
+        if (!keyframesOrName) {
             return;
         }
         var keyframes;
