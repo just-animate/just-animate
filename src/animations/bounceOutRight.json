@@ -17,7 +17,7 @@
     }
   ],
   "timings": {
-    "duration": 1000,
+    "duration": 900,
     "fill": "both"
   },
   "name": "bounceOutRight"

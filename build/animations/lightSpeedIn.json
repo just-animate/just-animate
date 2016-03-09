@@ -23,7 +23,8 @@
   ],
   "timings": {
     "duration": 1000,
-    "fill": "both"
+    "fill": "both",
+    "easing": "ease-out"
   },
   "name": "lightSpeedIn"
 }

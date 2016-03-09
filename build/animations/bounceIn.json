@@ -1,60 +1,31 @@
 {
   "keyframes": [
     {
-      "offset": 0,
-      "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-    },
-    {
-      "offset": 0,
       "opacity": 0,
       "transform": "scale3d(.3, .3, .3)"
     },
     {
-      "offset": 0.2,
-      "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-    },
-    {
-      "offset": 0.2,
       "transform": "scale3d(1.1, 1.1, 1.1)"
     },
     {
-      "offset": 0.4,
-      "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-    },
-    {
-      "offset": 0.4,
       "transform": "scale3d(.9, .9, .9)"
     },
     {
-      "offset": 0.6,
-      "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-    },
-    {
-      "offset": 0.6,
       "opacity": 1,
       "transform": "scale3d(1.03, 1.03, 1.03)"
     },
     {
-      "offset": 0.8,
-      "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-    },
-    {
-      "offset": 0.8,
       "transform": "scale3d(.97, .97, .97)"
     },
     {
-      "offset": 1,
-      "easing": "cubic-bezier(0.215, 0.610, 0.355, 1.000)"
-    },
-    {
-      "offset": 1,
       "opacity": 1,
       "transform": "scale3d(1, 1, 1)"
     }
   ],
   "timings": {
-    "duration": 750,
-    "fill": "both"
+    "duration": 650,
+    "fill": "both",
+    "easing": "easeOutCubic"
   },
   "name": "bounceIn"
 }

@@ -1,4 +1,3 @@
-"use strict";
 var ostring = Object.prototype.toString;
 var slice = Array.prototype.slice;
 function noop() {

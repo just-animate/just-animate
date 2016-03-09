@@ -32,8 +32,9 @@
     }
   ],
   "timings": {
-    "duration": 1000,
-    "fill": "both"
+    "duration": 900,
+    "fill": "both",
+    "easing": "easeOutCubic"
   },
   "name": "bounceInDown"
 }

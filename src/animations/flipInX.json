@@ -27,8 +27,7 @@
     }
   ],
   "timings": {
-    "duration": 1000,
-    "fill": "both"
+    "duration": 750
   },
   "name": "flipInX"
 }

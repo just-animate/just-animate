@@ -1,18 +1,16 @@
 {
   "keyframes": [
     {
-      "offset": 0,
       "opacity": 0,
       "transform": "translate3d(0, 2000px, 0)"
     },
     {
-      "offset": 1,
       "opacity": 1,
       "transform": "none"
     }
   ],
   "timings": {
-    "duration": 1000,
+    "duration": 650,
     "fill": "both"
   },
   "name": "fadeInUpBig"

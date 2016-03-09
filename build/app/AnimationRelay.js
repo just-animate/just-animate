@@ -1,4 +1,3 @@
-"use strict";
 var helpers_1 = require('./helpers');
 var AnimationRelay = (function () {
     function AnimationRelay(animations) {
@@ -41,5 +40,5 @@ var AnimationRelay = (function () {
         configurable: true
     });
     return AnimationRelay;
-}());
+})();
 exports.AnimationRelay = AnimationRelay;

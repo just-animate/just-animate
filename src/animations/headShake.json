@@ -30,9 +30,7 @@
     }
   ],
   "timings": {
-    "duration": 1000,
-    "fill": "both",
-    "ease": "ease-in-out"
+    "duration": 1000
   },
   "name": "headShake"
 }

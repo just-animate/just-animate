@@ -3,13 +3,11 @@
     {
       "offset": 0,
       "transform": "perspective(400px) rotate3d(0, 1, 0, 90deg)",
-      "easing": "ease-in ",
       "opacity": 0
     },
     {
       "offset": 0.4,
-      "transform": "perspective(400px) rotate3d(0, 1, 0, -20deg)",
-      "easing": "ease-in "
+      "transform": "perspective(400px) rotate3d(0, 1, 0, -20deg)"
     },
     {
       "offset": 0.6,
@@ -27,8 +25,7 @@
     }
   ],
   "timings": {
-    "duration": 1000,
-    "fill": "both"
+    "duration": 750
   },
   "name": "flipInY"
 }

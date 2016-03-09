@@ -1,21 +1,18 @@
 {
   "keyframes": [
     {
-      "offset": 0,
       "transform-origin": "right bottom",
       "transform": "none",
       "opacity": 1
     },
     {
-      "offset": 1,
       "transform-origin": "right bottom",
       "transform": "rotate3d(0, 0, 1, 90deg)",
       "opacity": 0
     }
   ],
   "timings": {
-    "duration": 1000,
-    "fill": "both"
+    "duration": 1000
   },
   "name": "rotateOutUpRight"
 }

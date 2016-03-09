@@ -1,4 +1,3 @@
-"use strict";
 var helpers_1 = require('./helpers');
 var AnimationSequence = (function () {
     function AnimationSequence(manager, steps) {
@@ -91,5 +90,5 @@ var AnimationSequence = (function () {
         animator.play(this._errorCallback);
     };
     return AnimationSequence;
-}());
+})();
 exports.AnimationSequence = AnimationSequence;

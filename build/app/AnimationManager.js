@@ -1,4 +1,3 @@
-"use strict";
 var helpers_1 = require('./helpers');
 var AnimationRelay_1 = require('./AnimationRelay');
 var AnimationSequence_1 = require('./AnimationSequence');
@@ -13,11 +12,11 @@ function getElements(source) {
         return [source];
     }
     if (helpers_1.isArray(source) || helpers_1.isJQuery(source)) {
-        var elements_1 = [];
+        var elements = [];
         helpers_1.each(source, function (i) {
-            elements_1.push.apply(elements_1, getElements(i));
+            elements.push.apply(elements, getElements(i));
         });
-        return elements_1;
+        return elements;
     }
     if (helpers_1.isFunction(source)) {
         var provider = source;
@@ -29,6 +28,7 @@ function getElements(source) {
 var AnimationManager = (function () {
     function AnimationManager() {
         this._definitions = {};
+        this._easings = {};
         this._timings = {
             duration: 1000,
             fill: 'both'
@@ -51,8 +51,13 @@ var AnimationManager = (function () {
         var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
         return new AnimationRelay_1.AnimationRelay(players);
     };
-    AnimationManager.prototype.configure = function (timings) {
-        helpers_1.extend(this._timings, timings);
+    AnimationManager.prototype.configure = function (timings, easings) {
+        if (timings) {
+            helpers_1.extend(this._timings, timings);
+        }
+        if (easings) {
+            helpers_1.extend(this._easings, easings);
+        }
         return this;
     };
     AnimationManager.prototype.register = function (name, animationOptions) {
@@ -86,5 +91,5 @@ var AnimationManager = (function () {
         return new AnimationSequence_1.AnimationSequence(this, animationSteps);
     };
     return AnimationManager;
-}());
+})();
 exports.AnimationManager = AnimationManager;

@@ -48,6 +48,10 @@ export interface IElementProvider {
     (): Element | IIndexed<Element> | NodeList;
 }
 
+export interface IMap<T> {
+    [name: string]: T;
+}
+
 export interface IIndexed<T> {
     [index: number]: T;
     length: number;

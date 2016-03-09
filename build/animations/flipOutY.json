@@ -17,8 +17,7 @@
     }
   ],
   "timings": {
-    "duration": 750,
-    "fill": "both"
+    "duration": 750
   },
   "name": "flipOutY"
 }

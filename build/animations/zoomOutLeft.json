@@ -20,7 +20,7 @@
   ],
   "timings": {
     "duration": 1000,
-    "fill": "both"
+    "easing": "elegantSlowStartEnd"
   },
   "name": "zoomOutLeft"
 }

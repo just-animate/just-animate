@@ -13,7 +13,7 @@
       "transform": "skewX(-12.5deg) skewY(-12.5deg)"
     },
     {
-      "offset": 0.33299999999999996,
+      "offset": 0.333,
       "transform": "skewX(6.25deg) skewY(6.25deg)"
     },
     {
@@ -25,7 +25,7 @@
       "transform": "skewX(1.5625deg) skewY(1.5625deg)"
     },
     {
-      "offset": 0.6659999999999999,
+      "offset": 0.666,
       "transform": "skewX(-0.78125deg) skewY(-0.78125deg)"
     },
     {
@@ -43,7 +43,8 @@
   ],
   "timings": {
     "duration": 1000,
-    "fill": "both"
+    "fill": "both",
+    "easing": "ease-in-out"
   },
   "name": "jello"
 }

@@ -1,11 +1,9 @@
 import {ElementSource, IAnimation, IAnimationManager,  
     IAnimationOptions, IAnimationSequenceStep, 
-    IAnimationTiming, IElementProvider, IIndexed, IKeyframe} from './types';
+    IAnimationTiming, IElementProvider, IIndexed, IKeyframe, IMap} from './types';
 import {extend, isArray, isFunction, isJQuery, isString, each, multiapply, toArray, map} from './helpers';
 import {AnimationRelay} from './AnimationRelay';
 import {AnimationSequence} from './AnimationSequence';
-
-
 
 function getElements(source: ElementSource): Element[] {
     if (!source) {
@@ -35,9 +33,11 @@ function getElements(source: ElementSource): Element[] {
 export class AnimationManager implements IAnimationManager {
     private _definitions: {[key: string]: IAnimationOptions};
     private _timings: IAnimationTiming;
+    private _easings: IMap<string>;
 
     constructor() {
         this._definitions = {};
+        this._easings = {};
         this._timings = {
             duration: 1000,
             fill: 'both'
@@ -64,8 +64,13 @@ export class AnimationManager implements IAnimationManager {
         return new AnimationRelay(players);
 
     }
-    public configure(timings?: IAnimationTiming): IAnimationManager {
-        extend(this._timings, timings);
+    public configure(timings?: IAnimationTiming, easings?: IMap<string>): IAnimationManager {
+        if (timings) {
+            extend(this._timings, timings);
+        }
+        if (easings) {
+            extend(this._easings, easings);
+        }     
         return this;
     }
     public register(name: string, animationOptions: IAnimationOptions): IAnimationManager {

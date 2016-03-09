@@ -1,4 +1,3 @@
-"use strict";
 exports.bounce = require('./bounce.json');
 exports.bounceIn = require('./bounceIn.json');
 exports.bounceInDown = require('./bounceInDown.json');

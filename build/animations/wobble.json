@@ -30,8 +30,7 @@
     }
   ],
   "timings": {
-    "duration": 1000,
-    "fill": "both"
+    "duration": 1000
   },
   "name": "wobble"
 }
