@@ -143,6 +143,12 @@
 	        else {
 	            keyframes = keyframesOrName;
 	        }
+	        if (timings && timings.easing) {
+	            var easing = this._easings[timings.easing];
+	            if (easing) {
+	                timings.easing = easing;
+	            }
+	        }
 	        var elements = getElements(el);
 	        var players = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
 	        return new AnimationRelay_1.AnimationRelay(players);

@@ -1,5 +1,5 @@
-import {ElementSource, IAnimation, IAnimationManager,  
-    IAnimationOptions, IAnimationSequenceStep, 
+import {ElementSource, IAnimation, IAnimationManager,
+    IAnimationOptions, IAnimationSequenceStep,
     IAnimationTiming, IElementProvider, IIndexed, IKeyframe, IMap} from './types';
 import {extend, isArray, isFunction, isJQuery, isString, each, multiapply, toArray, map} from './helpers';
 import {AnimationRelay} from './AnimationRelay';
@@ -31,7 +31,7 @@ function getElements(source: ElementSource): Element[] {
 }
 
 export class AnimationManager implements IAnimationManager {
-    private _definitions: {[key: string]: IAnimationOptions};
+    private _definitions: { [key: string]: IAnimationOptions };
     private _timings: IAnimationTiming;
     private _easings: IMap<string>;
 
@@ -44,7 +44,7 @@ export class AnimationManager implements IAnimationManager {
         };
     }
 
-    public animate(keyframesOrName: string|IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimation {
+    public animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimation {
         if (!keyframesOrName) {
             return;
         }
@@ -57,7 +57,14 @@ export class AnimationManager implements IAnimationManager {
         } else {
             keyframes = keyframesOrName;
         }
-        
+
+        if (timings && timings.easing) {
+            const easing = this._easings[timings.easing];
+            if (easing) {
+                timings.easing = easing;
+            }
+        }
+
         const elements = getElements(el);
         const players = multiapply(elements, 'animate', [keyframes, timings]) as IAnimation[];
 
@@ -70,7 +77,7 @@ export class AnimationManager implements IAnimationManager {
         }
         if (easings) {
             extend(this._easings, easings);
-        }     
+        }
         return this;
     }
     public register(name: string, animationOptions: IAnimationOptions): IAnimationManager {
@@ -102,7 +109,7 @@ export class AnimationManager implements IAnimationManager {
                 timings: timings
             };
         }) as IAnimationSequenceStep[];
-        
+
         return new AnimationSequence(this, animationSteps);
     }
 }
