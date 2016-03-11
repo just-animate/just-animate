@@ -10,10 +10,10 @@ export interface IAnimation {
 }
 
 export interface IAnimationManager {
-    animate(keyframesOrName: string|IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimation;
+    animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimation;
+    animateSequence(options: IAnimationSequenceOptions): IAnimation;
     configure(timings?: IAnimationTiming): IAnimationManager;
     register(name: string, animationOptions: IAnimationOptions): IAnimationManager;
-    sequence(steps: IAnimationSequenceStep[]): IAnimation;
 }
 
 export interface IAnimationOptions {
@@ -21,7 +21,7 @@ export interface IAnimationOptions {
     timings?: IAnimationTiming;
 }
 
-export interface IAnimationSequenceStep {
+export interface IAnimationSequenceEvent {
     el: ElementSource;
     name?: string;
     command?: string;
@@ -30,11 +30,31 @@ export interface IAnimationSequenceStep {
     _animator?: IAnimation;
 }
 
+export interface IAnimationSequenceOptions {
+    steps: IAnimationSequenceEvent[];
+    autoplay?: boolean;
+}
+
 export interface IAnimationTiming {
     duration?: number;
     fill?: string;
     iterations?: number;
     easing?: string;
+}
+
+export interface IAnimationSheetEvent {
+    offset: number;
+    name?: string;
+    el: ElementSource;
+    timings?: IAnimationTiming;
+    keyframes?: IIndexed<IKeyframe>;
+    _animator?: IAnimation;
+}
+
+export interface IAnimationSheetOptions {
+    events: IAnimationSheetEvent[];
+    duration: number;
+    autoplay?: boolean;
 }
 
 export interface ICallbackHandler {

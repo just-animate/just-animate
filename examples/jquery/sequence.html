@@ -69,7 +69,11 @@
                 }
             });
             
-            var player = Just.sequence(steps);
+            var player = Just.animateSequence({
+                steps: steps,
+                autoplay: false
+            });
+            
             $('#play').click(function() {
                 player.play();
             });

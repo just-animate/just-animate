@@ -73,7 +73,10 @@
                         }
                     });
                     
-                this.player = just.sequence(steps);
+                this.player = just.animateSequence({
+                    steps: steps,
+                    autoplay: false
+                });
             });
     </script>
 

@@ -1,4 +1,4 @@
-import {IAnimation, IAnimationManager, IAnimationSequenceStep, ICallbackHandler, IConsumer} from './types';
+import {IAnimation, IAnimationManager, IAnimationSequenceEvent, ICallbackHandler, IConsumer} from './types';
 import {noop} from './helpers';
 
 export class AnimationSequence implements IAnimation {
@@ -7,9 +7,9 @@ export class AnimationSequence implements IAnimation {
     private _isReversed: boolean;
     private _errorCallback: ICallbackHandler;
     private _manager: IAnimationManager;
-    private _steps: IAnimationSequenceStep[];
+    private _steps: IAnimationSequenceEvent[];
 
-    constructor(manager: IAnimationManager, steps: IAnimationSequenceStep[]) {
+    constructor(manager: IAnimationManager, steps: IAnimationSequenceEvent[]) {
         this.onfinish = noop;
         this._currentIndex = -1;
         this._isReversed = false;
