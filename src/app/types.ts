@@ -44,11 +44,14 @@ export interface IAnimationTiming {
 
 export interface IAnimationSheetEvent {
     offset: number;
-    name?: string;
     el: ElementSource;
+    name?: string;
     timings?: IAnimationTiming;
     keyframes?: IIndexed<IKeyframe>;
     _animator?: IAnimation;
+    _startTimeMs?: number;
+    _endTimeMs?: number;
+    _isClipped?: boolean;
 }
 
 export interface IAnimationSheetOptions {

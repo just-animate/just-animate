@@ -1,9 +1,10 @@
 import {ElementSource, IAnimation, IAnimationManager,
-    IAnimationOptions, IAnimationSequenceEvent, IAnimationSequenceOptions,
+    IAnimationOptions, IAnimationSheetOptions, IAnimationSequenceEvent, IAnimationSheetEvent, IAnimationSequenceOptions,
     IAnimationTiming, IElementProvider, IIndexed, IKeyframe, IMap} from './types';
 import {extend, isArray, isFunction, isJQuery, isString, each, multiapply, toArray, map} from './helpers';
 import {AnimationRelay} from './AnimationRelay';
 import {AnimationSequence} from './AnimationSequence';
+import {AnimationSheet} from './AnimationSheet';
 
 function getElements(source: ElementSource): Element[] {
     if (!source) {
@@ -111,6 +112,60 @@ export class AnimationManager implements IAnimationManager {
             sequence.play();
         }
         return sequence;        
+    }
+    public animateSheet(options: IAnimationSheetOptions): IAnimation {
+        const sheetDuration = options.duration;
+        if (sheetDuration === undefined) {
+            throw Error('Duration is required');
+        }
+
+        const animationEvents = map(options.events, (evt: IAnimationSheetEvent) => {
+            let keyframes: IIndexed<IKeyframe>;
+            let timings: IAnimationTiming;
+            let el: ElementSource;
+            
+            if (evt.name) {
+                const definition = this._registry[evt.name];
+                let timings2 = extend({}, definition.timings);
+                if (evt.timings) {
+                    timings = extend(timings, evt.timings);
+                }
+                keyframes = definition.keyframes;
+                timings = timings2;
+                el = evt.el;
+            } else {
+                keyframes = evt.keyframes;
+                timings = evt.timings;
+                el = evt.el;
+            }
+
+            // calculate endtime
+            const startTime = sheetDuration * evt.offset;
+            let endTime = startTime + timings.duration;
+            const isClipped = endTime > sheetDuration;
+
+            // if end of animation is clipped, set endTime to duration            
+            if (isClipped) {
+                endTime = sheetDuration;
+            }
+
+            return {
+                keyframes: keyframes,
+                timings: timings,
+                el: el,
+                offset: evt.offset,
+                _isClipped: isClipped,
+                _startTimeMs: startTime,
+                _endTimeMs: endTime
+            };
+        }) as IAnimationSheetEvent[];
+        
+        const sheet = new AnimationSheet({
+            autoplay: options.autoplay,
+            duration: options.duration,
+            events: animationEvents
+        });
+        return sheet;
     }
     public configure(timings?: IAnimationTiming, easings?: IMap<string>): IAnimationManager {
         if (timings) {
