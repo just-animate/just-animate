@@ -1,5 +1,3 @@
-declare var jQuery;
-
 import {ICallbackHandler} from '../interfaces/ICallbackHandler';
 import {IConsumer} from '../interfaces/IConsumer';
 import {IMapper} from '../interfaces/IMapper';
@@ -18,10 +16,6 @@ export function isArray(a: any): boolean {
 
 export function isFunction(a: any): boolean {
     return ostring.call(a) === '[object Function]';
-}
-
-export function isJQuery(a: any): boolean {
-    return isFunction(jQuery) && a instanceof jQuery;
 }
 
 export function isNumber(a: any): boolean {

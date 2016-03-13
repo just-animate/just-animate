@@ -12,7 +12,7 @@ import {IIndexed} from '../interfaces/IIndexed';
 import {IKeyframe} from '../interfaces/IKeyframe';
 import {IMap} from '../interfaces/IMap';
 
-import {extend, isArray, isFunction, isJQuery, isString, each, multiapply, toArray, map} from './helpers';
+import {extend, isArray, isFunction, isString, each, multiapply, toArray, map} from './helpers';
 import {AnimationRelay} from './AnimationRelay';
 import {AnimationSequence} from './AnimationSequence';
 import {AnimationSheet} from './AnimationSheet';
@@ -30,7 +30,7 @@ function getElements(source: ElementSource): Element[] {
         // if a single element, wrap in array 
         return [source];
     }
-    if (isArray(source) || isJQuery(source)) {
+    if (isArray(source)) {
         // if array or jQuery object, flatten to an array
         const elements = [];
         each(source as IIndexed<any>, (i: any) => {

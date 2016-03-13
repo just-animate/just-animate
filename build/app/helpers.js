@@ -12,10 +12,6 @@ function isFunction(a) {
     return ostring.call(a) === '[object Function]';
 }
 exports.isFunction = isFunction;
-function isJQuery(a) {
-    return isFunction(jQuery) && a instanceof jQuery;
-}
-exports.isJQuery = isJQuery;
 function isNumber(a) {
     return typeof a === 'number';
 }

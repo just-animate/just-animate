@@ -15,7 +15,7 @@ function getElements(source) {
         // if a single element, wrap in array 
         return [source];
     }
-    if (helpers_1.isArray(source) || helpers_1.isJQuery(source)) {
+    if (helpers_1.isArray(source)) {
         // if array or jQuery object, flatten to an array
         var elements = [];
         helpers_1.each(source, function (i) {

@@ -114,7 +114,7 @@
 	        // if a single element, wrap in array 
 	        return [source];
 	    }
-	    if (helpers_1.isArray(source) || helpers_1.isJQuery(source)) {
+	    if (helpers_1.isArray(source)) {
 	        // if array or jQuery object, flatten to an array
 	        var elements = [];
 	        helpers_1.each(source, function (i) {
@@ -285,10 +285,6 @@
 	    return ostring.call(a) === '[object Function]';
 	}
 	exports.isFunction = isFunction;
-	function isJQuery(a) {
-	    return isFunction(jQuery) && a instanceof jQuery;
-	}
-	exports.isJQuery = isJQuery;
 	function isNumber(a) {
 	    return typeof a === 'number';
 	}
