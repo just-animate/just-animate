@@ -1,6 +1,17 @@
-import {ElementSource, IAnimation, IAnimationManager,
-    IAnimationOptions, IAnimationSheetOptions, IAnimationSequenceEvent, IAnimationSheetEvent, IAnimationSequenceOptions,
-    IAnimationTiming, IElementProvider, IIndexed, IKeyframe, IMap} from './types';
+import {ElementSource} from '../interfaces/IElementProvider';
+import {IAnimation} from '../interfaces/IAnimation';
+import {IAnimationManager} from '../interfaces/IAnimationManager';
+import {IAnimationOptions} from '../interfaces/IAnimationOptions';
+import {IAnimationSheetOptions} from '../interfaces/IAnimationSheetOptions';
+import {IAnimationSequenceEvent} from '../interfaces/IAnimationSequenceEvent';
+import {IAnimationSheetEvent} from '../interfaces/IAnimationSheetEvent';
+import {IAnimationSequenceOptions} from '../interfaces/IAnimationSequenceOptions';
+import {IAnimationTiming} from '../interfaces/IAnimationTiming';
+import {IElementProvider} from '../interfaces/IElementProvider';
+import {IIndexed} from '../interfaces/IIndexed';
+import {IKeyframe} from '../interfaces/IKeyframe';
+import {IMap} from '../interfaces/IMap';
+
 import {extend, isArray, isFunction, isJQuery, isString, each, multiapply, toArray, map} from './helpers';
 import {AnimationRelay} from './AnimationRelay';
 import {AnimationSequence} from './AnimationSequence';

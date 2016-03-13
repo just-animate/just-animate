@@ -1,4 +1,8 @@
-import {IAnimation, IAnimationManager, IAnimationSequenceEvent, ICallbackHandler, IConsumer} from './types';
+import {IAnimation} from '../interfaces/IAnimation';
+import {IAnimationManager} from '../interfaces/IAnimationManager';
+import {IAnimationSequenceEvent} from '../interfaces/IAnimationSequenceEvent';
+import {ICallbackHandler} from '../interfaces/ICallbackHandler';
+import {IConsumer} from '../interfaces/IConsumer';
 import {noop} from './helpers';
 
 export class AnimationSequence implements IAnimation {

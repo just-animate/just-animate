@@ -1,4 +1,7 @@
-import {IAnimation, ICallbackHandler, IConsumer} from './types';
+import {IAnimation} from '../interfaces/IAnimation';
+import {ICallbackHandler} from '../interfaces/ICallbackHandler';
+import {IConsumer} from '../interfaces/IConsumer';
+
 import {multiapply, each, isArray, noop} from './helpers';
 
 export class AnimationRelay implements IAnimation {

@@ -1,6 +1,9 @@
 declare var jQuery;
 
-import {ICallbackHandler, IConsumer, IMapper, IIndexed} from './types';
+import {ICallbackHandler} from '../interfaces/ICallbackHandler';
+import {IConsumer} from '../interfaces/IConsumer';
+import {IMapper} from '../interfaces/IMapper';
+import {IIndexed} from '../interfaces/IIndexed';
 
 const ostring = Object.prototype.toString;
 const slice = Array.prototype.slice;

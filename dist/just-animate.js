@@ -46,7 +46,7 @@
 
 	var easings = __webpack_require__(1);
 	var AnimationManager_1 = __webpack_require__(2);
-	var animations = __webpack_require__(6);
+	var animations = __webpack_require__(7);
 	var animationManager = new AnimationManager_1.AnimationManager();
 	animationManager.configure(undefined, easings);
 	for (var animationName in animations) {
@@ -97,6 +97,7 @@
 	var helpers_1 = __webpack_require__(3);
 	var AnimationRelay_1 = __webpack_require__(4);
 	var AnimationSequence_1 = __webpack_require__(5);
+	var AnimationSheet_1 = __webpack_require__(6);
 	function getElements(source) {
 	    if (!source) {
 	        throw Error('source is undefined');
@@ -190,6 +191,56 @@
 	            sequence.play();
 	        }
 	        return sequence;
+	    };
+	    AnimationManager.prototype.animateSheet = function (options) {
+	        var _this = this;
+	        var sheetDuration = options.duration;
+	        if (sheetDuration === undefined) {
+	            throw Error('Duration is required');
+	        }
+	        var animationEvents = helpers_1.map(options.events, function (evt) {
+	            var keyframes;
+	            var timings;
+	            var el;
+	            if (evt.name) {
+	                var definition = _this._registry[evt.name];
+	                var timings2 = helpers_1.extend({}, definition.timings);
+	                if (evt.timings) {
+	                    timings = helpers_1.extend(timings, evt.timings);
+	                }
+	                keyframes = definition.keyframes;
+	                timings = timings2;
+	                el = evt.el;
+	            }
+	            else {
+	                keyframes = evt.keyframes;
+	                timings = evt.timings;
+	                el = evt.el;
+	            }
+	            // calculate endtime
+	            var startTime = sheetDuration * evt.offset;
+	            var endTime = startTime + timings.duration;
+	            var isClipped = endTime > sheetDuration;
+	            // if end of animation is clipped, set endTime to duration            
+	            if (isClipped) {
+	                endTime = sheetDuration;
+	            }
+	            return {
+	                keyframes: keyframes,
+	                timings: timings,
+	                el: el,
+	                offset: evt.offset,
+	                _isClipped: isClipped,
+	                _startTimeMs: startTime,
+	                _endTimeMs: endTime
+	            };
+	        });
+	        var sheet = new AnimationSheet_1.AnimationSheet({
+	            autoplay: options.autoplay,
+	            duration: options.duration,
+	            events: animationEvents
+	        });
+	        return sheet;
 	    };
 	    AnimationManager.prototype.configure = function (timings, easings) {
 	        if (timings) {
@@ -461,88 +512,116 @@
 
 /***/ },
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	exports.bounce = __webpack_require__(7);
-	exports.bounceIn = __webpack_require__(8);
-	exports.bounceInDown = __webpack_require__(9);
-	exports.bounceInLeft = __webpack_require__(10);
-	exports.bounceInRight = __webpack_require__(11);
-	exports.bounceInUp = __webpack_require__(12);
-	exports.bounceOut = __webpack_require__(13);
-	exports.bounceOutDown = __webpack_require__(14);
-	exports.bounceOutLeft = __webpack_require__(15);
-	exports.bounceOutRight = __webpack_require__(16);
-	exports.bounceOutUp = __webpack_require__(17);
-	exports.fadeIn = __webpack_require__(18);
-	exports.fadeInDown = __webpack_require__(19);
-	exports.fadeInDownBig = __webpack_require__(20);
-	exports.fadeInLeft = __webpack_require__(21);
-	exports.fadeInLeftBig = __webpack_require__(22);
-	exports.fadeInRight = __webpack_require__(23);
-	exports.fadeInRightBig = __webpack_require__(24);
-	exports.fadeInUp = __webpack_require__(25);
-	exports.fadeInUpBig = __webpack_require__(26);
-	exports.fadeOut = __webpack_require__(27);
-	exports.fadeOutDown = __webpack_require__(28);
-	exports.fadeOutDownBig = __webpack_require__(29);
-	exports.fadeOutLeft = __webpack_require__(30);
-	exports.fadeOutLeftBig = __webpack_require__(31);
-	exports.fadeOutRight = __webpack_require__(32);
-	exports.fadeOutRightBig = __webpack_require__(33);
-	exports.fadeOutUp = __webpack_require__(34);
-	exports.fadeOutUpBig = __webpack_require__(35);
-	exports.flash = __webpack_require__(36);
-	exports.flip = __webpack_require__(37);
-	exports.flipInX = __webpack_require__(38);
-	exports.flipInY = __webpack_require__(39);
-	exports.flipOutX = __webpack_require__(40);
-	exports.flipOutY = __webpack_require__(41);
-	exports.headShake = __webpack_require__(42);
-	exports.hinge = __webpack_require__(43);
-	exports.jello = __webpack_require__(44);
-	exports.lightSpeedIn = __webpack_require__(45);
-	exports.lightSpeedOut = __webpack_require__(46);
-	exports.pulse = __webpack_require__(47);
-	exports.rollIn = __webpack_require__(48);
-	exports.rollOut = __webpack_require__(49);
-	exports.rotateIn = __webpack_require__(50);
-	exports.rotateInDownLeft = __webpack_require__(51);
-	exports.rotateInDownRight = __webpack_require__(52);
-	exports.rotateInUpLeft = __webpack_require__(53);
-	exports.rotateInUpRight = __webpack_require__(54);
-	exports.rotateOut = __webpack_require__(55);
-	exports.rotateOutDownLeft = __webpack_require__(56);
-	exports.rotateOutDownRight = __webpack_require__(57);
-	exports.rotateOutUpLeft = __webpack_require__(58);
-	exports.rotateOutUpRight = __webpack_require__(59);
-	exports.rubberBand = __webpack_require__(60);
-	exports.shake = __webpack_require__(61);
-	exports.slideInDown = __webpack_require__(62);
-	exports.slideInLeft = __webpack_require__(63);
-	exports.slideInRight = __webpack_require__(64);
-	exports.slideInUp = __webpack_require__(65);
-	exports.slideOutDown = __webpack_require__(66);
-	exports.slideOutLeft = __webpack_require__(67);
-	exports.slideOutRight = __webpack_require__(68);
-	exports.slideOutUp = __webpack_require__(69);
-	exports.swing = __webpack_require__(70);
-	exports.tada = __webpack_require__(71);
-	exports.wobble = __webpack_require__(72);
-	exports.zoomIn = __webpack_require__(73);
-	exports.zoomInDown = __webpack_require__(74);
-	exports.zoomInLeft = __webpack_require__(75);
-	exports.zoomInRight = __webpack_require__(76);
-	exports.zoomInUp = __webpack_require__(77);
-	exports.zoomOut = __webpack_require__(78);
-	exports.zoomOutDown = __webpack_require__(79);
-	exports.zoomOutLeft = __webpack_require__(80);
-	exports.zoomOutRight = __webpack_require__(81);
-	exports.zoomOutUp = __webpack_require__(82);
+	var AnimationSheet = (function () {
+	    function AnimationSheet(options) {
+	        this._options = options;
+	    }
+	    AnimationSheet.prototype.finish = function (fn) {
+	        return this;
+	    };
+	    AnimationSheet.prototype.play = function (fn) {
+	        return this;
+	    };
+	    AnimationSheet.prototype.pause = function (fn) {
+	        return this;
+	    };
+	    AnimationSheet.prototype.reverse = function (fn) {
+	        return this;
+	    };
+	    AnimationSheet.prototype.cancel = function (fn) {
+	        return this;
+	    };
+	    return AnimationSheet;
+	})();
+	exports.AnimationSheet = AnimationSheet;
 
 
 /***/ },
 /* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports.bounce = __webpack_require__(8);
+	exports.bounceIn = __webpack_require__(9);
+	exports.bounceInDown = __webpack_require__(10);
+	exports.bounceInLeft = __webpack_require__(11);
+	exports.bounceInRight = __webpack_require__(12);
+	exports.bounceInUp = __webpack_require__(13);
+	exports.bounceOut = __webpack_require__(14);
+	exports.bounceOutDown = __webpack_require__(15);
+	exports.bounceOutLeft = __webpack_require__(16);
+	exports.bounceOutRight = __webpack_require__(17);
+	exports.bounceOutUp = __webpack_require__(18);
+	exports.fadeIn = __webpack_require__(19);
+	exports.fadeInDown = __webpack_require__(20);
+	exports.fadeInDownBig = __webpack_require__(21);
+	exports.fadeInLeft = __webpack_require__(22);
+	exports.fadeInLeftBig = __webpack_require__(23);
+	exports.fadeInRight = __webpack_require__(24);
+	exports.fadeInRightBig = __webpack_require__(25);
+	exports.fadeInUp = __webpack_require__(26);
+	exports.fadeInUpBig = __webpack_require__(27);
+	exports.fadeOut = __webpack_require__(28);
+	exports.fadeOutDown = __webpack_require__(29);
+	exports.fadeOutDownBig = __webpack_require__(30);
+	exports.fadeOutLeft = __webpack_require__(31);
+	exports.fadeOutLeftBig = __webpack_require__(32);
+	exports.fadeOutRight = __webpack_require__(33);
+	exports.fadeOutRightBig = __webpack_require__(34);
+	exports.fadeOutUp = __webpack_require__(35);
+	exports.fadeOutUpBig = __webpack_require__(36);
+	exports.flash = __webpack_require__(37);
+	exports.flip = __webpack_require__(38);
+	exports.flipInX = __webpack_require__(39);
+	exports.flipInY = __webpack_require__(40);
+	exports.flipOutX = __webpack_require__(41);
+	exports.flipOutY = __webpack_require__(42);
+	exports.headShake = __webpack_require__(43);
+	exports.hinge = __webpack_require__(44);
+	exports.jello = __webpack_require__(45);
+	exports.lightSpeedIn = __webpack_require__(46);
+	exports.lightSpeedOut = __webpack_require__(47);
+	exports.pulse = __webpack_require__(48);
+	exports.rollIn = __webpack_require__(49);
+	exports.rollOut = __webpack_require__(50);
+	exports.rotateIn = __webpack_require__(51);
+	exports.rotateInDownLeft = __webpack_require__(52);
+	exports.rotateInDownRight = __webpack_require__(53);
+	exports.rotateInUpLeft = __webpack_require__(54);
+	exports.rotateInUpRight = __webpack_require__(55);
+	exports.rotateOut = __webpack_require__(56);
+	exports.rotateOutDownLeft = __webpack_require__(57);
+	exports.rotateOutDownRight = __webpack_require__(58);
+	exports.rotateOutUpLeft = __webpack_require__(59);
+	exports.rotateOutUpRight = __webpack_require__(60);
+	exports.rubberBand = __webpack_require__(61);
+	exports.shake = __webpack_require__(62);
+	exports.slideInDown = __webpack_require__(63);
+	exports.slideInLeft = __webpack_require__(64);
+	exports.slideInRight = __webpack_require__(65);
+	exports.slideInUp = __webpack_require__(66);
+	exports.slideOutDown = __webpack_require__(67);
+	exports.slideOutLeft = __webpack_require__(68);
+	exports.slideOutRight = __webpack_require__(69);
+	exports.slideOutUp = __webpack_require__(70);
+	exports.swing = __webpack_require__(71);
+	exports.tada = __webpack_require__(72);
+	exports.wobble = __webpack_require__(73);
+	exports.zoomIn = __webpack_require__(74);
+	exports.zoomInDown = __webpack_require__(75);
+	exports.zoomInLeft = __webpack_require__(76);
+	exports.zoomInRight = __webpack_require__(77);
+	exports.zoomInUp = __webpack_require__(78);
+	exports.zoomOut = __webpack_require__(79);
+	exports.zoomOutDown = __webpack_require__(80);
+	exports.zoomOutLeft = __webpack_require__(81);
+	exports.zoomOutRight = __webpack_require__(82);
+	exports.zoomOutUp = __webpack_require__(83);
+
+
+/***/ },
+/* 8 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -593,7 +672,7 @@
 	};
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -629,7 +708,7 @@
 	};
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -674,7 +753,7 @@
 	};
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -714,7 +793,7 @@
 	};
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -752,7 +831,7 @@
 	};
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -792,7 +871,7 @@
 	};
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -830,7 +909,7 @@
 	};
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -868,7 +947,7 @@
 	};
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -897,7 +976,7 @@
 	};
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -926,7 +1005,7 @@
 	};
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -965,7 +1044,7 @@
 	};
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -986,7 +1065,7 @@
 	};
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1008,7 +1087,7 @@
 	};
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1023,14 +1102,14 @@
 			}
 		],
 		"timings": {
-			"duration": 650,
+			"duration": 1300,
 			"fill": "both"
 		},
 		"name": "fadeInDownBig"
 	};
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1052,7 +1131,7 @@
 	};
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1067,14 +1146,14 @@
 			}
 		],
 		"timings": {
-			"duration": 650,
+			"duration": 1300,
 			"fill": "both"
 		},
 		"name": "fadeInLeftBig"
 	};
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1096,7 +1175,7 @@
 	};
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1111,14 +1190,14 @@
 			}
 		],
 		"timings": {
-			"duration": 650,
+			"duration": 1300,
 			"fill": "both"
 		},
 		"name": "fadeInRightBig"
 	};
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1140,7 +1219,7 @@
 	};
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1155,14 +1234,14 @@
 			}
 		],
 		"timings": {
-			"duration": 650,
+			"duration": 1300,
 			"fill": "both"
 		},
 		"name": "fadeInUpBig"
 	};
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1182,7 +1261,7 @@
 	};
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1203,7 +1282,7 @@
 	};
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1218,13 +1297,13 @@
 			}
 		],
 		"timings": {
-			"duration": 650
+			"duration": 1300
 		},
 		"name": "fadeOutDownBig"
 	};
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1245,7 +1324,7 @@
 	};
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1260,13 +1339,13 @@
 			}
 		],
 		"timings": {
-			"duration": 650
+			"duration": 1300
 		},
 		"name": "fadeOutLeftBig"
 	};
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1287,7 +1366,7 @@
 	};
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1302,13 +1381,13 @@
 			}
 		],
 		"timings": {
-			"duration": 650
+			"duration": 1300
 		},
 		"name": "fadeOutRightBig"
 	};
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1329,7 +1408,7 @@
 	};
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1344,13 +1423,13 @@
 			}
 		],
 		"timings": {
-			"duration": 650
+			"duration": 1300
 		},
 		"name": "fadeOutUpBig"
 	};
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1378,7 +1457,7 @@
 	};
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1411,7 +1490,7 @@
 	};
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1449,7 +1528,7 @@
 	};
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1485,7 +1564,7 @@
 	};
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1513,7 +1592,7 @@
 	};
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1541,7 +1620,7 @@
 	};
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1582,7 +1661,7 @@
 	};
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1621,7 +1700,7 @@
 	};
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1676,7 +1755,7 @@
 	};
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1711,7 +1790,7 @@
 	};
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1734,7 +1813,7 @@
 	};
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1756,7 +1835,7 @@
 	};
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1777,7 +1856,7 @@
 	};
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1798,7 +1877,7 @@
 	};
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1821,7 +1900,7 @@
 	};
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1844,7 +1923,7 @@
 	};
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1867,7 +1946,7 @@
 	};
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1890,7 +1969,7 @@
 	};
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1913,7 +1992,7 @@
 	};
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1936,7 +2015,7 @@
 	};
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1959,7 +2038,7 @@
 	};
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1982,7 +2061,7 @@
 	};
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2005,7 +2084,7 @@
 	};
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2028,7 +2107,7 @@
 	};
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2069,7 +2148,7 @@
 	};
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2115,7 +2194,7 @@
 	};
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2136,7 +2215,7 @@
 	};
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2157,7 +2236,7 @@
 	};
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2178,7 +2257,7 @@
 	};
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2199,7 +2278,7 @@
 	};
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2220,7 +2299,7 @@
 	};
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2241,7 +2320,7 @@
 	};
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2262,7 +2341,7 @@
 	};
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2283,7 +2362,7 @@
 	};
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2314,7 +2393,7 @@
 	};
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2360,7 +2439,7 @@
 	};
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2401,7 +2480,7 @@
 	};
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2426,7 +2505,7 @@
 	};
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2455,7 +2534,7 @@
 	};
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2484,7 +2563,7 @@
 	};
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2513,7 +2592,7 @@
 	};
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2542,7 +2621,7 @@
 	};
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2570,7 +2649,7 @@
 	};
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2602,7 +2681,7 @@
 	};
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2633,7 +2712,7 @@
 	};
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2664,7 +2743,7 @@
 	};
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports) {
 
 	module.exports = {

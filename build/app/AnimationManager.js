@@ -1,6 +1,7 @@
 var helpers_1 = require('./helpers');
 var AnimationRelay_1 = require('./AnimationRelay');
 var AnimationSequence_1 = require('./AnimationSequence');
+var AnimationSheet_1 = require('./AnimationSheet');
 function getElements(source) {
     if (!source) {
         throw Error('source is undefined');
@@ -94,6 +95,56 @@ var AnimationManager = (function () {
             sequence.play();
         }
         return sequence;
+    };
+    AnimationManager.prototype.animateSheet = function (options) {
+        var _this = this;
+        var sheetDuration = options.duration;
+        if (sheetDuration === undefined) {
+            throw Error('Duration is required');
+        }
+        var animationEvents = helpers_1.map(options.events, function (evt) {
+            var keyframes;
+            var timings;
+            var el;
+            if (evt.name) {
+                var definition = _this._registry[evt.name];
+                var timings2 = helpers_1.extend({}, definition.timings);
+                if (evt.timings) {
+                    timings = helpers_1.extend(timings, evt.timings);
+                }
+                keyframes = definition.keyframes;
+                timings = timings2;
+                el = evt.el;
+            }
+            else {
+                keyframes = evt.keyframes;
+                timings = evt.timings;
+                el = evt.el;
+            }
+            // calculate endtime
+            var startTime = sheetDuration * evt.offset;
+            var endTime = startTime + timings.duration;
+            var isClipped = endTime > sheetDuration;
+            // if end of animation is clipped, set endTime to duration            
+            if (isClipped) {
+                endTime = sheetDuration;
+            }
+            return {
+                keyframes: keyframes,
+                timings: timings,
+                el: el,
+                offset: evt.offset,
+                _isClipped: isClipped,
+                _startTimeMs: startTime,
+                _endTimeMs: endTime
+            };
+        });
+        var sheet = new AnimationSheet_1.AnimationSheet({
+            autoplay: options.autoplay,
+            duration: options.duration,
+            events: animationEvents
+        });
+        return sheet;
     };
     AnimationManager.prototype.configure = function (timings, easings) {
         if (timings) {

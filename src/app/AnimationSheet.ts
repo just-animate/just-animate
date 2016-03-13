@@ -1,4 +1,7 @@
-import {IAnimation, IAnimationSheetOptions, IConsumer, ICallbackHandler} from './types';
+import {IAnimation} from '../interfaces/IAnimation';
+import {IAnimationSheetOptions} from '../interfaces/IAnimationSheetOptions';
+import {IConsumer} from '../interfaces/IConsumer';
+import {ICallbackHandler} from '../interfaces/ICallbackHandler';
 
 export class AnimationSheet implements IAnimation {
     _options: IAnimationSheetOptions;    
