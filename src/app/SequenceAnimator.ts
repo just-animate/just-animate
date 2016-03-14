@@ -1,24 +1,46 @@
 import {IAnimation} from '../interfaces/IAnimation';
 import {IAnimationManager} from '../interfaces/IAnimationManager';
-import {IAnimationSequenceEvent} from '../interfaces/IAnimationSequenceEvent';
+import {ISequenceEvent} from '../interfaces/ISequenceEvent';
+import {ISequenceOptions} from '../interfaces/ISequenceOptions';
 import {ICallbackHandler} from '../interfaces/ICallbackHandler';
 import {IConsumer} from '../interfaces/IConsumer';
-import {noop} from './helpers';
+import {extend, map, noop} from './helpers';
 
-export class AnimationSequence implements IAnimation {
+export class SequenceAnimator implements IAnimation {
     public onfinish: IConsumer<AnimationEvent>;
     private _currentIndex: number;
     private _isReversed: boolean;
     private _errorCallback: ICallbackHandler;
     private _manager: IAnimationManager;
-    private _steps: IAnimationSequenceEvent[];
+    private _steps: ISequenceEvent[];
 
-    constructor(manager: IAnimationManager, steps: IAnimationSequenceEvent[]) {
+    constructor(manager: IAnimationManager, options: ISequenceOptions) {
+        const steps: ISequenceEvent[] = map(options.steps, (step: ISequenceEvent) => {
+            if (step.command || !step.name) {
+                return step;
+            }
+
+            const definition = manager.findAnimation(step.name);
+            let timings = extend({}, definition.timings);
+            if (step.timings) {
+                timings = extend(timings, step.timings);
+            }
+            return {
+                el: step.el,
+                keyframes: definition.keyframes,
+                timings: timings
+            };
+        });
+
         this.onfinish = noop;
         this._currentIndex = -1;
         this._isReversed = false;
         this._manager = manager;
         this._steps = steps;
+
+        if (options.autoplay === true) {
+            this.play();
+        }        
     }
     
     public finish(fn?: ICallbackHandler): IAnimation {

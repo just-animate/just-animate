@@ -1,6 +1,6 @@
 var helpers_1 = require('./helpers');
-var AnimationSequence = (function () {
-    function AnimationSequence(manager, options) {
+var SequenceAnimator = (function () {
+    function SequenceAnimator(manager, options) {
         var steps = helpers_1.map(options.steps, function (step) {
             if (step.command || !step.name) {
                 return step;
@@ -25,7 +25,7 @@ var AnimationSequence = (function () {
             this.play();
         }
     }
-    AnimationSequence.prototype.finish = function (fn) {
+    SequenceAnimator.prototype.finish = function (fn) {
         this._errorCallback = fn;
         this._currentIndex = this._isReversed ? this._steps.length : -1;
         for (var x = 0; x < this._steps.length; x++) {
@@ -37,13 +37,13 @@ var AnimationSequence = (function () {
         this.onfinish(undefined);
         return this;
     };
-    AnimationSequence.prototype.play = function (fn) {
+    SequenceAnimator.prototype.play = function (fn) {
         this._errorCallback = fn;
         this._isReversed = false;
         this._playThisStep();
         return this;
     };
-    AnimationSequence.prototype.pause = function (fn) {
+    SequenceAnimator.prototype.pause = function (fn) {
         this._errorCallback = fn;
         // ignore pause if not relevant
         if (!this._isInEffect()) {
@@ -53,13 +53,13 @@ var AnimationSequence = (function () {
         animator.pause(fn);
         return this;
     };
-    AnimationSequence.prototype.reverse = function (fn) {
+    SequenceAnimator.prototype.reverse = function (fn) {
         this._errorCallback = fn;
         this._isReversed = true;
         this._playThisStep();
         return this;
     };
-    AnimationSequence.prototype.cancel = function (fn) {
+    SequenceAnimator.prototype.cancel = function (fn) {
         this._errorCallback = fn;
         this._isReversed = false;
         this._currentIndex = -1;
@@ -71,10 +71,10 @@ var AnimationSequence = (function () {
         }
         return this;
     };
-    AnimationSequence.prototype._isInEffect = function () {
+    SequenceAnimator.prototype._isInEffect = function () {
         return this._currentIndex > -1 && this._currentIndex < this._steps.length;
     };
-    AnimationSequence.prototype._getAnimator = function () {
+    SequenceAnimator.prototype._getAnimator = function () {
         var it = this._steps[this._currentIndex];
         if (it._animator) {
             return it._animator;
@@ -82,7 +82,7 @@ var AnimationSequence = (function () {
         it._animator = this._manager.animate(it.keyframes, it.el, it.timings);
         return it._animator;
     };
-    AnimationSequence.prototype._playNextStep = function (evt) {
+    SequenceAnimator.prototype._playNextStep = function (evt) {
         if (this._isReversed) {
             this._currentIndex--;
         }
@@ -96,7 +96,7 @@ var AnimationSequence = (function () {
             this.onfinish(evt);
         }
     };
-    AnimationSequence.prototype._playThisStep = function () {
+    SequenceAnimator.prototype._playThisStep = function () {
         var _this = this;
         if (!this._isInEffect()) {
             this._currentIndex = this._isReversed ? this._steps.length - 1 : 0;
@@ -107,6 +107,6 @@ var AnimationSequence = (function () {
         };
         animator.play(this._errorCallback);
     };
-    return AnimationSequence;
+    return SequenceAnimator;
 })();
-exports.AnimationSequence = AnimationSequence;
+exports.SequenceAnimator = SequenceAnimator;

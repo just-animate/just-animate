@@ -4,7 +4,7 @@ import {IIndexed} from './IIndexed';
 import {IAnimation} from './IAnimation';
 import {IKeyframe} from './IKeyframe';
 
-export interface IAnimationSequenceEvent {
+export interface ISequenceEvent {
     el: ElementSource;
     name?: string;
     command?: string;
