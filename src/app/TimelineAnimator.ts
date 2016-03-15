@@ -1,7 +1,7 @@
-import {IAnimation} from '../interfaces/IAnimation';
+import {IAnimator} from '../interfaces/IAnimator';
 import {IAnimationManager} from '../interfaces/IAnimationManager';
-import {IAnimationSheetEvent} from '../interfaces/IAnimationSheetEvent';
-import {IAnimationSheetOptions} from '../interfaces/IAnimationSheetOptions';
+import {ITimelineEvent} from '../interfaces/ITimelineEvent';
+import {ITimelineOptions} from '../interfaces/ITimelineOptions';
 import {IAnimationTiming} from '../interfaces/IAnimationTiming';
 import {IConsumer} from '../interfaces/IConsumer';
 import {ICallbackHandler} from '../interfaces/ICallbackHandler';
@@ -10,17 +10,17 @@ import {IIndexed} from '../interfaces/IIndexed';
 import {IKeyframe} from '../interfaces/IKeyframe';
 import {extend, map} from './helpers';
 
-export class TimelineAnimator implements IAnimation {
+export class TimelineAnimator implements IAnimator {
     _duration: number;
-    _events: IAnimationSheetEvent[];
+    _events: ITimelineEvent[];
 
-    constructor(manager: IAnimationManager, options: IAnimationSheetOptions) {
+    constructor(manager: IAnimationManager, options: ITimelineOptions) {
         const sheetDuration = options.duration;
         if (sheetDuration === undefined) {
             throw Error('Duration is required');
         }
 
-        const animationEvents = map(options.events, (evt: IAnimationSheetEvent) => {
+        const animationEvents = map(options.events, (evt: ITimelineEvent) => {
             let keyframes: IIndexed<IKeyframe>;
             let timings: IAnimationTiming;
             let el: ElementSource;
@@ -59,7 +59,7 @@ export class TimelineAnimator implements IAnimation {
                 _startTimeMs: startTime,
                 _endTimeMs: endTime
             };
-        }) as IAnimationSheetEvent[];
+        }) as ITimelineEvent[];
 
         this._duration = options.duration;
         this._events = animationEvents;
@@ -68,19 +68,19 @@ export class TimelineAnimator implements IAnimation {
             this.play();
         }        
     }
-    public finish(fn?: ICallbackHandler): IAnimation {
+    public finish(fn?: ICallbackHandler): IAnimator {
         return this;
     }
-    public play(fn?: ICallbackHandler): IAnimation {
+    public play(fn?: ICallbackHandler): IAnimator {
         return this;
     }
-    public pause(fn?: ICallbackHandler): IAnimation {
+    public pause(fn?: ICallbackHandler): IAnimator {
         return this;
     }
-    public reverse(fn?: ICallbackHandler): IAnimation {
+    public reverse(fn?: ICallbackHandler): IAnimator {
         return this;
     }
-    public cancel(fn?: ICallbackHandler): IAnimation {
+    public cancel(fn?: ICallbackHandler): IAnimator {
         return this;
     }
     onfinish: IConsumer<AnimationEvent>;

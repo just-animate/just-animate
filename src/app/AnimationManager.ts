@@ -1,10 +1,10 @@
 import {ElementSource} from '../interfaces/IElementProvider';
-import {IAnimation} from '../interfaces/IAnimation';
+import {IAnimator} from '../interfaces/IAnimator';
 import {IAnimationManager} from '../interfaces/IAnimationManager';
-import {IAnimationOptions} from '../interfaces/IAnimationOptions';
-import {IAnimationSheetOptions} from '../interfaces/IAnimationSheetOptions';
+import {IKeyframeOptions} from '../interfaces/IKeyframeOptions';
+import {ITimelineOptions} from '../interfaces/ITimelineOptions';
 import {ISequenceEvent} from '../interfaces/ISequenceEvent';
-import {IAnimationSheetEvent} from '../interfaces/IAnimationSheetEvent';
+import {ITimelineEvent} from '../interfaces/ITimelineEvent';
 import {ISequenceOptions} from '../interfaces/ISequenceOptions';
 import {IAnimationTiming} from '../interfaces/IAnimationTiming';
 import {IElementProvider} from '../interfaces/IElementProvider';
@@ -18,7 +18,7 @@ import {SequenceAnimator} from './SequenceAnimator';
 import {TimelineAnimator} from './TimelineAnimator';
 
 export class AnimationManager implements IAnimationManager {
-    private _registry: { [key: string]: IAnimationOptions };
+    private _registry: { [key: string]: IKeyframeOptions };
     private _timings: IAnimationTiming;
     private _easings: IMap<string>;
 
@@ -31,13 +31,13 @@ export class AnimationManager implements IAnimationManager {
         };
     }
 
-    public animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimation {
+    public animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimator {
         return new ElementAnimator(this, keyframesOrName, el, timings);
     }
-    public animateSequence(options: ISequenceOptions): IAnimation {
+    public animateSequence(options: ISequenceOptions): IAnimator {
         return new SequenceAnimator(this, options);
     }
-    public animateSheet(options: IAnimationSheetOptions): IAnimation {
+    public animateTimeline(options: ITimelineOptions): IAnimator {
         return new TimelineAnimator(this, options);
     }
     public configure(timings?: IAnimationTiming, easings?: IMap<string>): IAnimationManager {
@@ -49,13 +49,13 @@ export class AnimationManager implements IAnimationManager {
         }
         return this;
     }
-    public findAnimation(name: string): IAnimationOptions {
+    public findAnimation(name: string): IKeyframeOptions {
         return this._registry[name] || undefined;
     }
     public findEasing(name: string): string {
         return this._easings[name] || undefined;
     }
-    public register(name: string, animationOptions: IAnimationOptions): IAnimationManager {
+    public register(name: string, animationOptions: IKeyframeOptions): IAnimationManager {
         this._registry[name] = animationOptions;
 
         const self = this;

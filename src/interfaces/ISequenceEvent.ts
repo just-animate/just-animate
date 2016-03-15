@@ -1,7 +1,7 @@
 import {ElementSource} from './IElementProvider';
 import {IAnimationTiming} from './IAnimationTiming';
 import {IIndexed} from './IIndexed';
-import {IAnimation} from './IAnimation';
+import {IAnimator} from './IAnimator';
 import {IKeyframe} from './IKeyframe';
 
 export interface ISequenceEvent {
@@ -10,5 +10,5 @@ export interface ISequenceEvent {
     command?: string;
     timings?: IAnimationTiming;
     keyframes?: IIndexed<IKeyframe>;
-    _animator?: IAnimation;
+    _animator?: IAnimator;
 }

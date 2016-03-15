@@ -17,7 +17,7 @@ var AnimationManager = (function () {
     AnimationManager.prototype.animateSequence = function (options) {
         return new SequenceAnimator_1.SequenceAnimator(this, options);
     };
-    AnimationManager.prototype.animateSheet = function (options) {
+    AnimationManager.prototype.animateTimeline = function (options) {
         return new TimelineAnimator_1.TimelineAnimator(this, options);
     };
     AnimationManager.prototype.configure = function (timings, easings) {

@@ -2,15 +2,17 @@ import {IIndexed} from './IIndexed';
 import {IKeyframe} from './IKeyframe';
 import {ElementSource} from './IElementProvider';
 import {IAnimationTiming} from './IAnimationTiming';
-import {IAnimation} from './IAnimation';
+import {IAnimator} from './IAnimator';
 import {ISequenceOptions} from './ISequenceOptions';
-import {IAnimationOptions} from './IAnimationOptions';
+import {IKeyframeOptions} from './IKeyframeOptions';
+import {ITimelineOptions} from './ITimelineOptions';
 
 export interface IAnimationManager {
-    animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimation;
-    animateSequence(options: ISequenceOptions): IAnimation;
+    animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimator;
+    animateSequence(options: ISequenceOptions): IAnimator;
+    animateTimeline(options: ITimelineOptions): IAnimator;
     configure(timings?: IAnimationTiming): IAnimationManager;
-    findAnimation(name: string): IAnimationOptions;
+    findAnimation(name: string): IKeyframeOptions;
     findEasing(name: string): string;
-    register(name: string, animationOptions: IAnimationOptions): IAnimationManager;
+    register(name: string, animationOptions: IKeyframeOptions): IAnimationManager;
 }

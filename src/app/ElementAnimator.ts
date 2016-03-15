@@ -1,4 +1,4 @@
-import {IAnimation} from '../interfaces/IAnimation';
+import {IAnimator} from '../interfaces/IAnimator';
 import {IAnimationManager} from '../interfaces/IAnimationManager';
 import {IAnimationTiming} from '../interfaces/IAnimationTiming';
 import {ICallbackHandler} from '../interfaces/ICallbackHandler';
@@ -9,8 +9,8 @@ import {IIndexed} from '../interfaces/IIndexed';
 
 import {multiapply, each, extend, isArray, isFunction, isString, noop, toArray} from './helpers';
 
-export class ElementAnimator implements IAnimation {
-    private _animations: IAnimation[];
+export class ElementAnimator implements IAnimator {
+    private _animators: IAnimator[];
     constructor(manager: IAnimationManager, keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming) {
         if (!keyframesOrName) {
             return;
@@ -41,36 +41,36 @@ export class ElementAnimator implements IAnimation {
         const elements = getElements(el);
 
         // call .animate on all elements and get a list of their players        
-        this._animations = multiapply(elements, 'animate', [keyframes, timings]) as IAnimation[];
+        this._animators = multiapply(elements, 'animate', [keyframes, timings]) as IAnimator[];
     } 
-    public finish(fn?: ICallbackHandler): IAnimation {
-        multiapply(this._animations, 'finish', [], fn);
+    public finish(fn?: ICallbackHandler): IAnimator {
+        multiapply(this._animators, 'finish', [], fn);
         return this;
     }
-    public play(fn?: ICallbackHandler): IAnimation {
-        multiapply(this._animations, 'play', [], fn);
+    public play(fn?: ICallbackHandler): IAnimator {
+        multiapply(this._animators, 'play', [], fn);
         return this;
     }
-    public pause(fn?: ICallbackHandler): IAnimation {
-        multiapply(this._animations, 'pause', [], fn);
+    public pause(fn?: ICallbackHandler): IAnimator {
+        multiapply(this._animators, 'pause', [], fn);
         return this;
     }
-    public reverse(fn?: ICallbackHandler): IAnimation {
-        multiapply(this._animations, 'reverse', [], fn);
+    public reverse(fn?: ICallbackHandler): IAnimator {
+        multiapply(this._animators, 'reverse', [], fn);
         return this;
     }
-    public cancel(fn?: ICallbackHandler): IAnimation {
-        multiapply(this._animations, 'cancel', [], fn);
+    public cancel(fn?: ICallbackHandler): IAnimator {
+        multiapply(this._animators, 'cancel', [], fn);
         return this;
     }
     get onfinish(): IConsumer<AnimationEvent> {
-        if (this._animations.length === 0) {
+        if (this._animators.length === 0) {
             return undefined;
         }
-        return this._animations[0].onfinish as IConsumer<AnimationEvent> || noop;
+        return this._animators[0].onfinish as IConsumer<AnimationEvent> || noop;
     }
     set onfinish(val: IConsumer<AnimationEvent>) {
-        each(this._animations, (a: IAnimation) => { a.onfinish = val; });
+        each(this._animators, (a: IAnimator) => { a.onfinish = val; });
     }
 }
 

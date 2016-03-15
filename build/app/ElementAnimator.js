@@ -26,37 +26,37 @@ var ElementAnimator = (function () {
         // get list of elements to animate
         var elements = getElements(el);
         // call .animate on all elements and get a list of their players        
-        this._animations = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
+        this._animators = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
     }
     ElementAnimator.prototype.finish = function (fn) {
-        helpers_1.multiapply(this._animations, 'finish', [], fn);
+        helpers_1.multiapply(this._animators, 'finish', [], fn);
         return this;
     };
     ElementAnimator.prototype.play = function (fn) {
-        helpers_1.multiapply(this._animations, 'play', [], fn);
+        helpers_1.multiapply(this._animators, 'play', [], fn);
         return this;
     };
     ElementAnimator.prototype.pause = function (fn) {
-        helpers_1.multiapply(this._animations, 'pause', [], fn);
+        helpers_1.multiapply(this._animators, 'pause', [], fn);
         return this;
     };
     ElementAnimator.prototype.reverse = function (fn) {
-        helpers_1.multiapply(this._animations, 'reverse', [], fn);
+        helpers_1.multiapply(this._animators, 'reverse', [], fn);
         return this;
     };
     ElementAnimator.prototype.cancel = function (fn) {
-        helpers_1.multiapply(this._animations, 'cancel', [], fn);
+        helpers_1.multiapply(this._animators, 'cancel', [], fn);
         return this;
     };
     Object.defineProperty(ElementAnimator.prototype, "onfinish", {
         get: function () {
-            if (this._animations.length === 0) {
+            if (this._animators.length === 0) {
                 return undefined;
             }
-            return this._animations[0].onfinish || helpers_1.noop;
+            return this._animators[0].onfinish || helpers_1.noop;
         },
         set: function (val) {
-            helpers_1.each(this._animations, function (a) { a.onfinish = val; });
+            helpers_1.each(this._animators, function (a) { a.onfinish = val; });
         },
         enumerable: true,
         configurable: true
