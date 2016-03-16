@@ -319,6 +319,12 @@
 	        // if a single element, wrap in array 
 	        return [source];
 	    }
+	    if (helpers_1.isFunction(source)) {
+	        // if function, call it and call this function
+	        var provider = source;
+	        var result = provider();
+	        return getElements(result);
+	    }
 	    if (helpers_1.isArray(source)) {
 	        // if array or jQuery object, flatten to an array
 	        var elements = [];
@@ -328,12 +334,6 @@
 	            elements.push.apply(elements, innerElements);
 	        });
 	        return elements;
-	    }
-	    if (helpers_1.isFunction(source)) {
-	        // if function, call it and call this function
-	        var provider = source;
-	        var result = provider();
-	        return getElements(result);
 	    }
 	    // otherwise return empty    
 	    return [];
@@ -694,7 +694,7 @@
 			}
 		],
 		"timings": {
-			"duration": 650,
+			"duration": 900,
 			"fill": "both",
 			"easing": "easeOutCubic"
 		},

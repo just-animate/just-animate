@@ -87,6 +87,12 @@ function getElements(source: ElementSource): Element[] {
         // if a single element, wrap in array 
         return [source];
     }
+    if (isFunction(source)) {
+        // if function, call it and call this function
+        const provider = source as IElementProvider;
+        const result = provider();
+        return getElements(result);
+    }
     if (isArray(source)) {
         // if array or jQuery object, flatten to an array
         const elements = [];
@@ -96,12 +102,6 @@ function getElements(source: ElementSource): Element[] {
             elements.push.apply(elements, innerElements);
         });
         return elements;
-    }
-    if (isFunction(source)) {
-        // if function, call it and call this function
-        const provider = source as IElementProvider;
-        const result = provider();
-        return getElements(result);
     }
 
     // otherwise return empty    

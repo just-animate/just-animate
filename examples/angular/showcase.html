@@ -9,9 +9,8 @@
   <div class="container text-center">
     <h1>Showcase</h1>
     <hr/>
-
-    <div id="animation-container"></div>
-
+    <div id="target">
+    </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
@@ -19,63 +18,113 @@
   <script src="../../dist/just-animate-angular.js"></script>
   <script>
     angular.module('app', ['just.animate'])
-      .controller('showcaseCtrl', function($scope, $timeout, just) {
-        function playAllAnimations($container) {
-                var animations = Object.keys(just)
-                    .filter(function(name) {
-                        return name.indexOf("_") !== 0 && name !== "animate" && name !== "register";
-                    });
-                
-                var position = -1;
-                var errors = 0;
-                var passing = 0;
-                
-                function nextAnimation() {
-                    ++position;
-                    
-                    // end recursive function
-                    if (position >= animations.length) {
-                        var $summary = $('<div></div>')
-                          .addClass('alert');
-                        
-                        if (errors) {
-                          $summary
-                            .addClass('alert-danger')
-                            .html('There were ' + errors + ' errors. There were ' + passing + ' passing tests.')
-                        } else {
-                          $summary
-                            .addClass('alert-success')
-                            .html('Everything is awesome. Everything is cool when your tests are all green!')
-                        }
-                        
-                        $container.prepend($summary);
-                        return;
-                    }
-                    
-                    $timeout(function() {
-                        var animationName = animations[position];
-                        
-                        var $el = $('<h2></h2>')
-                        try {
-                            $el.html(animationName);
-                            just[animationName]($el);
-                            ++passing;
-                        } catch (err) {
-                            ++errors;
-                            $el = $('<pre></pre>')
-                            $el.html(animationName + ": " + err);
-                            $el.attr('style', 'color: red;');
-                        }
-                        $container.prepend($el);
-                        
-                        nextAnimation();
-                    }, 1200);
-                }
-                
-                nextAnimation();
-            }
+      .controller('showcaseCtrl', function(just) {
+           var animations = [
+            "bounce",
+            "bounceIn",
+            "bounceInDown",
+            "bounceInLeft",
+            "bounceInRight",
+            "bounceInUp",
+            "bounceOut",
+            "bounceOutDown",
+            "bounceOutLeft",
+            "bounceOutRight",
+            "bounceOutUp",
+            "fadeIn",
+            "fadeInDown",
+            "fadeInDownBig",
+            "fadeInLeft",
+            "fadeInLeftBig",
+            "fadeInRight",
+            "fadeInRightBig",
+            "fadeInUp",
+            "fadeInUpBig",
+            "fadeOut",
+            "fadeOutDown",
+            "fadeOutDownBig",
+            "fadeOutLeft",
+            "fadeOutLeftBig",
+            "fadeOutRight",
+            "fadeOutRightBig",
+            "fadeOutUp",
+            "fadeOutUpBig",
+            "flash",
+            "flip",
+            "flipInX",
+            "flipInY",
+            "flipOutX",
+            "flipOutY",
+            "headShake",
+            "hinge",
+            "jello",
+            "lightSpeedIn",
+            "lightSpeedOut",
+            "pulse",
+            "rollIn",
+            "rollOut",
+            "rotateIn",
+            "rotateInDownLeft",
+            "rotateInDownRight",
+            "rotateInUpLeft",
+            "rotateInUpRight",
+            "rotateOut",
+            "rotateOutDownLeft",
+            "rotateOutDownRight",
+            "rotateOutUpLeft",
+            "rotateOutUpRight",
+            "rubberBand",
+            "shake",
+            "slideInDown",
+            "slideInLeft",
+            "slideInRight",
+            "slideInUp",
+            "slideOutDown",
+            "slideOutLeft",
+            "slideOutRight",
+            "slideOutUp",
+            "swing",
+            "tada",
+            "wobble",
+            "zoomIn",
+            "zoomInDown",
+            "zoomInLeft",
+            "zoomInRight",
+            "zoomInUp",
+            "zoomOut",
+            "zoomOutDown",
+            "zoomOutLeft",
+            "zoomOutRight",
+            "zoomOutUp"
+        ];
+        
+        var $container = angular.element('#target');
             
-            playAllAnimations($('#animation-container'));
+        var player = just.animateSequence({
+            autoplay: true,
+            steps: animations
+                .map(function(name) {
+                    return {
+                        name: name,
+                        el: function() {
+                            $container.empty();
+            
+                            var $h2 = angular.element('<h2></h2>');
+                            $h2.html(name);
+                            $h2.appendTo($container);
+                            return $h2;
+                        }
+                    }
+                })
+        });
+        
+        player.onfinish = function() {
+            $container.empty();
+            
+            var $h2 = angular.element('<h2></h2>');
+            $h2.html('All Done!');
+            $h2.appendTo($container);
+        }
       });
   </script>
 </body>
