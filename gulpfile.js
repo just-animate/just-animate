@@ -37,21 +37,6 @@ gulp.task('just-animate', ['build'], function () {
         .pipe(notify('just-animate bundled'));
 });
 
-gulp.task('just-animate-angular', ['build'], function () {
-    return gulp.src('build/just-animate-angular.js')
-        .pipe(webpack({
-            module: {
-                loaders: [
-                    { test: /\.json$/, loader: "json" }
-                ]
-            },
-            output: {
-                filename: "just-animate-angular.js"
-            }
-        }))
-        .pipe(gulp.dest('dist/'))
-        .pipe(notify('just-animate bundled'));
-});
 
 gulp.task('clean-min', function () {
     return del([
@@ -59,7 +44,7 @@ gulp.task('clean-min', function () {
     ]);
 });
 
-gulp.task('dist', ['just-animate', 'just-animate-angular', 'clean-min'], function () {
+gulp.task('dist', ['just-animate', 'clean-min'], function () {
     return gulp.src('dist/*.js')
         .pipe(uglify({
             mangle: true,

@@ -44,19 +44,31 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var easings = __webpack_require__(1);
+	/* WEBPACK VAR INJECTION */(function(global) {var easings = __webpack_require__(1);
 	var AnimationManager_1 = __webpack_require__(2);
 	var animations = __webpack_require__(7);
+	var helpers_1 = __webpack_require__(3);
+	// create animationmanager
 	var animationManager = new AnimationManager_1.AnimationManager();
+	// register easings
 	animationManager.configure(undefined, easings);
+	// register animations
 	for (var animationName in animations) {
 	    if (animations.hasOwnProperty(animationName)) {
 	        var animationOptions = animations[animationName];
 	        animationManager.register(animationName, animationOptions);
 	    }
 	}
-	window['Just'] = animationManager;
+	// register with angular if it is present
+	if (typeof angular !== 'undefined') {
+	    angular.module('just.animate', []).service('just', function () { return animationManager; });
+	}
+	// add animation properties to global Just
+	var root = (window || global);
+	root.Just = root.Just || {};
+	helpers_1.extend(root.Just, animationManager);
 
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
 /* 1 */
@@ -199,9 +211,7 @@
 	    for (var i = 1, len = arguments.length; i < len; i++) {
 	        var source = arguments[i];
 	        for (var propName in source) {
-	            if (source.hasOwnProperty(propName)) {
-	                target[propName] = source[propName];
-	            }
+	            target[propName] = source[propName];
 	        }
 	    }
 	    return target;

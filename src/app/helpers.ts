@@ -51,9 +51,7 @@ export function extend(target: any, ...sources: any[]): any {
     for (let i = 1, len = arguments.length; i < len; i++) {
         const source = arguments[i];
         for (let propName in source) {
-            if (source.hasOwnProperty(propName)) {
-                target[propName] = source[propName];
-            }
+            target[propName] = source[propName];
         }
     }
     return target;
