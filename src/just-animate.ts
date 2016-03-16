@@ -17,7 +17,7 @@ animationManager.configure(undefined, easings);
 for (let animationName in animations) {
     if (animations.hasOwnProperty(animationName)) {
         const animationOptions = animations[animationName];
-        animationManager.register(animationName, animationOptions)
+        animationManager.register(animationName, animationOptions);
     }
 }
 
