@@ -36,6 +36,17 @@ export function each<T1>(items: IIndexed<T1>, fn: IConsumer<T1>): void {
     }
 }
 
+export function max<T1>(items: IIndexed<T1>, propertyName: string): any {
+    let max: any = '';
+    for (let i = 0, len = items.length; i < len; i++) {
+        const prop = items[i][propertyName];
+        if (max < prop) {
+           max = prop
+        }
+    }
+    return max;
+}
+
 export function map<T1, T2>(items: IIndexed<T1>, fn: IMapper<T1, T2>): T2[] {
     const results = [];
     for (let i = 0, len = items.length; i < len; i++) {

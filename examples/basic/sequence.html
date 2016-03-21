@@ -58,47 +58,44 @@
     <script src="../../dist/just-animate.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <script type="text/javascript">
-        (function() {
-            var stepElements = document.querySelectorAll('.step');
-            var steps = [];
-            for (var i = 0; i < stepElements.length; i++) {
-                steps.push({
-                    el: stepElements[i],
-                    name: 'zoomIn'
-                })
-            }
-            
-            var player = Just.animateSequence({
-                steps: steps,
-                autoplay: false
-            });
-                
-            var playButton = document.getElementById('play');
-            playButton.addEventListener('click', function() {
-                player.play();
-            });
-            
-            var pauseButton = document.getElementById('pause');
-            pauseButton.addEventListener('click', function() {
-                player.pause();
-            });
-            
-            var reverseButton = document.getElementById('reverse');
-            reverseButton.addEventListener('click', function() {
-                player.reverse();
-            });
-            
-            var cancelButton = document.getElementById('cancel');
-            cancelButton.addEventListener('click', function() {
-                player.cancel();
-            });
-            
-            var finishButton = document.getElementById('finish');
-            finishButton.addEventListener('click', function() {
-                player.finish();
-            });
-        })();
+        var stepElements = document.querySelectorAll('.step');
+        var steps = [];
+        for (var i = 0; i < stepElements.length; i++) {
+            steps.push({
+                el: stepElements[i],
+                name: 'zoomIn'
+            })
+        }
         
+        var player = Just.animateSequence({
+            steps: steps,
+            autoplay: false
+        });
+            
+        var playButton = document.getElementById('play');
+        playButton.addEventListener('click', function() {
+            player.play();
+        });
+        
+        var pauseButton = document.getElementById('pause');
+        pauseButton.addEventListener('click', function() {
+            player.pause();
+        });
+        
+        var reverseButton = document.getElementById('reverse');
+        reverseButton.addEventListener('click', function() {
+            player.reverse();
+        });
+        
+        var cancelButton = document.getElementById('cancel');
+        cancelButton.addEventListener('click', function() {
+            player.cancel();
+        });
+        
+        var finishButton = document.getElementById('finish');
+        finishButton.addEventListener('click', function() {
+            player.finish();
+        });
     </script>
 
 </body>

@@ -17,6 +17,7 @@
     "gulp-util": "^3.0.7",
     "json-loader": "^0.5.4",
     "tslint": "^3.5.0",
+    "typescript": "^1.8.9",
     "vinyl-source-stream": "^1.1.0",
     "vinyl-transform": "^1.0.0",
     "webpack": "^1.12.14",

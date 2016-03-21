@@ -6,7 +6,7 @@ import {ITimelineOptions} from '../interfaces/ITimelineOptions';
 import {ISequenceEvent} from '../interfaces/ISequenceEvent';
 import {ITimelineEvent} from '../interfaces/ITimelineEvent';
 import {ISequenceOptions} from '../interfaces/ISequenceOptions';
-import {IAnimationTiming} from '../interfaces/IAnimationTiming';
+import {IAnimationEffectTiming} from '../interfaces/IAnimationEffectTiming';
 import {IElementProvider} from '../interfaces/IElementProvider';
 import {IIndexed} from '../interfaces/IIndexed';
 import {IKeyframe} from '../interfaces/IKeyframe';
@@ -19,7 +19,7 @@ import {TimelineAnimator} from './TimelineAnimator';
 
 export class AnimationManager implements IAnimationManager {
     private _registry: { [key: string]: IKeyframeOptions };
-    private _timings: IAnimationTiming;
+    private _timings: IAnimationEffectTiming;
     private _easings: IMap<string>;
 
     constructor() {
@@ -31,7 +31,7 @@ export class AnimationManager implements IAnimationManager {
         };
     }
 
-    public animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming): IAnimator {
+    public animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationEffectTiming): IAnimator {
         return new ElementAnimator(this, keyframesOrName, el, timings);
     }
     public animateSequence(options: ISequenceOptions): IAnimator {
@@ -40,7 +40,7 @@ export class AnimationManager implements IAnimationManager {
     public animateTimeline(options: ITimelineOptions): IAnimator {
         return new TimelineAnimator(this, options);
     }
-    public configure(timings?: IAnimationTiming, easings?: IMap<string>): IAnimationManager {
+    public configure(timings?: IAnimationEffectTiming, easings?: IMap<string>): IAnimationManager {
         if (timings) {
             extend(this._timings, timings);
         }
@@ -59,7 +59,7 @@ export class AnimationManager implements IAnimationManager {
         this._registry[name] = animationOptions;
 
         const self = this;
-        self[name] = (el: ElementSource, timings: IAnimationTiming) => {
+        self[name] = (el: ElementSource, timings: IAnimationEffectTiming) => {
             return self.animate(name, el, timings);
         };
         return self;

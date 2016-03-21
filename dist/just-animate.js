@@ -44,7 +44,8 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var easings = __webpack_require__(1);
+	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
+	var easings = __webpack_require__(1);
 	var AnimationManager_1 = __webpack_require__(2);
 	var animations = __webpack_require__(7);
 	var helpers_1 = __webpack_require__(3);
@@ -106,6 +107,7 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
 	var helpers_1 = __webpack_require__(3);
 	var ElementAnimator_1 = __webpack_require__(4);
 	var SequenceAnimator_1 = __webpack_require__(5);
@@ -152,7 +154,7 @@
 	        return self;
 	    };
 	    return AnimationManager;
-	})();
+	}());
 	exports.AnimationManager = AnimationManager;
 
 
@@ -160,6 +162,7 @@
 /* 3 */
 /***/ function(module, exports) {
 
+	"use strict";
 	var ostring = Object.prototype.toString;
 	var slice = Array.prototype.slice;
 	function noop() {
@@ -192,6 +195,17 @@
 	    }
 	}
 	exports.each = each;
+	function max(items, propertyName) {
+	    var max = '';
+	    for (var i = 0, len = items.length; i < len; i++) {
+	        var prop = items[i][propertyName];
+	        if (max < prop) {
+	            max = prop;
+	        }
+	    }
+	    return max;
+	}
+	exports.max = max;
 	function map(items, fn) {
 	    var results = [];
 	    for (var i = 0, len = items.length; i < len; i++) {
@@ -250,9 +264,11 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
 	var helpers_1 = __webpack_require__(3);
 	var ElementAnimator = (function () {
 	    function ElementAnimator(manager, keyframesOrName, el, timings) {
+	        var _this = this;
 	        if (!keyframesOrName) {
 	            return;
 	        }
@@ -275,46 +291,65 @@
 	                timings.easing = easing;
 	            }
 	        }
+	        // add duration to object    
+	        this.duration = timings.duration;
 	        // get list of elements to animate
 	        var elements = getElements(el);
 	        // call .animate on all elements and get a list of their players        
 	        this._animators = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
+	        // hookup finish event for when it happens naturally    
+	        if (this._animators.length > 0) {
+	            // TODO: try to find a better way than just listening to one of them
+	            this._animators[0].onfinish = function () {
+	                _this.finish();
+	            };
+	        }
 	    }
-	    ElementAnimator.prototype.finish = function (fn) {
-	        helpers_1.multiapply(this._animators, 'finish', [], fn);
-	        return this;
-	    };
-	    ElementAnimator.prototype.play = function (fn) {
-	        helpers_1.multiapply(this._animators, 'play', [], fn);
-	        return this;
-	    };
-	    ElementAnimator.prototype.pause = function (fn) {
-	        helpers_1.multiapply(this._animators, 'pause', [], fn);
-	        return this;
-	    };
-	    ElementAnimator.prototype.reverse = function (fn) {
-	        helpers_1.multiapply(this._animators, 'reverse', [], fn);
-	        return this;
-	    };
-	    ElementAnimator.prototype.cancel = function (fn) {
-	        helpers_1.multiapply(this._animators, 'cancel', [], fn);
-	        return this;
-	    };
-	    Object.defineProperty(ElementAnimator.prototype, "onfinish", {
+	    Object.defineProperty(ElementAnimator.prototype, "currentTime", {
 	        get: function () {
-	            if (this._animators.length === 0) {
-	                return undefined;
-	            }
-	            return this._animators[0].onfinish || helpers_1.noop;
+	            return helpers_1.max(this._animators, 'currentTime') || 0;
 	        },
-	        set: function (val) {
-	            helpers_1.each(this._animators, function (a) { a.onfinish = val; });
+	        set: function (elapsed) {
+	            helpers_1.each(this._animators, function (it) {
+	                it.currentTime = elapsed;
+	            });
 	        },
 	        enumerable: true,
 	        configurable: true
 	    });
+	    ElementAnimator.prototype.finish = function (fn) {
+	        this.playbackRate = undefined;
+	        helpers_1.multiapply(this._animators, 'finish', [], fn);
+	        if (helpers_1.isFunction(this.onfinish)) {
+	            this.onfinish(this);
+	        }
+	        return this;
+	    };
+	    ElementAnimator.prototype.play = function (fn) {
+	        this.playbackRate = 1;
+	        helpers_1.multiapply(this._animators, 'play', [], fn);
+	        return this;
+	    };
+	    ElementAnimator.prototype.pause = function (fn) {
+	        this.playbackRate = 0;
+	        helpers_1.multiapply(this._animators, 'pause', [], fn);
+	        return this;
+	    };
+	    ElementAnimator.prototype.reverse = function (fn) {
+	        this.playbackRate = -1;
+	        helpers_1.multiapply(this._animators, 'reverse', [], fn);
+	        return this;
+	    };
+	    ElementAnimator.prototype.cancel = function (fn) {
+	        this.playbackRate = undefined;
+	        helpers_1.multiapply(this._animators, 'cancel', [], fn);
+	        if (helpers_1.isFunction(this.oncancel)) {
+	            this.oncancel(this);
+	        }
+	        return this;
+	    };
 	    return ElementAnimator;
-	})();
+	}());
 	exports.ElementAnimator = ElementAnimator;
 	function getElements(source) {
 	    if (!source) {
@@ -337,13 +372,13 @@
 	    }
 	    if (helpers_1.isArray(source)) {
 	        // if array or jQuery object, flatten to an array
-	        var elements = [];
+	        var elements_1 = [];
 	        helpers_1.each(source, function (i) {
 	            // recursively call this function in case of nested elements
 	            var innerElements = getElements(i);
-	            elements.push.apply(elements, innerElements);
+	            elements_1.push.apply(elements_1, innerElements);
 	        });
-	        return elements;
+	        return elements_1;
 	    }
 	    // otherwise return empty    
 	    return [];
@@ -354,6 +389,7 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
 	var helpers_1 = __webpack_require__(3);
 	var SequenceAnimator = (function () {
 	    function SequenceAnimator(manager, options) {
@@ -374,28 +410,68 @@
 	        });
 	        this.onfinish = helpers_1.noop;
 	        this._currentIndex = -1;
-	        this._isReversed = false;
 	        this._manager = manager;
 	        this._steps = steps;
 	        if (options.autoplay === true) {
 	            this.play();
 	        }
 	    }
+	    Object.defineProperty(SequenceAnimator.prototype, "currentTime", {
+	        get: function () {
+	            var currentIndex = this._currentIndex;
+	            var len = this._steps.length;
+	            if (currentIndex === -1 || currentIndex === len) {
+	                return 0;
+	            }
+	            var isReversed = this.playbackRate === -1;
+	            var beforeTime = 0;
+	            var afterTime = 0;
+	            var currentTime;
+	            for (var i = 0; i < len; i++) {
+	                var step = this._steps[i];
+	                if (i < currentIndex) {
+	                    beforeTime += step.timings.duration;
+	                    continue;
+	                }
+	                if (i > currentIndex) {
+	                    afterTime += step.timings.duration;
+	                    continue;
+	                }
+	                if (isReversed) {
+	                    currentTime = this.duration - step.animator.currentTime;
+	                    continue;
+	                }
+	                currentTime = step.animator.currentTime;
+	            }
+	            return currentTime + (isReversed ? afterTime : beforeTime);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(SequenceAnimator.prototype, "duration", {
+	        get: function () {
+	            return this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    SequenceAnimator.prototype.finish = function (fn) {
 	        this._errorCallback = fn;
-	        this._currentIndex = this._isReversed ? this._steps.length : -1;
+	        this._currentIndex = -1;
 	        for (var x = 0; x < this._steps.length; x++) {
 	            var step = this._steps[x];
-	            if (step._animator !== undefined) {
-	                step._animator.cancel(fn);
+	            if (step.animator !== undefined) {
+	                step.animator.cancel(fn);
 	            }
 	        }
-	        this.onfinish(undefined);
+	        if (helpers_1.isFunction(this.onfinish)) {
+	            this.onfinish(this);
+	        }
 	        return this;
 	    };
 	    SequenceAnimator.prototype.play = function (fn) {
 	        this._errorCallback = fn;
-	        this._isReversed = false;
+	        this.playbackRate = 1;
 	        this._playThisStep();
 	        return this;
 	    };
@@ -411,19 +487,22 @@
 	    };
 	    SequenceAnimator.prototype.reverse = function (fn) {
 	        this._errorCallback = fn;
-	        this._isReversed = true;
+	        this.playbackRate = -1;
 	        this._playThisStep();
 	        return this;
 	    };
 	    SequenceAnimator.prototype.cancel = function (fn) {
 	        this._errorCallback = fn;
-	        this._isReversed = false;
+	        this.playbackRate = undefined;
 	        this._currentIndex = -1;
 	        for (var x = 0; x < this._steps.length; x++) {
 	            var step = this._steps[x];
-	            if (step._animator !== undefined) {
-	                step._animator.cancel(fn);
+	            if (step.animator !== undefined) {
+	                step.animator.cancel(fn);
 	            }
+	        }
+	        if (helpers_1.isFunction(this.oncancel)) {
+	            this.oncancel(this);
 	        }
 	        return this;
 	    };
@@ -432,14 +511,14 @@
 	    };
 	    SequenceAnimator.prototype._getAnimator = function () {
 	        var it = this._steps[this._currentIndex];
-	        if (it._animator) {
-	            return it._animator;
+	        if (it.animator) {
+	            return it.animator;
 	        }
-	        it._animator = this._manager.animate(it.keyframes, it.el, it.timings);
-	        return it._animator;
+	        it.animator = this._manager.animate(it.keyframes, it.el, it.timings);
+	        return it.animator;
 	    };
 	    SequenceAnimator.prototype._playNextStep = function (evt) {
-	        if (this._isReversed) {
+	        if (this.playbackRate === -1) {
 	            this._currentIndex--;
 	        }
 	        else {
@@ -455,7 +534,12 @@
 	    SequenceAnimator.prototype._playThisStep = function () {
 	        var _this = this;
 	        if (!this._isInEffect()) {
-	            this._currentIndex = this._isReversed ? this._steps.length - 1 : 0;
+	            if (this.playbackRate === -1) {
+	                this._currentIndex = this._steps.length - 1;
+	            }
+	            else {
+	                this._currentIndex = 0;
+	            }
 	        }
 	        var animator = this._getAnimator();
 	        animator.onfinish = function (evt) {
@@ -464,7 +548,7 @@
 	        animator.play(this._errorCallback);
 	    };
 	    return SequenceAnimator;
-	})();
+	}());
 	exports.SequenceAnimator = SequenceAnimator;
 
 
@@ -472,6 +556,7 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
 	var helpers_1 = __webpack_require__(3);
 	var TimelineAnimator = (function () {
 	    function TimelineAnimator(manager, options) {
@@ -487,7 +572,7 @@
 	                var definition = manager.findAnimation(evt.name);
 	                var timings2 = helpers_1.extend({}, definition.timings);
 	                if (evt.timings) {
-	                    timings = helpers_1.extend(timings, evt.timings);
+	                    timings = helpers_1.extend(timings2, evt.timings);
 	                }
 	                keyframes = definition.keyframes;
 	                timings = timings2;
@@ -507,38 +592,149 @@
 	                endTime = sheetDuration;
 	            }
 	            return {
-	                keyframes: keyframes,
-	                timings: timings,
 	                el: el,
+	                isClipped: isClipped,
+	                isInEffect: false,
+	                endTimeMs: endTime,
+	                keyframes: keyframes,
 	                offset: evt.offset,
-	                _isClipped: isClipped,
-	                _startTimeMs: startTime,
-	                _endTimeMs: endTime
+	                startTimeMs: startTime,
+	                timings: timings,
 	            };
 	        });
-	        this._duration = options.duration;
+	        this.duration = options.duration;
+	        this.currentTime = 0;
 	        this._events = animationEvents;
+	        this._isPaused = false;
+	        this._manager = manager;
+	        // ensure context of tick is this instance        
+	        this._tick = this._tick.bind(this);
 	        if (options.autoplay) {
 	            this.play();
 	        }
 	    }
+	    TimelineAnimator.prototype._tick = function () {
+	        var _this = this;
+	        // handle cancelation and finishing early
+	        if (this._isCanceled) {
+	            this._triggerCancel();
+	        }
+	        if (this._isFinished) {
+	            this._triggerFinish();
+	        }
+	        if (this._isPaused) {
+	            this._isPaused = false;
+	            return;
+	        }
+	        // calculate currentTime from delta
+	        var thisTick = performance.now();
+	        var lastTick = this._lastTick;
+	        if (lastTick !== undefined) {
+	            var delta = (thisTick - lastTick) * this.playbackRate;
+	            this.currentTime += delta;
+	        }
+	        this._lastTick = thisTick;
+	        // check if animation has finished
+	        if (this.currentTime > this.duration || this.currentTime < 0) {
+	            this._triggerFinish();
+	            return;
+	        }
+	        // start animations if should be active and currently aren't        
+	        helpers_1.each(this._events, function (evt) {
+	            if (evt.isInEffect) {
+	                return;
+	            }
+	            var shouldBeActive = evt.startTimeMs <= _this.currentTime && evt.endTimeMs <= _this.currentTime;
+	            if (!shouldBeActive) {
+	                return;
+	            }
+	            // initialize animator if it doesn't exist            
+	            if (evt.animator === undefined) {
+	                evt.animator = _this._manager.animate(evt.keyframes, evt.el, evt.timings);
+	            }
+	            if (_this.playbackRate === -1) {
+	                evt.animator.reverse();
+	            }
+	            else {
+	                evt.animator.play();
+	            }
+	        });
+	        window.requestAnimationFrame(this._tick);
+	    };
+	    TimelineAnimator.prototype._triggerFinish = function () {
+	        this._reset();
+	        helpers_1.each(this._events, function (evt) {
+	            if (evt.animator !== undefined) {
+	                evt.animator.finish();
+	            }
+	        });
+	        if (helpers_1.isFunction(this.onfinish)) {
+	            this.onfinish(this);
+	        }
+	    };
+	    TimelineAnimator.prototype._triggerCancel = function () {
+	        this._reset();
+	        helpers_1.each(this._events, function (evt) {
+	            if (evt.animator !== undefined) {
+	                evt.animator.cancel();
+	            }
+	        });
+	        if (helpers_1.isFunction(this.oncancel)) {
+	            this.oncancel(this);
+	        }
+	    };
+	    TimelineAnimator.prototype._reset = function () {
+	        this.currentTime = 0;
+	        this._isCanceled = false;
+	        this._isFinished = false;
+	        this._isPaused = false;
+	    };
 	    TimelineAnimator.prototype.finish = function (fn) {
+	        if (this.playbackRate !== undefined) {
+	            this.playbackRate = undefined;
+	            this._isFinished = true;
+	        }
 	        return this;
 	    };
 	    TimelineAnimator.prototype.play = function (fn) {
+	        if (this.playbackRate === undefined || this.playbackRate === 0) {
+	            this.playbackRate = 1;
+	            this._tick();
+	            return this;
+	        }
+	        if (this.playbackRate === -1) {
+	            this.playbackRate = 1;
+	            return this;
+	        }
 	        return this;
 	    };
 	    TimelineAnimator.prototype.pause = function (fn) {
+	        if (this.playbackRate !== undefined && this.playbackRate !== 0) {
+	            this.playbackRate = 0;
+	        }
 	        return this;
 	    };
 	    TimelineAnimator.prototype.reverse = function (fn) {
+	        if (this.playbackRate === undefined || this.playbackRate === 0) {
+	            this.playbackRate = -1;
+	            this._tick();
+	            return this;
+	        }
+	        if (this.playbackRate === 1) {
+	            this.playbackRate = -1;
+	            return this;
+	        }
 	        return this;
 	    };
 	    TimelineAnimator.prototype.cancel = function (fn) {
+	        if (this.playbackRate !== undefined) {
+	            this.playbackRate = undefined;
+	            this._isCanceled = true;
+	        }
 	        return this;
 	    };
 	    return TimelineAnimator;
-	})();
+	}());
 	exports.TimelineAnimator = TimelineAnimator;
 
 
@@ -546,6 +742,7 @@
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
 	exports.bounce = __webpack_require__(8);
 	exports.bounceIn = __webpack_require__(9);
 	exports.bounceInDown = __webpack_require__(10);

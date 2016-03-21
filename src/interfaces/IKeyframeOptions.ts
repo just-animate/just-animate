@@ -1,8 +1,8 @@
 import {IKeyframe} from './IKeyframe';
 import {IIndexed} from './IIndexed';
-import {IAnimationTiming} from './IAnimationTiming';
+import {IAnimationEffectTiming} from './IAnimationEffectTiming';
 
 export interface IKeyframeOptions {
     keyframes: IIndexed<IKeyframe>;
-    timings?: IAnimationTiming;
+    timings?: IAnimationEffectTiming;
 }

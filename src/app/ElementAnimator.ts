@@ -1,17 +1,23 @@
 import {IAnimator} from '../interfaces/IAnimator';
 import {IAnimationManager} from '../interfaces/IAnimationManager';
-import {IAnimationTiming} from '../interfaces/IAnimationTiming';
+import {IAnimationEffectTiming} from '../interfaces/IAnimationEffectTiming';
 import {ICallbackHandler} from '../interfaces/ICallbackHandler';
 import {IConsumer} from '../interfaces/IConsumer';
 import {IElementProvider, ElementSource} from '../interfaces/IElementProvider';
 import {IKeyframe} from '../interfaces/IKeyframe';
 import {IIndexed} from '../interfaces/IIndexed';
 
-import {multiapply, each, extend, isArray, isFunction, isString, noop, toArray} from './helpers';
+import {multiapply, each, extend, isArray, isFunction, isString, noop, toArray, max} from './helpers';
 
 export class ElementAnimator implements IAnimator {
     private _animators: IAnimator[];
-    constructor(manager: IAnimationManager, keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationTiming) {
+    private _timings: IAnimationEffectTiming;
+    public duration: number;
+    public playbackRate: number;
+    public onfinish: IConsumer<IAnimator>;
+    public oncancel: IConsumer<IAnimator>;
+
+    constructor(manager: IAnimationManager, keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationEffectTiming) {
         if (!keyframesOrName) {
             return;
         }
@@ -37,40 +43,63 @@ export class ElementAnimator implements IAnimator {
             }
         }
 
+        // add duration to object    
+        this.duration = timings.duration;        
+
         // get list of elements to animate
         const elements = getElements(el);
 
         // call .animate on all elements and get a list of their players        
         this._animators = multiapply(elements, 'animate', [keyframes, timings]) as IAnimator[];
-    } 
+
+        // hookup finish event for when it happens naturally    
+        if (this._animators.length > 0) {
+            // TODO: try to find a better way than just listening to one of them
+            this._animators[0].onfinish = () => {
+                this.finish();
+            }
+        }        
+    }
+
+    get currentTime(): number {
+        return max(this._animators, 'currentTime') || 0;
+    }
+    set currentTime(elapsed: number) {
+        each(this._animators, it => {
+            it.currentTime = elapsed;
+        })
+    }
+
     public finish(fn?: ICallbackHandler): IAnimator {
+        this.playbackRate = undefined;
         multiapply(this._animators, 'finish', [], fn);
+        if (isFunction(this.onfinish)) {
+            this.onfinish(this)
+        }
         return this;
     }
     public play(fn?: ICallbackHandler): IAnimator {
+        this.playbackRate = 1;
         multiapply(this._animators, 'play', [], fn);
         return this;
     }
     public pause(fn?: ICallbackHandler): IAnimator {
+        this.playbackRate = 0;
         multiapply(this._animators, 'pause', [], fn);
         return this;
     }
     public reverse(fn?: ICallbackHandler): IAnimator {
+        this.playbackRate = -1;
         multiapply(this._animators, 'reverse', [], fn);
         return this;
     }
     public cancel(fn?: ICallbackHandler): IAnimator {
+        this.playbackRate = undefined;
         multiapply(this._animators, 'cancel', [], fn);
-        return this;
-    }
-    get onfinish(): IConsumer<AnimationEvent> {
-        if (this._animators.length === 0) {
-            return undefined;
+        if (isFunction(this.oncancel)) {
+            this.oncancel(this)
         }
-        return this._animators[0].onfinish as IConsumer<AnimationEvent> || noop;
-    }
-    set onfinish(val: IConsumer<AnimationEvent>) {
-        each(this._animators, (a: IAnimator) => { a.onfinish = val; });
+        return this;
     }
 }
 

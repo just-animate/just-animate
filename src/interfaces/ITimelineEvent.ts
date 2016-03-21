@@ -1,5 +1,5 @@
 import {ElementSource} from './IElementProvider';
-import {IAnimationTiming} from './IAnimationTiming';
+import {IAnimationEffectTiming} from './IAnimationEffectTiming';
 import {IKeyframe} from './IKeyframe';
 import {IAnimator} from './IAnimator';
 import {IIndexed} from './IIndexed';
@@ -8,10 +8,6 @@ export interface ITimelineEvent {
     offset: number;
     el: ElementSource;
     name?: string;
-    timings?: IAnimationTiming;
+    timings?: IAnimationEffectTiming;
     keyframes?: IIndexed<IKeyframe>;
-    _animator?: IAnimator;
-    _startTimeMs?: number;
-    _endTimeMs?: number;
-    _isClipped?: boolean;
 }

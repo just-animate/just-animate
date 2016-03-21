@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "version": "1.8.7.0",
         "target": "es5",
         "declaration": true,
         "rootDir": "src",
