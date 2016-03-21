@@ -24,6 +24,7 @@ gulp.task('build', ['copy-animations'], function () {
 gulp.task('just-animate', ['build'], function () {
     return gulp.src('build/just-animate.js')
         .pipe(webpack({
+            watch: true,
             module: {
                 loaders: [
                     { test: /\.json$/, loader: "json" }

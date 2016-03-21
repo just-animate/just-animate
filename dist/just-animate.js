@@ -627,7 +627,7 @@
 	            return;
 	        }
 	        // calculate currentTime from delta
-	        var thisTick = performance.now();
+	        var thisTick = new Date().getTime();
 	        var lastTick = this._lastTick;
 	        if (lastTick !== undefined) {
 	            var delta = (thisTick - lastTick) * this.playbackRate;
@@ -636,6 +636,7 @@
 	        this._lastTick = thisTick;
 	        // check if animation has finished
 	        if (this.currentTime > this.duration || this.currentTime < 0) {
+	            console.log(this.currentTime);
 	            this._triggerFinish();
 	            return;
 	        }
@@ -644,7 +645,7 @@
 	            if (evt.isInEffect) {
 	                return;
 	            }
-	            var shouldBeActive = evt.startTimeMs <= _this.currentTime && evt.endTimeMs <= _this.currentTime;
+	            var shouldBeActive = evt.startTimeMs <= _this.currentTime && evt.endTimeMs >= _this.currentTime;
 	            if (!shouldBeActive) {
 	                return;
 	            }
@@ -699,7 +700,7 @@
 	    TimelineAnimator.prototype.play = function (fn) {
 	        if (this.playbackRate === undefined || this.playbackRate === 0) {
 	            this.playbackRate = 1;
-	            this._tick();
+	            window.requestAnimationFrame(this._tick);
 	            return this;
 	        }
 	        if (this.playbackRate === -1) {
@@ -717,7 +718,7 @@
 	    TimelineAnimator.prototype.reverse = function (fn) {
 	        if (this.playbackRate === undefined || this.playbackRate === 0) {
 	            this.playbackRate = -1;
-	            this._tick();
+	            window.requestAnimationFrame(this._tick);
 	            return this;
 	        }
 	        if (this.playbackRate === 1) {

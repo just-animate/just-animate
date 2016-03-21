@@ -102,7 +102,7 @@ export class TimelineAnimator implements IAnimator {
         }
         
         // calculate currentTime from delta
-        const thisTick = performance.now();
+        const thisTick = new Date().getTime();
         const lastTick = this._lastTick;
         if (lastTick !== undefined) {
             const delta = (thisTick - lastTick) * this.playbackRate;
@@ -112,7 +112,9 @@ export class TimelineAnimator implements IAnimator {
 
         // check if animation has finished
         if (this.currentTime > this.duration || this.currentTime < 0) {
+            console.log(this.currentTime)
             this._triggerFinish();
+            
             return;
         }
 
@@ -122,7 +124,7 @@ export class TimelineAnimator implements IAnimator {
                 return;
             }
 
-            const shouldBeActive = evt.startTimeMs <= this.currentTime && evt.endTimeMs <= this.currentTime;
+            const shouldBeActive = evt.startTimeMs <= this.currentTime && evt.endTimeMs >= this.currentTime;
             if (!shouldBeActive) {
                 return;
             }
@@ -179,7 +181,7 @@ export class TimelineAnimator implements IAnimator {
     public play(fn?: ICallbackHandler): IAnimator {
         if (this.playbackRate === undefined || this.playbackRate === 0) {
             this.playbackRate = 1;
-            this._tick();
+            window.requestAnimationFrame(this._tick);
             return this;
         }
         if (this.playbackRate === -1) {
@@ -197,7 +199,7 @@ export class TimelineAnimator implements IAnimator {
     public reverse(fn?: ICallbackHandler): IAnimator {
         if (this.playbackRate === undefined || this.playbackRate === 0) {
             this.playbackRate = -1;
-            this._tick();
+            window.requestAnimationFrame(this._tick);
             return this;
         }
         if (this.playbackRate === 1) {
