@@ -341,7 +341,14 @@
 	        configurable: true
 	    });
 	    ElementAnimator.prototype.finish = function (fn) {
+	        var _this = this;
 	        helpers_1.multiapply(this._animators, 'finish', [], fn);
+	        if (this.playbackRate < 0) {
+	            helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
+	        }
+	        else {
+	            helpers_1.each(this._animators, function (a) { return a.currentTime = _this.duration; });
+	        }
 	        if (helpers_1.isFunction(this.onfinish)) {
 	            this.onfinish(this);
 	        }
@@ -361,6 +368,7 @@
 	    };
 	    ElementAnimator.prototype.cancel = function (fn) {
 	        helpers_1.multiapply(this._animators, 'cancel', [], fn);
+	        helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
 	        if (helpers_1.isFunction(this.oncancel)) {
 	            this.oncancel(this);
 	        }
@@ -578,52 +586,14 @@
 	var helpers_1 = __webpack_require__(3);
 	var TimelineAnimator = (function () {
 	    function TimelineAnimator(manager, options) {
-	        var sheetDuration = options.duration;
-	        if (sheetDuration === undefined) {
+	        var duration = options.duration;
+	        if (duration === undefined) {
 	            throw Error('Duration is required');
 	        }
-	        var animationEvents = helpers_1.map(options.events, function (evt) {
-	            var keyframes;
-	            var timings;
-	            var el;
-	            if (evt.name) {
-	                var definition = manager.findAnimation(evt.name);
-	                var timings2 = helpers_1.extend({}, definition.timings);
-	                if (evt.timings) {
-	                    timings = helpers_1.extend(timings2, evt.timings);
-	                }
-	                keyframes = definition.keyframes;
-	                timings = timings2;
-	                el = evt.el;
-	            }
-	            else {
-	                keyframes = evt.keyframes;
-	                timings = evt.timings;
-	                el = evt.el;
-	            }
-	            // calculate endtime
-	            var startTime = sheetDuration * evt.offset;
-	            var endTime = startTime + timings.duration;
-	            var isClipped = endTime > sheetDuration;
-	            // if end of animation is clipped, set endTime to duration            
-	            if (isClipped) {
-	                endTime = sheetDuration;
-	            }
-	            return {
-	                el: el,
-	                isClipped: isClipped,
-	                isInEffect: false,
-	                endTimeMs: endTime,
-	                keyframes: keyframes,
-	                offset: evt.offset,
-	                startTimeMs: startTime,
-	                timings: timings
-	            };
-	        });
 	        this.playbackRate = 0;
 	        this.duration = options.duration;
 	        this.currentTime = 0;
-	        this._events = animationEvents;
+	        this._events = helpers_1.map(options.events, function (evt) { return new TimelineEvent(manager, duration, evt); });
 	        this._isPaused = false;
 	        this._manager = manager;
 	        // ensure context of tick is this instance        
@@ -665,13 +635,10 @@
 	        }
 	        // start animations if should be active and currently aren't        
 	        helpers_1.each(this._events, function (evt) {
-	            var shouldBeActive = evt.startTimeMs <= _this.currentTime && evt.endTimeMs >= _this.currentTime;
+	            var shouldBeActive = evt.startTimeMs <= _this.currentTime && _this.currentTime <= evt.endTimeMs;
 	            if (!shouldBeActive) {
+	                evt.isInEffect = false;
 	                return;
-	            }
-	            // initialize animator if it doesn't exist            
-	            if (evt.animator === undefined) {
-	                evt.animator = _this._manager.animate(evt.keyframes, evt.el, evt.timings);
 	            }
 	            evt.animator.playbackRate = _this.playbackRate;
 	            evt.isInEffect = true;
@@ -680,30 +647,15 @@
 	        window.requestAnimationFrame(this._tick);
 	    };
 	    TimelineAnimator.prototype._triggerFinish = function () {
-	        var _this = this;
 	        this._reset();
-	        helpers_1.each(this._events, function (evt) {
-	            if (evt.animator === undefined) {
-	                evt.animator = _this._manager.animate(evt.keyframes, evt.el, evt.timings);
-	            }
-	            var currentTime = _this.currentTime - evt.startTimeMs;
-	            evt.animator.currentTime = helpers_1.clamp(currentTime, 0, evt.animator.duration);
-	            evt.animator.finish();
-	        });
+	        helpers_1.each(this._events, function (evt) { return evt.animator.finish(); });
 	        if (helpers_1.isFunction(this.onfinish)) {
 	            this.onfinish(this);
 	        }
 	    };
 	    TimelineAnimator.prototype._triggerCancel = function () {
-	        var _this = this;
 	        this._reset();
-	        helpers_1.each(this._events, function (evt) {
-	            if (evt.animator === undefined) {
-	                evt.animator = _this._manager.animate(evt.keyframes, evt.el, evt.timings);
-	            }
-	            evt.animator.cancel();
-	            //evt.animator.currentTime = 0;
-	        });
+	        helpers_1.each(this._events, function (evt) { return evt.animator.cancel(); });
 	        if (helpers_1.isFunction(this.oncancel)) {
 	            this.oncancel(this);
 	        }
@@ -715,9 +667,7 @@
 	        this.playbackRate = 0;
 	        helpers_1.each(this._events, function (evt) {
 	            evt.isInEffect = false;
-	            if (evt.animator !== undefined) {
-	                evt.animator.pause();
-	            }
+	            evt.animator.pause();
 	        });
 	    };
 	    TimelineAnimator.prototype._reset = function () {
@@ -776,6 +726,57 @@
 	    return TimelineAnimator;
 	}());
 	exports.TimelineAnimator = TimelineAnimator;
+	var TimelineEvent = (function () {
+	    function TimelineEvent(manager, timelineDuration, evt) {
+	        var keyframes;
+	        var timings;
+	        var el;
+	        if (evt.name) {
+	            var definition = manager.findAnimation(evt.name);
+	            var timings2 = helpers_1.extend({}, definition.timings);
+	            if (evt.timings) {
+	                timings = helpers_1.extend(timings2, evt.timings);
+	            }
+	            keyframes = definition.keyframes;
+	            timings = timings2;
+	            el = evt.el;
+	        }
+	        else {
+	            keyframes = evt.keyframes;
+	            timings = evt.timings;
+	            el = evt.el;
+	        }
+	        // calculate endtime
+	        var startTime = timelineDuration * evt.offset;
+	        var endTime = startTime + timings.duration;
+	        var isClipped = endTime > timelineDuration;
+	        // if end of animation is clipped, set endTime to duration            
+	        if (isClipped) {
+	            endTime = timelineDuration;
+	        }
+	        this.el = el;
+	        this.isClipped = isClipped;
+	        this.isInEffect = false;
+	        this.endTimeMs = endTime;
+	        this.keyframes = keyframes;
+	        this.offset = evt.offset;
+	        this.startTimeMs = startTime;
+	        this.timings = timings;
+	        this._manager = manager;
+	    }
+	    Object.defineProperty(TimelineEvent.prototype, "animator", {
+	        get: function () {
+	            if (this._animator === undefined) {
+	                this._animator = this._manager.animate(this.keyframes, this.el, this.timings);
+	                this._animator.pause();
+	            }
+	            return this._animator;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    return TimelineEvent;
+	}());
 
 
 /***/ },

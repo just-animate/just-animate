@@ -79,6 +79,11 @@ export class ElementAnimator implements IAnimator {
 
     public finish(fn?: ICallbackHandler): IAnimator {
         multiapply(this._animators, 'finish', [], fn);
+        if (this.playbackRate < 0) {
+            each(this._animators, a => a.currentTime = 0);
+        } else {
+            each(this._animators, a => a.currentTime = this.duration);
+        }
         if (isFunction(this.onfinish)) {
             this.onfinish(this)
         }
@@ -98,6 +103,7 @@ export class ElementAnimator implements IAnimator {
     }
     public cancel(fn?: ICallbackHandler): IAnimator {
         multiapply(this._animators, 'cancel', [], fn);
+        each(this._animators, a => a.currentTime = 0);
         if (isFunction(this.oncancel)) {
             this.oncancel(this)
         }

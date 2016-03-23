@@ -19,7 +19,7 @@ export class TimelineAnimator implements IAnimator {
     public duration: number;
     public playbackRate: number;
 
-    private _events: IInnerTimelineEvent[];
+    private _events: TimelineEvent[];
     private _isInEffect: boolean;
     private _isFinished: boolean;
     private _isCanceled: boolean;
@@ -29,57 +29,14 @@ export class TimelineAnimator implements IAnimator {
     private _manager: IAnimationManager;
 
     constructor(manager: IAnimationManager, options: ITimelineOptions) {
-        const sheetDuration = options.duration;
-        if (sheetDuration === undefined) {
+        const duration = options.duration;
+        if (duration === undefined) {
             throw Error('Duration is required');
         }
-
-        const animationEvents = map(options.events, (evt: ITimelineEvent) => {
-            let keyframes: IIndexed<IKeyframe>;
-            let timings: IAnimationEffectTiming;
-            let el: ElementSource;
-
-            if (evt.name) {
-                const definition = manager.findAnimation(evt.name);
-                let timings2 = extend({}, definition.timings);
-                if (evt.timings) {
-                    timings = extend(timings2, evt.timings);
-                }
-                keyframes = definition.keyframes;
-                timings = timings2;
-                el = evt.el;
-            } else {
-                keyframes = evt.keyframes;
-                timings = evt.timings;
-                el = evt.el;
-            }
-
-            // calculate endtime
-            const startTime = sheetDuration * evt.offset;
-            let endTime = startTime + timings.duration;
-            const isClipped = endTime > sheetDuration;
-
-            // if end of animation is clipped, set endTime to duration            
-            if (isClipped) {
-                endTime = sheetDuration;
-            }
-
-            return {
-                el: el,
-                isClipped: isClipped,
-                isInEffect: false,
-                endTimeMs: endTime,
-                keyframes: keyframes,
-                offset: evt.offset,
-                startTimeMs: startTime,
-                timings: timings
-            };
-        }) as IInnerTimelineEvent[];
-
         this.playbackRate = 0;
         this.duration = options.duration;
         this.currentTime = 0;
-        this._events = animationEvents;
+        this._events = map(options.events, evt => new TimelineEvent(manager, duration, evt));
         this._isPaused = false;
         this._manager = manager;
 
@@ -125,14 +82,11 @@ export class TimelineAnimator implements IAnimator {
 
         // start animations if should be active and currently aren't        
         each(this._events, evt => {
-            const shouldBeActive = evt.startTimeMs <= this.currentTime && evt.endTimeMs >= this.currentTime;
-            if (!shouldBeActive) {
-                return;
-            }
+            const shouldBeActive = evt.startTimeMs <= this.currentTime && this.currentTime <= evt.endTimeMs;
 
-            // initialize animator if it doesn't exist            
-            if (evt.animator === undefined) {
-                evt.animator = this._manager.animate(evt.keyframes, evt.el, evt.timings);
+            if (!shouldBeActive) {
+                evt.isInEffect = false;
+                return;
             }
 
             evt.animator.playbackRate = this.playbackRate;
@@ -144,27 +98,14 @@ export class TimelineAnimator implements IAnimator {
     }
     private _triggerFinish() {
         this._reset();
-        each(this._events, evt => {
-            if (evt.animator === undefined) {
-                evt.animator = this._manager.animate(evt.keyframes, evt.el, evt.timings);
-            }
-            const currentTime = this.currentTime - evt.startTimeMs;
-            evt.animator.currentTime = clamp(currentTime, 0, evt.animator.duration);
-            evt.animator.finish();
-        });
+        each(this._events, evt => evt.animator.finish());
         if (isFunction(this.onfinish)) {
             this.onfinish(this);
         }
     }
     private _triggerCancel() {
         this._reset();
-        each(this._events, evt => {
-            if (evt.animator === undefined) {
-                evt.animator = this._manager.animate(evt.keyframes, evt.el, evt.timings);
-            }
-            evt.animator.cancel();
-            //evt.animator.currentTime = 0;
-        });
+        each(this._events, evt => evt.animator.cancel());
         if (isFunction(this.oncancel)) {
             this.oncancel(this);
         }
@@ -176,9 +117,7 @@ export class TimelineAnimator implements IAnimator {
         this.playbackRate = 0;
         each(this._events, evt => {
             evt.isInEffect = false;
-            if (evt.animator !== undefined) {
-                evt.animator.pause();
-            }
+            evt.animator.pause();
         });
     }
     private _reset() {
@@ -239,15 +178,64 @@ export class TimelineAnimator implements IAnimator {
     }
 }
 
-interface IInnerTimelineEvent {
+class TimelineEvent {
+    private _animator: IAnimator;
+    private _manager: IAnimationManager;
     offset: number;
     el: ElementSource;
-    name?: string;
-    timings?: IAnimationEffectTiming;
-    keyframes?: IIndexed<IKeyframe>;
-    animator?: IAnimator;
-    endTimeMs?: number;
-    isClipped?: boolean;
-    startTimeMs?: number;
+    timings: IAnimationEffectTiming;
+    keyframes: IIndexed<IKeyframe>;
+    endTimeMs: number;
+    isClipped: boolean;
+    startTimeMs: number;
     isInEffect: boolean;
+
+    get animator(): IAnimator {
+        if (this._animator === undefined) {
+            this._animator = this._manager.animate(this.keyframes, this.el, this.timings);
+            this._animator.pause();
+        }
+        return this._animator;
+    }    
+
+    constructor(manager: IAnimationManager, timelineDuration: number, evt: ITimelineEvent) {
+        let keyframes: IIndexed<IKeyframe>;
+        let timings: IAnimationEffectTiming;
+        let el: ElementSource;
+
+        if (evt.name) {
+            const definition = manager.findAnimation(evt.name);
+            let timings2 = extend({}, definition.timings);
+            if (evt.timings) {
+                timings = extend(timings2, evt.timings);
+            }
+            keyframes = definition.keyframes;
+            timings = timings2;
+            el = evt.el;
+        } else {
+            keyframes = evt.keyframes;
+            timings = evt.timings;
+            el = evt.el;
+        }
+
+        // calculate endtime
+        const startTime = timelineDuration * evt.offset;
+        let endTime = startTime + timings.duration;
+        const isClipped = endTime > timelineDuration;
+
+        // if end of animation is clipped, set endTime to duration            
+        if (isClipped) {
+            endTime = timelineDuration;
+        }
+
+        this.el = el;
+        this.isClipped = isClipped;
+        this.isInEffect = false;
+        this.endTimeMs = endTime;
+        this.keyframes = keyframes;
+        this.offset = evt.offset;
+        this.startTimeMs = startTime;
+        this.timings = timings;
+        this._manager = manager;
+    }    
 }
