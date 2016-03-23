@@ -1,26 +1,37 @@
 {
-  "name": "just-animate",
-  "version": "0.0.1",
-  "description": "",
-  "main": "app.js",
-  "dependencies": {
-    "lodash": "^4.5.0"
-  },
-  "devDependencies": {
-    "del": "^2.2.0",
-    "gulp": "^3.9.1",
-    "gulp-browserify": "^0.5.1",
-    "gulp-notify": "^2.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-typescript": "^2.11.0",
-    "gulp-uglify": "^1.5.2",
-    "gulp-util": "^3.0.7",
-    "json-loader": "^0.5.4",
-    "tslint": "^3.5.0",
-    "vinyl-source-stream": "^1.1.0",
-    "vinyl-transform": "^1.0.0",
-    "webpack": "^1.12.14",
-    "webpack-stream": "^3.1.0"
-  },
-  "author": ""
+    "author": "christopher.j.wallis@gmail.com",
+    "bugs": {
+        "url": "https://github.com/notoriousb1t/just-animate/issues"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "del": "^2.2.0",
+        "gulp": "^3.9.1",
+        "gulp-notify": "^2.2.0",
+        "gulp-rename": "^1.2.2",
+        "gulp-typescript": "^2.11.0",
+        "gulp-uglify": "^1.5.2",
+        "gulp-util": "^3.0.7",
+        "json-loader": "^0.5.4",
+        "webpack": "^1.12.14",
+        "webpack-stream": "^3.1.0"
+    },
+    "description": "Web Animation library",
+    "keywords": [
+        "webanimation",
+        "animate",
+        "animatecss",
+        "javascript",
+        "animation",
+        "timeline",
+        "sequence"
+    ],
+    "license": "MIT",
+    "main": "index.js",
+    "name": "just-animate",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/notoriousb1t/just-animate"
+    },
+    "version": "0.1.0"
 }
