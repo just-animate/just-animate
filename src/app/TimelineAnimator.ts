@@ -10,6 +10,11 @@ import {IIndexed} from '../interfaces/IIndexed';
 import {IKeyframe} from '../interfaces/IKeyframe';
 import {clamp, each, extend, isFunction, map} from './helpers';
 
+// FIXME!: this controls the amount of time left before the timeline gives up 
+// on individual animation and calls finish.  If an animation plays after its time, it looks
+// like it restarts and that causes jank
+const animationPadding = 1.0 / 30;
+
 export class TimelineAnimator implements IAnimator {
     public onfinish: IConsumer<IAnimator>;
     public oncancel: IConsumer<IAnimator>;
@@ -82,7 +87,9 @@ export class TimelineAnimator implements IAnimator {
 
         // start animations if should be active and currently aren't        
         each(this._events, evt => {
-            const shouldBeActive = evt.startTimeMs <= this.currentTime && this.currentTime <= evt.endTimeMs;
+            const startTimeMs = this.playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+            const endTimeMs = this.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+            const shouldBeActive = startTimeMs <= this.currentTime && this.currentTime < endTimeMs;
 
             if (!shouldBeActive) {
                 evt.isInEffect = false;

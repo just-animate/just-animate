@@ -584,6 +584,10 @@
 
 	"use strict";
 	var helpers_1 = __webpack_require__(3);
+	// FIXME!: this controls the amount of time left before the timeline gives up 
+	// on individual animation and calls finish.  If an animation plays after its time, it looks
+	// like it restarts and that causes jank
+	var animationPadding = 1.0 / 30;
 	var TimelineAnimator = (function () {
 	    function TimelineAnimator(manager, options) {
 	        var duration = options.duration;
@@ -635,7 +639,9 @@
 	        }
 	        // start animations if should be active and currently aren't        
 	        helpers_1.each(this._events, function (evt) {
-	            var shouldBeActive = evt.startTimeMs <= _this.currentTime && _this.currentTime <= evt.endTimeMs;
+	            var startTimeMs = _this.playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+	            var endTimeMs = _this.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+	            var shouldBeActive = startTimeMs <= _this.currentTime && _this.currentTime < endTimeMs;
 	            if (!shouldBeActive) {
 	                evt.isInEffect = false;
 	                return;
