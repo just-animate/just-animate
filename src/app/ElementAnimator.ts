@@ -7,15 +7,22 @@ import {IElementProvider, ElementSource} from '../interfaces/IElementProvider';
 import {IKeyframe} from '../interfaces/IKeyframe';
 import {IIndexed} from '../interfaces/IIndexed';
 
-import {multiapply, each, extend, isArray, isFunction, isString, noop, toArray, max} from './helpers';
+import {head, multiapply, each, extend, isArray, isFunction, isString, noop, toArray, max} from './helpers';
 
 export class ElementAnimator implements IAnimator {
     private _animators: IAnimator[];
     private _timings: IAnimationEffectTiming;
     public duration: number;
-    public playbackRate: number;
     public onfinish: IConsumer<IAnimator>;
     public oncancel: IConsumer<IAnimator>;
+
+    public get playbackRate() {
+        const first = head(this._animators);
+        return first ? first.playbackRate : 0;
+    }
+    public set playbackRate(val: number) {
+        each(this._animators, a => a.playbackRate = val);
+    }    
 
     constructor(manager: IAnimationManager, keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationEffectTiming) {
         if (!keyframesOrName) {
@@ -71,7 +78,6 @@ export class ElementAnimator implements IAnimator {
     }
 
     public finish(fn?: ICallbackHandler): IAnimator {
-        this.playbackRate = undefined;
         multiapply(this._animators, 'finish', [], fn);
         if (isFunction(this.onfinish)) {
             this.onfinish(this)
@@ -79,22 +85,18 @@ export class ElementAnimator implements IAnimator {
         return this;
     }
     public play(fn?: ICallbackHandler): IAnimator {
-        this.playbackRate = 1;
         multiapply(this._animators, 'play', [], fn);
         return this;
     }
     public pause(fn?: ICallbackHandler): IAnimator {
-        this.playbackRate = 0;
         multiapply(this._animators, 'pause', [], fn);
         return this;
     }
     public reverse(fn?: ICallbackHandler): IAnimator {
-        this.playbackRate = -1;
         multiapply(this._animators, 'reverse', [], fn);
         return this;
     }
     public cancel(fn?: ICallbackHandler): IAnimator {
-        this.playbackRate = undefined;
         multiapply(this._animators, 'cancel', [], fn);
         if (isFunction(this.oncancel)) {
             this.oncancel(this)

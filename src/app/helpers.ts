@@ -10,6 +10,17 @@ export function noop(): void {
     // do nothing
 }
 
+export function clamp(val: number, min: number, max: number): number {
+    return val === undefined ? undefined : val < min ? min : val > max ? max : val;
+}
+
+export function head<T>(indexed: IIndexed<T>): T {
+    return (!indexed || indexed.length < 1) ? undefined : indexed[0];
+}
+export function tail<T>(indexed: IIndexed<T>): T {
+    return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
+}
+
 export function isArray(a: any): boolean {
     return !isString(a) && isNumber(a.length);
 }

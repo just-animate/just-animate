@@ -3,29 +3,47 @@
 <head>
     <title>Just Animate Demo</title>
     <style>
+        h2 {
+            font-size: 2.5em;
+        }
+        button {
+            background: white;
+            border: solid thin #333;
+            padding: 0.75em 1.5em;
+        }
+        button:hover {
+            cursor: pointer;
+        }
         .car-1,
         .car-2 {
-            height: 250px;
-            width: 250px;
+            height: 200px;
+            width: 200px;
+            position: absolute;
+        }
+        
+        .car-1 {
+            top: 0;
+        }
+        .car-2 {
+            top: 200px;
         }
         
         .red.car .car-body {
-            stroke: #ee0000;
+            stroke: #F31A1A;
             fill: #ff0000;
         }
         
         .blue.car .car-body {
-            stroke: #0000ee;
+            stroke: #1111E8;
             fill: #0000ff;
         }
-        h2 {
-            font-size: 2.5em;
-        }
+
         .container {
-            max-width: 960;
+            max-width: 800;
             width: 100%;
             margin-left: auto;
             margin-right: auto;
+            position: relative;
         }
         .road {
             background-color: #aaa;
@@ -84,8 +102,8 @@
                     offset: 0,
                     el: '.car-1', 
                     keyframes: [
-                        { transform: 'none' },
-                        { transform: 'translateX(1000px)' }
+                        { left: 0 },
+                        { left: '700px' }
                     ],
                     timings: {
                         duration: 4200,
@@ -97,8 +115,8 @@
                     offset: 0,
                     el: '.car-2', 
                     keyframes: [
-                        { offset: 0, transform: 'none' },
-                        { offset: 1, transform: 'translateX(1000px)' }
+                        { left: 0 },
+                        { left: '700px' }
                     ],
                     timings: {
                         duration: 5000,
@@ -108,14 +126,6 @@
                 },
                 {
                     offset: 0.1,
-                    el: '.red.car', 
-                    name: 'rubberBand',
-                    timings: {
-                        iterations: 1
-                    }
-                },
-                {
-                    offset: 0.8,
                     el: '.red.car', 
                     name: 'rubberBand',
                     timings: {
