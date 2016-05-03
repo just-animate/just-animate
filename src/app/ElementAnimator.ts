@@ -1,30 +1,23 @@
-import {IAnimator} from '../interfaces/IAnimator';
-import {IAnimationManager} from '../interfaces/IAnimationManager';
-import {IAnimationEffectTiming} from '../interfaces/IAnimationEffectTiming';
-import {ICallbackHandler} from '../interfaces/ICallbackHandler';
-import {IConsumer} from '../interfaces/IConsumer';
-import {IElementProvider, ElementSource} from '../interfaces/IElementProvider';
-import {IKeyframe} from '../interfaces/IKeyframe';
-import {IIndexed} from '../interfaces/IIndexed';
+import {easings} from '../easings';
+import {head, multiapply, each, extend, isArray, isFunction, isString, toArray, max} from './helpers';
 
-import {head, multiapply, each, extend, isArray, isFunction, isString, noop, toArray, max} from './helpers';
-
-export class ElementAnimator implements IAnimator {
-    private _animators: IAnimator[];
-    private _timings: IAnimationEffectTiming;
+export class ElementAnimator implements just.IAnimator {
     public duration: number;
-    public onfinish: IConsumer<IAnimator>;
-    public oncancel: IConsumer<IAnimator>;
+    public onfinish: just.IConsumer<just.IAnimator>;
+    public oncancel: just.IConsumer<just.IAnimator>;
+    
+    private _animators: just.IAnimator[];
 
-    public get playbackRate() {
+    public get playbackRate(): number {
         const first = head(this._animators);
         return first ? first.playbackRate : 0;
     }
     public set playbackRate(val: number) {
-        each(this._animators, a => a.playbackRate = val);
+        each(this._animators, (a: just.IAnimator) => a.playbackRate = val);
     }    
 
-    constructor(manager: IAnimationManager, keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationEffectTiming) {
+    constructor(manager: just.IAnimationManager, keyframesOrName: string | just.IIndexed<just.IKeyframe>, 
+                el: just.ElementSource, timings?: just.IAnimationEffectTiming) {
         if (!keyframesOrName) {
             return;
         }
@@ -44,7 +37,7 @@ export class ElementAnimator implements IAnimator {
 
         if (timings && timings.easing) {
             // if timings contains an easing property, 
-            const easing = manager.findEasing(timings.easing);
+            const easing = easings[timings.easing];
             if (easing) {
                 timings.easing = easing;
             }
@@ -57,14 +50,14 @@ export class ElementAnimator implements IAnimator {
         const elements = getElements(el);
 
         // call .animate on all elements and get a list of their players        
-        this._animators = multiapply(elements, 'animate', [keyframes, timings]) as IAnimator[];
+        this._animators = multiapply(elements, 'animate', [keyframes, timings]) as just.IAnimator[];
 
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
-            // TODO: try to find a better way than just listening to one of them
+            // todo: try to find a better way than just listening to one of them
             this._animators[0].onfinish = () => {
                 this.finish();
-            }
+            };
         }        
     }
 
@@ -72,46 +65,44 @@ export class ElementAnimator implements IAnimator {
         return max(this._animators, 'currentTime') || 0;
     }
     set currentTime(elapsed: number) {
-        each(this._animators, it => {
-            it.currentTime = elapsed;
-        })
+        each(this._animators, (a: just.IAnimator) => a.currentTime = elapsed);
     }
 
-    public finish(fn?: ICallbackHandler): IAnimator {
+    public finish(fn?: just.ICallbackHandler): just.IAnimator {
         multiapply(this._animators, 'finish', [], fn);
         if (this.playbackRate < 0) {
-            each(this._animators, a => a.currentTime = 0);
+            each(this._animators, (a: just.IAnimator) => a.currentTime = 0);
         } else {
-            each(this._animators, a => a.currentTime = this.duration);
+            each(this._animators, (a: just.IAnimator) => a.currentTime = this.duration);
         }
         if (isFunction(this.onfinish)) {
-            this.onfinish(this)
+            this.onfinish(this);
         }
         return this;
     }
-    public play(fn?: ICallbackHandler): IAnimator {
+    public play(fn?: just.ICallbackHandler): just.IAnimator {
         multiapply(this._animators, 'play', [], fn);
         return this;
     }
-    public pause(fn?: ICallbackHandler): IAnimator {
+    public pause(fn?: just.ICallbackHandler): just.IAnimator {
         multiapply(this._animators, 'pause', [], fn);
         return this;
     }
-    public reverse(fn?: ICallbackHandler): IAnimator {
+    public reverse(fn?: just.ICallbackHandler): just.IAnimator {
         multiapply(this._animators, 'reverse', [], fn);
         return this;
     }
-    public cancel(fn?: ICallbackHandler): IAnimator {
+    public cancel(fn?: just.ICallbackHandler): just.IAnimator {
         multiapply(this._animators, 'cancel', [], fn);
-        each(this._animators, a => a.currentTime = 0);
+        each(this._animators, (a: just.IAnimator) => a.currentTime = 0);
         if (isFunction(this.oncancel)) {
-            this.oncancel(this)
+            this.oncancel(this);
         }
         return this;
     }
 }
 
-function getElements(source: ElementSource): Element[] {
+function getElements(source: just.ElementSource): Element[] {
     if (!source) {
         throw Error('source is undefined');
     }
@@ -126,14 +117,14 @@ function getElements(source: ElementSource): Element[] {
     }
     if (isFunction(source)) {
         // if function, call it and call this function
-        const provider = source as IElementProvider;
+        const provider = source as just.IElementProvider;
         const result = provider();
         return getElements(result);
     }
     if (isArray(source)) {
         // if array or jQuery object, flatten to an array
         const elements = [];
-        each(source as IIndexed<any>, (i: any) => {
+        each(source as just.IIndexed<any>, (i: any) => {
             // recursively call this function in case of nested elements
             const innerElements = getElements(i);
             elements.push.apply(elements, innerElements);

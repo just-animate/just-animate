@@ -1,8 +1,3 @@
-import {ICallbackHandler} from '../interfaces/ICallbackHandler';
-import {IConsumer} from '../interfaces/IConsumer';
-import {IMapper} from '../interfaces/IMapper';
-import {IIndexed} from '../interfaces/IIndexed';
-
 const ostring = Object.prototype.toString;
 const slice = Array.prototype.slice;
 
@@ -14,10 +9,10 @@ export function clamp(val: number, min: number, max: number): number {
     return val === undefined ? undefined : val < min ? min : val > max ? max : val;
 }
 
-export function head<T>(indexed: IIndexed<T>): T {
+export function head<T>(indexed: just.IIndexed<T>): T {
     return (!indexed || indexed.length < 1) ? undefined : indexed[0];
 }
-export function tail<T>(indexed: IIndexed<T>): T {
+export function tail<T>(indexed: just.IIndexed<T>): T {
     return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
 }
 
@@ -37,17 +32,17 @@ export function isString(a: any): boolean {
     return typeof a === 'string';
 }
 
-export function toArray<T>(indexed: IIndexed<T>): T[] {
+export function toArray<T>(indexed: just.IIndexed<T>): T[] {
     return slice.call(indexed, 0);
 }
 
-export function each<T1>(items: IIndexed<T1>, fn: IConsumer<T1>): void {
+export function each<T1>(items: just.IIndexed<T1>, fn: just.IConsumer<T1>): void {
     for (let i = 0, len = items.length; i < len; i++) {
         fn(items[i]);
     }
 }
 
-export function max<T1>(items: IIndexed<T1>, propertyName: string): any {
+export function max<T1>(items: just.IIndexed<T1>, propertyName: string): any {
     let max: any = '';
     for (let i = 0, len = items.length; i < len; i++) {
         const prop = items[i][propertyName];
@@ -58,7 +53,7 @@ export function max<T1>(items: IIndexed<T1>, propertyName: string): any {
     return max;
 }
 
-export function map<T1, T2>(items: IIndexed<T1>, fn: IMapper<T1, T2>): T2[] {
+export function map<T1, T2>(items: just.IIndexed<T1>, fn: just.IMapper<T1, T2>): T2[] {
     const results = [];
     for (let i = 0, len = items.length; i < len; i++) {
         const result = fn(items[i]);
@@ -79,7 +74,7 @@ export function extend(target: any, ...sources: any[]): any {
     return target;
 }
 
-export function multiapply(targets: IIndexed<any>, fnName: string, args: IIndexed<any>, cb?: ICallbackHandler): any[] {
+export function multiapply(targets: just.IIndexed<any>, fnName: string, args: just.IIndexed<any>, cb?: just.ICallbackHandler): any[] {
     const errors = [];
     const results = [];
     for (let i = 0, len = targets.length; i < len; i++) {

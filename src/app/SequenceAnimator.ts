@@ -1,25 +1,14 @@
-import {IAnimator} from '../interfaces/IAnimator';
-import {IAnimationManager} from '../interfaces/IAnimationManager';
-import {IAnimationEffectTiming} from '../interfaces/IAnimationEffectTiming';
-import {ISequenceEvent} from '../interfaces/ISequenceEvent';
-import {ISequenceOptions} from '../interfaces/ISequenceOptions';
-import {ICallbackHandler} from '../interfaces/ICallbackHandler';
-import {IConsumer} from '../interfaces/IConsumer';
-import {IIndexed} from '../interfaces/IIndexed';
-import {IKeyframe} from '../interfaces/IKeyframe';
-import {ElementSource} from '../interfaces/IElementProvider';
 import {extend, isFunction, map, noop} from './helpers';
 
-export class SequenceAnimator implements IAnimator {
-    public onfinish: IConsumer<IAnimator>;
-    public oncancel: IConsumer<IAnimator>;
-
+export class SequenceAnimator implements just.IAnimator {
+  
     public playbackRate: number;
-
-    private _playStart: Date;
+    public onfinish: just.IConsumer<just.IAnimator>;
+    public oncancel: just.IConsumer<just.IAnimator>;   
+    
     private _currentIndex: number;
-    private _errorCallback: ICallbackHandler;
-    private _manager: IAnimationManager;
+    private _errorCallback: just.ICallbackHandler;
+    private _manager: just.IAnimationManager;
     private _steps: IInnerSequenceEvent[];
 
     get currentTime(): number {
@@ -59,8 +48,8 @@ export class SequenceAnimator implements IAnimator {
         return this._steps.reduce((c, n) => c + (n.timings.duration || 0), 0);
     }
 
-    constructor(manager: IAnimationManager, options: ISequenceOptions) {
-        const steps: IInnerSequenceEvent[] = map(options.steps, (step: ISequenceEvent) => {
+    constructor(manager: just.IAnimationManager, options: just.ISequenceOptions) {
+        const steps: IInnerSequenceEvent[] = map(options.steps, (step: just.ISequenceEvent) => {
             if (step.command || !step.name) {
                 return step;
             }
@@ -87,7 +76,7 @@ export class SequenceAnimator implements IAnimator {
         }        
     }
     
-    public finish(fn?: ICallbackHandler): IAnimator {
+    public finish(fn?: just.ICallbackHandler): just.IAnimator {
         this._errorCallback = fn;
         this._currentIndex = -1;
         
@@ -102,13 +91,13 @@ export class SequenceAnimator implements IAnimator {
         }
         return this;
     }
-    public play(fn?: ICallbackHandler): IAnimator {
+    public play(fn?: just.ICallbackHandler): just.IAnimator {
         this._errorCallback = fn;
         this.playbackRate = 1;
         this._playThisStep();
         return this;
     }
-    public pause(fn?: ICallbackHandler): IAnimator {
+    public pause(fn?: just.ICallbackHandler): just.IAnimator {
         this._errorCallback = fn;
         // ignore pause if not relevant
         if (!this._isInEffect()) {
@@ -118,13 +107,13 @@ export class SequenceAnimator implements IAnimator {
         animator.pause(fn);
         return this;
     }
-    public reverse(fn?: ICallbackHandler): IAnimator {
+    public reverse(fn?: just.ICallbackHandler): just.IAnimator {
         this._errorCallback = fn;
         this.playbackRate = -1;
         this._playThisStep();
         return this;
     }
-    public cancel(fn?: ICallbackHandler): IAnimator {
+    public cancel(fn?: just.ICallbackHandler): just.IAnimator {
         this._errorCallback = fn;
         this.playbackRate = undefined;
         this._currentIndex = -1;
@@ -142,7 +131,7 @@ export class SequenceAnimator implements IAnimator {
     private _isInEffect(): boolean {
         return this._currentIndex > -1 && this._currentIndex < this._steps.length;
     }
-    private _getAnimator(): IAnimator {
+    private _getAnimator(): just.IAnimator {
         const it = this._steps[this._currentIndex];
         if (it.animator) {
             return it.animator;
@@ -150,7 +139,7 @@ export class SequenceAnimator implements IAnimator {
         it.animator = this._manager.animate(it.keyframes, it.el, it.timings);
         return it.animator;
     }
-    private _playNextStep(evt: IAnimator): void {
+    private _playNextStep(evt: just.IAnimator): void {
         if (this.playbackRate === -1) {
             this._currentIndex--;
         } else {
@@ -171,7 +160,7 @@ export class SequenceAnimator implements IAnimator {
             }
         }
         const animator = this._getAnimator();
-        animator.onfinish = (evt: IAnimator) => {
+        animator.onfinish = (evt: just.IAnimator) => {
             this._playNextStep(evt);
         };
         
@@ -180,10 +169,10 @@ export class SequenceAnimator implements IAnimator {
 }
 
 interface IInnerSequenceEvent {
-    el: ElementSource;
+    el: just.ElementSource;
     name?: string;
     command?: string;
-    timings?: IAnimationEffectTiming;
-    keyframes?: IIndexed<IKeyframe>;
-    animator?: IAnimator;
+    timings?: just.IAnimationEffectTiming;
+    keyframes?: just.IIndexed<just.IKeyframe>;
+    animator?: just.IAnimator;
 }

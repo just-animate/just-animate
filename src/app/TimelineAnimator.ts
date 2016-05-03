@@ -1,39 +1,27 @@
-import {IAnimator} from '../interfaces/IAnimator';
-import {IAnimationManager} from '../interfaces/IAnimationManager';
-import {ITimelineEvent} from '../interfaces/ITimelineEvent';
-import {ITimelineOptions} from '../interfaces/ITimelineOptions';
-import {IAnimationEffectTiming} from '../interfaces/IAnimationEffectTiming';
-import {IConsumer} from '../interfaces/IConsumer';
-import {ICallbackHandler} from '../interfaces/ICallbackHandler';
-import {ElementSource} from '../interfaces/IElementProvider';
-import {IIndexed} from '../interfaces/IIndexed';
-import {IKeyframe} from '../interfaces/IKeyframe';
-import {clamp, each, extend, isFunction, map} from './helpers';
+import {each, extend, isFunction, map} from './helpers';
 
-// FIXME!: this controls the amount of time left before the timeline gives up 
+// fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 const animationPadding = 1.0 / 30;
 
-export class TimelineAnimator implements IAnimator {
-    public onfinish: IConsumer<IAnimator>;
-    public oncancel: IConsumer<IAnimator>;
-
-    // TODO: implement    
+export class TimelineAnimator implements just.IAnimator {
+    
     public currentTime: number;
     public duration: number;
     public playbackRate: number;
-
+    public onfinish: just.IConsumer<just.IAnimator>;
+    public oncancel: just.IConsumer<just.IAnimator>;
+    
     private _events: TimelineEvent[];
     private _isInEffect: boolean;
     private _isFinished: boolean;
     private _isCanceled: boolean;
     private _isPaused: boolean;
     private _lastTick: number;
-    private _tickOffset: number;
-    private _manager: IAnimationManager;
+    private _manager: just.IAnimationManager;  
 
-    constructor(manager: IAnimationManager, options: ITimelineOptions) {
+    constructor(manager: just.IAnimationManager, options: just.ITimelineOptions) {
         const duration = options.duration;
         if (duration === undefined) {
             throw Error('Duration is required');
@@ -41,7 +29,7 @@ export class TimelineAnimator implements IAnimator {
         this.playbackRate = 0;
         this.duration = options.duration;
         this.currentTime = 0;
-        this._events = map(options.events, evt => new TimelineEvent(manager, duration, evt));
+        this._events = map(options.events, (evt: just.ITimelineEvent) => new TimelineEvent(manager, duration, evt));
         this._isPaused = false;
         this._manager = manager;
 
@@ -52,7 +40,55 @@ export class TimelineAnimator implements IAnimator {
             this.play();
         }
     }
-    private _tick() {
+    
+
+    public finish(fn?: just.ICallbackHandler): just.IAnimator {
+        this._isFinished = true;
+        return this;
+    }
+    
+    public play(fn?: just.ICallbackHandler): just.IAnimator {
+        this.playbackRate = 1;
+        this._isPaused = false;
+
+        if (this._isInEffect) {
+            return this;
+        }
+        if (this.playbackRate < 0) {
+            this.currentTime = this.duration;
+        } else {
+            this.currentTime = 0;
+        }
+        window.requestAnimationFrame(this._tick);
+        return this;
+    }
+    public pause(fn?: just.ICallbackHandler): just.IAnimator {
+        if (this._isInEffect) {
+            this._isPaused = true;
+        }
+        return this;
+    }
+    public reverse(fn?: just.ICallbackHandler): just.IAnimator {
+        this.playbackRate = -1;
+        this._isPaused = false;
+
+        if (this._isInEffect) {
+            return this;
+        }
+
+        if (this.currentTime <= 0) {
+            this.currentTime = this.duration;
+        }
+        window.requestAnimationFrame(this._tick);
+        return this;
+    }
+    public cancel(fn?: just.ICallbackHandler): just.IAnimator {
+        this.playbackRate = 0;
+        this._isCanceled = true;
+        return this;
+    }
+    
+    private _tick(): void {
         // handle cancelation and finishing early
         if (this._isCanceled) {
             this._triggerCancel();
@@ -86,7 +122,7 @@ export class TimelineAnimator implements IAnimator {
         }
 
         // start animations if should be active and currently aren't        
-        each(this._events, evt => {
+        each(this._events, (evt: TimelineEvent) => {
             const startTimeMs = this.playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             const endTimeMs = this.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
             const shouldBeActive = startTimeMs <= this.currentTime && this.currentTime < endTimeMs;
@@ -103,21 +139,21 @@ export class TimelineAnimator implements IAnimator {
 
         window.requestAnimationFrame(this._tick);
     }
-    private _triggerFinish() {
+    private _triggerFinish(): void {
         this._reset();
-        each(this._events, evt => evt.animator.finish());
+        each(this._events, (evt: TimelineEvent) => evt.animator.finish());
         if (isFunction(this.onfinish)) {
             this.onfinish(this);
         }
     }
-    private _triggerCancel() {
+    private _triggerCancel(): void {
         this._reset();
-        each(this._events, evt => evt.animator.cancel());
+        each(this._events, (evt: TimelineEvent) => evt.animator.cancel());
         if (isFunction(this.oncancel)) {
             this.oncancel(this);
         }
     }
-    private _triggerPause() {
+    private _triggerPause(): void {
         this._isPaused = true;
         this._isInEffect = false;
         this._lastTick = undefined;
@@ -127,7 +163,7 @@ export class TimelineAnimator implements IAnimator {
             evt.animator.pause();
         });
     }
-    private _reset() {
+    private _reset(): void {
         this.currentTime = 0;
         this._lastTick = undefined;
         this._isCanceled = false;
@@ -138,66 +174,21 @@ export class TimelineAnimator implements IAnimator {
             evt.isInEffect = false;
         });
     }
-
-    public finish(fn?: ICallbackHandler): IAnimator {
-        this._isFinished = true;
-        return this;
-    }
-    public play(fn?: ICallbackHandler): IAnimator {
-        this.playbackRate = 1;
-        this._isPaused = false;
-
-        if (this._isInEffect) {
-            return this;
-        }
-        if (this.playbackRate < 0) {
-            this.currentTime = this.duration;
-        } else {
-            this.currentTime = 0;
-        }
-        window.requestAnimationFrame(this._tick);
-        return this;
-    }
-    public pause(fn?: ICallbackHandler): IAnimator {
-        if (this._isInEffect) {
-            this._isPaused = true;
-        }
-        return this;
-    }
-    public reverse(fn?: ICallbackHandler): IAnimator {
-        this.playbackRate = -1;
-        this._isPaused = false;
-
-        if (this._isInEffect) {
-            return this;
-        }
-
-        if (this.currentTime <= 0) {
-            this.currentTime = this.duration;
-        }
-        window.requestAnimationFrame(this._tick);
-        return this;
-    }
-    public cancel(fn?: ICallbackHandler): IAnimator {
-        this.playbackRate = 0;
-        this._isCanceled = true;
-        return this;
-    }
 }
 
-class TimelineEvent {
-    private _animator: IAnimator;
-    private _manager: IAnimationManager;
-    offset: number;
-    el: ElementSource;
-    timings: IAnimationEffectTiming;
-    keyframes: IIndexed<IKeyframe>;
-    endTimeMs: number;
-    isClipped: boolean;
-    startTimeMs: number;
-    isInEffect: boolean;
+class TimelineEvent implements just.ITimelineEvent {
+    public offset: number;
+    public el: just.ElementSource;
+    public timings: just.IAnimationEffectTiming;
+    public keyframes: just.IIndexed<just.IKeyframe>;
+    public endTimeMs: number;
+    public isClipped: boolean;
+    public startTimeMs: number;
+    public isInEffect: boolean;
+    private _animator: just.IAnimator;
+    private _manager: just.IAnimationManager;
 
-    get animator(): IAnimator {
+    get animator(): just.IAnimator {
         if (this._animator === undefined) {
             this._animator = this._manager.animate(this.keyframes, this.el, this.timings);
             this._animator.pause();
@@ -205,14 +196,14 @@ class TimelineEvent {
         return this._animator;
     }    
 
-    constructor(manager: IAnimationManager, timelineDuration: number, evt: ITimelineEvent) {
-        let keyframes: IIndexed<IKeyframe>;
-        let timings: IAnimationEffectTiming;
-        let el: ElementSource;
+    constructor(manager: just.IAnimationManager, timelineDuration: number, evt: just.ITimelineEvent) {
+        let keyframes: just.IIndexed<just.IKeyframe>;
+        let timings: just.IAnimationEffectTiming;
+        let el: just.ElementSource;
 
         if (evt.name) {
             const definition = manager.findAnimation(evt.name);
-            let timings2 = extend({}, definition.timings);
+            let timings2: just.ITimelineEvent = extend({}, definition.timings);
             if (evt.timings) {
                 timings = extend(timings2, evt.timings);
             }
