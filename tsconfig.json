@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
-        "version": "1.8.7.0",
         "target": "es5",
-        "declaration": true,
         "rootDir": "src",
         "outDir": "build",
-        "module": "commonjs"
+        "module": "commonjs",
+        "preserveConstEnums": false,
+        "removeComments": true
     },
     "exclude": [
-        "node_modules"
+        "node_modules", 
+        "src/browser.ts"
     ]
 }
