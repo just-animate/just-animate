@@ -42,15 +42,16 @@ export class AnimationManager implements just.IAnimationManager {
         const self = this;
         
         const registerAnimation = (it: just.IAnimationOptions) => {
-            self[name] = (el: just.ElementSource, timings: just.IAnimationEffectTiming) => self.animate(name, el, timings);
-            self._registry[name] = it;
+            self[name] = (el: just.ElementSource, timings: just.IAnimationEffectTiming) => self.animate(it.name, el, it.timings);
+            self._registry[it.name] = it;
         };
         
         if (isArray(animationOptions)) {
             each(animationOptions as just.IAnimationOptions[], registerAnimation);
         } else {
-            self[name] = (el: just.ElementSource, timings: just.IAnimationEffectTiming) => self.animate(name, el, timings);
-            self._registry[name] = animationOptions as just.IAnimationOptions;
+            self[name] = (el: just.ElementSource, timings: just.IAnimationEffectTiming) 
+                => self.animate(animationOptions.name, el, animationOptions.timings);
+            self._registry[animationOptions.name] = animationOptions as just.IAnimationOptions;
         }
         
         return self;

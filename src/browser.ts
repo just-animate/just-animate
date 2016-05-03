@@ -1,5 +1,5 @@
-declare var global;
-declare var angular;
+declare var window: any;
+declare var angular: any;
 
 import {AnimationManager} from './AnimationManager';
 import {IAnimationOptions} from './interfaces/IAnimationOptions';
@@ -18,6 +18,4 @@ if (typeof angular !== 'undefined') {
 }
 
 // add animation properties to global Just
-// add animation properties to global Just
-const root = (window || global) as any;
-root.Just = animationManager;
+window.Just = animationManager;

@@ -49,7 +49,7 @@
             var button = document.getElementById('animate-button');
 
             button.addEventListener('click', function() {
-                var player = Just.bounceIn('.badger');  
+                var player = Just.animate('bounceIn', '.badger');  
                 
                 setTimeout(function(){ 
                     player.reverse(); 

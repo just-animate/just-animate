@@ -62,7 +62,7 @@ export class SequenceAnimator implements just.IAnimator {
             return {
                 el: step.el,
                 keyframes: definition.keyframes,
-                timings: timings
+                timings: definition.timings
             };
         });
 

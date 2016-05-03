@@ -5,9 +5,10 @@ export default {
     entry: 'src/browser.ts',
     dest: 'dist/just-animate.js',
     format: 'iife',
+    moduleName: 'Just',
     plugins: [
         typescript({
-            "target": "es6",
+            "target": "es5",
             "rootDir": "src",
             "module": "es2015",
             "preserveConstEnums": false,

@@ -1,8 +1,8 @@
 (function () {
     'use strict';
 
-    const ostring = Object.prototype.toString;
-    const slice = Array.prototype.slice;
+    var ostring = Object.prototype.toString;
+    var slice = Array.prototype.slice;
     function noop() {
     }
     function head(indexed) {
@@ -24,14 +24,14 @@
         return slice.call(indexed, 0);
     }
     function each(items, fn) {
-        for (let i = 0, len = items.length; i < len; i++) {
+        for (var i = 0, len = items.length; i < len; i++) {
             fn(items[i]);
         }
     }
     function max(items, propertyName) {
-        let max = '';
-        for (let i = 0, len = items.length; i < len; i++) {
-            const prop = items[i][propertyName];
+        var max = '';
+        for (var i = 0, len = items.length; i < len; i++) {
+            var prop = items[i][propertyName];
             if (max < prop) {
                 max = prop;
             }
@@ -39,31 +39,35 @@
         return max;
     }
     function map(items, fn) {
-        const results = [];
-        for (let i = 0, len = items.length; i < len; i++) {
-            const result = fn(items[i]);
+        var results = [];
+        for (var i = 0, len = items.length; i < len; i++) {
+            var result = fn(items[i]);
             if (result !== undefined) {
                 results.push(result);
             }
         }
         return results;
     }
-    function extend(target, ...sources) {
-        for (let i = 1, len = arguments.length; i < len; i++) {
-            const source = arguments[i];
-            for (let propName in source) {
+    function extend(target) {
+        var sources = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            sources[_i - 1] = arguments[_i];
+        }
+        for (var i = 1, len = arguments.length; i < len; i++) {
+            var source = arguments[i];
+            for (var propName in source) {
                 target[propName] = source[propName];
             }
         }
         return target;
     }
     function multiapply(targets, fnName, args, cb) {
-        const errors = [];
-        const results = [];
-        for (let i = 0, len = targets.length; i < len; i++) {
+        var errors = [];
+        var results = [];
+        for (var i = 0, len = targets.length; i < len; i++) {
             try {
-                const target = targets[i];
-                let result;
+                var target = targets[i];
+                var result = void 0;
                 if (fnName) {
                     result = target[fnName].apply(target, args);
                 }
@@ -84,7 +88,7 @@
         return results;
     }
 
-    const easings = {
+    var easings = {
         'easeInCubic': 'cubic-bezier(0.550, 0.055, 0.675, 0.190)',
         'easeOutCubic': 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
         'easeInOutCubic': 'cubic-bezier(0.645, 0.045, 0.355, 1.000)',
@@ -112,14 +116,15 @@
         'elegantSlowStartEnd': 'cubic-bezier(0.175, 0.885, 0.320, 1.275)'
     };
 
-    class ElementAnimator {
-        constructor(manager, keyframesOrName, el, timings) {
+    var ElementAnimator = (function () {
+        function ElementAnimator(manager, keyframesOrName, el, timings) {
+            var _this = this;
             if (!keyframesOrName) {
                 return;
             }
-            let keyframes;
+            var keyframes;
             if (isString(keyframesOrName)) {
-                const definition = manager.findAnimation(keyframesOrName);
+                var definition = manager.findAnimation(keyframesOrName);
                 keyframes = definition.keyframes;
                 timings = extend({}, definition.timings, timings);
             }
@@ -127,109 +132,119 @@
                 keyframes = keyframesOrName;
             }
             if (timings && timings.easing) {
-                const easing = easings[timings.easing];
+                var easing = easings[timings.easing];
                 if (easing) {
                     timings.easing = easing;
                 }
             }
             this.duration = timings.duration;
-            const elements = getElements(el);
+            var elements = getElements(el);
             this._animators = multiapply(elements, 'animate', [keyframes, timings]);
             if (this._animators.length > 0) {
-                this._animators[0].onfinish = () => {
-                    this.finish();
+                this._animators[0].onfinish = function () {
+                    _this.finish();
                 };
             }
         }
-        get playbackRate() {
-            const first = head(this._animators);
-            return first ? first.playbackRate : 0;
-        }
-        set playbackRate(val) {
-            each(this._animators, (a) => a.playbackRate = val);
-        }
-        get currentTime() {
-            return max(this._animators, 'currentTime') || 0;
-        }
-        set currentTime(elapsed) {
-            each(this._animators, (a) => a.currentTime = elapsed);
-        }
-        finish(fn) {
+        Object.defineProperty(ElementAnimator.prototype, "playbackRate", {
+            get: function () {
+                var first = head(this._animators);
+                return first ? first.playbackRate : 0;
+            },
+            set: function (val) {
+                each(this._animators, function (a) { return a.playbackRate = val; });
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ElementAnimator.prototype, "currentTime", {
+            get: function () {
+                return max(this._animators, 'currentTime') || 0;
+            },
+            set: function (elapsed) {
+                each(this._animators, function (a) { return a.currentTime = elapsed; });
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ElementAnimator.prototype.finish = function (fn) {
+            var _this = this;
             multiapply(this._animators, 'finish', [], fn);
             if (this.playbackRate < 0) {
-                each(this._animators, (a) => a.currentTime = 0);
+                each(this._animators, function (a) { return a.currentTime = 0; });
             }
             else {
-                each(this._animators, (a) => a.currentTime = this.duration);
+                each(this._animators, function (a) { return a.currentTime = _this.duration; });
             }
             if (isFunction(this.onfinish)) {
                 this.onfinish(this);
             }
             return this;
-        }
-        play(fn) {
+        };
+        ElementAnimator.prototype.play = function (fn) {
             multiapply(this._animators, 'play', [], fn);
             return this;
-        }
-        pause(fn) {
+        };
+        ElementAnimator.prototype.pause = function (fn) {
             multiapply(this._animators, 'pause', [], fn);
             return this;
-        }
-        reverse(fn) {
+        };
+        ElementAnimator.prototype.reverse = function (fn) {
             multiapply(this._animators, 'reverse', [], fn);
             return this;
-        }
-        cancel(fn) {
+        };
+        ElementAnimator.prototype.cancel = function (fn) {
             multiapply(this._animators, 'cancel', [], fn);
-            each(this._animators, (a) => a.currentTime = 0);
+            each(this._animators, function (a) { return a.currentTime = 0; });
             if (isFunction(this.oncancel)) {
                 this.oncancel(this);
             }
             return this;
-        }
-    }
+        };
+        return ElementAnimator;
+    }());
     function getElements(source) {
         if (!source) {
             throw Error('source is undefined');
         }
         if (isString(source)) {
-            const nodeResults = document.querySelectorAll(source);
+            var nodeResults = document.querySelectorAll(source);
             return toArray(nodeResults);
         }
         if (source instanceof Element) {
             return [source];
         }
         if (isFunction(source)) {
-            const provider = source;
-            const result = provider();
+            var provider = source;
+            var result = provider();
             return getElements(result);
         }
         if (isArray(source)) {
-            const elements = [];
-            each(source, (i) => {
-                const innerElements = getElements(i);
-                elements.push.apply(elements, innerElements);
+            var elements_1 = [];
+            each(source, function (i) {
+                var innerElements = getElements(i);
+                elements_1.push.apply(elements_1, innerElements);
             });
-            return elements;
+            return elements_1;
         }
         return [];
     }
 
-    class SequenceAnimator {
-        constructor(manager, options) {
-            const steps = map(options.steps, (step) => {
+    var SequenceAnimator = (function () {
+        function SequenceAnimator(manager, options) {
+            var steps = map(options.steps, function (step) {
                 if (step.command || !step.name) {
                     return step;
                 }
-                const definition = manager.findAnimation(step.name);
-                let timings = extend({}, definition.timings);
+                var definition = manager.findAnimation(step.name);
+                var timings = extend({}, definition.timings);
                 if (step.timings) {
                     timings = extend(timings, step.timings);
                 }
                 return {
                     el: step.el,
                     keyframes: definition.keyframes,
-                    timings: timings
+                    timings: definition.timings
                 };
             });
             this.onfinish = noop;
@@ -240,42 +255,50 @@
                 this.play();
             }
         }
-        get currentTime() {
-            const currentIndex = this._currentIndex;
-            const len = this._steps.length;
-            if (currentIndex === -1 || currentIndex === len) {
-                return 0;
-            }
-            const isReversed = this.playbackRate === -1;
-            let beforeTime = 0;
-            let afterTime = 0;
-            let currentTime;
-            for (let i = 0; i < len; i++) {
-                const step = this._steps[i];
-                if (i < currentIndex) {
-                    beforeTime += step.timings.duration;
-                    continue;
+        Object.defineProperty(SequenceAnimator.prototype, "currentTime", {
+            get: function () {
+                var currentIndex = this._currentIndex;
+                var len = this._steps.length;
+                if (currentIndex === -1 || currentIndex === len) {
+                    return 0;
                 }
-                if (i > currentIndex) {
-                    afterTime += step.timings.duration;
-                    continue;
+                var isReversed = this.playbackRate === -1;
+                var beforeTime = 0;
+                var afterTime = 0;
+                var currentTime;
+                for (var i = 0; i < len; i++) {
+                    var step = this._steps[i];
+                    if (i < currentIndex) {
+                        beforeTime += step.timings.duration;
+                        continue;
+                    }
+                    if (i > currentIndex) {
+                        afterTime += step.timings.duration;
+                        continue;
+                    }
+                    if (isReversed) {
+                        currentTime = this.duration - step.animator.currentTime;
+                        continue;
+                    }
+                    currentTime = step.animator.currentTime;
                 }
-                if (isReversed) {
-                    currentTime = this.duration - step.animator.currentTime;
-                    continue;
-                }
-                currentTime = step.animator.currentTime;
-            }
-            return currentTime + (isReversed ? afterTime : beforeTime);
-        }
-        get duration() {
-            return this._steps.reduce((c, n) => c + (n.timings.duration || 0), 0);
-        }
-        finish(fn) {
+                return currentTime + (isReversed ? afterTime : beforeTime);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(SequenceAnimator.prototype, "duration", {
+            get: function () {
+                return this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        SequenceAnimator.prototype.finish = function (fn) {
             this._errorCallback = fn;
             this._currentIndex = -1;
-            for (let x = 0; x < this._steps.length; x++) {
-                const step = this._steps[x];
+            for (var x = 0; x < this._steps.length; x++) {
+                var step = this._steps[x];
                 if (step.animator !== undefined) {
                     step.animator.cancel(fn);
                 }
@@ -284,34 +307,34 @@
                 this.onfinish(this);
             }
             return this;
-        }
-        play(fn) {
+        };
+        SequenceAnimator.prototype.play = function (fn) {
             this._errorCallback = fn;
             this.playbackRate = 1;
             this._playThisStep();
             return this;
-        }
-        pause(fn) {
+        };
+        SequenceAnimator.prototype.pause = function (fn) {
             this._errorCallback = fn;
             if (!this._isInEffect()) {
                 return this;
             }
-            const animator = this._getAnimator();
+            var animator = this._getAnimator();
             animator.pause(fn);
             return this;
-        }
-        reverse(fn) {
+        };
+        SequenceAnimator.prototype.reverse = function (fn) {
             this._errorCallback = fn;
             this.playbackRate = -1;
             this._playThisStep();
             return this;
-        }
-        cancel(fn) {
+        };
+        SequenceAnimator.prototype.cancel = function (fn) {
             this._errorCallback = fn;
             this.playbackRate = undefined;
             this._currentIndex = -1;
-            for (let x = 0; x < this._steps.length; x++) {
-                const step = this._steps[x];
+            for (var x = 0; x < this._steps.length; x++) {
+                var step = this._steps[x];
                 if (step.animator !== undefined) {
                     step.animator.cancel(fn);
                 }
@@ -320,19 +343,19 @@
                 this.oncancel(this);
             }
             return this;
-        }
-        _isInEffect() {
+        };
+        SequenceAnimator.prototype._isInEffect = function () {
             return this._currentIndex > -1 && this._currentIndex < this._steps.length;
-        }
-        _getAnimator() {
-            const it = this._steps[this._currentIndex];
+        };
+        SequenceAnimator.prototype._getAnimator = function () {
+            var it = this._steps[this._currentIndex];
             if (it.animator) {
                 return it.animator;
             }
             it.animator = this._manager.animate(it.keyframes, it.el, it.timings);
             return it.animator;
-        }
-        _playNextStep(evt) {
+        };
+        SequenceAnimator.prototype._playNextStep = function (evt) {
             if (this.playbackRate === -1) {
                 this._currentIndex--;
             }
@@ -345,8 +368,9 @@
             else {
                 this.onfinish(evt);
             }
-        }
-        _playThisStep() {
+        };
+        SequenceAnimator.prototype._playThisStep = function () {
+            var _this = this;
             if (!this._isInEffect()) {
                 if (this.playbackRate === -1) {
                     this._currentIndex = this._steps.length - 1;
@@ -355,25 +379,26 @@
                     this._currentIndex = 0;
                 }
             }
-            const animator = this._getAnimator();
-            animator.onfinish = (evt) => {
-                this._playNextStep(evt);
+            var animator = this._getAnimator();
+            animator.onfinish = function (evt) {
+                _this._playNextStep(evt);
             };
             animator.play(this._errorCallback);
-        }
-    }
+        };
+        return SequenceAnimator;
+    }());
 
-    const animationPadding = 1.0 / 30;
-    class TimelineAnimator {
-        constructor(manager, options) {
-            const duration = options.duration;
+    var animationPadding = 1.0 / 30;
+    var TimelineAnimator = (function () {
+        function TimelineAnimator(manager, options) {
+            var duration = options.duration;
             if (duration === undefined) {
                 throw Error('Duration is required');
             }
             this.playbackRate = 0;
             this.duration = options.duration;
             this.currentTime = 0;
-            this._events = map(options.events, (evt) => new TimelineEvent(manager, duration, evt));
+            this._events = map(options.events, function (evt) { return new TimelineEvent(manager, duration, evt); });
             this._isPaused = false;
             this._manager = manager;
             this._tick = this._tick.bind(this);
@@ -381,11 +406,11 @@
                 this.play();
             }
         }
-        finish(fn) {
+        TimelineAnimator.prototype.finish = function (fn) {
             this._isFinished = true;
             return this;
-        }
-        play(fn) {
+        };
+        TimelineAnimator.prototype.play = function (fn) {
             this.playbackRate = 1;
             this._isPaused = false;
             if (this._isInEffect) {
@@ -399,14 +424,14 @@
             }
             window.requestAnimationFrame(this._tick);
             return this;
-        }
-        pause(fn) {
+        };
+        TimelineAnimator.prototype.pause = function (fn) {
             if (this._isInEffect) {
                 this._isPaused = true;
             }
             return this;
-        }
-        reverse(fn) {
+        };
+        TimelineAnimator.prototype.reverse = function (fn) {
             this.playbackRate = -1;
             this._isPaused = false;
             if (this._isInEffect) {
@@ -417,13 +442,14 @@
             }
             window.requestAnimationFrame(this._tick);
             return this;
-        }
-        cancel(fn) {
+        };
+        TimelineAnimator.prototype.cancel = function (fn) {
             this.playbackRate = 0;
             this._isCanceled = true;
             return this;
-        }
-        _tick() {
+        };
+        TimelineAnimator.prototype._tick = function () {
+            var _this = this;
             if (this._isCanceled) {
                 this._triggerCancel();
                 return;
@@ -439,10 +465,10 @@
             if (!this._isInEffect) {
                 this._isInEffect = true;
             }
-            const thisTick = performance.now();
-            const lastTick = this._lastTick;
+            var thisTick = performance.now();
+            var lastTick = this._lastTick;
             if (lastTick !== undefined) {
-                const delta = (thisTick - lastTick) * this.playbackRate;
+                var delta = (thisTick - lastTick) * this.playbackRate;
                 this.currentTime += delta;
             }
             this._lastTick = thisTick;
@@ -450,64 +476,65 @@
                 this._triggerFinish();
                 return;
             }
-            each(this._events, (evt) => {
-                const startTimeMs = this.playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
-                const endTimeMs = this.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-                const shouldBeActive = startTimeMs <= this.currentTime && this.currentTime < endTimeMs;
+            each(this._events, function (evt) {
+                var startTimeMs = _this.playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+                var endTimeMs = _this.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+                var shouldBeActive = startTimeMs <= _this.currentTime && _this.currentTime < endTimeMs;
                 if (!shouldBeActive) {
                     evt.isInEffect = false;
                     return;
                 }
-                evt.animator.playbackRate = this.playbackRate;
+                evt.animator.playbackRate = _this.playbackRate;
                 evt.isInEffect = true;
                 evt.animator.play();
             });
             window.requestAnimationFrame(this._tick);
-        }
-        _triggerFinish() {
+        };
+        TimelineAnimator.prototype._triggerFinish = function () {
             this._reset();
-            each(this._events, (evt) => evt.animator.finish());
+            each(this._events, function (evt) { return evt.animator.finish(); });
             if (isFunction(this.onfinish)) {
                 this.onfinish(this);
             }
-        }
-        _triggerCancel() {
+        };
+        TimelineAnimator.prototype._triggerCancel = function () {
             this._reset();
-            each(this._events, (evt) => evt.animator.cancel());
+            each(this._events, function (evt) { return evt.animator.cancel(); });
             if (isFunction(this.oncancel)) {
                 this.oncancel(this);
             }
-        }
-        _triggerPause() {
+        };
+        TimelineAnimator.prototype._triggerPause = function () {
             this._isPaused = true;
             this._isInEffect = false;
             this._lastTick = undefined;
             this.playbackRate = 0;
-            each(this._events, evt => {
+            each(this._events, function (evt) {
                 evt.isInEffect = false;
                 evt.animator.pause();
             });
-        }
-        _reset() {
+        };
+        TimelineAnimator.prototype._reset = function () {
             this.currentTime = 0;
             this._lastTick = undefined;
             this._isCanceled = false;
             this._isFinished = false;
             this._isPaused = false;
             this._isInEffect = false;
-            each(this._events, evt => {
+            each(this._events, function (evt) {
                 evt.isInEffect = false;
             });
-        }
-    }
-    class TimelineEvent {
-        constructor(manager, timelineDuration, evt) {
-            let keyframes;
-            let timings;
-            let el;
+        };
+        return TimelineAnimator;
+    }());
+    var TimelineEvent = (function () {
+        function TimelineEvent(manager, timelineDuration, evt) {
+            var keyframes;
+            var timings;
+            var el;
             if (evt.name) {
-                const definition = manager.findAnimation(evt.name);
-                let timings2 = extend({}, definition.timings);
+                var definition = manager.findAnimation(evt.name);
+                var timings2 = extend({}, definition.timings);
                 if (evt.timings) {
                     timings = extend(timings2, evt.timings);
                 }
@@ -520,9 +547,9 @@
                 timings = evt.timings;
                 el = evt.el;
             }
-            const startTime = timelineDuration * evt.offset;
-            let endTime = startTime + timings.duration;
-            const isClipped = endTime > timelineDuration;
+            var startTime = timelineDuration * evt.offset;
+            var endTime = startTime + timings.duration;
+            var isClipped = endTime > timelineDuration;
             if (isClipped) {
                 endTime = timelineDuration;
             }
@@ -536,134 +563,1915 @@
             this.timings = timings;
             this._manager = manager;
         }
-        get animator() {
-            if (this._animator === undefined) {
-                this._animator = this._manager.animate(this.keyframes, this.el, this.timings);
-                this._animator.pause();
-            }
-            return this._animator;
-        }
-    }
+        Object.defineProperty(TimelineEvent.prototype, "animator", {
+            get: function () {
+                if (this._animator === undefined) {
+                    this._animator = this._manager.animate(this.keyframes, this.el, this.timings);
+                    this._animator.pause();
+                }
+                return this._animator;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return TimelineEvent;
+    }());
 
-    class AnimationManager {
-        constructor() {
+    var AnimationManager = (function () {
+        function AnimationManager() {
             this._registry = {};
             this._timings = {
                 duration: 1000,
                 fill: 'both'
             };
         }
-        animate(keyframesOrName, el, timings) {
+        AnimationManager.prototype.animate = function (keyframesOrName, el, timings) {
             return new ElementAnimator(this, keyframesOrName, el, timings);
-        }
-        animateSequence(options) {
+        };
+        AnimationManager.prototype.animateSequence = function (options) {
             return new SequenceAnimator(this, options);
-        }
-        animateTimeline(options) {
+        };
+        AnimationManager.prototype.animateTimeline = function (options) {
             return new TimelineAnimator(this, options);
-        }
-        configure(timings) {
+        };
+        AnimationManager.prototype.configure = function (timings) {
             if (timings) {
                 extend(this._timings, timings);
             }
             return this;
-        }
-        findAnimation(name) {
+        };
+        AnimationManager.prototype.findAnimation = function (name) {
             return this._registry[name] || undefined;
-        }
-        register(animationOptions) {
-            const self = this;
-            const registerAnimation = (it) => {
-                self[name] = (el, timings) => self.animate(name, el, timings);
-                self._registry[name] = it;
+        };
+        AnimationManager.prototype.register = function (animationOptions) {
+            var self = this;
+            var registerAnimation = function (it) {
+                self[name] = function (el, timings) { return self.animate(it.name, el, it.timings); };
+                self._registry[it.name] = it;
             };
             if (isArray(animationOptions)) {
                 each(animationOptions, registerAnimation);
             }
             else {
-                self[name] = (el, timings) => self.animate(name, el, timings);
-                self._registry[name] = animationOptions;
+                self[name] = function (el, timings) {
+                    return self.animate(animationOptions.name, el, animationOptions.timings);
+                };
+                self._registry[animationOptions.name] = animationOptions;
             }
             return self;
-        }
-    }
+        };
+        return AnimationManager;
+    }());
 
-    var bounce = require('./animations/bounce.json');
-    var bounceIn = require('./animations/bounceIn.json');
-    var bounceInDown = require('./animations/bounceInDown.json');
-    var bounceInLeft = require('./animations/bounceInLeft.json');
-    var bounceInRight = require('./animations/bounceInRight.json');
-    var bounceInUp = require('./animations/bounceInUp.json');
-    var bounceOut = require('./animations/bounceOut.json');
-    var bounceOutDown = require('./animations/bounceOutDown.json');
-    var bounceOutLeft = require('./animations/bounceOutLeft.json');
-    var bounceOutRight = require('./animations/bounceOutRight.json');
-    var bounceOutUp = require('./animations/bounceOutUp.json');
-    var fadeIn = require('./animations/fadeIn.json');
-    var fadeInDown = require('./animations/fadeInDown.json');
-    var fadeInDownBig = require('./animations/fadeInDownBig.json');
-    var fadeInLeft = require('./animations/fadeInLeft.json');
-    var fadeInLeftBig = require('./animations/fadeInLeftBig.json');
-    var fadeInRight = require('./animations/fadeInRight.json');
-    var fadeInRightBig = require('./animations/fadeInRightBig.json');
-    var fadeInUp = require('./animations/fadeInUp.json');
-    var fadeInUpBig = require('./animations/fadeInUpBig.json');
-    var fadeOut = require('./animations/fadeOut.json');
-    var fadeOutDown = require('./animations/fadeOutDown.json');
-    var fadeOutDownBig = require('./animations/fadeOutDownBig.json');
-    var fadeOutLeft = require('./animations/fadeOutLeft.json');
-    var fadeOutLeftBig = require('./animations/fadeOutLeftBig.json');
-    var fadeOutRight = require('./animations/fadeOutRight.json');
-    var fadeOutRightBig = require('./animations/fadeOutRightBig.json');
-    var fadeOutUp = require('./animations/fadeOutUp.json');
-    var fadeOutUpBig = require('./animations/fadeOutUpBig.json');
-    var flash = require('./animations/flash.json');
-    var flip = require('./animations/flip.json');
-    var flipInX = require('./animations/flipInX.json');
-    var flipInY = require('./animations/flipInY.json');
-    var flipOutX = require('./animations/flipOutX.json');
-    var flipOutY = require('./animations/flipOutY.json');
-    var headShake = require('./animations/headShake.json');
-    var hinge = require('./animations/hinge.json');
-    var jello = require('./animations/jello.json');
-    var lightSpeedIn = require('./animations/lightSpeedIn.json');
-    var lightSpeedOut = require('./animations/lightSpeedOut.json');
-    var pulse = require('./animations/pulse.json');
-    var rollIn = require('./animations/rollIn.json');
-    var rollOut = require('./animations/rollOut.json');
-    var rotateIn = require('./animations/rotateIn.json');
-    var rotateInDownLeft = require('./animations/rotateInDownLeft.json');
-    var rotateInDownRight = require('./animations/rotateInDownRight.json');
-    var rotateInUpLeft = require('./animations/rotateInUpLeft.json');
-    var rotateInUpRight = require('./animations/rotateInUpRight.json');
-    var rotateOut = require('./animations/rotateOut.json');
-    var rotateOutDownLeft = require('./animations/rotateOutDownLeft.json');
-    var rotateOutDownRight = require('./animations/rotateOutDownRight.json');
-    var rotateOutUpLeft = require('./animations/rotateOutUpLeft.json');
-    var rotateOutUpRight = require('./animations/rotateOutUpRight.json');
-    var rubberBand = require('./animations/rubberBand.json');
-    var shake = require('./animations/shake.json');
-    var slideInDown = require('./animations/slideInDown.json');
-    var slideInLeft = require('./animations/slideInLeft.json');
-    var slideInRight = require('./animations/slideInRight.json');
-    var slideInUp = require('./animations/slideInUp.json');
-    var slideOutDown = require('./animations/slideOutDown.json');
-    var slideOutLeft = require('./animations/slideOutLeft.json');
-    var slideOutRight = require('./animations/slideOutRight.json');
-    var slideOutUp = require('./animations/slideOutUp.json');
-    var swing = require('./animations/swing.json');
-    var tada = require('./animations/tada.json');
-    var wobble = require('./animations/wobble.json');
-    var zoomIn = require('./animations/zoomIn.json');
-    var zoomInDown = require('./animations/zoomInDown.json');
-    var zoomInLeft = require('./animations/zoomInLeft.json');
-    var zoomInRight = require('./animations/zoomInRight.json');
-    var zoomInUp = require('./animations/zoomInUp.json');
-    var zoomOut = require('./animations/zoomOut.json');
-    var zoomOutDown = require('./animations/zoomOutDown.json');
-    var zoomOutLeft = require('./animations/zoomOutLeft.json');
-    var zoomOutRight = require('./animations/zoomOutRight.json');
-    var zoomOutUp = require('./animations/zoomOutUp.json');
+    var bounce = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'translate3d(0, 0, 0)'
+            },
+            {
+                'offset': 0.2,
+                'transform': 'translate3d(0, 0, 0)'
+            },
+            {
+                'offset': 0.4,
+                'transform': 'translate3d(0, -30px, 0)'
+            },
+            {
+                'offset': 0.43,
+                'transform': 'translate3d(0, -30px, 0)'
+            },
+            {
+                'offset': 0.53,
+                'transform': 'translate3d(0, 0, 0)'
+            },
+            {
+                'offset': 0.7,
+                'transform': 'translate3d(0, -15px, 0)'
+            },
+            {
+                'offset': 0.8,
+                'transform': 'translate3d(0, 0, 0)'
+            },
+            {
+                'offset': 0.9,
+                'transform': 'translate3d(0, -4px, 0)'
+            },
+            {
+                'offset': 1,
+                'transform': 'translate3d(0, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both',
+            'easing': 'easeOutCubic'
+        },
+        'name': 'bounce'
+    };
+
+    var bounceIn = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'scale3d(.3, .3, .3)'
+            },
+            {
+                'transform': 'scale3d(1.1, 1.1, 1.1)'
+            },
+            {
+                'transform': 'scale3d(.9, .9, .9)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'scale3d(1.03, 1.03, 1.03)'
+            },
+            {
+                'transform': 'scale3d(.97, .97, .97)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'scale3d(1, 1, 1)'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both',
+            'easing': 'easeOutCubic'
+        },
+        'name': 'bounceIn'
+    };
+
+    var bounceInDown = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'easing': 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
+                'opacity': 0,
+                'transform': 'translate3d(0, -3000px, 0)'
+            },
+            {
+                'offset': 0.6,
+                'easing': 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
+                'opacity': 1,
+                'transform': 'translate3d(0, 25px, 0)'
+            },
+            {
+                'offset': 0.75,
+                'easing': 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
+                'opacity': 1,
+                'transform': 'translate3d(0, -10px, 0)'
+            },
+            {
+                'offset': 0.9,
+                'easing': 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
+                'opacity': 1,
+                'transform': 'translate3d(0, 5px, 0)'
+            },
+            {
+                'offset': 1,
+                'easing': 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both',
+            'easing': 'easeOutCubic'
+        },
+        'name': 'bounceInDown'
+    };
+
+    var bounceInLeft = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 0,
+                'transform': 'translate3d(-3000px, 0, 0)'
+            },
+            {
+                'offset': 0.6,
+                'opacity': 1,
+                'transform': 'translate3d(25px, 0, 0)'
+            },
+            {
+                'offset': 0.75,
+                'opacity': 1,
+                'transform': 'translate3d(-10px, 0, 0)'
+            },
+            {
+                'offset': 0.9,
+                'opacity': 1,
+                'transform': 'translate3d(5px, 0, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both',
+            'easing': 'easeOutCubic'
+        },
+        'name': 'bounceInLeft'
+    };
+
+    var bounceInRight = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 0,
+                'transform': 'translate3d(3000px, 0, 0)'
+            },
+            {
+                'offset': 0.6,
+                'opacity': 1,
+                'transform': 'translate3d(-25px, 0, 0)'
+            },
+            {
+                'offset': 0.75,
+                'transform': 'translate3d(10px, 0, 0)'
+            },
+            {
+                'offset': 0.9,
+                'transform': 'translate3d(-5px, 0, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both',
+            'easing': 'easeOutCubic'
+        },
+        'name': 'bounceInRight'
+    };
+
+    var bounceInUp = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 0,
+                'transform': 'translate3d(0, 3000px, 0)'
+            },
+            {
+                'offset': 0.6,
+                'opacity': 1,
+                'transform': 'translate3d(0, -20px, 0)'
+            },
+            {
+                'offset': 0.75,
+                'opacity': 1,
+                'transform': 'translate3d(0, 10px, 0)'
+            },
+            {
+                'offset': 0.9,
+                'opacity': 1,
+                'transform': 'translate3d(0, -5px, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 1,
+                'transform': 'translate3d(0, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both',
+            'easing': 'easeOutCubic'
+        },
+        'name': 'bounceInUp'
+    };
+
+    var bounceOut = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'offset': 0.2,
+                'transform': 'scale3d(.9, .9, .9)'
+            },
+            {
+                'offset': 0.5,
+                'opacity': 1,
+                'transform': 'scale3d(1.1, 1.1, 1.1)'
+            },
+            {
+                'offset': 0.55,
+                'opacity': 1,
+                'transform': 'scale3d(1.1, 1.1, 1.1)'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'scale3d(.3, .3, .3)'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both'
+        },
+        'name': 'bounceOut'
+    };
+
+    var bounceOutDown = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'offset': 0.2,
+                'transform': 'translate3d(0, 10px, 0)'
+            },
+            {
+                'offset': 0.4,
+                'opacity': 1,
+                'transform': 'translate3d(0, -20px, 0)'
+            },
+            {
+                'offset': 0.45,
+                'opacity': 1,
+                'transform': 'translate3d(0, -20px, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'translate3d(0, 2000px, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both'
+        },
+        'name': 'bounceOutDown'
+    };
+
+    var bounceOutLeft = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'offset': 0.2,
+                'opacity': 1,
+                'transform': 'translate3d(20px, 0, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'translate3d(-2000px, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both'
+        },
+        'name': 'bounceOutLeft'
+    };
+
+    var bounceOutRight = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'offset': 0.2,
+                'opacity': 1,
+                'transform': 'translate3d(-20px, 0, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'translate3d(2000px, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both'
+        },
+        'name': 'bounceOutRight'
+    };
+
+    var bounceOutUp = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'offset': 0.2,
+                'opacity': 1,
+                'transform': 'translate3d(0, -10px, 0)'
+            },
+            {
+                'offset': 0.4,
+                'opacity': 1,
+                'transform': 'translate3d(0, 20px, 0)'
+            },
+            {
+                'offset': 0.45,
+                'opacity': 1,
+                'transform': 'translate3d(0, 20px, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'translate3d(0, -2000px, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 900,
+            'fill': 'both'
+        },
+        'name': 'bounceOutUp'
+    };
+
+    var fadeIn = {
+        'keyframes': [
+            {
+                'opacity': 0
+            },
+            {
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 650,
+            'fill': 'both',
+            'easing': 'ease-in'
+        },
+        'name': 'fadeIn'
+    };
+
+    var fadeInDown = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(0, -100%, 0)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 650,
+            'fill': 'both'
+        },
+        'name': 'fadeInDown'
+    };
+
+    var fadeInDownBig = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(0, -2000px, 0)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1300,
+            'fill': 'both'
+        },
+        'name': 'fadeInDownBig'
+    };
+
+    var fadeInLeft = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(-100%, 0, 0)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 650,
+            'fill': 'both'
+        },
+        'name': 'fadeInLeft'
+    };
+
+    var fadeInLeftBig = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(-2000px, 0, 0)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1300,
+            'fill': 'both'
+        },
+        'name': 'fadeInLeftBig'
+    };
+
+    var fadeInRight = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(100%, 0, 0)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 650,
+            'fill': 'both'
+        },
+        'name': 'fadeInRight'
+    };
+
+    var fadeInRightBig = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(2000px, 0, 0)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1300,
+            'fill': 'both'
+        },
+        'name': 'fadeInRightBig'
+    };
+
+    var fadeInUp = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(0, 100%, 0)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 650,
+            'fill': 'both'
+        },
+        'name': 'fadeInUp'
+    };
+
+    var fadeInUpBig = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(0, 2000px, 0)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1300,
+            'fill': 'both'
+        },
+        'name': 'fadeInUpBig'
+    };
+
+    var fadeOut = {
+        'keyframes': [
+            {
+                'opacity': 1
+            },
+            {
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 650,
+            'fill': 'both'
+        },
+        'name': 'fadeOut'
+    };
+
+    var fadeOutDown = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(0, 100%, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 650
+        },
+        'name': 'fadeOutDown'
+    };
+
+    var fadeOutDownBig = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(0, 2000px, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1300
+        },
+        'name': 'fadeOutDownBig'
+    };
+
+    var fadeOutLeft = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(-100%, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 650
+        },
+        'name': 'fadeOutLeft'
+    };
+
+    var fadeOutLeftBig = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(-2000px, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1300
+        },
+        'name': 'fadeOutLeftBig'
+    };
+
+    var fadeOutRight = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(100%, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 650
+        },
+        'name': 'fadeOutRight'
+    };
+
+    var fadeOutRightBig = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(2000px, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1300
+        },
+        'name': 'fadeOutRightBig'
+    };
+
+    var fadeOutUp = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(0, -100%, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 650
+        },
+        'name': 'fadeOutUp'
+    };
+
+    var fadeOutUpBig = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(0, -2000px, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1300
+        },
+        'name': 'fadeOutUpBig'
+    };
+
+    var flash = {
+        'keyframes': [
+            {
+                'opacity': 1
+            },
+            {
+                'opacity': 0
+            },
+            {
+                'opacity': 1
+            },
+            {
+                'opacity': 0
+            },
+            {
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'flash'
+    };
+
+    var flip = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'perspective(400px) rotate3d(0, 1, 0, -360deg)'
+            },
+            {
+                'offset': 0.4,
+                'transform': 'perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg)'
+            },
+            {
+                'offset': 0.5,
+                'transform': 'perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg)'
+            },
+            {
+                'offset': 0.8,
+                'transform': 'perspective(400px) scale3d(.95, .95, .95)'
+            },
+            {
+                'offset': 1,
+                'transform': 'perspective(400px)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'flip'
+    };
+
+    var flipInX = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'perspective(400px) rotate3d(1, 0, 0, 90deg)',
+                'easing': 'ease-in ',
+                'opacity': 0
+            },
+            {
+                'offset': 0.4,
+                'transform': 'perspective(400px) rotate3d(1, 0, 0, -20deg)',
+                'easing': 'ease-in '
+            },
+            {
+                'offset': 0.6,
+                'transform': 'perspective(400px) rotate3d(1, 0, 0, 10deg)',
+                'opacity': 1
+            },
+            {
+                'offset': 0.8,
+                'transform': 'perspective(400px) rotate3d(1, 0, 0, -5deg)'
+            },
+            {
+                'offset': 1,
+                'opacity': 1,
+                'transform': 'perspective(400px)'
+            }
+        ],
+        'timings': {
+            'duration': 750
+        },
+        'name': 'flipInX'
+    };
+
+    var flipInY = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'perspective(400px) rotate3d(0, 1, 0, 90deg)',
+                'opacity': 0
+            },
+            {
+                'offset': 0.4,
+                'transform': 'perspective(400px) rotate3d(0, 1, 0, -20deg)'
+            },
+            {
+                'offset': 0.6,
+                'transform': 'perspective(400px) rotate3d(0, 1, 0, 10deg)',
+                'opacity': 1
+            },
+            {
+                'offset': 0.8,
+                'transform': 'perspective(400px) rotate3d(0, 1, 0, -5deg)'
+            },
+            {
+                'offset': 1,
+                'transform': 'perspective(400px)',
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 750
+        },
+        'name': 'flipInY'
+    };
+
+    var flipOutX = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'perspective(400px)',
+                'opacity': 1
+            },
+            {
+                'offset': 0.3,
+                'transform': 'perspective(400px) rotate3d(1, 0, 0, -20deg)',
+                'opacity': 1
+            },
+            {
+                'offset': 1,
+                'transform': 'perspective(400px) rotate3d(1, 0, 0, 90deg)',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 750
+        },
+        'name': 'flipOutX'
+    };
+
+    var flipOutY = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'perspective(400px)',
+                'opacity': 1
+            },
+            {
+                'offset': 0.3,
+                'transform': 'perspective(400px) rotate3d(0, 1, 0, -15deg)',
+                'opacity': 1
+            },
+            {
+                'offset': 1,
+                'transform': 'perspective(400px) rotate3d(0, 1, 0, 90deg)',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 750
+        },
+        'name': 'flipOutY'
+    };
+
+    var headShake = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'translateX(0)'
+            },
+            {
+                'offset': 0.065,
+                'transform': 'translateX(-6px) rotateY(-9deg)'
+            },
+            {
+                'offset': 0.185,
+                'transform': 'translateX(5px) rotateY(7deg)'
+            },
+            {
+                'offset': 0.315,
+                'transform': 'translateX(-3px) rotateY(-5deg)'
+            },
+            {
+                'offset': 0.435,
+                'transform': 'translateX(2px) rotateY(3deg)'
+            },
+            {
+                'offset': 0.5,
+                'transform': 'translateX(0)'
+            },
+            {
+                'offset': 1,
+                'transform': 'translateX(0)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'headShake'
+    };
+
+    var hinge = {
+        'keyframes': [
+            {
+                'transform': 'none',
+                'transform-origin': 'top left',
+                'opacity': 1
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, 80deg)',
+                'opacity': 1
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, 60deg)',
+                'opacity': 1
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, 80deg)',
+                'opacity': 0
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, 60deg)',
+                'opacity': 1
+            },
+            {
+                'transform': 'translate3d(0, 700px, 0)',
+                'transform-origin': 'top left',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 2000
+        },
+        'name': 'hinge'
+    };
+
+    var jello = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'none'
+            },
+            {
+                'offset': 0.111,
+                'transform': 'none'
+            },
+            {
+                'offset': 0.222,
+                'transform': 'skewX(-12.5deg) skewY(-12.5deg)'
+            },
+            {
+                'offset': 0.333,
+                'transform': 'skewX(6.25deg) skewY(6.25deg)'
+            },
+            {
+                'offset': 0.444,
+                'transform': 'skewX(-3.125deg) skewY(-3.125deg)'
+            },
+            {
+                'offset': 0.555,
+                'transform': 'skewX(1.5625deg) skewY(1.5625deg)'
+            },
+            {
+                'offset': 0.666,
+                'transform': 'skewX(-0.78125deg) skewY(-0.78125deg)'
+            },
+            {
+                'offset': 0.777,
+                'transform': 'skewX(0.390625deg) skewY(0.390625deg)'
+            },
+            {
+                'offset': 0.888,
+                'transform': 'skewX(-0.1953125deg) skewY(-0.1953125deg)'
+            },
+            {
+                'offset': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'fill': 'both',
+            'easing': 'ease-in-out'
+        },
+        'name': 'jello'
+    };
+
+    var lightSpeedIn = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'translate3d(100%, 0, 0) skewX(-30deg)',
+                'opacity': 0
+            },
+            {
+                'offset': 0.6,
+                'transform': 'skewX(20deg)',
+                'opacity': 1
+            },
+            {
+                'offset': 0.8,
+                'transform': 'skewX(-5deg)',
+                'opacity': 1
+            },
+            {
+                'offset': 1,
+                'transform': 'none',
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'fill': 'both',
+            'easing': 'ease-out'
+        },
+        'name': 'lightSpeedIn'
+    };
+
+    var lightSpeedOut = {
+        'keyframes': [
+            {
+                'transform': 'none',
+                'opacity': 1
+            },
+            {
+                'transform': 'translate3d(100%, 0, 0) skewX(30deg)',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'fill': 'both',
+            'easing': 'ease-in'
+        },
+        'name': 'lightSpeedOut'
+    };
+
+    var pulse = {
+        'keyframes': [
+            {
+                'transform': 'scale3d(1, 1, 1)'
+            },
+            {
+                'transform': 'scale3d(1.05, 1.05, 1.05)'
+            },
+            {
+                'transform': 'scale3d(1, 1, 1)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'pulse'
+    };
+
+    var rollIn = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'translate3d(-100%, 0, 0) rotate3d(0, 0, 1, -120deg)'
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rollIn'
+    };
+
+    var rollOut = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none'
+            },
+            {
+                'opacity': 0,
+                'transform': 'translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rollOut'
+    };
+
+    var rotateIn = {
+        'keyframes': [
+            {
+                'transform-origin': 'center',
+                'transform': 'rotate3d(0, 0, 1, -200deg)',
+                'opacity': 0
+            },
+            {
+                'transform-origin': 'center',
+                'transform': 'none',
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateIn'
+    };
+
+    var rotateInDownLeft = {
+        'keyframes': [
+            {
+                'transform-origin': 'left bottom',
+                'transform': 'rotate3d(0, 0, 1, -45deg)',
+                'opacity': 0
+            },
+            {
+                'transform-origin': 'left bottom',
+                'transform': 'none',
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateInDownLeft'
+    };
+
+    var rotateInDownRight = {
+        'keyframes': [
+            {
+                'transform-origin': 'right bottom',
+                'transform': 'rotate3d(0, 0, 1, 45deg)',
+                'opacity': 0
+            },
+            {
+                'transform-origin': 'right bottom',
+                'transform': 'none',
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateInDownRight'
+    };
+
+    var rotateInUpLeft = {
+        'keyframes': [
+            {
+                'transform-origin': 'left bottom',
+                'transform': 'rotate3d(0, 0, 1, 45deg)',
+                'opacity': 0
+            },
+            {
+                'transform-origin': 'left bottom',
+                'transform': 'none',
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateInUpLeft'
+    };
+
+    var rotateInUpRight = {
+        'keyframes': [
+            {
+                'transform-origin': 'right bottom',
+                'transform': 'rotate3d(0, 0, 1, -90deg)',
+                'opacity': 0
+            },
+            {
+                'transform-origin': 'right bottom',
+                'transform': 'none',
+                'opacity': 1
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateInUpRight'
+    };
+
+    var rotateOut = {
+        'keyframes': [
+            {
+                'transform-origin': 'center',
+                'transform': 'none',
+                'opacity': 1
+            },
+            {
+                'transform-origin': 'center',
+                'transform': 'rotate3d(0, 0, 1, 200deg)',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateOut'
+    };
+
+    var rotateOutDownLeft = {
+        'keyframes': [
+            {
+                'transform-origin': 'left bottom',
+                'transform': 'none',
+                'opacity': 1
+            },
+            {
+                'transform-origin': 'left bottom',
+                'transform': 'rotate3d(0, 0, 1, 45deg)',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateOutDownLeft'
+    };
+
+    var rotateOutDownRight = {
+        'keyframes': [
+            {
+                'transform-origin': 'right bottom',
+                'transform': 'none',
+                'opacity': 1
+            },
+            {
+                'transform-origin': 'right bottom',
+                'transform': 'rotate3d(0, 0, 1, -45deg)',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateOutDownRight'
+    };
+
+    var rotateOutUpLeft = {
+        'keyframes': [
+            {
+                'transform-origin': 'left bottom',
+                'transform': 'none',
+                'opacity': 1
+            },
+            {
+                'transform-origin': 'left bottom',
+                'transform': 'rotate3d(0, 0, 1, -45deg)',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateOutUpLeft'
+    };
+
+    var rotateOutUpRight = {
+        'keyframes': [
+            {
+                'transform-origin': 'right bottom',
+                'transform': 'none',
+                'opacity': 1
+            },
+            {
+                'transform-origin': 'right bottom',
+                'transform': 'rotate3d(0, 0, 1, 90deg)',
+                'opacity': 0
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rotateOutUpRight'
+    };
+
+    var rubberBand = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'scale3d(1, 1, 1)'
+            },
+            {
+                'offset': 0.3,
+                'transform': 'scale3d(1.25, 0.75, 1)'
+            },
+            {
+                'offset': 0.4,
+                'transform': 'scale3d(0.75, 1.25, 1)'
+            },
+            {
+                'offset': 0.5,
+                'transform': 'scale3d(1.15, 0.85, 1)'
+            },
+            {
+                'offset': 0.65,
+                'transform': 'scale3d(.95, 1.05, 1)'
+            },
+            {
+                'offset': 0.75,
+                'transform': 'scale3d(1.05, .95, 1)'
+            },
+            {
+                'offset': 1,
+                'transform': 'scale3d(1, 1, 1)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'rubberBand'
+    };
+
+    var shake = {
+        'keyframes': [
+            {
+                'transform': 'translate3d(0, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(-10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(-10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(-10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(-10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(-10px, 0, 0)'
+            },
+            {
+                'transform': 'translate3d(0, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'shake'
+    };
+
+    var slideInDown = {
+        'keyframes': [
+            {
+                'transform': 'translate3d(0, -100%, 0)',
+                'visibility': 'hidden'
+            },
+            {
+                'transform': 'translate3d(0, 0, 0)',
+                'visibility': 'visible'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'slideInDown'
+    };
+
+    var slideInLeft = {
+        'keyframes': [
+            {
+                'transform': 'translate3d(-100%, 0, 0)',
+                'visibility': 'hidden'
+            },
+            {
+                'transform': 'translate3d(0, 0, 0)',
+                'visibility': 'visible'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'slideInLeft'
+    };
+
+    var slideInRight = {
+        'keyframes': [
+            {
+                'transform': 'translate3d(100%, 0, 0)',
+                'visibility': 'hidden'
+            },
+            {
+                'transform': 'translate3d(0, 0, 0)',
+                'visibility': 'visible'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'slideInRight'
+    };
+
+    var slideInUp = {
+        'keyframes': [
+            {
+                'transform': 'translate3d(0, 100%, 0)',
+                'visibility': 'hidden'
+            },
+            {
+                'transform': 'translate3d(0, 0, 0)',
+                'visibility': 'visible'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'slideInUp'
+    };
+
+    var slideOutDown = {
+        'keyframes': [
+            {
+                'transform': 'translate3d(0, 0, 0)',
+                'visibility': 'visible'
+            },
+            {
+                'visibility': 'hidden',
+                'transform': 'translate3d(0, 100%, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'slideOutDown'
+    };
+
+    var slideOutLeft = {
+        'keyframes': [
+            {
+                'visibility': 'visible',
+                'transform': 'translate3d(0, 0, 0)'
+            },
+            {
+                'visibility': 'hidden',
+                'transform': 'translate3d(-100%, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'slideOutLeft'
+    };
+
+    var slideOutRight = {
+        'keyframes': [
+            {
+                'visibility': 'visible',
+                'transform': 'translate3d(0, 0, 0)'
+            },
+            {
+                'visibility': 'hidden',
+                'transform': 'translate3d(100%, 0, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'slideOutRight'
+    };
+
+    var slideOutUp = {
+        'keyframes': [
+            {
+                'visibility': 'visible',
+                'transform': 'translate3d(0, 0, 0)'
+            },
+            {
+                'visibility': 'hidden',
+                'transform': 'translate3d(0, -100%, 0)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'slideOutUp'
+    };
+
+    var swing = {
+        'keyframes': [
+            {
+                'transform': 'none'
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, 15deg)'
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, -10deg)'
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, 5deg)'
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, -5deg)'
+            },
+            {
+                'transform': 'rotate3d(0, 0, 1, 0deg)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'swing'
+    };
+
+    var tada = {
+        'keyframes': [
+            {
+                'transform': 'scale3d(1, 1, 1)'
+            },
+            {
+                'transform': 'scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg)'
+            },
+            {
+                'transform': 'scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg)'
+            },
+            {
+                'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
+            },
+            {
+                'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
+            },
+            {
+                'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
+            },
+            {
+                'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
+            },
+            {
+                'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
+            },
+            {
+                'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
+            },
+            {
+                'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
+            },
+            {
+                'transform': 'scale3d(1, 1, 1)'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'tada'
+    };
+
+    var wobble = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'transform': 'none'
+            },
+            {
+                'offset': 0.15,
+                'transform': 'translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg)'
+            },
+            {
+                'offset': 0.3,
+                'transform': 'translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg)'
+            },
+            {
+                'offset': 0.45,
+                'transform': 'translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg)'
+            },
+            {
+                'offset': 0.6,
+                'transform': 'translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg)'
+            },
+            {
+                'offset': 0.75,
+                'transform': 'translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg)'
+            },
+            {
+                'offset': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1000
+        },
+        'name': 'wobble'
+    };
+
+    var zoomIn = {
+        'keyframes': [
+            {
+                'opacity': 0,
+                'transform': 'scale3d(.3, .3, .3)'
+            },
+            {
+                'opacity': 1
+            },
+            {
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomIn'
+    };
+
+    var zoomInDown = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 0,
+                'transform': 'scale3d(.1, .1, .1) translate3d(0, -1000px, 0)'
+            },
+            {
+                'offset': 0.6,
+                'opacity': 1,
+                'transform': 'scale3d(.475, .475, .475) translate3d(0, 60px, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'easeInCubic'
+        },
+        'name': 'zoomInDown'
+    };
+
+    var zoomInLeft = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 0,
+                'transform': 'scale3d(.1, .1, .1) translate3d(-1000px, 0, 0)'
+            },
+            {
+                'offset': 0.6,
+                'opacity': 1,
+                'transform': 'scale3d(.475, .475, .475) translate3d(10px, 0, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomInLeft'
+    };
+
+    var zoomInRight = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 0,
+                'transform': 'scale3d(.1, .1, .1) translate3d(1000px, 0, 0)'
+            },
+            {
+                'offset': 0.6,
+                'opacity': 1,
+                'transform': 'scale3d(.475, .475, .475) translate3d(-10px, 0, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomInRight'
+    };
+
+    var zoomInUp = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 0,
+                'transform': 'scale3d(.1, .1, .1) translate3d(0, 1000px, 0)'
+            },
+            {
+                'offset': 0.6,
+                'opacity': 1,
+                'transform': 'scale3d(.475, .475, .475) translate3d(0, -60px, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 1,
+                'transform': 'none'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomInUp'
+    };
+
+    var zoomOut = {
+        'keyframes': [
+            {
+                'opacity': 1,
+                'transform': 'none',
+                'transform-origin': 'center middle'
+            },
+            {
+                'opacity': 0,
+                'transform': 'scale3d(.3, .3, .3)'
+            },
+            {
+                'opacity': 0,
+                'transform': 'none',
+                'transform-origin': 'center middle'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomOut'
+    };
+
+    var zoomOutDown = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none',
+                'transform-origin': 'center bottom'
+            },
+            {
+                'offset': 0.4,
+                'opacity': 1,
+                'transform': 'scale3d(.475, .475, .475) translate3d(0, -60px, 0)',
+                'transform-origin': 'center bottom'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'scale3d(.1, .1, .1) translate3d(0, 2000px, 0)',
+                'transform-origin': 'center bottom'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomOutDown'
+    };
+
+    var zoomOutLeft = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none',
+                'transform-origin': 'left center'
+            },
+            {
+                'offset': 0.4,
+                'opacity': 1,
+                'transform': 'scale3d(.475, .475, .475) translate3d(42px, 0, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'scale(.1) translate3d(-2000px, 0, 0)',
+                'transform-origin': 'left center'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomOutLeft'
+    };
+
+    var zoomOutRight = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none',
+                'transform-origin': 'right center'
+            },
+            {
+                'offset': 0.4,
+                'opacity': 1,
+                'transform': 'scale3d(.475, .475, .475) translate3d(-42px, 0, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'scale(.1) translate3d(2000px, 0, 0)',
+                'transform-origin': 'right center'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomOutRight'
+    };
+
+    var zoomOutUp = {
+        'keyframes': [
+            {
+                'offset': 0,
+                'opacity': 1,
+                'transform': 'none',
+                'transform-origin': 'center bottom'
+            },
+            {
+                'offset': 0.4,
+                'opacity': 1,
+                'transform': 'scale3d(.475, .475, .475) translate3d(0, 60px, 0)'
+            },
+            {
+                'offset': 1,
+                'opacity': 0,
+                'transform': 'scale3d(.1, .1, .1) translate3d(0, -2000px, 0)',
+                'transform-origin': 'center bottom'
+            }
+        ],
+        'timings': {
+            'duration': 1000,
+            'easing': 'elegantSlowStartEnd'
+        },
+        'name': 'zoomOutUp'
+    };
+
 
 
     var animations = Object.freeze({
@@ -745,11 +2553,12 @@
     	zoomOutUp: zoomOutUp
     });
 
-    const animationManager = new AnimationManager();
-    const allAnimations = Object.keys(animations).map((name) => animations[name]);
+    var animationManager = new AnimationManager();
+    var allAnimations = Object.keys(animations).map(function (name) { return animations[name]; });
     animationManager.register(allAnimations);
     if (typeof angular !== 'undefined') {
-        angular.module('just.animate', []).service('just', () => animationManager);
+        angular.module('just.animate', []).service('just', function () { return animationManager; });
     }
+    window.Just = animationManager;
 
 }());
