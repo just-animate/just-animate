@@ -35,5 +35,5 @@
     "minify-animations": "uglifyjs --c --m --screw-ie8 --o dist/just-animate-animations.min.js dist/just-animate-animations.js",
     "build-universal": "tsc"
   },
-  "version": "0.3.0b"
+  "version": "0.4.0"
 }
