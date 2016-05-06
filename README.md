@@ -10,7 +10,7 @@
   - [Animating Multiple Elements](http://codepen.io/notoriousb1t/pen/Wwevxv)
   - [Registering Custom Animations](http://codepen.io/notoriousb1t/pen/WwNvON)
   
-##Getting Started
+## Getting Started
 1. Include these scripts on your document
 
   ```html
@@ -56,7 +56,7 @@
  player.cancel();
  ```
 
-##Getting Started with Angular 1.x
+## Getting Started with Angular 1.x
 1. Include these scripts on your document
 
   ```html
