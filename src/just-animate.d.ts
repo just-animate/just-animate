@@ -1,4 +1,6 @@
-declare module just {
+declare const Just: ja.IAnimationManager & ja.IAnimationInjectable;
+
+declare module ja {
     export type FillMode = "none" | "forwards" | "backwards" | "both" | "auto";
    // export type PlaybackDiraction = "normal" | "reverse" | "alternate" | "alternate-reverse";
 
@@ -13,15 +15,16 @@ declare module just {
         iterations?: number;
     }
 
+    export interface IAnimationInjectable {
+        inject(animationOptionList: IAnimationOptions[]): void;
+    }
+
     export interface IAnimationManager {
         animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationEffectTiming): IAnimator;
         animateSequence(options: ISequenceOptions): IAnimator;
         animateTimeline(options: ITimelineOptions): IAnimator;
-        configure(timings?: IAnimationEffectTiming): IAnimationManager;
         findAnimation(name: string): IKeyframeOptions;
         register(animationOptions: IAnimationOptions): IAnimationManager;
-        register(animationOptionsList: IAnimationOptions[]): IAnimationManager;
-        register(animationOptions: IAnimationOptions|IAnimationOptions[]): IAnimationManager;
     }
 
     export interface IAnimationOptions extends IKeyframeOptions {

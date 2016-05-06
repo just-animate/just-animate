@@ -1,14 +1,14 @@
 import {extend, isFunction, map, noop} from './helpers';
 
-export class SequenceAnimator implements just.IAnimator {
+export class SequenceAnimator implements ja.IAnimator {
   
     public playbackRate: number;
-    public onfinish: just.IConsumer<just.IAnimator>;
-    public oncancel: just.IConsumer<just.IAnimator>;   
+    public onfinish: ja.IConsumer<ja.IAnimator>;
+    public oncancel: ja.IConsumer<ja.IAnimator>;   
     
     private _currentIndex: number;
-    private _errorCallback: just.ICallbackHandler;
-    private _manager: just.IAnimationManager;
+    private _errorCallback: ja.ICallbackHandler;
+    private _manager: ja.IAnimationManager;
     private _steps: IInnerSequenceEvent[];
 
     get currentTime(): number {
@@ -48,8 +48,8 @@ export class SequenceAnimator implements just.IAnimator {
         return this._steps.reduce((c, n) => c + (n.timings.duration || 0), 0);
     }
 
-    constructor(manager: just.IAnimationManager, options: just.ISequenceOptions) {
-        const steps: IInnerSequenceEvent[] = map(options.steps, (step: just.ISequenceEvent) => {
+    constructor(manager: ja.IAnimationManager, options: ja.ISequenceOptions) {
+        const steps: IInnerSequenceEvent[] = map(options.steps, (step: ja.ISequenceEvent) => {
             if (step.command || !step.name) {
                 return step;
             }
@@ -76,7 +76,7 @@ export class SequenceAnimator implements just.IAnimator {
         }        
     }
     
-    public finish(fn?: just.ICallbackHandler): just.IAnimator {
+    public finish(fn?: ja.ICallbackHandler): ja.IAnimator {
         this._errorCallback = fn;
         this._currentIndex = -1;
         
@@ -91,13 +91,13 @@ export class SequenceAnimator implements just.IAnimator {
         }
         return this;
     }
-    public play(fn?: just.ICallbackHandler): just.IAnimator {
+    public play(fn?: ja.ICallbackHandler): ja.IAnimator {
         this._errorCallback = fn;
         this.playbackRate = 1;
         this._playThisStep();
         return this;
     }
-    public pause(fn?: just.ICallbackHandler): just.IAnimator {
+    public pause(fn?: ja.ICallbackHandler): ja.IAnimator {
         this._errorCallback = fn;
         // ignore pause if not relevant
         if (!this._isInEffect()) {
@@ -107,13 +107,13 @@ export class SequenceAnimator implements just.IAnimator {
         animator.pause(fn);
         return this;
     }
-    public reverse(fn?: just.ICallbackHandler): just.IAnimator {
+    public reverse(fn?: ja.ICallbackHandler): ja.IAnimator {
         this._errorCallback = fn;
         this.playbackRate = -1;
         this._playThisStep();
         return this;
     }
-    public cancel(fn?: just.ICallbackHandler): just.IAnimator {
+    public cancel(fn?: ja.ICallbackHandler): ja.IAnimator {
         this._errorCallback = fn;
         this.playbackRate = undefined;
         this._currentIndex = -1;
@@ -131,7 +131,7 @@ export class SequenceAnimator implements just.IAnimator {
     private _isInEffect(): boolean {
         return this._currentIndex > -1 && this._currentIndex < this._steps.length;
     }
-    private _getAnimator(): just.IAnimator {
+    private _getAnimator(): ja.IAnimator {
         const it = this._steps[this._currentIndex];
         if (it.animator) {
             return it.animator;
@@ -139,7 +139,7 @@ export class SequenceAnimator implements just.IAnimator {
         it.animator = this._manager.animate(it.keyframes, it.el, it.timings);
         return it.animator;
     }
-    private _playNextStep(evt: just.IAnimator): void {
+    private _playNextStep(evt: ja.IAnimator): void {
         if (this.playbackRate === -1) {
             this._currentIndex--;
         } else {
@@ -160,7 +160,7 @@ export class SequenceAnimator implements just.IAnimator {
             }
         }
         const animator = this._getAnimator();
-        animator.onfinish = (evt: just.IAnimator) => {
+        animator.onfinish = (evt: ja.IAnimator) => {
             this._playNextStep(evt);
         };
         
@@ -169,10 +169,10 @@ export class SequenceAnimator implements just.IAnimator {
 }
 
 interface IInnerSequenceEvent {
-    el: just.ElementSource;
+    el: ja.ElementSource;
     name?: string;
     command?: string;
-    timings?: just.IAnimationEffectTiming;
-    keyframes?: just.IIndexed<just.IKeyframe>;
-    animator?: just.IAnimator;
+    timings?: ja.IAnimationEffectTiming;
+    keyframes?: ja.IIndexed<ja.IKeyframe>;
+    animator?: ja.IAnimator;
 }

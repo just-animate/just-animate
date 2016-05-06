@@ -5,13 +5,13 @@ import {each, extend, isFunction, map} from './helpers';
 // like it restarts and that causes jank
 const animationPadding = 1.0 / 30;
 
-export class TimelineAnimator implements just.IAnimator {
+export class TimelineAnimator implements ja.IAnimator {
     
     public currentTime: number;
     public duration: number;
     public playbackRate: number;
-    public onfinish: just.IConsumer<just.IAnimator>;
-    public oncancel: just.IConsumer<just.IAnimator>;
+    public onfinish: ja.IConsumer<ja.IAnimator>;
+    public oncancel: ja.IConsumer<ja.IAnimator>;
     
     private _events: TimelineEvent[];
     private _isInEffect: boolean;
@@ -19,9 +19,9 @@ export class TimelineAnimator implements just.IAnimator {
     private _isCanceled: boolean;
     private _isPaused: boolean;
     private _lastTick: number;
-    private _manager: just.IAnimationManager;  
+    private _manager: ja.IAnimationManager;  
 
-    constructor(manager: just.IAnimationManager, options: just.ITimelineOptions) {
+    constructor(manager: ja.IAnimationManager, options: ja.ITimelineOptions) {
         const duration = options.duration;
         if (duration === undefined) {
             throw Error('Duration is required');
@@ -29,7 +29,7 @@ export class TimelineAnimator implements just.IAnimator {
         this.playbackRate = 0;
         this.duration = options.duration;
         this.currentTime = 0;
-        this._events = map(options.events, (evt: just.ITimelineEvent) => new TimelineEvent(manager, duration, evt));
+        this._events = map(options.events, (evt: ja.ITimelineEvent) => new TimelineEvent(manager, duration, evt));
         this._isPaused = false;
         this._manager = manager;
 
@@ -42,12 +42,12 @@ export class TimelineAnimator implements just.IAnimator {
     }
     
 
-    public finish(fn?: just.ICallbackHandler): just.IAnimator {
+    public finish(fn?: ja.ICallbackHandler): ja.IAnimator {
         this._isFinished = true;
         return this;
     }
     
-    public play(fn?: just.ICallbackHandler): just.IAnimator {
+    public play(fn?: ja.ICallbackHandler): ja.IAnimator {
         this.playbackRate = 1;
         this._isPaused = false;
 
@@ -62,13 +62,13 @@ export class TimelineAnimator implements just.IAnimator {
         window.requestAnimationFrame(this._tick);
         return this;
     }
-    public pause(fn?: just.ICallbackHandler): just.IAnimator {
+    public pause(fn?: ja.ICallbackHandler): ja.IAnimator {
         if (this._isInEffect) {
             this._isPaused = true;
         }
         return this;
     }
-    public reverse(fn?: just.ICallbackHandler): just.IAnimator {
+    public reverse(fn?: ja.ICallbackHandler): ja.IAnimator {
         this.playbackRate = -1;
         this._isPaused = false;
 
@@ -82,7 +82,7 @@ export class TimelineAnimator implements just.IAnimator {
         window.requestAnimationFrame(this._tick);
         return this;
     }
-    public cancel(fn?: just.ICallbackHandler): just.IAnimator {
+    public cancel(fn?: ja.ICallbackHandler): ja.IAnimator {
         this.playbackRate = 0;
         this._isCanceled = true;
         return this;
@@ -176,19 +176,19 @@ export class TimelineAnimator implements just.IAnimator {
     }
 }
 
-class TimelineEvent implements just.ITimelineEvent {
+class TimelineEvent implements ja.ITimelineEvent {
     public offset: number;
-    public el: just.ElementSource;
-    public timings: just.IAnimationEffectTiming;
-    public keyframes: just.IIndexed<just.IKeyframe>;
+    public el: ja.ElementSource;
+    public timings: ja.IAnimationEffectTiming;
+    public keyframes: ja.IIndexed<ja.IKeyframe>;
     public endTimeMs: number;
     public isClipped: boolean;
     public startTimeMs: number;
     public isInEffect: boolean;
-    private _animator: just.IAnimator;
-    private _manager: just.IAnimationManager;
+    private _animator: ja.IAnimator;
+    private _manager: ja.IAnimationManager;
 
-    get animator(): just.IAnimator {
+    get animator(): ja.IAnimator {
         if (this._animator === undefined) {
             this._animator = this._manager.animate(this.keyframes, this.el, this.timings);
             this._animator.pause();
@@ -196,14 +196,14 @@ class TimelineEvent implements just.ITimelineEvent {
         return this._animator;
     }    
 
-    constructor(manager: just.IAnimationManager, timelineDuration: number, evt: just.ITimelineEvent) {
-        let keyframes: just.IIndexed<just.IKeyframe>;
-        let timings: just.IAnimationEffectTiming;
-        let el: just.ElementSource;
+    constructor(manager: ja.IAnimationManager, timelineDuration: number, evt: ja.ITimelineEvent) {
+        let keyframes: ja.IIndexed<ja.IKeyframe>;
+        let timings: ja.IAnimationEffectTiming;
+        let el: ja.ElementSource;
 
         if (evt.name) {
             const definition = manager.findAnimation(evt.name);
-            let timings2: just.ITimelineEvent = extend({}, definition.timings);
+            let timings2: ja.ITimelineEvent = extend({}, definition.timings);
             if (evt.timings) {
                 timings = extend(timings2, evt.timings);
             }

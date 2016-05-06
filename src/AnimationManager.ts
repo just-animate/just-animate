@@ -3,57 +3,44 @@ import {ElementAnimator} from './app/ElementAnimator';
 import {SequenceAnimator} from './app/SequenceAnimator';
 import {TimelineAnimator} from './app/TimelineAnimator';
 
-export class AnimationManager implements just.IAnimationManager {
-    private _registry: { [key: string]: just.IKeyframeOptions };
-    private _timings: just.IAnimationEffectTiming;
+const DEFAULT_ANIMATIONS = [];
+
+export class AnimationManager implements ja.IAnimationManager {
+    private _registry: { [key: string]: ja.IKeyframeOptions };
+    private _timings: ja.IAnimationEffectTiming;
+       
+    public static inject(animations: ja.IAnimationOptions[]) {
+        Array.prototype.push.apply(DEFAULT_ANIMATIONS, animations);
+    }
 
     constructor() {
-        this._registry = {};
         this._timings = {
             duration: 1000,
             fill: 'both'
         };
+
+        this._registry = {};
+        each(DEFAULT_ANIMATIONS, a => {
+            this._registry[a.name] = a
+        });
     }
 
-    public animate(keyframesOrName: string | just.IIndexed<just.IKeyframe>, 
-                   el: just.ElementSource, 
-                   timings?: just.IAnimationEffectTiming): just.IAnimator {
+    public animate(keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, 
+                   el: ja.ElementSource, 
+                   timings?: ja.IAnimationEffectTiming): ja.IAnimator {
         return new ElementAnimator(this, keyframesOrName, el, timings);
     }
-    public animateSequence(options: just.ISequenceOptions): just.IAnimator {
+    public animateSequence(options: ja.ISequenceOptions): ja.IAnimator {
         return new SequenceAnimator(this, options);
     }
-    public animateTimeline(options: just.ITimelineOptions): just.IAnimator {
+    public animateTimeline(options: ja.ITimelineOptions): ja.IAnimator {
         return new TimelineAnimator(this, options);
     }
-    public configure(timings?: just.IAnimationEffectTiming): just.IAnimationManager {
-        if (timings) {
-            extend(this._timings, timings);
-        }
-        return this;
-    }
-    public findAnimation(name: string): just.IKeyframeOptions {
+    public findAnimation(name: string): ja.IKeyframeOptions {
         return this._registry[name] || undefined;
     }
-    
-    public register(animationOptions: just.IAnimationOptions): just.IAnimationManager;
-    public register(animationOptionsList: just.IAnimationOptions[]): just.IAnimationManager;
-    public register(animationOptions: just.IAnimationOptions|just.IAnimationOptions[]): just.IAnimationManager {
-        const self = this;
-        
-        const registerAnimation = (it: just.IAnimationOptions) => {
-            self[name] = (el: just.ElementSource, timings: just.IAnimationEffectTiming) => self.animate(it.name, el, it.timings);
-            self._registry[it.name] = it;
-        };
-        
-        if (isArray(animationOptions)) {
-            each(animationOptions as just.IAnimationOptions[], registerAnimation);
-        } else {
-            self[name] = (el: just.ElementSource, timings: just.IAnimationEffectTiming) 
-                => self.animate(animationOptions.name, el, animationOptions.timings);
-            self._registry[animationOptions.name] = animationOptions as just.IAnimationOptions;
-        }
-        
-        return self;
+    public register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager {
+        this._registry[animationOptions.name] = animationOptions;
+        return this;
     }
 }

@@ -1,23 +1,24 @@
 <html>
 
 <head>
-  <title>Just Animate Demo</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <title>Just Animate Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 </head>
 
 <body ng-app="app" ng-controller="showcaseCtrl as vm">
-  <div class="container text-center">
-    <h1>Showcase</h1>
-    <hr/>
-    <div id="target">
+    <div class="container text-center">
+        <h1>Showcase</h1>
+        <hr/>
+        <div id="target">
+        </div>
     </div>
-  </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
-  <script src="../../dist/just-animate.js"></script>
-  <script>
-    angular.module('app', ['just.animate'])
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="../../dist/just-animate-core.js"></script>
+    <script src="../../dist/just-animate-animations.js"></script>
+    <script>
+        angular.module('app', ['just.animate'])
       .controller('showcaseCtrl', function(just) {
            var animations = [
             "bounce",
@@ -126,7 +127,7 @@
             $h2.appendTo($container);
         }
       });
-  </script>
+    </script>
 </body>
 
 </html>

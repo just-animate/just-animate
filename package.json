@@ -5,21 +5,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "del": "^2.2.0",
-    "gulp": "^3.9.1",
-    "gulp-notify": "^2.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-typescript": "^2.11.0",
-    "gulp-uglify": "^1.5.2",
-    "gulp-util": "^3.0.7",
-    "ink-docstrap": "^1.1.4",
-    "jsdoc": "^3.4.0",
-    "json-loader": "^0.5.4",
+    "typescript": "^1.8.10",
     "rollup": "^0.26.1",
-    "rollup-plugin-json": "^2.0.0",
     "rollup-plugin-typescript": "^0.7.5",
-    "webpack": "^1.12.14",
-    "webpack-stream": "^3.1.0"
+    "uglify": "^0.1.5"
   },
   "description": "Web Animation library",
   "keywords": [
@@ -32,15 +21,19 @@
     "sequence"
   ],
   "license": "MIT",
-  "main": "build/server.js",
+  "main": "build/index.js",
   "name": "just-animate",
   "repository": {
     "type": "git",
     "url": "https://github.com/notoriousb1t/just-animate"
   },
   "scripts": {
-    "postinstall": "npm run jsdocs",
-    "jsdocs": "jsdoc -c jsdoc.conf.json -t ./node_modules/ink-docstrap/template -R README.md -r dist"
+    "start": "npm run build-universal && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
+    "build-core": "rollup -c rollup.core.config.js",
+    "build-animations": "rollup -c rollup.animations.config.js",
+    "minify-core": "uglifyjs --c --m --screw-ie8 --o dist/just-animate-core.min.js dist/just-animate-core.js",
+    "minify-animations": "uglifyjs --c --m --screw-ie8 --o dist/just-animate-animations.min.js dist/just-animate-animations.js",
+    "build-universal": "tsc"
   },
   "version": "0.3.0b"
 }

@@ -6,14 +6,17 @@
         h2 {
             font-size: 2.5em;
         }
+        
         button {
             background: white;
             border: solid thin #333;
             padding: 0.75em 1.5em;
         }
+        
         button:hover {
             cursor: pointer;
         }
+        
         .car-1,
         .car-2 {
             height: 200px;
@@ -24,6 +27,7 @@
         .car-1 {
             top: 0;
         }
+        
         .car-2 {
             top: 200px;
         }
@@ -37,7 +41,7 @@
             stroke: #1111E8;
             fill: #0000ff;
         }
-
+        
         .container {
             max-width: 800;
             width: 100%;
@@ -45,10 +49,12 @@
             margin-right: auto;
             position: relative;
         }
+        
         .road {
             background-color: #aaa;
             border-right: solid 20px #444;
         }
+        
         .text-center {
             text-align: center;
         }
@@ -61,7 +67,8 @@
     </div>
     <div class="container road">
         <div class="car-1">
-            <svg class="red car" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 16 20" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+            <svg class="red car" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px"
+                y="0px" viewBox="0 0 16 20" style="enable-background:new 0 0 16 16;" xml:space="preserve">
                 <g>
                     <path class="car-body" d="M15.023,8.783l-2.547-0.566c-0.151-0.034-0.333-0.064-0.524-0.093L10.53,5.848C10.238,5.382,9.55,5,9,5H4.5   c-0.55,0-1.201,0.402-1.447,0.895L2,8H1C0.45,8,0,8.45,0,9v2c0,0.55,0.45,1,1,1h0.5c0-1.379,1.122-2.5,2.5-2.5s2.5,1.121,2.5,2.5h3   c0-1.379,1.121-2.5,2.5-2.5s2.5,1.121,2.5,2.5H15c0.553,0,1-0.447,1-1v-1C16,9.45,15.561,8.902,15.023,8.783z M7,8   c0,0-2.561,0-2.882,0l0.83-1.658C5.024,6.188,5.329,6,5.5,6H7V8z M8,8V6h1c0.204,0,0.574,0.206,0.683,0.378L10.695,8H8z" />
                     <path d="M4,10c-1.104,0-2,0.896-2,2s0.896,2,2,2s2-0.896,2-2S5.104,10,4,10z M4,13c-0.553,0-1-0.447-1-1s0.447-1,1-1s1,0.447,1,1   S4.553,13,4,13z" />
@@ -72,7 +79,8 @@
             </svg>
         </div>
         <div class="car-2">
-            <svg class="blue car" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 16 20" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+            <svg class="blue car" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px"
+                y="0px" viewBox="0 0 16 20" style="enable-background:new 0 0 16 16;" xml:space="preserve">
                 <g>
                     <path class="car-body" d="M15.023,8.783l-2.547-0.566c-0.151-0.034-0.333-0.064-0.524-0.093L10.53,5.848C10.238,5.382,9.55,5,9,5H4.5   c-0.55,0-1.201,0.402-1.447,0.895L2,8H1C0.45,8,0,8.45,0,9v2c0,0.55,0.45,1,1,1h0.5c0-1.379,1.122-2.5,2.5-2.5s2.5,1.121,2.5,2.5h3   c0-1.379,1.121-2.5,2.5-2.5s2.5,1.121,2.5,2.5H15c0.553,0,1-0.447,1-1v-1C16,9.45,15.561,8.902,15.023,8.783z M7,8   c0,0-2.561,0-2.882,0l0.83-1.658C5.024,6.188,5.329,6,5.5,6H7V8z M8,8V6h1c0.204,0,0.574,0.206,0.683,0.378L10.695,8H8z" />
                     <path d="M4,10c-1.104,0-2,0.896-2,2s0.896,2,2,2s2-0.896,2-2S5.104,10,4,10z M4,13c-0.553,0-1-0.447-1-1s0.447-1,1-1s1,0.447,1,1   S4.553,13,4,13z" />
@@ -84,15 +92,16 @@
         </div>
     </div>
     <div class="container text-center">
-            <button id="reverse">.reverse()</button>
-            <button id="pause">.pause()</button>
-            <button id="play">.play()</button>
-            <button id="finish">.finish()</button>
-            <button id="cancel">.cancel()</button>
-        </div>
+        <button id="reverse">.reverse()</button>
+        <button id="pause">.pause()</button>
+        <button id="play">.play()</button>
+        <button id="finish">.finish()</button>
+        <button id="cancel">.cancel()</button>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-    <script src="../../dist/just-animate.js"></script>
+    <script src="../../dist/just-animate-core.js"></script>
+    <script src="../../dist/just-animate-animations.js"></script>
     <script>
         var player = Just.animateTimeline({
             autoplay: true,
@@ -150,7 +159,6 @@
         document.getElementById('cancel').addEventListener('click', function() {
            player.cancel(); 
         });
-        
     </script>
 </body>
 

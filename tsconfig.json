@@ -9,6 +9,7 @@
     },
     "exclude": [
         "node_modules", 
-        "src/browser.ts"
+        "src/just-animate-core.ts",
+        "src/just-animate-animations.ts"
     ]
 }

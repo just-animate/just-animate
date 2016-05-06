@@ -1,78 +1,232 @@
-declare const require: any;
+import { bounce } from './animations/bounce';
+import { bounceIn } from './animations/bounceIn';
+import { bounceInDown } from './animations/bounceInDown';
+import { bounceInLeft } from './animations/bounceInLeft';
+import { bounceInRight } from './animations/bounceInRight';
+import { bounceInUp } from './animations/bounceInUp';
+import { bounceOut } from './animations/bounceOut';
+import { bounceOutDown } from './animations/bounceOutDown';
+import { bounceOutLeft } from './animations/bounceOutLeft';
+import { bounceOutRight } from './animations/bounceOutRight';
+import { bounceOutUp } from './animations/bounceOutUp';
+import { fadeIn } from './animations/fadeIn';
+import { fadeInDown } from './animations/fadeInDown';
+import { fadeInDownBig } from './animations/fadeInDownBig';
+import { fadeInLeft } from './animations/fadeInLeft';
+import { fadeInLeftBig } from './animations/fadeInLeftBig';
+import { fadeInRight } from './animations/fadeInRight';
+import { fadeInRightBig } from './animations/fadeInRightBig';
+import { fadeInUp } from './animations/fadeInUp';
+import { fadeInUpBig } from './animations/fadeInUpBig';
+import { fadeOut } from './animations/fadeOut';
+import { fadeOutDown } from './animations/fadeOutDown';
+import { fadeOutDownBig } from './animations/fadeOutDownBig';
+import { fadeOutLeft } from './animations/fadeOutLeft';
+import { fadeOutLeftBig } from './animations/fadeOutLeftBig';
+import { fadeOutRight } from './animations/fadeOutRight';
+import { fadeOutRightBig } from './animations/fadeOutRightBig';
+import { fadeOutUp } from './animations/fadeOutUp';
+import { fadeOutUpBig } from './animations/fadeOutUpBig';
+import { flash } from './animations/flash';
+import { flip } from './animations/flip';
+import { flipInX } from './animations/flipInX';
+import { flipInY } from './animations/flipInY';
+import { flipOutX } from './animations/flipOutX';
+import { flipOutY } from './animations/flipOutY';
+import { headShake } from './animations/headShake';
+import { hinge } from './animations/hinge';
+import { jello } from './animations/jello';
+import { lightSpeedIn } from './animations/lightSpeedIn';
+import { lightSpeedOut } from './animations/lightSpeedOut';
+import { pulse } from './animations/pulse';
+import { rollIn } from './animations/rollIn';
+import { rollOut } from './animations/rollOut';
+import { rotateIn } from './animations/rotateIn';
+import { rotateInDownLeft } from './animations/rotateInDownLeft';
+import { rotateInDownRight } from './animations/rotateInDownRight';
+import { rotateInUpLeft } from './animations/rotateInUpLeft';
+import { rotateInUpRight } from './animations/rotateInUpRight';
+import { rotateOut } from './animations/rotateOut';
+import { rotateOutDownLeft } from './animations/rotateOutDownLeft';
+import { rotateOutDownRight } from './animations/rotateOutDownRight';
+import { rotateOutUpLeft } from './animations/rotateOutUpLeft';
+import { rotateOutUpRight } from './animations/rotateOutUpRight';
+import { rubberBand } from './animations/rubberBand';
+import { shake } from './animations/shake';
+import { slideInDown } from './animations/slideInDown';
+import { slideInLeft } from './animations/slideInLeft';
+import { slideInRight } from './animations/slideInRight';
+import { slideInUp } from './animations/slideInUp';
+import { slideOutDown } from './animations/slideOutDown';
+import { slideOutLeft } from './animations/slideOutLeft';
+import { slideOutRight } from './animations/slideOutRight';
+import { slideOutUp } from './animations/slideOutUp';
+import { swing } from './animations/swing';
+import { tada } from './animations/tada';
+import { wobble } from './animations/wobble';
+import { zoomIn } from './animations/zoomIn';
+import { zoomInDown } from './animations/zoomInDown';
+import { zoomInLeft } from './animations/zoomInLeft';
+import { zoomInRight } from './animations/zoomInRight';
+import { zoomInUp } from './animations/zoomInUp';
+import { zoomOut } from './animations/zoomOut';
+import { zoomOutDown } from './animations/zoomOutDown';
+import { zoomOutLeft } from './animations/zoomOutLeft';
+import { zoomOutRight } from './animations/zoomOutRight';
+import { zoomOutUp } from './animations/zoomOutUp';
 
-export { bounce } from './animations/bounce';
-export { bounceIn } from './animations/bounceIn';
-export { bounceInDown } from './animations/bounceInDown';
-export { bounceInLeft } from './animations/bounceInLeft';
-export { bounceInRight } from './animations/bounceInRight';
-export { bounceInUp } from './animations/bounceInUp';
-export { bounceOut } from './animations/bounceOut';
-export { bounceOutDown } from './animations/bounceOutDown';
-export { bounceOutLeft } from './animations/bounceOutLeft';
-export { bounceOutRight } from './animations/bounceOutRight';
-export { bounceOutUp } from './animations/bounceOutUp';
-export { fadeIn } from './animations/fadeIn';
-export { fadeInDown } from './animations/fadeInDown';
-export { fadeInDownBig } from './animations/fadeInDownBig';
-export { fadeInLeft } from './animations/fadeInLeft';
-export { fadeInLeftBig } from './animations/fadeInLeftBig';
-export { fadeInRight } from './animations/fadeInRight';
-export { fadeInRightBig } from './animations/fadeInRightBig';
-export { fadeInUp } from './animations/fadeInUp';
-export { fadeInUpBig } from './animations/fadeInUpBig';
-export { fadeOut } from './animations/fadeOut';
-export { fadeOutDown } from './animations/fadeOutDown';
-export { fadeOutDownBig } from './animations/fadeOutDownBig';
-export { fadeOutLeft } from './animations/fadeOutLeft';
-export { fadeOutLeftBig } from './animations/fadeOutLeftBig';
-export { fadeOutRight } from './animations/fadeOutRight';
-export { fadeOutRightBig } from './animations/fadeOutRightBig';
-export { fadeOutUp } from './animations/fadeOutUp';
-export { fadeOutUpBig } from './animations/fadeOutUpBig';
-export { flash } from './animations/flash';
-export { flip } from './animations/flip';
-export { flipInX } from './animations/flipInX';
-export { flipInY } from './animations/flipInY';
-export { flipOutX } from './animations/flipOutX';
-export { flipOutY } from './animations/flipOutY';
-export { headShake } from './animations/headShake';
-export { hinge } from './animations/hinge';
-export { jello } from './animations/jello';
-export { lightSpeedIn } from './animations/lightSpeedIn';
-export { lightSpeedOut } from './animations/lightSpeedOut';
-export { pulse } from './animations/pulse';
-export { rollIn } from './animations/rollIn';
-export { rollOut } from './animations/rollOut';
-export { rotateIn } from './animations/rotateIn';
-export { rotateInDownLeft } from './animations/rotateInDownLeft';
-export { rotateInDownRight } from './animations/rotateInDownRight';
-export { rotateInUpLeft } from './animations/rotateInUpLeft';
-export { rotateInUpRight } from './animations/rotateInUpRight';
-export { rotateOut } from './animations/rotateOut';
-export { rotateOutDownLeft } from './animations/rotateOutDownLeft';
-export { rotateOutDownRight } from './animations/rotateOutDownRight';
-export { rotateOutUpLeft } from './animations/rotateOutUpLeft';
-export { rotateOutUpRight } from './animations/rotateOutUpRight';
-export { rubberBand } from './animations/rubberBand';
-export { shake } from './animations/shake';
-export { slideInDown } from './animations/slideInDown';
-export { slideInLeft } from './animations/slideInLeft';
-export { slideInRight } from './animations/slideInRight';
-export { slideInUp } from './animations/slideInUp';
-export { slideOutDown } from './animations/slideOutDown';
-export { slideOutLeft } from './animations/slideOutLeft';
-export { slideOutRight } from './animations/slideOutRight';
-export { slideOutUp } from './animations/slideOutUp';
-export { swing } from './animations/swing';
-export { tada } from './animations/tada';
-export { wobble } from './animations/wobble';
-export { zoomIn } from './animations/zoomIn';
-export { zoomInDown } from './animations/zoomInDown';
-export { zoomInLeft } from './animations/zoomInLeft';
-export { zoomInRight } from './animations/zoomInRight';
-export { zoomInUp } from './animations/zoomInUp';
-export { zoomOut } from './animations/zoomOut';
-export { zoomOutDown } from './animations/zoomOutDown';
-export { zoomOutLeft } from './animations/zoomOutLeft';
-export { zoomOutRight } from './animations/zoomOutRight';
-export { zoomOutUp } from './animations/zoomOutUp';
+export const ANIMATE_CSS = [
+    bounce,
+    bounceIn,
+    bounceInDown,
+    bounceInLeft,
+    bounceInRight,
+    bounceInUp,
+    bounceOut,
+    bounceOutDown,
+    bounceOutLeft,
+    bounceOutRight,
+    bounceOutUp,
+    fadeIn,
+    fadeInDown,
+    fadeInDownBig,
+    fadeInLeft,
+    fadeInLeftBig,
+    fadeInRight,
+    fadeInRightBig,
+    fadeInUp,
+    fadeInUpBig,
+    fadeOut,
+    fadeOutDown,
+    fadeOutDownBig,
+    fadeOutLeft,
+    fadeOutLeftBig,
+    fadeOutRight,
+    fadeOutRightBig,
+    fadeOutUp,
+    fadeOutUpBig,
+    flash,
+    flip,
+    flipInX,
+    flipInY,
+    flipOutX,
+    flipOutY,
+    headShake,
+    hinge,
+    jello,
+    lightSpeedIn,
+    lightSpeedOut,
+    pulse,
+    rollIn,
+    rollOut,
+    rotateIn,
+    rotateInDownLeft,
+    rotateInDownRight,
+    rotateInUpLeft,
+    rotateInUpRight,
+    rotateOut,
+    rotateOutDownLeft,
+    rotateOutDownRight,
+    rotateOutUpLeft,
+    rotateOutUpRight,
+    rubberBand,
+    shake,
+    slideInDown,
+    slideInLeft,
+    slideInRight,
+    slideInUp,
+    slideOutDown,
+    slideOutLeft,
+    slideOutRight,
+    slideOutUp,
+    swing,
+    tada,
+    wobble,
+    zoomIn,
+    zoomInDown,
+    zoomInLeft,
+    zoomInRight,
+    zoomInUp,
+    zoomOut,
+    zoomOutDown,
+    zoomOutLeft,
+    zoomOutRight,
+    zoomOutUp
+];
+
+export { bounce }
+export { bounceIn }
+export { bounceInDown }
+export { bounceInLeft }
+export { bounceInRight }
+export { bounceInUp }
+export { bounceOut }
+export { bounceOutDown }
+export { bounceOutLeft }
+export { bounceOutRight }
+export { bounceOutUp }
+export { fadeIn }
+export { fadeInDown }
+export { fadeInDownBig }
+export { fadeInLeft }
+export { fadeInLeftBig }
+export { fadeInRight }
+export { fadeInRightBig }
+export { fadeInUp }
+export { fadeInUpBig }
+export { fadeOut }
+export { fadeOutDown }
+export { fadeOutDownBig }
+export { fadeOutLeft }
+export { fadeOutLeftBig }
+export { fadeOutRight }
+export { fadeOutRightBig }
+export { fadeOutUp }
+export { fadeOutUpBig }
+export { flash }
+export { flip }
+export { flipInX }
+export { flipInY }
+export { flipOutX }
+export { flipOutY }
+export { headShake }
+export { hinge }
+export { jello }
+export { lightSpeedIn }
+export { lightSpeedOut }
+export { pulse }
+export { rollIn }
+export { rollOut }
+export { rotateIn }
+export { rotateInDownLeft }
+export { rotateInDownRight }
+export { rotateInUpLeft }
+export { rotateInUpRight }
+export { rotateOut }
+export { rotateOutDownLeft }
+export { rotateOutDownRight }
+export { rotateOutUpLeft }
+export { rotateOutUpRight }
+export { rubberBand }
+export { shake }
+export { slideInDown }
+export { slideInLeft }
+export { slideInRight }
+export { slideInUp }
+export { slideOutDown }
+export { slideOutLeft }
+export { slideOutRight }
+export { slideOutUp }
+export { swing }
+export { tada }
+export { wobble }
+export { zoomIn }
+export { zoomInDown }
+export { zoomInLeft }
+export { zoomInRight }
+export { zoomInUp }
+export { zoomOut }
+export { zoomOutDown }
+export { zoomOutLeft }
+export { zoomOutRight }
+export { zoomOutUp }
