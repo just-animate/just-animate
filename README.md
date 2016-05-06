@@ -10,12 +10,13 @@
   - [Animating Multiple Elements](http://codepen.io/notoriousb1t/pen/Wwevxv)
   - [Registering Custom Animations](http://codepen.io/notoriousb1t/pen/WwNvON)
   
-##Getting Started
+## Getting Started
 1. Include these scripts on your document
 
   ```html
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="just-animate.js"></script>
+  <script src="just-animate-core.js"></script>
+  <script src="just-animate-animations.js"></script>
   ```
   Just Animate uses the new Web Animations API in JavaScript.  For maximum browser compatibility, this should be included even
   if your browser supports this new standard.
@@ -44,19 +45,10 @@
   Just.animate('fadeIn', [$('input:checkbox'), document.getElementById('#animate-me')]);
   ```
 
-3. Use shorthand functions to make it easy to read.  All animations can be called as functions 
-
-  ```javascript
-  Just.fadeIn('#animate-me');
-  Just.fadeOut('#animate-me');
-  Just.bounceIn('#animate-me');
-  /* ... */
-  ```
-
-4. Use the player returned from animate to do more advanced things:
+3. Use the player returned from animate to do more advanced things:
  
  ```javascript
- var player = Just.fadeIn('#animate-me');
+ var player = Just.animate('fadeIn', '#animate-me');
  player.play();
  player.pause();
  player.finish();
@@ -64,12 +56,13 @@
  player.cancel();
  ```
 
-##Getting Started with Angular 1.x
+## Getting Started with Angular 1.x
 1. Include these scripts on your document
 
   ```html
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="just-animate.js"></script>
+  <script src="just-animate-core.js"></script>
+  <script src="just-animate-animations.js"></script>
   ```
   
 2. Import the JustAnimate module into your application
@@ -102,7 +95,7 @@
 
 ## Included animations
 
-  The animations in JustAnimate are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
+  The animations in just-animate-animations.js are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
 
   * `bounce`
   * `flash`
