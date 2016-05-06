@@ -44,16 +44,7 @@
   Just.animate('fadeIn', [$('input:checkbox'), document.getElementById('#animate-me')]);
   ```
 
-3. Use shorthand functions to make it easy to read.  All animations can be called as functions 
-
-  ```javascript
-  Just.fadeIn('#animate-me');
-  Just.fadeOut('#animate-me');
-  Just.bounceIn('#animate-me');
-  /* ... */
-  ```
-
-4. Use the player returned from animate to do more advanced things:
+3. Use the player returned from animate to do more advanced things:
  
  ```javascript
  var player = Just.fadeIn('#animate-me');
