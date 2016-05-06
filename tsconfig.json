@@ -2,14 +2,18 @@
     "compilerOptions": {
         "target": "es5",
         "rootDir": "src",
-        "outDir": "build",
+        "outDir": "dist",
         "module": "commonjs",
         "preserveConstEnums": false,
-        "removeComments": true
+        "removeComments": true,
+        "inlineSourceMap": false,
+        "allowUnreachableCode": false,
+        "declaration": true
     },
     "exclude": [
         "node_modules", 
         "src/just-animate-core.ts",
-        "src/just-animate-animations.ts"
+        "src/just-animate-animations.ts",
+        "dist"
     ]
 }

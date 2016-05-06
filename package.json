@@ -1,8 +1,5 @@
 {
   "author": "christopher.j.wallis@gmail.com",
-  "bugs": {
-    "url": "https://github.com/notoriousb1t/just-animate/issues"
-  },
   "dependencies": {},
   "devDependencies": {
     "typescript": "^1.8.10",
@@ -10,30 +7,22 @@
     "rollup-plugin-typescript": "^0.7.5",
     "uglify": "^0.1.5"
   },
-  "description": "Web Animation library",
-  "keywords": [
-    "webanimation",
-    "animate",
-    "animatecss",
-    "javascript",
-    "animation",
-    "timeline",
-    "sequence"
-  ],
   "license": "MIT",
-  "main": "build/index.js",
+  "main": "./dist/index.js",
   "name": "just-animate",
   "repository": {
     "type": "git",
     "url": "https://github.com/notoriousb1t/just-animate"
   },
   "scripts": {
-    "start": "npm run build-universal && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
-    "build-core": "rollup -c rollup.core.config.js",
+    "build": "npm run build-universal && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
     "build-animations": "rollup -c rollup.animations.config.js",
-    "minify-core": "uglifyjs --c --m --screw-ie8 --o dist/just-animate-core.min.js dist/just-animate-core.js",
-    "minify-animations": "uglifyjs --c --m --screw-ie8 --o dist/just-animate-animations.min.js dist/just-animate-animations.js",
-    "build-universal": "tsc"
-  },
-  "version": "0.4.2"
+    "build-core": "rollup -c rollup.core.config.js",
+    "build-universal": "tsc",
+    "minify-core": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-core.min.js dist/browser/just-animate-core.js",
+    "minify-animations": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-animations.min.js dist/browser/just-animate-animations.js",
+    "prepublish": "npm run build",
+    "start": "npm run build",
+    "npm-publish": "npm run build && cd ./dist && npm publish"
+  }
 }

@@ -1,0 +1,7 @@
+src/
+examples/
+node_modules/
+rollup.core.config.js
+rollup.animations.config.js
+tsconfig.json
+tslint.json
