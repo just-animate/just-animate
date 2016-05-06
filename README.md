@@ -15,7 +15,8 @@
 
   ```html
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="just-animate.js"></script>
+  <script src="just-animate-core.js"></script>
+  <script src="just-animate-animations.js"></script>
   ```
   Just Animate uses the new Web Animations API in JavaScript.  For maximum browser compatibility, this should be included even
   if your browser supports this new standard.
@@ -47,7 +48,7 @@
 3. Use the player returned from animate to do more advanced things:
  
  ```javascript
- var player = Just.fadeIn('#animate-me');
+ var player = Just.animate('fadeIn', '#animate-me');
  player.play();
  player.pause();
  player.finish();
@@ -60,7 +61,8 @@
 
   ```html
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="just-animate.js"></script>
+  <script src="just-animate-core.js"></script>
+  <script src="just-animate-animations.js"></script>
   ```
   
 2. Import the JustAnimate module into your application
@@ -93,7 +95,7 @@
 
 ## Included animations
 
-  The animations in JustAnimate are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
+  The animations in just-animate-animations.js are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
 
   * `bounce`
   * `flash`
