@@ -1,4 +1,4 @@
-declare module "app/helpers" {
+declare module "just-animate/app/helpers" {
     export function noop(): void;
     export function clamp(val: number, min: number, max: number): number;
     export function head<T>(indexed: ja.IIndexed<T>): T;
@@ -14,7 +14,7 @@ declare module "app/helpers" {
     export function extend(target: any, ...sources: any[]): any;
     export function multiapply(targets: ja.IIndexed<any>, fnName: string, args: ja.IIndexed<any>, cb?: ja.ICallbackHandler): any[];
 }
-declare module "easings" {
+declare module "just-animate/easings" {
     export const easings: {
         'easeInCubic': string;
         'easeOutCubic': string;
@@ -43,7 +43,7 @@ declare module "easings" {
         'elegantSlowStartEnd': string;
     };
 }
-declare module "app/ElementAnimator" {
+declare module "just-animate/app/ElementAnimator" {
     export class ElementAnimator implements ja.IAnimator {
         duration: number;
         onfinish: ja.IConsumer<ja.IAnimator>;
@@ -59,7 +59,7 @@ declare module "app/ElementAnimator" {
         cancel(fn?: ja.ICallbackHandler): ja.IAnimator;
     }
 }
-declare module "app/SequenceAnimator" {
+declare module "just-animate/app/SequenceAnimator" {
     export class SequenceAnimator implements ja.IAnimator {
         playbackRate: number;
         onfinish: ja.IConsumer<ja.IAnimator>;
@@ -82,7 +82,7 @@ declare module "app/SequenceAnimator" {
         private _playThisStep();
     }
 }
-declare module "app/TimelineAnimator" {
+declare module "just-animate/app/TimelineAnimator" {
     export class TimelineAnimator implements ja.IAnimator {
         currentTime: number;
         duration: number;
@@ -109,7 +109,7 @@ declare module "app/TimelineAnimator" {
         private _reset();
     }
 }
-declare module "AnimationManager" {
+declare module "just-animate/AnimationManager" {
     export class AnimationManager implements ja.IAnimationManager {
         private _registry;
         private _timings;
@@ -122,7 +122,7 @@ declare module "AnimationManager" {
         register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager;
     }
 }
-declare module "animations/bounce" {
+declare module "just-animate/animations/bounce" {
     export const bounce: {
         'keyframes': {
             'offset': number;
@@ -136,7 +136,7 @@ declare module "animations/bounce" {
         'name': string;
     };
 }
-declare module "animations/bounceIn" {
+declare module "just-animate/animations/bounceIn" {
     export const bounceIn: {
         'keyframes': ({
             'opacity': number;
@@ -152,7 +152,7 @@ declare module "animations/bounceIn" {
         'name': string;
     };
 }
-declare module "animations/bounceInDown" {
+declare module "just-animate/animations/bounceInDown" {
     export const bounceInDown: {
         'keyframes': {
             'offset': number;
@@ -168,7 +168,7 @@ declare module "animations/bounceInDown" {
         'name': string;
     };
 }
-declare module "animations/bounceInLeft" {
+declare module "just-animate/animations/bounceInLeft" {
     export const bounceInLeft: {
         'keyframes': {
             'offset': number;
@@ -183,7 +183,7 @@ declare module "animations/bounceInLeft" {
         'name': string;
     };
 }
-declare module "animations/bounceInRight" {
+declare module "just-animate/animations/bounceInRight" {
     export const bounceInRight: {
         'keyframes': ({
             'offset': number;
@@ -201,7 +201,7 @@ declare module "animations/bounceInRight" {
         'name': string;
     };
 }
-declare module "animations/bounceInUp" {
+declare module "just-animate/animations/bounceInUp" {
     export const bounceInUp: {
         'keyframes': {
             'offset': number;
@@ -216,7 +216,7 @@ declare module "animations/bounceInUp" {
         'name': string;
     };
 }
-declare module "animations/bounceOut" {
+declare module "just-animate/animations/bounceOut" {
     export const bounceOut: {
         'keyframes': ({
             'offset': number;
@@ -233,7 +233,7 @@ declare module "animations/bounceOut" {
         'name': string;
     };
 }
-declare module "animations/bounceOutDown" {
+declare module "just-animate/animations/bounceOutDown" {
     export const bounceOutDown: {
         'keyframes': ({
             'offset': number;
@@ -250,7 +250,7 @@ declare module "animations/bounceOutDown" {
         'name': string;
     };
 }
-declare module "animations/bounceOutLeft" {
+declare module "just-animate/animations/bounceOutLeft" {
     export const bounceOutLeft: {
         'keyframes': {
             'offset': number;
@@ -264,7 +264,7 @@ declare module "animations/bounceOutLeft" {
         'name': string;
     };
 }
-declare module "animations/bounceOutRight" {
+declare module "just-animate/animations/bounceOutRight" {
     export const bounceOutRight: {
         'keyframes': {
             'offset': number;
@@ -278,7 +278,7 @@ declare module "animations/bounceOutRight" {
         'name': string;
     };
 }
-declare module "animations/bounceOutUp" {
+declare module "just-animate/animations/bounceOutUp" {
     export const bounceOutUp: {
         'keyframes': {
             'offset': number;
@@ -292,7 +292,7 @@ declare module "animations/bounceOutUp" {
         'name': string;
     };
 }
-declare module "animations/fadeIn" {
+declare module "just-animate/animations/fadeIn" {
     export const fadeIn: {
         'keyframes': {
             'opacity': number;
@@ -305,7 +305,7 @@ declare module "animations/fadeIn" {
         'name': string;
     };
 }
-declare module "animations/fadeInDown" {
+declare module "just-animate/animations/fadeInDown" {
     export const fadeInDown: {
         'keyframes': {
             'opacity': number;
@@ -318,7 +318,7 @@ declare module "animations/fadeInDown" {
         'name': string;
     };
 }
-declare module "animations/fadeInDownBig" {
+declare module "just-animate/animations/fadeInDownBig" {
     export const fadeInDownBig: {
         'keyframes': {
             'opacity': number;
@@ -331,7 +331,7 @@ declare module "animations/fadeInDownBig" {
         'name': string;
     };
 }
-declare module "animations/fadeInLeft" {
+declare module "just-animate/animations/fadeInLeft" {
     export const fadeInLeft: {
         'keyframes': {
             'opacity': number;
@@ -344,7 +344,7 @@ declare module "animations/fadeInLeft" {
         'name': string;
     };
 }
-declare module "animations/fadeInLeftBig" {
+declare module "just-animate/animations/fadeInLeftBig" {
     export const fadeInLeftBig: {
         'keyframes': {
             'opacity': number;
@@ -357,7 +357,7 @@ declare module "animations/fadeInLeftBig" {
         'name': string;
     };
 }
-declare module "animations/fadeInRight" {
+declare module "just-animate/animations/fadeInRight" {
     export const fadeInRight: {
         'keyframes': {
             'opacity': number;
@@ -370,7 +370,7 @@ declare module "animations/fadeInRight" {
         'name': string;
     };
 }
-declare module "animations/fadeInRightBig" {
+declare module "just-animate/animations/fadeInRightBig" {
     export const fadeInRightBig: {
         'keyframes': {
             'opacity': number;
@@ -383,7 +383,7 @@ declare module "animations/fadeInRightBig" {
         'name': string;
     };
 }
-declare module "animations/fadeInUp" {
+declare module "just-animate/animations/fadeInUp" {
     export const fadeInUp: {
         'keyframes': {
             'opacity': number;
@@ -396,7 +396,7 @@ declare module "animations/fadeInUp" {
         'name': string;
     };
 }
-declare module "animations/fadeInUpBig" {
+declare module "just-animate/animations/fadeInUpBig" {
     export const fadeInUpBig: {
         'keyframes': {
             'opacity': number;
@@ -409,7 +409,7 @@ declare module "animations/fadeInUpBig" {
         'name': string;
     };
 }
-declare module "animations/fadeOut" {
+declare module "just-animate/animations/fadeOut" {
     export const fadeOut: {
         'keyframes': {
             'opacity': number;
@@ -421,7 +421,7 @@ declare module "animations/fadeOut" {
         'name': string;
     };
 }
-declare module "animations/fadeOutDown" {
+declare module "just-animate/animations/fadeOutDown" {
     export const fadeOutDown: {
         'keyframes': {
             'opacity': number;
@@ -433,7 +433,7 @@ declare module "animations/fadeOutDown" {
         'name': string;
     };
 }
-declare module "animations/fadeOutDownBig" {
+declare module "just-animate/animations/fadeOutDownBig" {
     export const fadeOutDownBig: {
         'keyframes': {
             'opacity': number;
@@ -445,7 +445,7 @@ declare module "animations/fadeOutDownBig" {
         'name': string;
     };
 }
-declare module "animations/fadeOutLeft" {
+declare module "just-animate/animations/fadeOutLeft" {
     export const fadeOutLeft: {
         'keyframes': {
             'opacity': number;
@@ -457,7 +457,7 @@ declare module "animations/fadeOutLeft" {
         'name': string;
     };
 }
-declare module "animations/fadeOutLeftBig" {
+declare module "just-animate/animations/fadeOutLeftBig" {
     export const fadeOutLeftBig: {
         'keyframes': {
             'opacity': number;
@@ -469,7 +469,7 @@ declare module "animations/fadeOutLeftBig" {
         'name': string;
     };
 }
-declare module "animations/fadeOutRight" {
+declare module "just-animate/animations/fadeOutRight" {
     export const fadeOutRight: {
         'keyframes': {
             'opacity': number;
@@ -481,7 +481,7 @@ declare module "animations/fadeOutRight" {
         'name': string;
     };
 }
-declare module "animations/fadeOutRightBig" {
+declare module "just-animate/animations/fadeOutRightBig" {
     export const fadeOutRightBig: {
         'keyframes': {
             'opacity': number;
@@ -493,7 +493,7 @@ declare module "animations/fadeOutRightBig" {
         'name': string;
     };
 }
-declare module "animations/fadeOutUp" {
+declare module "just-animate/animations/fadeOutUp" {
     export const fadeOutUp: {
         'keyframes': {
             'opacity': number;
@@ -505,7 +505,7 @@ declare module "animations/fadeOutUp" {
         'name': string;
     };
 }
-declare module "animations/fadeOutUpBig" {
+declare module "just-animate/animations/fadeOutUpBig" {
     export const fadeOutUpBig: {
         'keyframes': {
             'opacity': number;
@@ -517,7 +517,7 @@ declare module "animations/fadeOutUpBig" {
         'name': string;
     };
 }
-declare module "animations/flash" {
+declare module "just-animate/animations/flash" {
     export const flash: {
         'keyframes': {
             'opacity': number;
@@ -528,7 +528,7 @@ declare module "animations/flash" {
         'name': string;
     };
 }
-declare module "animations/flip" {
+declare module "just-animate/animations/flip" {
     export const flip: {
         'keyframes': {
             'offset': number;
@@ -540,7 +540,7 @@ declare module "animations/flip" {
         'name': string;
     };
 }
-declare module "animations/flipInX" {
+declare module "just-animate/animations/flipInX" {
     export const flipInX: {
         'keyframes': ({
             'offset': number;
@@ -565,7 +565,7 @@ declare module "animations/flipInX" {
         'name': string;
     };
 }
-declare module "animations/flipInY" {
+declare module "just-animate/animations/flipInY" {
     export const flipInY: {
         'keyframes': ({
             'offset': number;
@@ -581,7 +581,7 @@ declare module "animations/flipInY" {
         'name': string;
     };
 }
-declare module "animations/flipOutX" {
+declare module "just-animate/animations/flipOutX" {
     export const flipOutX: {
         'keyframes': {
             'offset': number;
@@ -594,7 +594,7 @@ declare module "animations/flipOutX" {
         'name': string;
     };
 }
-declare module "animations/flipOutY" {
+declare module "just-animate/animations/flipOutY" {
     export const flipOutY: {
         'keyframes': {
             'offset': number;
@@ -607,7 +607,7 @@ declare module "animations/flipOutY" {
         'name': string;
     };
 }
-declare module "animations/headShake" {
+declare module "just-animate/animations/headShake" {
     export const headShake: {
         'keyframes': {
             'offset': number;
@@ -619,7 +619,7 @@ declare module "animations/headShake" {
         'name': string;
     };
 }
-declare module "animations/hinge" {
+declare module "just-animate/animations/hinge" {
     export const hinge: {
         'keyframes': ({
             'transform': string;
@@ -635,7 +635,7 @@ declare module "animations/hinge" {
         'name': string;
     };
 }
-declare module "animations/jello" {
+declare module "just-animate/animations/jello" {
     export const jello: {
         'keyframes': {
             'offset': number;
@@ -649,7 +649,7 @@ declare module "animations/jello" {
         'name': string;
     };
 }
-declare module "animations/lightSpeedIn" {
+declare module "just-animate/animations/lightSpeedIn" {
     export const lightSpeedIn: {
         'keyframes': {
             'offset': number;
@@ -664,7 +664,7 @@ declare module "animations/lightSpeedIn" {
         'name': string;
     };
 }
-declare module "animations/lightSpeedOut" {
+declare module "just-animate/animations/lightSpeedOut" {
     export const lightSpeedOut: {
         'keyframes': {
             'transform': string;
@@ -678,7 +678,7 @@ declare module "animations/lightSpeedOut" {
         'name': string;
     };
 }
-declare module "animations/pulse" {
+declare module "just-animate/animations/pulse" {
     export const pulse: {
         'keyframes': {
             'transform': string;
@@ -689,7 +689,7 @@ declare module "animations/pulse" {
         'name': string;
     };
 }
-declare module "animations/rollIn" {
+declare module "just-animate/animations/rollIn" {
     export const rollIn: {
         'keyframes': {
             'opacity': number;
@@ -701,7 +701,7 @@ declare module "animations/rollIn" {
         'name': string;
     };
 }
-declare module "animations/rollOut" {
+declare module "just-animate/animations/rollOut" {
     export const rollOut: {
         'keyframes': {
             'opacity': number;
@@ -713,7 +713,7 @@ declare module "animations/rollOut" {
         'name': string;
     };
 }
-declare module "animations/rotateIn" {
+declare module "just-animate/animations/rotateIn" {
     export const rotateIn: {
         'keyframes': {
             'transform-origin': string;
@@ -726,7 +726,7 @@ declare module "animations/rotateIn" {
         'name': string;
     };
 }
-declare module "animations/rotateInDownLeft" {
+declare module "just-animate/animations/rotateInDownLeft" {
     export const rotateInDownLeft: {
         'keyframes': {
             'transform-origin': string;
@@ -739,7 +739,7 @@ declare module "animations/rotateInDownLeft" {
         'name': string;
     };
 }
-declare module "animations/rotateInDownRight" {
+declare module "just-animate/animations/rotateInDownRight" {
     export const rotateInDownRight: {
         'keyframes': {
             'transform-origin': string;
@@ -752,7 +752,7 @@ declare module "animations/rotateInDownRight" {
         'name': string;
     };
 }
-declare module "animations/rotateInUpLeft" {
+declare module "just-animate/animations/rotateInUpLeft" {
     export const rotateInUpLeft: {
         'keyframes': {
             'transform-origin': string;
@@ -765,7 +765,7 @@ declare module "animations/rotateInUpLeft" {
         'name': string;
     };
 }
-declare module "animations/rotateInUpRight" {
+declare module "just-animate/animations/rotateInUpRight" {
     export const rotateInUpRight: {
         'keyframes': {
             'transform-origin': string;
@@ -778,7 +778,7 @@ declare module "animations/rotateInUpRight" {
         'name': string;
     };
 }
-declare module "animations/rotateOut" {
+declare module "just-animate/animations/rotateOut" {
     export const rotateOut: {
         'keyframes': {
             'transform-origin': string;
@@ -791,7 +791,7 @@ declare module "animations/rotateOut" {
         'name': string;
     };
 }
-declare module "animations/rotateOutDownLeft" {
+declare module "just-animate/animations/rotateOutDownLeft" {
     export const rotateOutDownLeft: {
         'keyframes': {
             'transform-origin': string;
@@ -804,7 +804,7 @@ declare module "animations/rotateOutDownLeft" {
         'name': string;
     };
 }
-declare module "animations/rotateOutDownRight" {
+declare module "just-animate/animations/rotateOutDownRight" {
     export const rotateOutDownRight: {
         'keyframes': {
             'transform-origin': string;
@@ -817,7 +817,7 @@ declare module "animations/rotateOutDownRight" {
         'name': string;
     };
 }
-declare module "animations/rotateOutUpLeft" {
+declare module "just-animate/animations/rotateOutUpLeft" {
     export const rotateOutUpLeft: {
         'keyframes': {
             'transform-origin': string;
@@ -830,7 +830,7 @@ declare module "animations/rotateOutUpLeft" {
         'name': string;
     };
 }
-declare module "animations/rotateOutUpRight" {
+declare module "just-animate/animations/rotateOutUpRight" {
     export const rotateOutUpRight: {
         'keyframes': {
             'transform-origin': string;
@@ -843,7 +843,7 @@ declare module "animations/rotateOutUpRight" {
         'name': string;
     };
 }
-declare module "animations/rubberBand" {
+declare module "just-animate/animations/rubberBand" {
     export const rubberBand: {
         'keyframes': {
             'offset': number;
@@ -855,7 +855,7 @@ declare module "animations/rubberBand" {
         'name': string;
     };
 }
-declare module "animations/shake" {
+declare module "just-animate/animations/shake" {
     export const shake: {
         'keyframes': {
             'transform': string;
@@ -866,7 +866,7 @@ declare module "animations/shake" {
         'name': string;
     };
 }
-declare module "animations/slideInDown" {
+declare module "just-animate/animations/slideInDown" {
     export const slideInDown: {
         'keyframes': {
             'transform': string;
@@ -878,7 +878,7 @@ declare module "animations/slideInDown" {
         'name': string;
     };
 }
-declare module "animations/slideInLeft" {
+declare module "just-animate/animations/slideInLeft" {
     export const slideInLeft: {
         'keyframes': {
             'transform': string;
@@ -890,7 +890,7 @@ declare module "animations/slideInLeft" {
         'name': string;
     };
 }
-declare module "animations/slideInRight" {
+declare module "just-animate/animations/slideInRight" {
     export const slideInRight: {
         'keyframes': {
             'transform': string;
@@ -902,7 +902,7 @@ declare module "animations/slideInRight" {
         'name': string;
     };
 }
-declare module "animations/slideInUp" {
+declare module "just-animate/animations/slideInUp" {
     export const slideInUp: {
         'keyframes': {
             'transform': string;
@@ -914,7 +914,7 @@ declare module "animations/slideInUp" {
         'name': string;
     };
 }
-declare module "animations/slideOutDown" {
+declare module "just-animate/animations/slideOutDown" {
     export const slideOutDown: {
         'keyframes': {
             'transform': string;
@@ -926,7 +926,7 @@ declare module "animations/slideOutDown" {
         'name': string;
     };
 }
-declare module "animations/slideOutLeft" {
+declare module "just-animate/animations/slideOutLeft" {
     export const slideOutLeft: {
         'keyframes': {
             'visibility': string;
@@ -938,7 +938,7 @@ declare module "animations/slideOutLeft" {
         'name': string;
     };
 }
-declare module "animations/slideOutRight" {
+declare module "just-animate/animations/slideOutRight" {
     export const slideOutRight: {
         'keyframes': {
             'visibility': string;
@@ -950,7 +950,7 @@ declare module "animations/slideOutRight" {
         'name': string;
     };
 }
-declare module "animations/slideOutUp" {
+declare module "just-animate/animations/slideOutUp" {
     export const slideOutUp: {
         'keyframes': {
             'visibility': string;
@@ -962,7 +962,7 @@ declare module "animations/slideOutUp" {
         'name': string;
     };
 }
-declare module "animations/swing" {
+declare module "just-animate/animations/swing" {
     export const swing: {
         'keyframes': {
             'transform': string;
@@ -973,7 +973,7 @@ declare module "animations/swing" {
         'name': string;
     };
 }
-declare module "animations/tada" {
+declare module "just-animate/animations/tada" {
     export const tada: {
         'keyframes': {
             'transform': string;
@@ -984,7 +984,7 @@ declare module "animations/tada" {
         'name': string;
     };
 }
-declare module "animations/wobble" {
+declare module "just-animate/animations/wobble" {
     export const wobble: {
         'keyframes': {
             'offset': number;
@@ -996,7 +996,7 @@ declare module "animations/wobble" {
         'name': string;
     };
 }
-declare module "animations/zoomIn" {
+declare module "just-animate/animations/zoomIn" {
     export const zoomIn: {
         'keyframes': ({
             'opacity': number;
@@ -1011,7 +1011,7 @@ declare module "animations/zoomIn" {
         'name': string;
     };
 }
-declare module "animations/zoomInDown" {
+declare module "just-animate/animations/zoomInDown" {
     export const zoomInDown: {
         'keyframes': {
             'offset': number;
@@ -1025,7 +1025,7 @@ declare module "animations/zoomInDown" {
         'name': string;
     };
 }
-declare module "animations/zoomInLeft" {
+declare module "just-animate/animations/zoomInLeft" {
     export const zoomInLeft: {
         'keyframes': {
             'offset': number;
@@ -1039,7 +1039,7 @@ declare module "animations/zoomInLeft" {
         'name': string;
     };
 }
-declare module "animations/zoomInRight" {
+declare module "just-animate/animations/zoomInRight" {
     export const zoomInRight: {
         'keyframes': {
             'offset': number;
@@ -1053,7 +1053,7 @@ declare module "animations/zoomInRight" {
         'name': string;
     };
 }
-declare module "animations/zoomInUp" {
+declare module "just-animate/animations/zoomInUp" {
     export const zoomInUp: {
         'keyframes': {
             'offset': number;
@@ -1067,7 +1067,7 @@ declare module "animations/zoomInUp" {
         'name': string;
     };
 }
-declare module "animations/zoomOut" {
+declare module "just-animate/animations/zoomOut" {
     export const zoomOut: {
         'keyframes': ({
             'opacity': number;
@@ -1084,7 +1084,7 @@ declare module "animations/zoomOut" {
         'name': string;
     };
 }
-declare module "animations/zoomOutDown" {
+declare module "just-animate/animations/zoomOutDown" {
     export const zoomOutDown: {
         'keyframes': {
             'offset': number;
@@ -1099,7 +1099,7 @@ declare module "animations/zoomOutDown" {
         'name': string;
     };
 }
-declare module "animations/zoomOutLeft" {
+declare module "just-animate/animations/zoomOutLeft" {
     export const zoomOutLeft: {
         'keyframes': ({
             'offset': number;
@@ -1118,7 +1118,7 @@ declare module "animations/zoomOutLeft" {
         'name': string;
     };
 }
-declare module "animations/zoomOutRight" {
+declare module "just-animate/animations/zoomOutRight" {
     export const zoomOutRight: {
         'keyframes': ({
             'offset': number;
@@ -1137,7 +1137,7 @@ declare module "animations/zoomOutRight" {
         'name': string;
     };
 }
-declare module "animations/zoomOutUp" {
+declare module "just-animate/animations/zoomOutUp" {
     export const zoomOutUp: {
         'keyframes': ({
             'offset': number;
@@ -1156,83 +1156,83 @@ declare module "animations/zoomOutUp" {
         'name': string;
     };
 }
-declare module "animations" {
-    import { bounce } from "animations/bounce";
-    import { bounceIn } from "animations/bounceIn";
-    import { bounceInDown } from "animations/bounceInDown";
-    import { bounceInLeft } from "animations/bounceInLeft";
-    import { bounceInRight } from "animations/bounceInRight";
-    import { bounceInUp } from "animations/bounceInUp";
-    import { bounceOut } from "animations/bounceOut";
-    import { bounceOutDown } from "animations/bounceOutDown";
-    import { bounceOutLeft } from "animations/bounceOutLeft";
-    import { bounceOutRight } from "animations/bounceOutRight";
-    import { bounceOutUp } from "animations/bounceOutUp";
-    import { fadeIn } from "animations/fadeIn";
-    import { fadeInDown } from "animations/fadeInDown";
-    import { fadeInDownBig } from "animations/fadeInDownBig";
-    import { fadeInLeft } from "animations/fadeInLeft";
-    import { fadeInLeftBig } from "animations/fadeInLeftBig";
-    import { fadeInRight } from "animations/fadeInRight";
-    import { fadeInRightBig } from "animations/fadeInRightBig";
-    import { fadeInUp } from "animations/fadeInUp";
-    import { fadeInUpBig } from "animations/fadeInUpBig";
-    import { fadeOut } from "animations/fadeOut";
-    import { fadeOutDown } from "animations/fadeOutDown";
-    import { fadeOutDownBig } from "animations/fadeOutDownBig";
-    import { fadeOutLeft } from "animations/fadeOutLeft";
-    import { fadeOutLeftBig } from "animations/fadeOutLeftBig";
-    import { fadeOutRight } from "animations/fadeOutRight";
-    import { fadeOutRightBig } from "animations/fadeOutRightBig";
-    import { fadeOutUp } from "animations/fadeOutUp";
-    import { fadeOutUpBig } from "animations/fadeOutUpBig";
-    import { flash } from "animations/flash";
-    import { flip } from "animations/flip";
-    import { flipInX } from "animations/flipInX";
-    import { flipInY } from "animations/flipInY";
-    import { flipOutX } from "animations/flipOutX";
-    import { flipOutY } from "animations/flipOutY";
-    import { headShake } from "animations/headShake";
-    import { hinge } from "animations/hinge";
-    import { jello } from "animations/jello";
-    import { lightSpeedIn } from "animations/lightSpeedIn";
-    import { lightSpeedOut } from "animations/lightSpeedOut";
-    import { pulse } from "animations/pulse";
-    import { rollIn } from "animations/rollIn";
-    import { rollOut } from "animations/rollOut";
-    import { rotateIn } from "animations/rotateIn";
-    import { rotateInDownLeft } from "animations/rotateInDownLeft";
-    import { rotateInDownRight } from "animations/rotateInDownRight";
-    import { rotateInUpLeft } from "animations/rotateInUpLeft";
-    import { rotateInUpRight } from "animations/rotateInUpRight";
-    import { rotateOut } from "animations/rotateOut";
-    import { rotateOutDownLeft } from "animations/rotateOutDownLeft";
-    import { rotateOutDownRight } from "animations/rotateOutDownRight";
-    import { rotateOutUpLeft } from "animations/rotateOutUpLeft";
-    import { rotateOutUpRight } from "animations/rotateOutUpRight";
-    import { rubberBand } from "animations/rubberBand";
-    import { shake } from "animations/shake";
-    import { slideInDown } from "animations/slideInDown";
-    import { slideInLeft } from "animations/slideInLeft";
-    import { slideInRight } from "animations/slideInRight";
-    import { slideInUp } from "animations/slideInUp";
-    import { slideOutDown } from "animations/slideOutDown";
-    import { slideOutLeft } from "animations/slideOutLeft";
-    import { slideOutRight } from "animations/slideOutRight";
-    import { slideOutUp } from "animations/slideOutUp";
-    import { swing } from "animations/swing";
-    import { tada } from "animations/tada";
-    import { wobble } from "animations/wobble";
-    import { zoomIn } from "animations/zoomIn";
-    import { zoomInDown } from "animations/zoomInDown";
-    import { zoomInLeft } from "animations/zoomInLeft";
-    import { zoomInRight } from "animations/zoomInRight";
-    import { zoomInUp } from "animations/zoomInUp";
-    import { zoomOut } from "animations/zoomOut";
-    import { zoomOutDown } from "animations/zoomOutDown";
-    import { zoomOutLeft } from "animations/zoomOutLeft";
-    import { zoomOutRight } from "animations/zoomOutRight";
-    import { zoomOutUp } from "animations/zoomOutUp";
+declare module "just-animate/animations" {
+    import { bounce } from "just-animate/animations/bounce";
+    import { bounceIn } from "just-animate/animations/bounceIn";
+    import { bounceInDown } from "just-animate/animations/bounceInDown";
+    import { bounceInLeft } from "just-animate/animations/bounceInLeft";
+    import { bounceInRight } from "just-animate/animations/bounceInRight";
+    import { bounceInUp } from "just-animate/animations/bounceInUp";
+    import { bounceOut } from "just-animate/animations/bounceOut";
+    import { bounceOutDown } from "just-animate/animations/bounceOutDown";
+    import { bounceOutLeft } from "just-animate/animations/bounceOutLeft";
+    import { bounceOutRight } from "just-animate/animations/bounceOutRight";
+    import { bounceOutUp } from "just-animate/animations/bounceOutUp";
+    import { fadeIn } from "just-animate/animations/fadeIn";
+    import { fadeInDown } from "just-animate/animations/fadeInDown";
+    import { fadeInDownBig } from "just-animate/animations/fadeInDownBig";
+    import { fadeInLeft } from "just-animate/animations/fadeInLeft";
+    import { fadeInLeftBig } from "just-animate/animations/fadeInLeftBig";
+    import { fadeInRight } from "just-animate/animations/fadeInRight";
+    import { fadeInRightBig } from "just-animate/animations/fadeInRightBig";
+    import { fadeInUp } from "just-animate/animations/fadeInUp";
+    import { fadeInUpBig } from "just-animate/animations/fadeInUpBig";
+    import { fadeOut } from "just-animate/animations/fadeOut";
+    import { fadeOutDown } from "just-animate/animations/fadeOutDown";
+    import { fadeOutDownBig } from "just-animate/animations/fadeOutDownBig";
+    import { fadeOutLeft } from "just-animate/animations/fadeOutLeft";
+    import { fadeOutLeftBig } from "just-animate/animations/fadeOutLeftBig";
+    import { fadeOutRight } from "just-animate/animations/fadeOutRight";
+    import { fadeOutRightBig } from "just-animate/animations/fadeOutRightBig";
+    import { fadeOutUp } from "just-animate/animations/fadeOutUp";
+    import { fadeOutUpBig } from "just-animate/animations/fadeOutUpBig";
+    import { flash } from "just-animate/animations/flash";
+    import { flip } from "just-animate/animations/flip";
+    import { flipInX } from "just-animate/animations/flipInX";
+    import { flipInY } from "just-animate/animations/flipInY";
+    import { flipOutX } from "just-animate/animations/flipOutX";
+    import { flipOutY } from "just-animate/animations/flipOutY";
+    import { headShake } from "just-animate/animations/headShake";
+    import { hinge } from "just-animate/animations/hinge";
+    import { jello } from "just-animate/animations/jello";
+    import { lightSpeedIn } from "just-animate/animations/lightSpeedIn";
+    import { lightSpeedOut } from "just-animate/animations/lightSpeedOut";
+    import { pulse } from "just-animate/animations/pulse";
+    import { rollIn } from "just-animate/animations/rollIn";
+    import { rollOut } from "just-animate/animations/rollOut";
+    import { rotateIn } from "just-animate/animations/rotateIn";
+    import { rotateInDownLeft } from "just-animate/animations/rotateInDownLeft";
+    import { rotateInDownRight } from "just-animate/animations/rotateInDownRight";
+    import { rotateInUpLeft } from "just-animate/animations/rotateInUpLeft";
+    import { rotateInUpRight } from "just-animate/animations/rotateInUpRight";
+    import { rotateOut } from "just-animate/animations/rotateOut";
+    import { rotateOutDownLeft } from "just-animate/animations/rotateOutDownLeft";
+    import { rotateOutDownRight } from "just-animate/animations/rotateOutDownRight";
+    import { rotateOutUpLeft } from "just-animate/animations/rotateOutUpLeft";
+    import { rotateOutUpRight } from "just-animate/animations/rotateOutUpRight";
+    import { rubberBand } from "just-animate/animations/rubberBand";
+    import { shake } from "just-animate/animations/shake";
+    import { slideInDown } from "just-animate/animations/slideInDown";
+    import { slideInLeft } from "just-animate/animations/slideInLeft";
+    import { slideInRight } from "just-animate/animations/slideInRight";
+    import { slideInUp } from "just-animate/animations/slideInUp";
+    import { slideOutDown } from "just-animate/animations/slideOutDown";
+    import { slideOutLeft } from "just-animate/animations/slideOutLeft";
+    import { slideOutRight } from "just-animate/animations/slideOutRight";
+    import { slideOutUp } from "just-animate/animations/slideOutUp";
+    import { swing } from "just-animate/animations/swing";
+    import { tada } from "just-animate/animations/tada";
+    import { wobble } from "just-animate/animations/wobble";
+    import { zoomIn } from "just-animate/animations/zoomIn";
+    import { zoomInDown } from "just-animate/animations/zoomInDown";
+    import { zoomInLeft } from "just-animate/animations/zoomInLeft";
+    import { zoomInRight } from "just-animate/animations/zoomInRight";
+    import { zoomInUp } from "just-animate/animations/zoomInUp";
+    import { zoomOut } from "just-animate/animations/zoomOut";
+    import { zoomOutDown } from "just-animate/animations/zoomOutDown";
+    import { zoomOutLeft } from "just-animate/animations/zoomOutLeft";
+    import { zoomOutRight } from "just-animate/animations/zoomOutRight";
+    import { zoomOutUp } from "just-animate/animations/zoomOutUp";
     export const ANIMATE_CSS: ({
         'keyframes': {
             'opacity': number;
@@ -1327,9 +1327,9 @@ declare module "animations" {
     export { zoomOutRight };
     export { zoomOutUp };
 }
-declare module "index" {
-    import * as easings from "easings";
-    import * as animations from "animations";
+declare module "just-animate/index" {
+    import * as easings from "just-animate/easings";
+    import * as animations from "just-animate/animations";
     export { animations, easings };
-    export { AnimationManager } from "AnimationManager";
+    export { AnimationManager } from "just-animate/AnimationManager";
 }

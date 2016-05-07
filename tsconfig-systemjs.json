@@ -3,14 +3,14 @@
     "target": "es5",
     "module": "system",
     "moduleResolution": "node",
-    "sourceMap": true,
+    "sourceMap": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
     "suppressImplicitAnyIndexErrors": true,
-    "outFile": "./dist/browser/just-animate-dev.js",
+    "outFile": "./dist/browser/just-animate-systemjs.js",
     "declaration": true,
-    "rootDir": "./src"
+    "rootDir": "."
   },
   "exclude": [
         "node_modules",

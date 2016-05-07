@@ -1,4 +1,4 @@
-System.register("app/helpers", [], function(exports_1, context_1) {
+System.register("just-animate/app/helpers", [], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var ostring, slice;
@@ -115,7 +115,7 @@ System.register("app/helpers", [], function(exports_1, context_1) {
         }
     }
 });
-System.register("easings", [], function(exports_2, context_2) {
+System.register("just-animate/easings", [], function(exports_2, context_2) {
     "use strict";
     var __moduleName = context_2 && context_2.id;
     var easings;
@@ -152,7 +152,7 @@ System.register("easings", [], function(exports_2, context_2) {
         }
     }
 });
-System.register("app/ElementAnimator", ["easings", "app/helpers"], function(exports_3, context_3) {
+System.register("just-animate/app/ElementAnimator", ["just-animate/easings", "just-animate/app/helpers"], function(exports_3, context_3) {
     "use strict";
     var __moduleName = context_3 && context_3.id;
     var easings_1, helpers_1;
@@ -298,7 +298,7 @@ System.register("app/ElementAnimator", ["easings", "app/helpers"], function(expo
         }
     }
 });
-System.register("app/SequenceAnimator", ["app/helpers"], function(exports_4, context_4) {
+System.register("just-animate/app/SequenceAnimator", ["just-animate/app/helpers"], function(exports_4, context_4) {
     "use strict";
     var __moduleName = context_4 && context_4.id;
     var helpers_2;
@@ -471,7 +471,7 @@ System.register("app/SequenceAnimator", ["app/helpers"], function(exports_4, con
         }
     }
 });
-System.register("app/TimelineAnimator", ["app/helpers"], function(exports_5, context_5) {
+System.register("just-animate/app/TimelineAnimator", ["just-animate/app/helpers"], function(exports_5, context_5) {
     "use strict";
     var __moduleName = context_5 && context_5.id;
     var helpers_3;
@@ -684,7 +684,7 @@ System.register("app/TimelineAnimator", ["app/helpers"], function(exports_5, con
         }
     }
 });
-System.register("AnimationManager", ["app/helpers", "app/ElementAnimator", "app/SequenceAnimator", "app/TimelineAnimator"], function(exports_6, context_6) {
+System.register("just-animate/AnimationManager", ["just-animate/app/helpers", "just-animate/app/ElementAnimator", "just-animate/app/SequenceAnimator", "just-animate/app/TimelineAnimator"], function(exports_6, context_6) {
     "use strict";
     var __moduleName = context_6 && context_6.id;
     var helpers_4, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
@@ -742,7 +742,7 @@ System.register("AnimationManager", ["app/helpers", "app/ElementAnimator", "app/
         }
     }
 });
-System.register("animations/bounce", [], function(exports_7, context_7) {
+System.register("just-animate/animations/bounce", [], function(exports_7, context_7) {
     "use strict";
     var __moduleName = context_7 && context_7.id;
     var bounce;
@@ -798,7 +798,7 @@ System.register("animations/bounce", [], function(exports_7, context_7) {
         }
     }
 });
-System.register("animations/bounceIn", [], function(exports_8, context_8) {
+System.register("just-animate/animations/bounceIn", [], function(exports_8, context_8) {
     "use strict";
     var __moduleName = context_8 && context_8.id;
     var bounceIn;
@@ -839,7 +839,7 @@ System.register("animations/bounceIn", [], function(exports_8, context_8) {
         }
     }
 });
-System.register("animations/bounceInDown", [], function(exports_9, context_9) {
+System.register("just-animate/animations/bounceInDown", [], function(exports_9, context_9) {
     "use strict";
     var __moduleName = context_9 && context_9.id;
     var bounceInDown;
@@ -889,7 +889,7 @@ System.register("animations/bounceInDown", [], function(exports_9, context_9) {
         }
     }
 });
-System.register("animations/bounceInLeft", [], function(exports_10, context_10) {
+System.register("just-animate/animations/bounceInLeft", [], function(exports_10, context_10) {
     "use strict";
     var __moduleName = context_10 && context_10.id;
     var bounceInLeft;
@@ -934,7 +934,7 @@ System.register("animations/bounceInLeft", [], function(exports_10, context_10) 
         }
     }
 });
-System.register("animations/bounceInRight", [], function(exports_11, context_11) {
+System.register("just-animate/animations/bounceInRight", [], function(exports_11, context_11) {
     "use strict";
     var __moduleName = context_11 && context_11.id;
     var bounceInRight;
@@ -977,7 +977,7 @@ System.register("animations/bounceInRight", [], function(exports_11, context_11)
         }
     }
 });
-System.register("animations/bounceInUp", [], function(exports_12, context_12) {
+System.register("just-animate/animations/bounceInUp", [], function(exports_12, context_12) {
     "use strict";
     var __moduleName = context_12 && context_12.id;
     var bounceInUp;
@@ -1022,7 +1022,7 @@ System.register("animations/bounceInUp", [], function(exports_12, context_12) {
         }
     }
 });
-System.register("animations/bounceOut", [], function(exports_13, context_13) {
+System.register("just-animate/animations/bounceOut", [], function(exports_13, context_13) {
     "use strict";
     var __moduleName = context_13 && context_13.id;
     var bounceOut;
@@ -1065,7 +1065,7 @@ System.register("animations/bounceOut", [], function(exports_13, context_13) {
         }
     }
 });
-System.register("animations/bounceOutDown", [], function(exports_14, context_14) {
+System.register("just-animate/animations/bounceOutDown", [], function(exports_14, context_14) {
     "use strict";
     var __moduleName = context_14 && context_14.id;
     var bounceOutDown;
@@ -1108,7 +1108,7 @@ System.register("animations/bounceOutDown", [], function(exports_14, context_14)
         }
     }
 });
-System.register("animations/bounceOutLeft", [], function(exports_15, context_15) {
+System.register("just-animate/animations/bounceOutLeft", [], function(exports_15, context_15) {
     "use strict";
     var __moduleName = context_15 && context_15.id;
     var bounceOutLeft;
@@ -1142,7 +1142,7 @@ System.register("animations/bounceOutLeft", [], function(exports_15, context_15)
         }
     }
 });
-System.register("animations/bounceOutRight", [], function(exports_16, context_16) {
+System.register("just-animate/animations/bounceOutRight", [], function(exports_16, context_16) {
     "use strict";
     var __moduleName = context_16 && context_16.id;
     var bounceOutRight;
@@ -1176,7 +1176,7 @@ System.register("animations/bounceOutRight", [], function(exports_16, context_16
         }
     }
 });
-System.register("animations/bounceOutUp", [], function(exports_17, context_17) {
+System.register("just-animate/animations/bounceOutUp", [], function(exports_17, context_17) {
     "use strict";
     var __moduleName = context_17 && context_17.id;
     var bounceOutUp;
@@ -1220,7 +1220,7 @@ System.register("animations/bounceOutUp", [], function(exports_17, context_17) {
         }
     }
 });
-System.register("animations/fadeIn", [], function(exports_18, context_18) {
+System.register("just-animate/animations/fadeIn", [], function(exports_18, context_18) {
     "use strict";
     var __moduleName = context_18 && context_18.id;
     var fadeIn;
@@ -1246,7 +1246,7 @@ System.register("animations/fadeIn", [], function(exports_18, context_18) {
         }
     }
 });
-System.register("animations/fadeInDown", [], function(exports_19, context_19) {
+System.register("just-animate/animations/fadeInDown", [], function(exports_19, context_19) {
     "use strict";
     var __moduleName = context_19 && context_19.id;
     var fadeInDown;
@@ -1273,7 +1273,7 @@ System.register("animations/fadeInDown", [], function(exports_19, context_19) {
         }
     }
 });
-System.register("animations/fadeInDownBig", [], function(exports_20, context_20) {
+System.register("just-animate/animations/fadeInDownBig", [], function(exports_20, context_20) {
     "use strict";
     var __moduleName = context_20 && context_20.id;
     var fadeInDownBig;
@@ -1300,7 +1300,7 @@ System.register("animations/fadeInDownBig", [], function(exports_20, context_20)
         }
     }
 });
-System.register("animations/fadeInLeft", [], function(exports_21, context_21) {
+System.register("just-animate/animations/fadeInLeft", [], function(exports_21, context_21) {
     "use strict";
     var __moduleName = context_21 && context_21.id;
     var fadeInLeft;
@@ -1327,7 +1327,7 @@ System.register("animations/fadeInLeft", [], function(exports_21, context_21) {
         }
     }
 });
-System.register("animations/fadeInLeftBig", [], function(exports_22, context_22) {
+System.register("just-animate/animations/fadeInLeftBig", [], function(exports_22, context_22) {
     "use strict";
     var __moduleName = context_22 && context_22.id;
     var fadeInLeftBig;
@@ -1354,7 +1354,7 @@ System.register("animations/fadeInLeftBig", [], function(exports_22, context_22)
         }
     }
 });
-System.register("animations/fadeInRight", [], function(exports_23, context_23) {
+System.register("just-animate/animations/fadeInRight", [], function(exports_23, context_23) {
     "use strict";
     var __moduleName = context_23 && context_23.id;
     var fadeInRight;
@@ -1381,7 +1381,7 @@ System.register("animations/fadeInRight", [], function(exports_23, context_23) {
         }
     }
 });
-System.register("animations/fadeInRightBig", [], function(exports_24, context_24) {
+System.register("just-animate/animations/fadeInRightBig", [], function(exports_24, context_24) {
     "use strict";
     var __moduleName = context_24 && context_24.id;
     var fadeInRightBig;
@@ -1408,7 +1408,7 @@ System.register("animations/fadeInRightBig", [], function(exports_24, context_24
         }
     }
 });
-System.register("animations/fadeInUp", [], function(exports_25, context_25) {
+System.register("just-animate/animations/fadeInUp", [], function(exports_25, context_25) {
     "use strict";
     var __moduleName = context_25 && context_25.id;
     var fadeInUp;
@@ -1435,7 +1435,7 @@ System.register("animations/fadeInUp", [], function(exports_25, context_25) {
         }
     }
 });
-System.register("animations/fadeInUpBig", [], function(exports_26, context_26) {
+System.register("just-animate/animations/fadeInUpBig", [], function(exports_26, context_26) {
     "use strict";
     var __moduleName = context_26 && context_26.id;
     var fadeInUpBig;
@@ -1462,7 +1462,7 @@ System.register("animations/fadeInUpBig", [], function(exports_26, context_26) {
         }
     }
 });
-System.register("animations/fadeOut", [], function(exports_27, context_27) {
+System.register("just-animate/animations/fadeOut", [], function(exports_27, context_27) {
     "use strict";
     var __moduleName = context_27 && context_27.id;
     var fadeOut;
@@ -1487,7 +1487,7 @@ System.register("animations/fadeOut", [], function(exports_27, context_27) {
         }
     }
 });
-System.register("animations/fadeOutDown", [], function(exports_28, context_28) {
+System.register("just-animate/animations/fadeOutDown", [], function(exports_28, context_28) {
     "use strict";
     var __moduleName = context_28 && context_28.id;
     var fadeOutDown;
@@ -1513,7 +1513,7 @@ System.register("animations/fadeOutDown", [], function(exports_28, context_28) {
         }
     }
 });
-System.register("animations/fadeOutDownBig", [], function(exports_29, context_29) {
+System.register("just-animate/animations/fadeOutDownBig", [], function(exports_29, context_29) {
     "use strict";
     var __moduleName = context_29 && context_29.id;
     var fadeOutDownBig;
@@ -1539,7 +1539,7 @@ System.register("animations/fadeOutDownBig", [], function(exports_29, context_29
         }
     }
 });
-System.register("animations/fadeOutLeft", [], function(exports_30, context_30) {
+System.register("just-animate/animations/fadeOutLeft", [], function(exports_30, context_30) {
     "use strict";
     var __moduleName = context_30 && context_30.id;
     var fadeOutLeft;
@@ -1565,7 +1565,7 @@ System.register("animations/fadeOutLeft", [], function(exports_30, context_30) {
         }
     }
 });
-System.register("animations/fadeOutLeftBig", [], function(exports_31, context_31) {
+System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_31, context_31) {
     "use strict";
     var __moduleName = context_31 && context_31.id;
     var fadeOutLeftBig;
@@ -1591,7 +1591,7 @@ System.register("animations/fadeOutLeftBig", [], function(exports_31, context_31
         }
     }
 });
-System.register("animations/fadeOutRight", [], function(exports_32, context_32) {
+System.register("just-animate/animations/fadeOutRight", [], function(exports_32, context_32) {
     "use strict";
     var __moduleName = context_32 && context_32.id;
     var fadeOutRight;
@@ -1617,7 +1617,7 @@ System.register("animations/fadeOutRight", [], function(exports_32, context_32) 
         }
     }
 });
-System.register("animations/fadeOutRightBig", [], function(exports_33, context_33) {
+System.register("just-animate/animations/fadeOutRightBig", [], function(exports_33, context_33) {
     "use strict";
     var __moduleName = context_33 && context_33.id;
     var fadeOutRightBig;
@@ -1643,7 +1643,7 @@ System.register("animations/fadeOutRightBig", [], function(exports_33, context_3
         }
     }
 });
-System.register("animations/fadeOutUp", [], function(exports_34, context_34) {
+System.register("just-animate/animations/fadeOutUp", [], function(exports_34, context_34) {
     "use strict";
     var __moduleName = context_34 && context_34.id;
     var fadeOutUp;
@@ -1669,7 +1669,7 @@ System.register("animations/fadeOutUp", [], function(exports_34, context_34) {
         }
     }
 });
-System.register("animations/fadeOutUpBig", [], function(exports_35, context_35) {
+System.register("just-animate/animations/fadeOutUpBig", [], function(exports_35, context_35) {
     "use strict";
     var __moduleName = context_35 && context_35.id;
     var fadeOutUpBig;
@@ -1695,7 +1695,7 @@ System.register("animations/fadeOutUpBig", [], function(exports_35, context_35) 
         }
     }
 });
-System.register("animations/flash", [], function(exports_36, context_36) {
+System.register("just-animate/animations/flash", [], function(exports_36, context_36) {
     "use strict";
     var __moduleName = context_36 && context_36.id;
     var flash;
@@ -1728,7 +1728,7 @@ System.register("animations/flash", [], function(exports_36, context_36) {
         }
     }
 });
-System.register("animations/flip", [], function(exports_37, context_37) {
+System.register("just-animate/animations/flip", [], function(exports_37, context_37) {
     "use strict";
     var __moduleName = context_37 && context_37.id;
     var flip;
@@ -1766,7 +1766,7 @@ System.register("animations/flip", [], function(exports_37, context_37) {
         }
     }
 });
-System.register("animations/flipInX", [], function(exports_38, context_38) {
+System.register("just-animate/animations/flipInX", [], function(exports_38, context_38) {
     "use strict";
     var __moduleName = context_38 && context_38.id;
     var flipInX;
@@ -1809,7 +1809,7 @@ System.register("animations/flipInX", [], function(exports_38, context_38) {
         }
     }
 });
-System.register("animations/flipInY", [], function(exports_39, context_39) {
+System.register("just-animate/animations/flipInY", [], function(exports_39, context_39) {
     "use strict";
     var __moduleName = context_39 && context_39.id;
     var flipInY;
@@ -1850,7 +1850,7 @@ System.register("animations/flipInY", [], function(exports_39, context_39) {
         }
     }
 });
-System.register("animations/flipOutX", [], function(exports_40, context_40) {
+System.register("just-animate/animations/flipOutX", [], function(exports_40, context_40) {
     "use strict";
     var __moduleName = context_40 && context_40.id;
     var flipOutX;
@@ -1883,7 +1883,7 @@ System.register("animations/flipOutX", [], function(exports_40, context_40) {
         }
     }
 });
-System.register("animations/flipOutY", [], function(exports_41, context_41) {
+System.register("just-animate/animations/flipOutY", [], function(exports_41, context_41) {
     "use strict";
     var __moduleName = context_41 && context_41.id;
     var flipOutY;
@@ -1916,7 +1916,7 @@ System.register("animations/flipOutY", [], function(exports_41, context_41) {
         }
     }
 });
-System.register("animations/headShake", [], function(exports_42, context_42) {
+System.register("just-animate/animations/headShake", [], function(exports_42, context_42) {
     "use strict";
     var __moduleName = context_42 && context_42.id;
     var headShake;
@@ -1962,7 +1962,7 @@ System.register("animations/headShake", [], function(exports_42, context_42) {
         }
     }
 });
-System.register("animations/hinge", [], function(exports_43, context_43) {
+System.register("just-animate/animations/hinge", [], function(exports_43, context_43) {
     "use strict";
     var __moduleName = context_43 && context_43.id;
     var hinge;
@@ -2006,7 +2006,7 @@ System.register("animations/hinge", [], function(exports_43, context_43) {
         }
     }
 });
-System.register("animations/jello", [], function(exports_44, context_44) {
+System.register("just-animate/animations/jello", [], function(exports_44, context_44) {
     "use strict";
     var __moduleName = context_44 && context_44.id;
     var jello;
@@ -2066,7 +2066,7 @@ System.register("animations/jello", [], function(exports_44, context_44) {
         }
     }
 });
-System.register("animations/lightSpeedIn", [], function(exports_45, context_45) {
+System.register("just-animate/animations/lightSpeedIn", [], function(exports_45, context_45) {
     "use strict";
     var __moduleName = context_45 && context_45.id;
     var lightSpeedIn;
@@ -2106,7 +2106,7 @@ System.register("animations/lightSpeedIn", [], function(exports_45, context_45) 
         }
     }
 });
-System.register("animations/lightSpeedOut", [], function(exports_46, context_46) {
+System.register("just-animate/animations/lightSpeedOut", [], function(exports_46, context_46) {
     "use strict";
     var __moduleName = context_46 && context_46.id;
     var lightSpeedOut;
@@ -2134,7 +2134,7 @@ System.register("animations/lightSpeedOut", [], function(exports_46, context_46)
         }
     }
 });
-System.register("animations/pulse", [], function(exports_47, context_47) {
+System.register("just-animate/animations/pulse", [], function(exports_47, context_47) {
     "use strict";
     var __moduleName = context_47 && context_47.id;
     var pulse;
@@ -2161,7 +2161,7 @@ System.register("animations/pulse", [], function(exports_47, context_47) {
         }
     }
 });
-System.register("animations/rollIn", [], function(exports_48, context_48) {
+System.register("just-animate/animations/rollIn", [], function(exports_48, context_48) {
     "use strict";
     var __moduleName = context_48 && context_48.id;
     var rollIn;
@@ -2187,7 +2187,7 @@ System.register("animations/rollIn", [], function(exports_48, context_48) {
         }
     }
 });
-System.register("animations/rollOut", [], function(exports_49, context_49) {
+System.register("just-animate/animations/rollOut", [], function(exports_49, context_49) {
     "use strict";
     var __moduleName = context_49 && context_49.id;
     var rollOut;
@@ -2213,7 +2213,7 @@ System.register("animations/rollOut", [], function(exports_49, context_49) {
         }
     }
 });
-System.register("animations/rotateIn", [], function(exports_50, context_50) {
+System.register("just-animate/animations/rotateIn", [], function(exports_50, context_50) {
     "use strict";
     var __moduleName = context_50 && context_50.id;
     var rotateIn;
@@ -2241,7 +2241,7 @@ System.register("animations/rotateIn", [], function(exports_50, context_50) {
         }
     }
 });
-System.register("animations/rotateInDownLeft", [], function(exports_51, context_51) {
+System.register("just-animate/animations/rotateInDownLeft", [], function(exports_51, context_51) {
     "use strict";
     var __moduleName = context_51 && context_51.id;
     var rotateInDownLeft;
@@ -2269,7 +2269,7 @@ System.register("animations/rotateInDownLeft", [], function(exports_51, context_
         }
     }
 });
-System.register("animations/rotateInDownRight", [], function(exports_52, context_52) {
+System.register("just-animate/animations/rotateInDownRight", [], function(exports_52, context_52) {
     "use strict";
     var __moduleName = context_52 && context_52.id;
     var rotateInDownRight;
@@ -2297,7 +2297,7 @@ System.register("animations/rotateInDownRight", [], function(exports_52, context
         }
     }
 });
-System.register("animations/rotateInUpLeft", [], function(exports_53, context_53) {
+System.register("just-animate/animations/rotateInUpLeft", [], function(exports_53, context_53) {
     "use strict";
     var __moduleName = context_53 && context_53.id;
     var rotateInUpLeft;
@@ -2325,7 +2325,7 @@ System.register("animations/rotateInUpLeft", [], function(exports_53, context_53
         }
     }
 });
-System.register("animations/rotateInUpRight", [], function(exports_54, context_54) {
+System.register("just-animate/animations/rotateInUpRight", [], function(exports_54, context_54) {
     "use strict";
     var __moduleName = context_54 && context_54.id;
     var rotateInUpRight;
@@ -2353,7 +2353,7 @@ System.register("animations/rotateInUpRight", [], function(exports_54, context_5
         }
     }
 });
-System.register("animations/rotateOut", [], function(exports_55, context_55) {
+System.register("just-animate/animations/rotateOut", [], function(exports_55, context_55) {
     "use strict";
     var __moduleName = context_55 && context_55.id;
     var rotateOut;
@@ -2381,7 +2381,7 @@ System.register("animations/rotateOut", [], function(exports_55, context_55) {
         }
     }
 });
-System.register("animations/rotateOutDownLeft", [], function(exports_56, context_56) {
+System.register("just-animate/animations/rotateOutDownLeft", [], function(exports_56, context_56) {
     "use strict";
     var __moduleName = context_56 && context_56.id;
     var rotateOutDownLeft;
@@ -2409,7 +2409,7 @@ System.register("animations/rotateOutDownLeft", [], function(exports_56, context
         }
     }
 });
-System.register("animations/rotateOutDownRight", [], function(exports_57, context_57) {
+System.register("just-animate/animations/rotateOutDownRight", [], function(exports_57, context_57) {
     "use strict";
     var __moduleName = context_57 && context_57.id;
     var rotateOutDownRight;
@@ -2437,7 +2437,7 @@ System.register("animations/rotateOutDownRight", [], function(exports_57, contex
         }
     }
 });
-System.register("animations/rotateOutUpLeft", [], function(exports_58, context_58) {
+System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_58, context_58) {
     "use strict";
     var __moduleName = context_58 && context_58.id;
     var rotateOutUpLeft;
@@ -2465,7 +2465,7 @@ System.register("animations/rotateOutUpLeft", [], function(exports_58, context_5
         }
     }
 });
-System.register("animations/rotateOutUpRight", [], function(exports_59, context_59) {
+System.register("just-animate/animations/rotateOutUpRight", [], function(exports_59, context_59) {
     "use strict";
     var __moduleName = context_59 && context_59.id;
     var rotateOutUpRight;
@@ -2493,7 +2493,7 @@ System.register("animations/rotateOutUpRight", [], function(exports_59, context_
         }
     }
 });
-System.register("animations/rubberBand", [], function(exports_60, context_60) {
+System.register("just-animate/animations/rubberBand", [], function(exports_60, context_60) {
     "use strict";
     var __moduleName = context_60 && context_60.id;
     var rubberBand;
@@ -2539,7 +2539,7 @@ System.register("animations/rubberBand", [], function(exports_60, context_60) {
         }
     }
 });
-System.register("animations/shake", [], function(exports_61, context_61) {
+System.register("just-animate/animations/shake", [], function(exports_61, context_61) {
     "use strict";
     var __moduleName = context_61 && context_61.id;
     var shake;
@@ -2590,7 +2590,7 @@ System.register("animations/shake", [], function(exports_61, context_61) {
         }
     }
 });
-System.register("animations/slideInDown", [], function(exports_62, context_62) {
+System.register("just-animate/animations/slideInDown", [], function(exports_62, context_62) {
     "use strict";
     var __moduleName = context_62 && context_62.id;
     var slideInDown;
@@ -2616,7 +2616,7 @@ System.register("animations/slideInDown", [], function(exports_62, context_62) {
         }
     }
 });
-System.register("animations/slideInLeft", [], function(exports_63, context_63) {
+System.register("just-animate/animations/slideInLeft", [], function(exports_63, context_63) {
     "use strict";
     var __moduleName = context_63 && context_63.id;
     var slideInLeft;
@@ -2642,7 +2642,7 @@ System.register("animations/slideInLeft", [], function(exports_63, context_63) {
         }
     }
 });
-System.register("animations/slideInRight", [], function(exports_64, context_64) {
+System.register("just-animate/animations/slideInRight", [], function(exports_64, context_64) {
     "use strict";
     var __moduleName = context_64 && context_64.id;
     var slideInRight;
@@ -2668,7 +2668,7 @@ System.register("animations/slideInRight", [], function(exports_64, context_64) 
         }
     }
 });
-System.register("animations/slideInUp", [], function(exports_65, context_65) {
+System.register("just-animate/animations/slideInUp", [], function(exports_65, context_65) {
     "use strict";
     var __moduleName = context_65 && context_65.id;
     var slideInUp;
@@ -2694,7 +2694,7 @@ System.register("animations/slideInUp", [], function(exports_65, context_65) {
         }
     }
 });
-System.register("animations/slideOutDown", [], function(exports_66, context_66) {
+System.register("just-animate/animations/slideOutDown", [], function(exports_66, context_66) {
     "use strict";
     var __moduleName = context_66 && context_66.id;
     var slideOutDown;
@@ -2720,7 +2720,7 @@ System.register("animations/slideOutDown", [], function(exports_66, context_66) 
         }
     }
 });
-System.register("animations/slideOutLeft", [], function(exports_67, context_67) {
+System.register("just-animate/animations/slideOutLeft", [], function(exports_67, context_67) {
     "use strict";
     var __moduleName = context_67 && context_67.id;
     var slideOutLeft;
@@ -2746,7 +2746,7 @@ System.register("animations/slideOutLeft", [], function(exports_67, context_67) 
         }
     }
 });
-System.register("animations/slideOutRight", [], function(exports_68, context_68) {
+System.register("just-animate/animations/slideOutRight", [], function(exports_68, context_68) {
     "use strict";
     var __moduleName = context_68 && context_68.id;
     var slideOutRight;
@@ -2772,7 +2772,7 @@ System.register("animations/slideOutRight", [], function(exports_68, context_68)
         }
     }
 });
-System.register("animations/slideOutUp", [], function(exports_69, context_69) {
+System.register("just-animate/animations/slideOutUp", [], function(exports_69, context_69) {
     "use strict";
     var __moduleName = context_69 && context_69.id;
     var slideOutUp;
@@ -2798,7 +2798,7 @@ System.register("animations/slideOutUp", [], function(exports_69, context_69) {
         }
     }
 });
-System.register("animations/swing", [], function(exports_70, context_70) {
+System.register("just-animate/animations/swing", [], function(exports_70, context_70) {
     "use strict";
     var __moduleName = context_70 && context_70.id;
     var swing;
@@ -2834,7 +2834,7 @@ System.register("animations/swing", [], function(exports_70, context_70) {
         }
     }
 });
-System.register("animations/tada", [], function(exports_71, context_71) {
+System.register("just-animate/animations/tada", [], function(exports_71, context_71) {
     "use strict";
     var __moduleName = context_71 && context_71.id;
     var tada;
@@ -2885,7 +2885,7 @@ System.register("animations/tada", [], function(exports_71, context_71) {
         }
     }
 });
-System.register("animations/wobble", [], function(exports_72, context_72) {
+System.register("just-animate/animations/wobble", [], function(exports_72, context_72) {
     "use strict";
     var __moduleName = context_72 && context_72.id;
     var wobble;
@@ -2931,7 +2931,7 @@ System.register("animations/wobble", [], function(exports_72, context_72) {
         }
     }
 });
-System.register("animations/zoomIn", [], function(exports_73, context_73) {
+System.register("just-animate/animations/zoomIn", [], function(exports_73, context_73) {
     "use strict";
     var __moduleName = context_73 && context_73.id;
     var zoomIn;
@@ -2961,7 +2961,7 @@ System.register("animations/zoomIn", [], function(exports_73, context_73) {
         }
     }
 });
-System.register("animations/zoomInDown", [], function(exports_74, context_74) {
+System.register("just-animate/animations/zoomInDown", [], function(exports_74, context_74) {
     "use strict";
     var __moduleName = context_74 && context_74.id;
     var zoomInDown;
@@ -2995,7 +2995,7 @@ System.register("animations/zoomInDown", [], function(exports_74, context_74) {
         }
     }
 });
-System.register("animations/zoomInLeft", [], function(exports_75, context_75) {
+System.register("just-animate/animations/zoomInLeft", [], function(exports_75, context_75) {
     "use strict";
     var __moduleName = context_75 && context_75.id;
     var zoomInLeft;
@@ -3029,7 +3029,7 @@ System.register("animations/zoomInLeft", [], function(exports_75, context_75) {
         }
     }
 });
-System.register("animations/zoomInRight", [], function(exports_76, context_76) {
+System.register("just-animate/animations/zoomInRight", [], function(exports_76, context_76) {
     "use strict";
     var __moduleName = context_76 && context_76.id;
     var zoomInRight;
@@ -3063,7 +3063,7 @@ System.register("animations/zoomInRight", [], function(exports_76, context_76) {
         }
     }
 });
-System.register("animations/zoomInUp", [], function(exports_77, context_77) {
+System.register("just-animate/animations/zoomInUp", [], function(exports_77, context_77) {
     "use strict";
     var __moduleName = context_77 && context_77.id;
     var zoomInUp;
@@ -3097,7 +3097,7 @@ System.register("animations/zoomInUp", [], function(exports_77, context_77) {
         }
     }
 });
-System.register("animations/zoomOut", [], function(exports_78, context_78) {
+System.register("just-animate/animations/zoomOut", [], function(exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
     var zoomOut;
@@ -3130,7 +3130,7 @@ System.register("animations/zoomOut", [], function(exports_78, context_78) {
         }
     }
 });
-System.register("animations/zoomOutDown", [], function(exports_79, context_79) {
+System.register("just-animate/animations/zoomOutDown", [], function(exports_79, context_79) {
     "use strict";
     var __moduleName = context_79 && context_79.id;
     var zoomOutDown;
@@ -3167,7 +3167,7 @@ System.register("animations/zoomOutDown", [], function(exports_79, context_79) {
         }
     }
 });
-System.register("animations/zoomOutLeft", [], function(exports_80, context_80) {
+System.register("just-animate/animations/zoomOutLeft", [], function(exports_80, context_80) {
     "use strict";
     var __moduleName = context_80 && context_80.id;
     var zoomOutLeft;
@@ -3203,7 +3203,7 @@ System.register("animations/zoomOutLeft", [], function(exports_80, context_80) {
         }
     }
 });
-System.register("animations/zoomOutRight", [], function(exports_81, context_81) {
+System.register("just-animate/animations/zoomOutRight", [], function(exports_81, context_81) {
     "use strict";
     var __moduleName = context_81 && context_81.id;
     var zoomOutRight;
@@ -3239,7 +3239,7 @@ System.register("animations/zoomOutRight", [], function(exports_81, context_81) 
         }
     }
 });
-System.register("animations/zoomOutUp", [], function(exports_82, context_82) {
+System.register("just-animate/animations/zoomOutUp", [], function(exports_82, context_82) {
     "use strict";
     var __moduleName = context_82 && context_82.id;
     var zoomOutUp;
@@ -3275,7 +3275,7 @@ System.register("animations/zoomOutUp", [], function(exports_82, context_82) {
         }
     }
 });
-System.register("animations", ["animations/bounce", "animations/bounceIn", "animations/bounceInDown", "animations/bounceInLeft", "animations/bounceInRight", "animations/bounceInUp", "animations/bounceOut", "animations/bounceOutDown", "animations/bounceOutLeft", "animations/bounceOutRight", "animations/bounceOutUp", "animations/fadeIn", "animations/fadeInDown", "animations/fadeInDownBig", "animations/fadeInLeft", "animations/fadeInLeftBig", "animations/fadeInRight", "animations/fadeInRightBig", "animations/fadeInUp", "animations/fadeInUpBig", "animations/fadeOut", "animations/fadeOutDown", "animations/fadeOutDownBig", "animations/fadeOutLeft", "animations/fadeOutLeftBig", "animations/fadeOutRight", "animations/fadeOutRightBig", "animations/fadeOutUp", "animations/fadeOutUpBig", "animations/flash", "animations/flip", "animations/flipInX", "animations/flipInY", "animations/flipOutX", "animations/flipOutY", "animations/headShake", "animations/hinge", "animations/jello", "animations/lightSpeedIn", "animations/lightSpeedOut", "animations/pulse", "animations/rollIn", "animations/rollOut", "animations/rotateIn", "animations/rotateInDownLeft", "animations/rotateInDownRight", "animations/rotateInUpLeft", "animations/rotateInUpRight", "animations/rotateOut", "animations/rotateOutDownLeft", "animations/rotateOutDownRight", "animations/rotateOutUpLeft", "animations/rotateOutUpRight", "animations/rubberBand", "animations/shake", "animations/slideInDown", "animations/slideInLeft", "animations/slideInRight", "animations/slideInUp", "animations/slideOutDown", "animations/slideOutLeft", "animations/slideOutRight", "animations/slideOutUp", "animations/swing", "animations/tada", "animations/wobble", "animations/zoomIn", "animations/zoomInDown", "animations/zoomInLeft", "animations/zoomInRight", "animations/zoomInUp", "animations/zoomOut", "animations/zoomOutDown", "animations/zoomOutLeft", "animations/zoomOutRight", "animations/zoomOutUp"], function(exports_83, context_83) {
+System.register("just-animate/animations", ["just-animate/animations/bounce", "just-animate/animations/bounceIn", "just-animate/animations/bounceInDown", "just-animate/animations/bounceInLeft", "just-animate/animations/bounceInRight", "just-animate/animations/bounceInUp", "just-animate/animations/bounceOut", "just-animate/animations/bounceOutDown", "just-animate/animations/bounceOutLeft", "just-animate/animations/bounceOutRight", "just-animate/animations/bounceOutUp", "just-animate/animations/fadeIn", "just-animate/animations/fadeInDown", "just-animate/animations/fadeInDownBig", "just-animate/animations/fadeInLeft", "just-animate/animations/fadeInLeftBig", "just-animate/animations/fadeInRight", "just-animate/animations/fadeInRightBig", "just-animate/animations/fadeInUp", "just-animate/animations/fadeInUpBig", "just-animate/animations/fadeOut", "just-animate/animations/fadeOutDown", "just-animate/animations/fadeOutDownBig", "just-animate/animations/fadeOutLeft", "just-animate/animations/fadeOutLeftBig", "just-animate/animations/fadeOutRight", "just-animate/animations/fadeOutRightBig", "just-animate/animations/fadeOutUp", "just-animate/animations/fadeOutUpBig", "just-animate/animations/flash", "just-animate/animations/flip", "just-animate/animations/flipInX", "just-animate/animations/flipInY", "just-animate/animations/flipOutX", "just-animate/animations/flipOutY", "just-animate/animations/headShake", "just-animate/animations/hinge", "just-animate/animations/jello", "just-animate/animations/lightSpeedIn", "just-animate/animations/lightSpeedOut", "just-animate/animations/pulse", "just-animate/animations/rollIn", "just-animate/animations/rollOut", "just-animate/animations/rotateIn", "just-animate/animations/rotateInDownLeft", "just-animate/animations/rotateInDownRight", "just-animate/animations/rotateInUpLeft", "just-animate/animations/rotateInUpRight", "just-animate/animations/rotateOut", "just-animate/animations/rotateOutDownLeft", "just-animate/animations/rotateOutDownRight", "just-animate/animations/rotateOutUpLeft", "just-animate/animations/rotateOutUpRight", "just-animate/animations/rubberBand", "just-animate/animations/shake", "just-animate/animations/slideInDown", "just-animate/animations/slideInLeft", "just-animate/animations/slideInRight", "just-animate/animations/slideInUp", "just-animate/animations/slideOutDown", "just-animate/animations/slideOutLeft", "just-animate/animations/slideOutRight", "just-animate/animations/slideOutUp", "just-animate/animations/swing", "just-animate/animations/tada", "just-animate/animations/wobble", "just-animate/animations/zoomIn", "just-animate/animations/zoomInDown", "just-animate/animations/zoomInLeft", "just-animate/animations/zoomInRight", "just-animate/animations/zoomInUp", "just-animate/animations/zoomOut", "just-animate/animations/zoomOutDown", "just-animate/animations/zoomOutLeft", "just-animate/animations/zoomOutRight", "just-animate/animations/zoomOutUp"], function(exports_83, context_83) {
     "use strict";
     var __moduleName = context_83 && context_83.id;
     var bounce_1, bounceIn_1, bounceInDown_1, bounceInLeft_1, bounceInRight_1, bounceInUp_1, bounceOut_1, bounceOutDown_1, bounceOutLeft_1, bounceOutRight_1, bounceOutUp_1, fadeIn_1, fadeInDown_1, fadeInDownBig_1, fadeInLeft_1, fadeInLeftBig_1, fadeInRight_1, fadeInRightBig_1, fadeInUp_1, fadeInUpBig_1, fadeOut_1, fadeOutDown_1, fadeOutDownBig_1, fadeOutLeft_1, fadeOutLeftBig_1, fadeOutRight_1, fadeOutRightBig_1, fadeOutUp_1, fadeOutUpBig_1, flash_1, flip_1, flipInX_1, flipInY_1, flipOutX_1, flipOutY_1, headShake_1, hinge_1, jello_1, lightSpeedIn_1, lightSpeedOut_1, pulse_1, rollIn_1, rollOut_1, rotateIn_1, rotateInDownLeft_1, rotateInDownRight_1, rotateInUpLeft_1, rotateInUpRight_1, rotateOut_1, rotateOutDownLeft_1, rotateOutDownRight_1, rotateOutUpLeft_1, rotateOutUpRight_1, rubberBand_1, shake_1, slideInDown_1, slideInLeft_1, slideInRight_1, slideInUp_1, slideOutDown_1, slideOutLeft_1, slideOutRight_1, slideOutUp_1, swing_1, tada_1, wobble_1, zoomIn_1, zoomInDown_1, zoomInLeft_1, zoomInRight_1, zoomInUp_1, zoomOut_1, zoomOutDown_1, zoomOutLeft_1, zoomOutRight_1, zoomOutUp_1;
@@ -3668,7 +3668,7 @@ System.register("animations", ["animations/bounce", "animations/bounceIn", "anim
         }
     }
 });
-System.register("index", ["easings", "animations", "AnimationManager"], function(exports_84, context_84) {
+System.register("just-animate/index", ["just-animate/easings", "just-animate/animations", "just-animate/AnimationManager"], function(exports_84, context_84) {
     "use strict";
     var __moduleName = context_84 && context_84.id;
     var easings, animations;
@@ -3691,4 +3691,3 @@ System.register("index", ["easings", "animations", "AnimationManager"], function
         }
     }
 });
-//# sourceMappingURL=just-animate-dev.js.map
