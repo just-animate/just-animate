@@ -15,10 +15,11 @@
     "url": "https://github.com/notoriousb1t/just-animate"
   },
   "scripts": {
-    "build": "npm run build-universal && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
+    "build": "npm run build-systemjs && npm run build-commonjs && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
     "build-animations": "rollup -c rollup.animations.config.js",
     "build-core": "rollup -c rollup.core.config.js",
-    "build-universal": "tsc",
+    "build-commonjs": "tsc -p tsconfig-commonjs.json",
+    "build-systemjs": "tsc -p tsconfig-systemjs.json",
     "minify-core": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-core.min.js dist/browser/just-animate-core.js",
     "minify-animations": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-animations.min.js dist/browser/just-animate-animations.js",
     "prepublish": "npm run build",

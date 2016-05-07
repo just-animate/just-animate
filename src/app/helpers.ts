@@ -54,7 +54,7 @@ export function max<T1>(items: ja.IIndexed<T1>, propertyName: string): any {
 }
 
 export function map<T1, T2>(items: ja.IIndexed<T1>, fn: ja.IMapper<T1, T2>): T2[] {
-    const results = [];
+    const results = [] as T2[];
     for (let i = 0, len = items.length; i < len; i++) {
         const result = fn(items[i]);
         if (result !== undefined) {
@@ -75,8 +75,8 @@ export function extend(target: any, ...sources: any[]): any {
 }
 
 export function multiapply(targets: ja.IIndexed<any>, fnName: string, args: ja.IIndexed<any>, cb?: ja.ICallbackHandler): any[] {
-    const errors = [];
-    const results = [];
+    const errors = [] as any[];
+    const results = [] as any[];
     for (let i = 0, len = targets.length; i < len; i++) {
         try {
             const target = targets[i];

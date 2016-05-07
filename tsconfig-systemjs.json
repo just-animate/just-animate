@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "system",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "outFile": "./dist/browser/just-animate-dev.js",
+    "declaration": true,
+    "rootDir": "./src"
+  },
+  "exclude": [
+        "node_modules",
+        "src/just-animate-core.ts",
+        "src/just-animate-animations.ts",
+        "dist"
+  ]
+}
