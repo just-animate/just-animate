@@ -93,6 +93,42 @@
   ```
   See **Getting Started** above for more information
 
+## Getting Started with Angular 2.x (with SystemJS)
+1. Include these scripts in the head of the document after systemjs
+
+  ```html
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
+  <script src="browser/just-animate-systemjs.js"></script>
+  ```
+  
+2. Import the JustAnimate module into your application and inject the Animate.css animations
+  ```typescript
+  import { JustAnimate, animations } from 'just-animate';
+  
+  JustAnimate.inject(animations.ANIMATE_CSS);
+  ```
+
+3. Inject the service into your component and call animate()
+
+  ```typescript
+  import { Component } from 'angular2/core';
+  import { JustAnimate } from 'just-animate';
+  
+  @Component({
+     template: '<div><button (click)="onClick($event)"></button></div>',
+     providers: [ JustAnimate ]
+  })
+  class MyComponent {
+    constructor(private just: JustAnimate) { }
+    
+    onClick($event: Event) {
+        this.just.animate('bounceIn', $event.target);
+    }
+  }
+  ```
+
+  See **Getting Started** above for more information
+
 ## Included animations
 
   The animations in just-animate-animations.js are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
