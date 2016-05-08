@@ -93,10 +93,10 @@ declare module ja {
         (consumable: T1): any;
     }
 
-    export type ElementSource = Element | IIndexed<Element> | NodeList | string | IElementProvider;
+    export type ElementSource = Node | IIndexed<Node> | NodeList | string | IElementProvider;
 
     export interface IElementProvider {
-        (): Element | IIndexed<Element> | NodeList;
+        (): Node | IIndexed<Node> | NodeList;
     }
 
     export interface IIndexed<T> {
