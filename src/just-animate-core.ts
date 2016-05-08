@@ -2,18 +2,18 @@
 declare var window: Window & { Just: ja.IAnimationManager & ja.IAnimationInjectable };
 declare var angular: any;
 
-import {AnimationManager} from './AnimationManager';
+import {JustAnimate} from './JustAnimate';
 
 // register with angular if it is present
 if (typeof angular !== 'undefined') {
-    angular.module('just.animate', []).service('just', AnimationManager);
+    angular.module('just.animate', []).service('just', JustAnimate);
 }
 
 // create manager if it doesn't yet exist
 let animationManager: ja.IAnimationManager = undefined;
 function getManager() {
     if (animationManager === undefined) {
-        animationManager = new AnimationManager();
+        animationManager = new JustAnimate();
     }
     return animationManager;
 }
@@ -36,7 +36,7 @@ const Just: ja.IAnimationManager & ja.IAnimationInjectable = {
         if (animationManager !== undefined) {
             console.warn('Animations must be injected prior to using Just.*');
         }
-        AnimationManager.inject(animations)  
+        JustAnimate.inject(animations)  
     },
     register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager {
         return getManager().register(animationOptions);

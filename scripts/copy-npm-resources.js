@@ -2,7 +2,8 @@ var fs = require('fs');
 
 var filesToCopy = {
     '../README.md': '../dist/README.md',
-    '../package-npm.json': '../dist/package.json'
+    '../package-npm.json': '../dist/package.json',
+    '../src/just-animate.d.ts': '../dist/just-animate.d.ts',
 };
 
 for (var inFile in filesToCopy) {

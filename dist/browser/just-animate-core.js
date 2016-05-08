@@ -578,8 +578,8 @@
     }());
 
     var DEFAULT_ANIMATIONS = [];
-    var AnimationManager = (function () {
-        function AnimationManager() {
+    var JustAnimate = (function () {
+        function JustAnimate() {
             var _this = this;
             this._timings = {
                 duration: 1000,
@@ -590,35 +590,35 @@
                 _this._registry[a.name] = a;
             });
         }
-        AnimationManager.inject = function (animations) {
+        JustAnimate.inject = function (animations) {
             Array.prototype.push.apply(DEFAULT_ANIMATIONS, animations);
         };
-        AnimationManager.prototype.animate = function (keyframesOrName, el, timings) {
+        JustAnimate.prototype.animate = function (keyframesOrName, el, timings) {
             return new ElementAnimator(this, keyframesOrName, el, timings);
         };
-        AnimationManager.prototype.animateSequence = function (options) {
+        JustAnimate.prototype.animateSequence = function (options) {
             return new SequenceAnimator(this, options);
         };
-        AnimationManager.prototype.animateTimeline = function (options) {
+        JustAnimate.prototype.animateTimeline = function (options) {
             return new TimelineAnimator(this, options);
         };
-        AnimationManager.prototype.findAnimation = function (name) {
+        JustAnimate.prototype.findAnimation = function (name) {
             return this._registry[name] || undefined;
         };
-        AnimationManager.prototype.register = function (animationOptions) {
+        JustAnimate.prototype.register = function (animationOptions) {
             this._registry[animationOptions.name] = animationOptions;
             return this;
         };
-        return AnimationManager;
+        return JustAnimate;
     }());
 
     if (typeof angular !== 'undefined') {
-        angular.module('just.animate', []).service('just', AnimationManager);
+        angular.module('just.animate', []).service('just', JustAnimate);
     }
     var animationManager = undefined;
     function getManager() {
         if (animationManager === undefined) {
-            animationManager = new AnimationManager();
+            animationManager = new JustAnimate();
         }
         return animationManager;
     }
@@ -639,7 +639,7 @@
             if (animationManager !== undefined) {
                 console.warn('Animations must be injected prior to using Just.*');
             }
-            AnimationManager.inject(animations);
+            JustAnimate.inject(animations);
         },
         register: function (animationOptions) {
             return getManager().register(animationOptions);

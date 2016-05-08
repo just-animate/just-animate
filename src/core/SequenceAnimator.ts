@@ -1,3 +1,5 @@
+/// <reference path="../just-animate.d.ts" />
+
 import {extend, isFunction, map, noop} from './helpers';
 
 export class SequenceAnimator implements ja.IAnimator {

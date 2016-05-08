@@ -1,11 +1,13 @@
-import {each, extend, isArray} from './app/helpers';
-import {ElementAnimator} from './app/ElementAnimator';
-import {SequenceAnimator} from './app/SequenceAnimator';
-import {TimelineAnimator} from './app/TimelineAnimator';
+/// <reference path="./just-animate.d.ts" />
+
+import {each, extend, isArray} from './core/helpers';
+import {ElementAnimator} from './core/ElementAnimator';
+import {SequenceAnimator} from './core/SequenceAnimator';
+import {TimelineAnimator} from './core/TimelineAnimator';
 
 const DEFAULT_ANIMATIONS = [];
 
-export class AnimationManager implements ja.IAnimationManager {
+export class JustAnimate implements ja.IAnimationManager {
     private _registry: { [key: string]: ja.IKeyframeOptions };
     private _timings: ja.IAnimationEffectTiming;
        

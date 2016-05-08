@@ -8,7 +8,7 @@
         "removeComments": true,
         "inlineSourceMap": false,
         "allowUnreachableCode": false,
-        "declaration": true
+        "declaration": false
     },
     "exclude": [
         "node_modules", 

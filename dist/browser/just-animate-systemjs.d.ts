@@ -1,4 +1,5 @@
-declare module "just-animate/app/helpers" {
+/// <reference path="../../src/just-animate.d.ts" />
+declare module "just-animate/core/helpers" {
     export function noop(): void;
     export function clamp(val: number, min: number, max: number): number;
     export function head<T>(indexed: ja.IIndexed<T>): T;
@@ -43,7 +44,7 @@ declare module "just-animate/easings" {
         'elegantSlowStartEnd': string;
     };
 }
-declare module "just-animate/app/ElementAnimator" {
+declare module "just-animate/core/ElementAnimator" {
     export class ElementAnimator implements ja.IAnimator {
         duration: number;
         onfinish: ja.IConsumer<ja.IAnimator>;
@@ -59,7 +60,7 @@ declare module "just-animate/app/ElementAnimator" {
         cancel(fn?: ja.ICallbackHandler): ja.IAnimator;
     }
 }
-declare module "just-animate/app/SequenceAnimator" {
+declare module "just-animate/core/SequenceAnimator" {
     export class SequenceAnimator implements ja.IAnimator {
         playbackRate: number;
         onfinish: ja.IConsumer<ja.IAnimator>;
@@ -82,7 +83,7 @@ declare module "just-animate/app/SequenceAnimator" {
         private _playThisStep();
     }
 }
-declare module "just-animate/app/TimelineAnimator" {
+declare module "just-animate/core/TimelineAnimator" {
     export class TimelineAnimator implements ja.IAnimator {
         currentTime: number;
         duration: number;
@@ -109,8 +110,8 @@ declare module "just-animate/app/TimelineAnimator" {
         private _reset();
     }
 }
-declare module "just-animate/AnimationManager" {
-    export class AnimationManager implements ja.IAnimationManager {
+declare module "just-animate/JustAnimate" {
+    export class JustAnimate implements ja.IAnimationManager {
         private _registry;
         private _timings;
         static inject(animations: ja.IAnimationOptions[]): void;
@@ -1328,8 +1329,7 @@ declare module "just-animate/animations" {
     export { zoomOutUp };
 }
 declare module "just-animate/index" {
-    import * as easings from "just-animate/easings";
     import * as animations from "just-animate/animations";
-    export { animations, easings };
-    export { AnimationManager } from "just-animate/AnimationManager";
+    export { animations };
+    export { JustAnimate } from "just-animate/JustAnimate";
 }

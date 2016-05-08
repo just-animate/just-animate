@@ -1,3 +1,5 @@
+/// <reference path="../just-animate.d.ts" />
+
 import {easings} from '../easings';
 import {head, multiapply, each, extend, isArray, isFunction, isString, toArray, max} from './helpers';
 

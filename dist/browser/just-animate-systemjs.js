@@ -1,4 +1,5 @@
-System.register("just-animate/app/helpers", [], function(exports_1, context_1) {
+/// <reference path="../just-animate.d.ts" />
+System.register("just-animate/core/helpers", [], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var ostring, slice;
@@ -152,7 +153,8 @@ System.register("just-animate/easings", [], function(exports_2, context_2) {
         }
     }
 });
-System.register("just-animate/app/ElementAnimator", ["just-animate/easings", "just-animate/app/helpers"], function(exports_3, context_3) {
+/// <reference path="../just-animate.d.ts" />
+System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/core/helpers"], function(exports_3, context_3) {
     "use strict";
     var __moduleName = context_3 && context_3.id;
     var easings_1, helpers_1;
@@ -298,7 +300,8 @@ System.register("just-animate/app/ElementAnimator", ["just-animate/easings", "ju
         }
     }
 });
-System.register("just-animate/app/SequenceAnimator", ["just-animate/app/helpers"], function(exports_4, context_4) {
+/// <reference path="../just-animate.d.ts" />
+System.register("just-animate/core/SequenceAnimator", ["just-animate/core/helpers"], function(exports_4, context_4) {
     "use strict";
     var __moduleName = context_4 && context_4.id;
     var helpers_2;
@@ -471,7 +474,8 @@ System.register("just-animate/app/SequenceAnimator", ["just-animate/app/helpers"
         }
     }
 });
-System.register("just-animate/app/TimelineAnimator", ["just-animate/app/helpers"], function(exports_5, context_5) {
+/// <reference path="../just-animate.d.ts" />
+System.register("just-animate/core/TimelineAnimator", ["just-animate/core/helpers"], function(exports_5, context_5) {
     "use strict";
     var __moduleName = context_5 && context_5.id;
     var helpers_3;
@@ -684,11 +688,12 @@ System.register("just-animate/app/TimelineAnimator", ["just-animate/app/helpers"
         }
     }
 });
-System.register("just-animate/AnimationManager", ["just-animate/app/helpers", "just-animate/app/ElementAnimator", "just-animate/app/SequenceAnimator", "just-animate/app/TimelineAnimator"], function(exports_6, context_6) {
+/// <reference path="./just-animate.d.ts" />
+System.register("just-animate/JustAnimate", ["just-animate/core/helpers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_6, context_6) {
     "use strict";
     var __moduleName = context_6 && context_6.id;
     var helpers_4, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
-    var DEFAULT_ANIMATIONS, AnimationManager;
+    var DEFAULT_ANIMATIONS, JustAnimate;
     return {
         setters:[
             function (helpers_4_1) {
@@ -705,8 +710,8 @@ System.register("just-animate/AnimationManager", ["just-animate/app/helpers", "j
             }],
         execute: function() {
             DEFAULT_ANIMATIONS = [];
-            AnimationManager = (function () {
-                function AnimationManager() {
+            JustAnimate = (function () {
+                function JustAnimate() {
                     var _this = this;
                     this._timings = {
                         duration: 1000,
@@ -717,28 +722,28 @@ System.register("just-animate/AnimationManager", ["just-animate/app/helpers", "j
                         _this._registry[a.name] = a;
                     });
                 }
-                AnimationManager.inject = function (animations) {
+                JustAnimate.inject = function (animations) {
                     Array.prototype.push.apply(DEFAULT_ANIMATIONS, animations);
                 };
-                AnimationManager.prototype.animate = function (keyframesOrName, el, timings) {
+                JustAnimate.prototype.animate = function (keyframesOrName, el, timings) {
                     return new ElementAnimator_1.ElementAnimator(this, keyframesOrName, el, timings);
                 };
-                AnimationManager.prototype.animateSequence = function (options) {
+                JustAnimate.prototype.animateSequence = function (options) {
                     return new SequenceAnimator_1.SequenceAnimator(this, options);
                 };
-                AnimationManager.prototype.animateTimeline = function (options) {
+                JustAnimate.prototype.animateTimeline = function (options) {
                     return new TimelineAnimator_1.TimelineAnimator(this, options);
                 };
-                AnimationManager.prototype.findAnimation = function (name) {
+                JustAnimate.prototype.findAnimation = function (name) {
                     return this._registry[name] || undefined;
                 };
-                AnimationManager.prototype.register = function (animationOptions) {
+                JustAnimate.prototype.register = function (animationOptions) {
                     this._registry[animationOptions.name] = animationOptions;
                     return this;
                 };
-                return AnimationManager;
+                return JustAnimate;
             }());
-            exports_6("AnimationManager", AnimationManager);
+            exports_6("JustAnimate", JustAnimate);
         }
     }
 });
@@ -3668,26 +3673,22 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
         }
     }
 });
-System.register("just-animate/index", ["just-animate/easings", "just-animate/animations", "just-animate/AnimationManager"], function(exports_84, context_84) {
+System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_84, context_84) {
     "use strict";
     var __moduleName = context_84 && context_84.id;
-    var easings, animations;
+    var animations;
     return {
         setters:[
-            function (easings_2) {
-                easings = easings_2;
-            },
             function (animations_1) {
                 animations = animations_1;
             },
-            function (AnimationManager_1_1) {
+            function (JustAnimate_1_1) {
                 exports_84({
-                    "AnimationManager": AnimationManager_1_1["AnimationManager"]
+                    "JustAnimate": JustAnimate_1_1["JustAnimate"]
                 });
             }],
         execute: function() {
             exports_84("animations", animations);
-            exports_84("easings", easings);
         }
     }
 });

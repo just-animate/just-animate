@@ -1,3 +1,5 @@
+/// <reference path="../just-animate.d.ts" />
+
 const ostring = Object.prototype.toString;
 const slice = Array.prototype.slice;
 

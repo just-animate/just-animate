@@ -2,13 +2,14 @@
   "author": "christopher.j.wallis@gmail.com",
   "dependencies": {},
   "devDependencies": {
-    "typescript": "^1.8.10",
+    "del-cli": "^0.2.0",
     "rollup": "^0.26.1",
     "rollup-plugin-typescript": "^0.7.5",
+    "typescript": "^1.8.10",
     "uglify": "^0.1.5"
   },
   "license": "MIT",
-  "version": "0.4.3a",
+  "version": "0.4.4",
   "main": "./dist/index.js",
   "name": "just-animate",
   "repository": {
@@ -17,14 +18,16 @@
   },
   "scripts": {
     "build": "npm run build-systemjs && npm run build-commonjs && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
-    "build-animations": "rollup -c rollup.animations.config.js",
-    "build-core": "rollup -c rollup.core.config.js",
+    "build-animations": "rollup -c rollup-animations.config.js",
+    "build-core": "rollup -c rollup-core.config.js",
     "build-commonjs": "tsc -p tsconfig-commonjs.json",
     "build-systemjs": "tsc -p tsconfig-systemjs.json && node ./scripts/systemjs-fix-namespaces",
+    "clean": "del -f ./dist",
     "minify-core": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-core.min.js dist/browser/just-animate-core.js",
     "minify-animations": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-animations.min.js dist/browser/just-animate-animations.js",
+    "npm-publish": "npm run build && node ./scripts/copy-npm-resources.js && cd ./dist && npm publish",
     "prepublish": "npm run build",
-    "start": "npm run build",
-    "npm-publish": "npm run build && node ./scripts/copy-npm-resources.js && cd ./dist && npm publish"
+    "rebuild": "npm run clean && npm run build",
+    "start": "npm run build"
   }
 }

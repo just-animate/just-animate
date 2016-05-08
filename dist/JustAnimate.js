@@ -1,11 +1,11 @@
 "use strict";
-var helpers_1 = require('./app/helpers');
-var ElementAnimator_1 = require('./app/ElementAnimator');
-var SequenceAnimator_1 = require('./app/SequenceAnimator');
-var TimelineAnimator_1 = require('./app/TimelineAnimator');
+var helpers_1 = require('./core/helpers');
+var ElementAnimator_1 = require('./core/ElementAnimator');
+var SequenceAnimator_1 = require('./core/SequenceAnimator');
+var TimelineAnimator_1 = require('./core/TimelineAnimator');
 var DEFAULT_ANIMATIONS = [];
-var AnimationManager = (function () {
-    function AnimationManager() {
+var JustAnimate = (function () {
+    function JustAnimate() {
         var _this = this;
         this._timings = {
             duration: 1000,
@@ -16,25 +16,25 @@ var AnimationManager = (function () {
             _this._registry[a.name] = a;
         });
     }
-    AnimationManager.inject = function (animations) {
+    JustAnimate.inject = function (animations) {
         Array.prototype.push.apply(DEFAULT_ANIMATIONS, animations);
     };
-    AnimationManager.prototype.animate = function (keyframesOrName, el, timings) {
+    JustAnimate.prototype.animate = function (keyframesOrName, el, timings) {
         return new ElementAnimator_1.ElementAnimator(this, keyframesOrName, el, timings);
     };
-    AnimationManager.prototype.animateSequence = function (options) {
+    JustAnimate.prototype.animateSequence = function (options) {
         return new SequenceAnimator_1.SequenceAnimator(this, options);
     };
-    AnimationManager.prototype.animateTimeline = function (options) {
+    JustAnimate.prototype.animateTimeline = function (options) {
         return new TimelineAnimator_1.TimelineAnimator(this, options);
     };
-    AnimationManager.prototype.findAnimation = function (name) {
+    JustAnimate.prototype.findAnimation = function (name) {
         return this._registry[name] || undefined;
     };
-    AnimationManager.prototype.register = function (animationOptions) {
+    JustAnimate.prototype.register = function (animationOptions) {
         this._registry[animationOptions.name] = animationOptions;
         return this;
     };
-    return AnimationManager;
+    return JustAnimate;
 }());
-exports.AnimationManager = AnimationManager;
+exports.JustAnimate = JustAnimate;
