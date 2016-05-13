@@ -1,7 +1,7 @@
 {
   "author": "christopher.j.wallis@gmail.com",
   "bugs": {
-    "url": "https://github.com/notoriousb1t/just-animate/issues"
+    "url": "https://github.com/just-animate/just-animate/issues"
   },
   "dependencies": {},
   "devDependencies": {},
@@ -20,7 +20,7 @@
   "name": "just-animate",
   "repository": {
     "type": "git",
-    "url": "https://github.com/notoriousb1t/just-animate"
+    "url": "https://github.com/just-animate/just-animate"
   },
   "version": "0.4.4b"
 }

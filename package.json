@@ -14,7 +14,7 @@
   "name": "just-animate",
   "repository": {
     "type": "git",
-    "url": "https://github.com/notoriousb1t/just-animate"
+    "url": "https://github.com/just-animate/just-animate"
   },
   "scripts": {
     "build": "npm run build-systemjs && npm run build-commonjs && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
