@@ -3,21 +3,59 @@
 import {easings} from '../easings';
 import {head, multiapply, each, extend, isArray, isFunction, isString, toArray, max} from './helpers';
 
+/**
+ * (description)
+ * 
+ * @export
+ * @class ElementAnimator
+ * @implements {ja.IAnimator}
+ */
 export class ElementAnimator implements ja.IAnimator {
+    /**
+     * (description)
+     * 
+     * @type {number}
+     */
     public duration: number;
+    /**
+     * (description)
+     * 
+     * @type {ja.IConsumer<ja.IAnimator>}
+     */
     public onfinish: ja.IConsumer<ja.IAnimator>;
+    /**
+     * (description)
+     * 
+     * @type {ja.IConsumer<ja.IAnimator>}
+     */
     public oncancel: ja.IConsumer<ja.IAnimator>;
     
     private _animators: ja.IAnimator[];
 
+    /**
+     * (description)
+     * 
+     * @type {number}
+     */
     public get playbackRate(): number {
         const first = head(this._animators);
         return first ? first.playbackRate : 0;
     }
+    /**
+     * (description)
+     */
     public set playbackRate(val: number) {
         each(this._animators, (a: ja.IAnimator) => a.playbackRate = val);
     }    
 
+    /**
+     * Creates an instance of ElementAnimator.
+     * 
+     * @param {ja.IAnimationManager} manager (description)
+     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
+     * @param {ja.ElementSource} el (description)
+     * @param {ja.IAnimationEffectTiming} [timings] (description)
+     */
     constructor(manager: ja.IAnimationManager, keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, 
                 el: ja.ElementSource, timings?: ja.IAnimationEffectTiming) {
         if (!keyframesOrName) {
@@ -57,19 +95,36 @@ export class ElementAnimator implements ja.IAnimator {
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
             // todo: try to find a better way than just listening to one of them
+            /**
+             * (description)
+             */
             this._animators[0].onfinish = () => {
                 this.finish();
             };
         }        
     }
 
+    /**
+     * (description)
+     * 
+     * @type {number}
+     */
     get currentTime(): number {
         return max(this._animators, 'currentTime') || 0;
     }
+    /**
+     * (description)
+     */
     set currentTime(elapsed: number) {
         each(this._animators, (a: ja.IAnimator) => a.currentTime = elapsed);
     }
 
+    /**
+     * (description)
+     * 
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     public finish(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'finish', [], fn);
         if (this.playbackRate < 0) {
@@ -82,18 +137,42 @@ export class ElementAnimator implements ja.IAnimator {
         }
         return this;
     }
+    /**
+     * (description)
+     * 
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     public play(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'play', [], fn);
         return this;
     }
+    /**
+     * (description)
+     * 
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     public pause(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'pause', [], fn);
         return this;
     }
+    /**
+     * (description)
+     * 
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     public reverse(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'reverse', [], fn);
         return this;
     }
+    /**
+     * (description)
+     * 
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     public cancel(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'cancel', [], fn);
         each(this._animators, (a: ja.IAnimator) => a.currentTime = 0);
@@ -104,6 +183,12 @@ export class ElementAnimator implements ja.IAnimator {
     }
 }
 
+/**
+ * (description)
+ * 
+ * @param {ja.ElementSource} source (description)
+ * @returns {Element[]} (description)
+ */
 function getElements(source: ja.ElementSource): Element[] {
     if (!source) {
         throw Error('source is undefined');

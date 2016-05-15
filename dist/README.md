@@ -1,7 +1,7 @@
 #JustAnimate
 *Just animate your websites*
 
-`JustAnimate is an easy to use Animation library that lets you add animations and *just* move on.
+`Just Animate is an easy to use Animation library that lets you add animations and *just* move on.
 
 ## Demos
   - [Basic Animations](http://codepen.io/notoriousb1t/pen/BjgGmY)

@@ -45,37 +45,183 @@ declare module "just-animate/easings" {
     };
 }
 declare module "just-animate/core/ElementAnimator" {
+    /**
+     * (description)
+     *
+     * @export
+     * @class ElementAnimator
+     * @implements {ja.IAnimator}
+     */
     export class ElementAnimator implements ja.IAnimator {
+        /**
+         * (description)
+         *
+         * @type {number}
+         */
         duration: number;
+        /**
+         * (description)
+         *
+         * @type {ja.IConsumer<ja.IAnimator>}
+         */
         onfinish: ja.IConsumer<ja.IAnimator>;
+        /**
+         * (description)
+         *
+         * @type {ja.IConsumer<ja.IAnimator>}
+         */
         oncancel: ja.IConsumer<ja.IAnimator>;
         private _animators;
+        /**
+         * (description)
+         *
+         * @type {number}
+         */
+        /**
+         * (description)
+         */
         playbackRate: number;
+        /**
+         * Creates an instance of ElementAnimator.
+         *
+         * @param {ja.IAnimationManager} manager (description)
+         * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
+         * @param {ja.ElementSource} el (description)
+         * @param {ja.IAnimationEffectTiming} [timings] (description)
+         */
         constructor(manager: ja.IAnimationManager, keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, el: ja.ElementSource, timings?: ja.IAnimationEffectTiming);
+        /**
+         * (description)
+         *
+         * @type {number}
+         */
+        /**
+         * (description)
+         */
         currentTime: number;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         finish(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         play(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         pause(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         reverse(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         cancel(fn?: ja.ICallbackHandler): ja.IAnimator;
     }
 }
 declare module "just-animate/core/SequenceAnimator" {
+    /**
+     * (description)
+     *
+     * @export
+     * @class SequenceAnimator
+     * @implements {ja.IAnimator}
+     */
     export class SequenceAnimator implements ja.IAnimator {
+        /**
+         * (description)
+         *
+         * @type {number}
+         */
         playbackRate: number;
+        /**
+         * (description)
+         *
+         * @type {ja.IConsumer<ja.IAnimator>}
+         */
         onfinish: ja.IConsumer<ja.IAnimator>;
+        /**
+         * (description)
+         *
+         * @type {ja.IConsumer<ja.IAnimator>}
+         */
         oncancel: ja.IConsumer<ja.IAnimator>;
         private _currentIndex;
         private _errorCallback;
         private _manager;
         private _steps;
+        /**
+         * (description)
+         *
+         * @readonly
+         * @type {number}
+         */
         currentTime: number;
+        /**
+         * (description)
+         *
+         * @readonly
+         * @type {number}
+         */
         duration: number;
+        /**
+         * Creates an instance of SequenceAnimator.
+         *
+         * @param {ja.IAnimationManager} manager (description)
+         * @param {ja.ISequenceOptions} options (description)
+         */
         constructor(manager: ja.IAnimationManager, options: ja.ISequenceOptions);
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         finish(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         play(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         pause(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         reverse(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         cancel(fn?: ja.ICallbackHandler): ja.IAnimator;
         private _isInEffect();
         private _getAnimator();
@@ -84,11 +230,43 @@ declare module "just-animate/core/SequenceAnimator" {
     }
 }
 declare module "just-animate/core/TimelineAnimator" {
+    /**
+     * (description)
+     *
+     * @export
+     * @class TimelineAnimator
+     * @implements {ja.IAnimator}
+     */
     export class TimelineAnimator implements ja.IAnimator {
+        /**
+         * (description)
+         *
+         * @type {number}
+         */
         currentTime: number;
+        /**
+         * (description)
+         *
+         * @type {number}
+         */
         duration: number;
+        /**
+         * (description)
+         *
+         * @type {number}
+         */
         playbackRate: number;
+        /**
+         * (description)
+         *
+         * @type {ja.IConsumer<ja.IAnimator>}
+         */
         onfinish: ja.IConsumer<ja.IAnimator>;
+        /**
+         * (description)
+         *
+         * @type {ja.IConsumer<ja.IAnimator>}
+         */
         oncancel: ja.IConsumer<ja.IAnimator>;
         private _events;
         private _isInEffect;
@@ -97,11 +275,47 @@ declare module "just-animate/core/TimelineAnimator" {
         private _isPaused;
         private _lastTick;
         private _manager;
+        /**
+         * Creates an instance of TimelineAnimator.
+         *
+         * @param {ja.IAnimationManager} manager (description)
+         * @param {ja.ITimelineOptions} options (description)
+         */
         constructor(manager: ja.IAnimationManager, options: ja.ITimelineOptions);
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         finish(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         play(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         pause(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         reverse(fn?: ja.ICallbackHandler): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ICallbackHandler} [fn] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         cancel(fn?: ja.ICallbackHandler): ja.IAnimator;
         private _tick();
         private _triggerFinish();
@@ -111,15 +325,63 @@ declare module "just-animate/core/TimelineAnimator" {
     }
 }
 declare module "just-animate/JustAnimate" {
+    /**
+     * (description)
+     *
+     * @export
+     * @class JustAnimate
+     * @implements {ja.IAnimationManager}
+     */
     export class JustAnimate implements ja.IAnimationManager {
         private _registry;
         private _timings;
+        /**
+         * (description)
+         *
+         * @static
+         * @param {ja.IAnimationOptions[]} animations (description)
+         */
         static inject(animations: ja.IAnimationOptions[]): void;
+        /**
+         * Creates an instance of JustAnimate.
+         */
         constructor();
+        /**
+         * (description)
+         *
+         * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
+         * @param {ja.ElementSource} el (description)
+         * @param {ja.IAnimationEffectTiming} [timings] (description)
+         * @returns {ja.IAnimator} (description)
+         */
         animate(keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, el: ja.ElementSource, timings?: ja.IAnimationEffectTiming): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ISequenceOptions} options (description)
+         * @returns {ja.IAnimator} (description)
+         */
         animateSequence(options: ja.ISequenceOptions): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {ja.ITimelineOptions} options (description)
+         * @returns {ja.IAnimator} (description)
+         */
         animateTimeline(options: ja.ITimelineOptions): ja.IAnimator;
+        /**
+         * (description)
+         *
+         * @param {string} name (description)
+         * @returns {ja.IKeyframeOptions} (description)
+         */
         findAnimation(name: string): ja.IKeyframeOptions;
+        /**
+         * (description)
+         *
+         * @param {ja.IAnimationOptions} animationOptions (description)
+         * @returns {ja.IAnimationManager} (description)
+         */
         register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager;
     }
 }

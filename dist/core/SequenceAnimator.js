@@ -1,7 +1,27 @@
+/// <reference path="../just-animate.d.ts" />
 "use strict";
 var helpers_1 = require('./helpers');
+/**
+ * (description)
+ *
+ * @export
+ * @class SequenceAnimator
+ * @implements {ja.IAnimator}
+ */
 var SequenceAnimator = (function () {
+    /**
+     * Creates an instance of SequenceAnimator.
+     *
+     * @param {ja.IAnimationManager} manager (description)
+     * @param {ja.ISequenceOptions} options (description)
+     */
     function SequenceAnimator(manager, options) {
+        /**
+         * (description)
+         *
+         * @param {ja.ISequenceEvent} step (description)
+         * @returns (description)
+         */
         var steps = helpers_1.map(options.steps, function (step) {
             if (step.command || !step.name) {
                 return step;
@@ -26,6 +46,12 @@ var SequenceAnimator = (function () {
         }
     }
     Object.defineProperty(SequenceAnimator.prototype, "currentTime", {
+        /**
+         * (description)
+         *
+         * @readonly
+         * @type {number}
+         */
         get: function () {
             var currentIndex = this._currentIndex;
             var len = this._steps.length;
@@ -58,12 +84,24 @@ var SequenceAnimator = (function () {
         configurable: true
     });
     Object.defineProperty(SequenceAnimator.prototype, "duration", {
+        /**
+         * (description)
+         *
+         * @readonly
+         * @type {number}
+         */
         get: function () {
             return this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
         },
         enumerable: true,
         configurable: true
     });
+    /**
+     * (description)
+     *
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     SequenceAnimator.prototype.finish = function (fn) {
         this._errorCallback = fn;
         this._currentIndex = -1;
@@ -78,14 +116,27 @@ var SequenceAnimator = (function () {
         }
         return this;
     };
+    /**
+     * (description)
+     *
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     SequenceAnimator.prototype.play = function (fn) {
         this._errorCallback = fn;
         this.playbackRate = 1;
         this._playThisStep();
         return this;
     };
+    /**
+     * (description)
+     *
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     SequenceAnimator.prototype.pause = function (fn) {
         this._errorCallback = fn;
+        // ignore pause if not relevant
         if (!this._isInEffect()) {
             return this;
         }
@@ -93,12 +144,24 @@ var SequenceAnimator = (function () {
         animator.pause(fn);
         return this;
     };
+    /**
+     * (description)
+     *
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     SequenceAnimator.prototype.reverse = function (fn) {
         this._errorCallback = fn;
         this.playbackRate = -1;
         this._playThisStep();
         return this;
     };
+    /**
+     * (description)
+     *
+     * @param {ja.ICallbackHandler} [fn] (description)
+     * @returns {ja.IAnimator} (description)
+     */
     SequenceAnimator.prototype.cancel = function (fn) {
         this._errorCallback = fn;
         this.playbackRate = undefined;

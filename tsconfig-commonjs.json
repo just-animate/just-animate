@@ -5,7 +5,7 @@
         "outDir": "dist",
         "module": "commonjs",
         "preserveConstEnums": false,
-        "removeComments": true,
+        "removeComments": false,
         "inlineSourceMap": false,
         "allowUnreachableCode": false,
         "declaration": false

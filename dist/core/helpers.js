@@ -1,7 +1,9 @@
+/// <reference path="../just-animate.d.ts" />
 "use strict";
 var ostring = Object.prototype.toString;
 var slice = Array.prototype.slice;
 function noop() {
+    // do nothing
 }
 exports.noop = noop;
 function clamp(val, min, max) {

@@ -159,6 +159,12 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
     var __moduleName = context_3 && context_3.id;
     var easings_1, helpers_1;
     var ElementAnimator;
+    /**
+     * (description)
+     *
+     * @param {ja.ElementSource} source (description)
+     * @returns {Element[]} (description)
+     */
     function getElements(source) {
         if (!source) {
             throw Error('source is undefined');
@@ -200,7 +206,22 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                 helpers_1 = helpers_1_1;
             }],
         execute: function() {
+            /**
+             * (description)
+             *
+             * @export
+             * @class ElementAnimator
+             * @implements {ja.IAnimator}
+             */
             ElementAnimator = (function () {
+                /**
+                 * Creates an instance of ElementAnimator.
+                 *
+                 * @param {ja.IAnimationManager} manager (description)
+                 * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
+                 * @param {ja.ElementSource} el (description)
+                 * @param {ja.IAnimationEffectTiming} [timings] (description)
+                 */
                 function ElementAnimator(manager, keyframesOrName, el, timings) {
                     var _this = this;
                     if (!keyframesOrName) {
@@ -234,16 +255,27 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                     // hookup finish event for when it happens naturally    
                     if (this._animators.length > 0) {
                         // todo: try to find a better way than just listening to one of them
+                        /**
+                         * (description)
+                         */
                         this._animators[0].onfinish = function () {
                             _this.finish();
                         };
                     }
                 }
                 Object.defineProperty(ElementAnimator.prototype, "playbackRate", {
+                    /**
+                     * (description)
+                     *
+                     * @type {number}
+                     */
                     get: function () {
                         var first = helpers_1.head(this._animators);
                         return first ? first.playbackRate : 0;
                     },
+                    /**
+                     * (description)
+                     */
                     set: function (val) {
                         helpers_1.each(this._animators, function (a) { return a.playbackRate = val; });
                     },
@@ -251,15 +283,29 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                     configurable: true
                 });
                 Object.defineProperty(ElementAnimator.prototype, "currentTime", {
+                    /**
+                     * (description)
+                     *
+                     * @type {number}
+                     */
                     get: function () {
                         return helpers_1.max(this._animators, 'currentTime') || 0;
                     },
+                    /**
+                     * (description)
+                     */
                     set: function (elapsed) {
                         helpers_1.each(this._animators, function (a) { return a.currentTime = elapsed; });
                     },
                     enumerable: true,
                     configurable: true
                 });
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 ElementAnimator.prototype.finish = function (fn) {
                     var _this = this;
                     helpers_1.multiapply(this._animators, 'finish', [], fn);
@@ -274,18 +320,42 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                     }
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 ElementAnimator.prototype.play = function (fn) {
                     helpers_1.multiapply(this._animators, 'play', [], fn);
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 ElementAnimator.prototype.pause = function (fn) {
                     helpers_1.multiapply(this._animators, 'pause', [], fn);
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 ElementAnimator.prototype.reverse = function (fn) {
                     helpers_1.multiapply(this._animators, 'reverse', [], fn);
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 ElementAnimator.prototype.cancel = function (fn) {
                     helpers_1.multiapply(this._animators, 'cancel', [], fn);
                     helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
@@ -312,8 +382,27 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/helper
                 helpers_2 = helpers_2_1;
             }],
         execute: function() {
+            /**
+             * (description)
+             *
+             * @export
+             * @class SequenceAnimator
+             * @implements {ja.IAnimator}
+             */
             SequenceAnimator = (function () {
+                /**
+                 * Creates an instance of SequenceAnimator.
+                 *
+                 * @param {ja.IAnimationManager} manager (description)
+                 * @param {ja.ISequenceOptions} options (description)
+                 */
                 function SequenceAnimator(manager, options) {
+                    /**
+                     * (description)
+                     *
+                     * @param {ja.ISequenceEvent} step (description)
+                     * @returns (description)
+                     */
                     var steps = helpers_2.map(options.steps, function (step) {
                         if (step.command || !step.name) {
                             return step;
@@ -338,6 +427,12 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/helper
                     }
                 }
                 Object.defineProperty(SequenceAnimator.prototype, "currentTime", {
+                    /**
+                     * (description)
+                     *
+                     * @readonly
+                     * @type {number}
+                     */
                     get: function () {
                         var currentIndex = this._currentIndex;
                         var len = this._steps.length;
@@ -370,12 +465,24 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/helper
                     configurable: true
                 });
                 Object.defineProperty(SequenceAnimator.prototype, "duration", {
+                    /**
+                     * (description)
+                     *
+                     * @readonly
+                     * @type {number}
+                     */
                     get: function () {
                         return this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
                     },
                     enumerable: true,
                     configurable: true
                 });
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 SequenceAnimator.prototype.finish = function (fn) {
                     this._errorCallback = fn;
                     this._currentIndex = -1;
@@ -390,12 +497,24 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/helper
                     }
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 SequenceAnimator.prototype.play = function (fn) {
                     this._errorCallback = fn;
                     this.playbackRate = 1;
                     this._playThisStep();
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 SequenceAnimator.prototype.pause = function (fn) {
                     this._errorCallback = fn;
                     // ignore pause if not relevant
@@ -406,12 +525,24 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/helper
                     animator.pause(fn);
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 SequenceAnimator.prototype.reverse = function (fn) {
                     this._errorCallback = fn;
                     this.playbackRate = -1;
                     this._playThisStep();
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 SequenceAnimator.prototype.cancel = function (fn) {
                     this._errorCallback = fn;
                     this.playbackRate = undefined;
@@ -490,7 +621,20 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/helper
             // on individual animation and calls finish.  If an animation plays after its time, it looks
             // like it restarts and that causes jank
             animationPadding = 1.0 / 30;
+            /**
+             * (description)
+             *
+             * @export
+             * @class TimelineAnimator
+             * @implements {ja.IAnimator}
+             */
             TimelineAnimator = (function () {
+                /**
+                 * Creates an instance of TimelineAnimator.
+                 *
+                 * @param {ja.IAnimationManager} manager (description)
+                 * @param {ja.ITimelineOptions} options (description)
+                 */
                 function TimelineAnimator(manager, options) {
                     var duration = options.duration;
                     if (duration === undefined) {
@@ -508,10 +652,22 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/helper
                         this.play();
                     }
                 }
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 TimelineAnimator.prototype.finish = function (fn) {
                     this._isFinished = true;
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 TimelineAnimator.prototype.play = function (fn) {
                     this.playbackRate = 1;
                     this._isPaused = false;
@@ -527,12 +683,24 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/helper
                     window.requestAnimationFrame(this._tick);
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 TimelineAnimator.prototype.pause = function (fn) {
                     if (this._isInEffect) {
                         this._isPaused = true;
                     }
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 TimelineAnimator.prototype.reverse = function (fn) {
                     this.playbackRate = -1;
                     this._isPaused = false;
@@ -545,6 +713,12 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/helper
                     window.requestAnimationFrame(this._tick);
                     return this;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ICallbackHandler} [fn] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 TimelineAnimator.prototype.cancel = function (fn) {
                     this.playbackRate = 0;
                     this._isCanceled = true;
@@ -710,7 +884,17 @@ System.register("just-animate/JustAnimate", ["just-animate/core/helpers", "just-
             }],
         execute: function() {
             DEFAULT_ANIMATIONS = [];
+            /**
+             * (description)
+             *
+             * @export
+             * @class JustAnimate
+             * @implements {ja.IAnimationManager}
+             */
             JustAnimate = (function () {
+                /**
+                 * Creates an instance of JustAnimate.
+                 */
                 function JustAnimate() {
                     var _this = this;
                     this._timings = {
@@ -722,21 +906,59 @@ System.register("just-animate/JustAnimate", ["just-animate/core/helpers", "just-
                         _this._registry[a.name] = a;
                     });
                 }
+                /**
+                 * (description)
+                 *
+                 * @static
+                 * @param {ja.IAnimationOptions[]} animations (description)
+                 */
                 JustAnimate.inject = function (animations) {
                     Array.prototype.push.apply(DEFAULT_ANIMATIONS, animations);
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
+                 * @param {ja.ElementSource} el (description)
+                 * @param {ja.IAnimationEffectTiming} [timings] (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 JustAnimate.prototype.animate = function (keyframesOrName, el, timings) {
                     return new ElementAnimator_1.ElementAnimator(this, keyframesOrName, el, timings);
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ISequenceOptions} options (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 JustAnimate.prototype.animateSequence = function (options) {
                     return new SequenceAnimator_1.SequenceAnimator(this, options);
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.ITimelineOptions} options (description)
+                 * @returns {ja.IAnimator} (description)
+                 */
                 JustAnimate.prototype.animateTimeline = function (options) {
                     return new TimelineAnimator_1.TimelineAnimator(this, options);
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {string} name (description)
+                 * @returns {ja.IKeyframeOptions} (description)
+                 */
                 JustAnimate.prototype.findAnimation = function (name) {
                     return this._registry[name] || undefined;
                 };
+                /**
+                 * (description)
+                 *
+                 * @param {ja.IAnimationOptions} animationOptions (description)
+                 * @returns {ja.IAnimationManager} (description)
+                 */
                 JustAnimate.prototype.register = function (animationOptions) {
                     this._registry[animationOptions.name] = animationOptions;
                     return this;
