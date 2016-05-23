@@ -129,7 +129,10 @@ declare module "just-animate/core/Helpers" {
     export function multiapply(targets: ja.IIndexed<any>, fnName: string, args: ja.IIndexed<any>, cb?: ja.ICallbackHandler): any[];
 }
 declare module "just-animate/core/KeyframeTransformers" {
-    export const keyframeTransformer: (keyframe: ja.IKeyframe) => ja.IKeyframe;
+    /**
+     * Handles transforming short hand key properties into their native form
+     */
+    export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe;
 }
 declare module "just-animate/easings" {
     export const easings: {
