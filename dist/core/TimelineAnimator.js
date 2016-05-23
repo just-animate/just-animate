@@ -1,6 +1,6 @@
 /// <reference path="../just-animate.d.ts" />
 "use strict";
-var helpers_1 = require('./helpers');
+var Helpers_1 = require('./Helpers');
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
@@ -27,7 +27,7 @@ var TimelineAnimator = (function () {
         this.playbackRate = 0;
         this.duration = options.duration;
         this.currentTime = 0;
-        this._events = helpers_1.map(options.events, function (evt) { return new TimelineEvent(manager, duration, evt); });
+        this._events = Helpers_1.map(options.events, function (evt) { return new TimelineEvent(manager, duration, evt); });
         this._isPaused = false;
         this._manager = manager;
         // ensure context of tick is this instance        
@@ -140,7 +140,7 @@ var TimelineAnimator = (function () {
             return;
         }
         // start animations if should be active and currently aren't        
-        helpers_1.each(this._events, function (evt) {
+        Helpers_1.each(this._events, function (evt) {
             var startTimeMs = _this.playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             var endTimeMs = _this.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
             var shouldBeActive = startTimeMs <= _this.currentTime && _this.currentTime < endTimeMs;
@@ -156,15 +156,15 @@ var TimelineAnimator = (function () {
     };
     TimelineAnimator.prototype._triggerFinish = function () {
         this._reset();
-        helpers_1.each(this._events, function (evt) { return evt.animator.finish(); });
-        if (helpers_1.isFunction(this.onfinish)) {
+        Helpers_1.each(this._events, function (evt) { return evt.animator.finish(); });
+        if (Helpers_1.isFunction(this.onfinish)) {
             this.onfinish(this);
         }
     };
     TimelineAnimator.prototype._triggerCancel = function () {
         this._reset();
-        helpers_1.each(this._events, function (evt) { return evt.animator.cancel(); });
-        if (helpers_1.isFunction(this.oncancel)) {
+        Helpers_1.each(this._events, function (evt) { return evt.animator.cancel(); });
+        if (Helpers_1.isFunction(this.oncancel)) {
             this.oncancel(this);
         }
     };
@@ -173,7 +173,7 @@ var TimelineAnimator = (function () {
         this._isInEffect = false;
         this._lastTick = undefined;
         this.playbackRate = 0;
-        helpers_1.each(this._events, function (evt) {
+        Helpers_1.each(this._events, function (evt) {
             evt.isInEffect = false;
             evt.animator.pause();
         });
@@ -185,7 +185,7 @@ var TimelineAnimator = (function () {
         this._isFinished = false;
         this._isPaused = false;
         this._isInEffect = false;
-        helpers_1.each(this._events, function (evt) {
+        Helpers_1.each(this._events, function (evt) {
             evt.isInEffect = false;
         });
     };
@@ -199,9 +199,9 @@ var TimelineEvent = (function () {
         var el;
         if (evt.name) {
             var definition = manager.findAnimation(evt.name);
-            var timings2 = helpers_1.extend({}, definition.timings);
+            var timings2 = Helpers_1.extend({}, definition.timings);
             if (evt.timings) {
-                timings = helpers_1.extend(timings2, evt.timings);
+                timings = Helpers_1.extend(timings2, evt.timings);
             }
             keyframes = definition.keyframes;
             timings = timings2;

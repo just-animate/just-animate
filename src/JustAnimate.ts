@@ -1,6 +1,7 @@
 /// <reference path="./just-animate.d.ts" />
 
-import {each, extend, isArray} from './core/helpers';
+import {each, extend, isArray, map} from './core/Helpers';
+import { keyframeTransformer } from './core/KeyframeTransformers';
 import {ElementAnimator} from './core/ElementAnimator';
 import {SequenceAnimator} from './core/SequenceAnimator';
 import {TimelineAnimator} from './core/TimelineAnimator';
@@ -25,7 +26,12 @@ export class JustAnimate implements ja.IAnimationManager {
      * @param {ja.IAnimationOptions[]} animations (description)
      */
     public static inject(animations: ja.IAnimationOptions[]) {
-        Array.prototype.push.apply(DEFAULT_ANIMATIONS, animations);
+        const animationDefs = map(animations, (animationOptions) => ({
+            name: animationOptions.name,
+            timings: extend({}, animationOptions.timings),
+            keyframes: map(animationOptions.keyframes, keyframeTransformer)
+        }))
+        Array.prototype.push.apply(DEFAULT_ANIMATIONS, animationDefs);
     }
 
     /**
@@ -90,7 +96,13 @@ export class JustAnimate implements ja.IAnimationManager {
      * @returns {ja.IAnimationManager} (description)
      */
     public register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager {
-        this._registry[animationOptions.name] = animationOptions;
+        const animationDef: ja.IAnimationOptions = {
+            name: animationOptions.name,
+            timings: extend({}, animationOptions.timings),
+            keyframes: map(animationOptions.keyframes, keyframeTransformer)
+        };
+        
+        this._registry[animationDef.name] = animationDef;
         return this;
     }
 }

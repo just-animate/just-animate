@@ -1,19 +1,135 @@
 /// <reference path="../../src/just-animate.d.ts" />
-declare module "just-animate/core/helpers" {
+declare module "just-animate/core/Helpers" {
+    /**
+     * No operation function: a placeholder
+     *
+     * @export
+     */
     export function noop(): void;
+    /**
+     * Clamps a number between the min and max
+     *
+     * @export
+     * @param {number} val number to clamp
+     * @param {number} min min number allowed
+     * @param {number} max max number allowed
+     * @returns {number} val if between min-max, min if lesser, max if greater
+     */
     export function clamp(val: number, min: number, max: number): number;
+    /**
+     * Returns the first object in the list or undefined
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} indexed list of objects
+     * @returns {T} first object in the list or undefined
+     */
     export function head<T>(indexed: ja.IIndexed<T>): T;
+    /**
+     * Returns the last object in the list or undefined
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} indexed list of objects
+     * @returns {T} last object in the list or undefined
+     */
     export function tail<T>(indexed: ja.IIndexed<T>): T;
+    /**
+     * Tests if object is a list
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if is not a string and length property is a number
+     */
     export function isArray(a: any): boolean;
+    /**
+     * Tests if object is a function
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object.toString reports it as a Function
+     */
     export function isFunction(a: any): boolean;
+    /**
+     * Tests if object is a number
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if the object is typeof number
+     */
     export function isNumber(a: any): boolean;
+    /**
+     * Tests if object is a string
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object is typeof string
+     */
     export function isString(a: any): boolean;
+    /**
+     * Converts list to an Array.
+     * Useful for converting NodeList and arguments to []
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} list to convert
+     * @returns {T[]} array clone of list
+     */
     export function toArray<T>(indexed: ja.IIndexed<T>): T[];
+    /**
+     * Performs the function against all objects in the list
+     *
+     * @export
+     * @template T1
+     * @param {ja.IIndexed<T1>} items list of objects
+     * @param {ja.IConsumer<T1>} fn function to execute for each object
+     */
     export function each<T1>(items: ja.IIndexed<T1>, fn: ja.IConsumer<T1>): void;
+    /**
+     * Returns the max value of a given property in a list
+     *
+     * @export
+     * @template T1
+     * @param {ja.IIndexed<T1>} items list of objects
+     * @param {string} propertyName property to evaluate
+     * @returns {*} max value of the property provided
+     */
     export function max<T1>(items: ja.IIndexed<T1>, propertyName: string): any;
+    /**
+     * Maps one list of objects to another.
+     * Returning undefined skips the item (effectively filtering it)
+     *
+     * @export
+     * @template T1
+     * @template T2
+     * @param {ja.IIndexed<T1>} items list of objects to map
+     * @param {ja.IMapper<T1, T2>} fn function that maps each object
+     * @returns {T2[]} new list of objects
+     */
     export function map<T1, T2>(items: ja.IIndexed<T1>, fn: ja.IMapper<T1, T2>): T2[];
+    /**
+     * Extends the first object with the properties of each subsequent object
+     *
+     * @export
+     * @param {*} target object to extend
+     * @param {...any[]} sources sources from which to inherit properties
+     * @returns {*} first object
+     */
     export function extend(target: any, ...sources: any[]): any;
+    /**
+     * Calls the named function for each object in the list
+     *
+     * @export
+     * @param {ja.IIndexed<any>} targets list of objects on which to call a function
+     * @param {string} fnName function name to call on each object
+     * @param {ja.IIndexed<any>} args list of arguments to pass to the function
+     * @param {ja.ICallbackHandler} [cb] optional error handlers
+     * @returns {any[]} all results as an array
+     */
     export function multiapply(targets: ja.IIndexed<any>, fnName: string, args: ja.IIndexed<any>, cb?: ja.ICallbackHandler): any[];
+}
+declare module "just-animate/core/KeyframeTransformers" {
+    export const keyframeTransformer: (keyframe: ja.IKeyframe) => ja.IKeyframe;
 }
 declare module "just-animate/easings" {
     export const easings: {
@@ -46,7 +162,7 @@ declare module "just-animate/easings" {
 }
 declare module "just-animate/core/ElementAnimator" {
     /**
-     * (description)
+     * Animates one or more elements
      *
      * @export
      * @class ElementAnimator
@@ -54,84 +170,84 @@ declare module "just-animate/core/ElementAnimator" {
      */
     export class ElementAnimator implements ja.IAnimator {
         /**
-         * (description)
+         * The duration of the animation in milliseconds
          *
          * @type {number}
          */
         duration: number;
         /**
-         * (description)
+         * Called when the animation is finished
          *
          * @type {ja.IConsumer<ja.IAnimator>}
          */
         onfinish: ja.IConsumer<ja.IAnimator>;
         /**
-         * (description)
+         * Called when the animation is canceled
          *
          * @type {ja.IConsumer<ja.IAnimator>}
          */
         oncancel: ja.IConsumer<ja.IAnimator>;
         private _animators;
         /**
-         * (description)
+         * Returns 0 when not playing, 1 when playing forward, and -1 when playing backward
          *
          * @type {number}
          */
         /**
-         * (description)
+         * Sets the playbackRate to the specified value
          */
         playbackRate: number;
         /**
          * Creates an instance of ElementAnimator.
          *
-         * @param {ja.IAnimationManager} manager (description)
-         * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
-         * @param {ja.ElementSource} el (description)
-         * @param {ja.IAnimationEffectTiming} [timings] (description)
+         * @param {ja.IAnimationManager} manager JustAnimate instance
+         * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName keyframe definition or name of registered animation
+         * @param {ja.ElementSource} el element or element source to animate
+         * @param {ja.IAnimationEffectTiming} [timings] optional timing overrides.  required when passing in keyframes
          */
         constructor(manager: ja.IAnimationManager, keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, el: ja.ElementSource, timings?: ja.IAnimationEffectTiming);
         /**
-         * (description)
+         * Returns current time of the animation
          *
          * @type {number}
          */
         /**
-         * (description)
+         * Sets the animation current time
          */
         currentTime: number;
         /**
-         * (description)
+         * Finishes the current animation
          *
-         * @param {ja.ICallbackHandler} [fn] (description)
-         * @returns {ja.IAnimator} (description)
+         * @param {ja.ICallbackHandler} [fn] optional error handler
+         * @returns {ja.IAnimator} this instance of the Element Animator
          */
         finish(fn?: ja.ICallbackHandler): ja.IAnimator;
         /**
-         * (description)
+         * Plays the animation
          *
-         * @param {ja.ICallbackHandler} [fn] (description)
-         * @returns {ja.IAnimator} (description)
+         * @param {ja.ICallbackHandler} [fn] optional error handler
+         * @returns {ja.IAnimator} this instance of Element Animator
          */
         play(fn?: ja.ICallbackHandler): ja.IAnimator;
         /**
-         * (description)
+         * Pauses the animation
          *
-         * @param {ja.ICallbackHandler} [fn] (description)
-         * @returns {ja.IAnimator} (description)
+         * @param {ja.ICallbackHandler} [fn] optional error handler
+         * @returns {ja.IAnimator}  this instance of Element Animator
          */
         pause(fn?: ja.ICallbackHandler): ja.IAnimator;
         /**
-         * (description)
+         * Reverses the direction of the animation
          *
-         * @param {ja.ICallbackHandler} [fn] (description)
-         * @returns {ja.IAnimator} (description)
+         * @param {ja.ICallbackHandler} [fn] optional error handler
+         * @returns {ja.IAnimator} this instance of Element Animator
          */
         reverse(fn?: ja.ICallbackHandler): ja.IAnimator;
         /**
-         * (description)
+         * Cancels the animation
          *
-         * @param {ja.ICallbackHandler} [fn] (description)
-         * @returns {ja.IAnimator} (description)
+         * @param {ja.ICallbackHandler} [fn] optional error handler
+         * @returns {ja.IAnimator} this instance of Element Animator
          */
         cancel(fn?: ja.ICallbackHandler): ja.IAnimator;
     }
@@ -386,50 +502,13 @@ declare module "just-animate/JustAnimate" {
     }
 }
 declare module "just-animate/animations/bounce" {
-    export const bounce: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const bounce: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceIn" {
-    export const bounceIn: {
-        'keyframes': ({
-            'opacity': number;
-            'transform': string;
-        } | {
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const bounceIn: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceInDown" {
-    export const bounceInDown: {
-        'keyframes': {
-            'offset': number;
-            'easing': string;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const bounceInDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceInLeft" {
     export const bounceInLeft: {
@@ -1496,7 +1575,7 @@ declare module "just-animate/animations" {
     import { zoomOutLeft } from "just-animate/animations/zoomOutLeft";
     import { zoomOutRight } from "just-animate/animations/zoomOutRight";
     import { zoomOutUp } from "just-animate/animations/zoomOutUp";
-    export const ANIMATE_CSS: ({
+    export const ANIMATE_CSS: (ja.IAnimationOptions | {
         'keyframes': {
             'opacity': number;
         }[];

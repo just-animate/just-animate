@@ -860,6 +860,13 @@ declare module ja {
          */
         'right'?: string;
         /**
+         * Shortform for 'transform: scale3d()'.
+         * Pass a single number to scale evenly, or an array of 3 numbers to set the X, Y, Z axes
+         * 
+         * @type {(number|number[])}
+         */
+        'scale3d'?: number|number[],
+        /**
          * (description)
          * 
          * @type {string}
@@ -943,6 +950,14 @@ declare module ja {
          * @type {string}
          */
         'transform-origin'?: string;
+        /**
+         * Shortform for 'transform: translate3d()'.
+         * Pass a single string to translate the same amount in all directions,
+         * or an array of 3 strings to set the X, Y, Z axes
+         * 
+         * @type {(string|string[])}
+         */
+        'translate3d'?: string | string[],
         /**
          * (description)
          * 

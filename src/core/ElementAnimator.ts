@@ -1,10 +1,10 @@
 /// <reference path="../just-animate.d.ts" />
 
 import {easings} from '../easings';
-import {head, multiapply, each, extend, isArray, isFunction, isString, toArray, max} from './helpers';
+import {head, multiapply, each, extend, isArray, isFunction, isString, toArray, max} from './Helpers';
 
 /**
- * (description)
+ * Animates one or more elements
  * 
  * @export
  * @class ElementAnimator
@@ -12,19 +12,19 @@ import {head, multiapply, each, extend, isArray, isFunction, isString, toArray, 
  */
 export class ElementAnimator implements ja.IAnimator {
     /**
-     * (description)
+     * The duration of the animation in milliseconds
      * 
      * @type {number}
      */
     public duration: number;
     /**
-     * (description)
+     * Called when the animation is finished
      * 
      * @type {ja.IConsumer<ja.IAnimator>}
      */
     public onfinish: ja.IConsumer<ja.IAnimator>;
     /**
-     * (description)
+     * Called when the animation is canceled
      * 
      * @type {ja.IConsumer<ja.IAnimator>}
      */
@@ -33,7 +33,7 @@ export class ElementAnimator implements ja.IAnimator {
     private _animators: ja.IAnimator[];
 
     /**
-     * (description)
+     * Returns 0 when not playing, 1 when playing forward, and -1 when playing backward
      * 
      * @type {number}
      */
@@ -42,7 +42,7 @@ export class ElementAnimator implements ja.IAnimator {
         return first ? first.playbackRate : 0;
     }
     /**
-     * (description)
+     * Sets the playbackRate to the specified value
      */
     public set playbackRate(val: number) {
         each(this._animators, (a: ja.IAnimator) => a.playbackRate = val);
@@ -51,10 +51,10 @@ export class ElementAnimator implements ja.IAnimator {
     /**
      * Creates an instance of ElementAnimator.
      * 
-     * @param {ja.IAnimationManager} manager (description)
-     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
-     * @param {ja.ElementSource} el (description)
-     * @param {ja.IAnimationEffectTiming} [timings] (description)
+     * @param {ja.IAnimationManager} manager JustAnimate instance
+     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName keyframe definition or name of registered animation
+     * @param {ja.ElementSource} el element or element source to animate
+     * @param {ja.IAnimationEffectTiming} [timings] optional timing overrides.  required when passing in keyframes
      */
     constructor(manager: ja.IAnimationManager, keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, 
                 el: ja.ElementSource, timings?: ja.IAnimationEffectTiming) {
@@ -105,7 +105,7 @@ export class ElementAnimator implements ja.IAnimator {
     }
 
     /**
-     * (description)
+     * Returns current time of the animation
      * 
      * @type {number}
      */
@@ -113,17 +113,17 @@ export class ElementAnimator implements ja.IAnimator {
         return max(this._animators, 'currentTime') || 0;
     }
     /**
-     * (description)
+     * Sets the animation current time
      */
     set currentTime(elapsed: number) {
         each(this._animators, (a: ja.IAnimator) => a.currentTime = elapsed);
     }
 
     /**
-     * (description)
+     * Finishes the current animation
      * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator} this instance of the Element Animator
      */
     public finish(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'finish', [], fn);
@@ -138,40 +138,40 @@ export class ElementAnimator implements ja.IAnimator {
         return this;
     }
     /**
-     * (description)
+     * Plays the animation
      * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator} this instance of Element Animator
      */
     public play(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'play', [], fn);
         return this;
     }
     /**
-     * (description)
+     * Pauses the animation
      * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator}  this instance of Element Animator
      */
     public pause(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'pause', [], fn);
         return this;
     }
     /**
-     * (description)
+     * Reverses the direction of the animation
      * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator} this instance of Element Animator
      */
     public reverse(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'reverse', [], fn);
         return this;
     }
     /**
-     * (description)
+     * Cancels the animation
      * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator} this instance of Element Animator
      */
     public cancel(fn?: ja.ICallbackHandler): ja.IAnimator {
         multiapply(this._animators, 'cancel', [], fn);
@@ -184,10 +184,10 @@ export class ElementAnimator implements ja.IAnimator {
 }
 
 /**
- * (description)
+ * Recursively resolves the element source from dom, selector, jquery, array, and function sources
  * 
- * @param {ja.ElementSource} source (description)
- * @returns {Element[]} (description)
+ * @param {ja.ElementSource} source from which to locate elements
+ * @returns {Element[]} array of elements found
  */
 function getElements(source: ja.ElementSource): Element[] {
     if (!source) {

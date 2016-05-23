@@ -88,6 +88,55 @@
         return results;
     }
 
+    var browserRules = {
+        scale3d: function (val, output) {
+            if (isNumber(val)) {
+                output.transform = (output.transform || '') + " scale3d(" + val + ", " + val + ", " + val + ")";
+                return;
+            }
+            if (isArray(val)) {
+                var arr = val;
+                if (arr.length !== 3) {
+                    throw Error('scale3d requires x, y, & z');
+                }
+                output.transform = (output.transform || '') + " scale3d(" + arr[0] + ", " + arr[1] + ", " + arr[2] + ")";
+                return;
+            }
+            throw Error('scale3d requires a number or number[]');
+        },
+        translate3d: function (val, output) {
+            if (isString(val)) {
+                output.transform = (output.transform || '') + " translate3d(" + val + ", " + val + ", " + val + ")";
+                return;
+            }
+            if (isArray(val)) {
+                var arr = val;
+                if (arr.length !== 3) {
+                    throw Error('translate3d requires x, y, & z');
+                }
+                output.transform = (output.transform || '') + " translate3d(" + arr[0] + ", " + arr[1] + ", " + arr[2] + ")";
+                return;
+            }
+            throw Error('translate3d requires number, string, or an array of strings or numbers');
+        }
+    };
+    var keyframeTransformer = createTransformer(browserRules);
+    function createTransformer(rules) {
+        return function (keyframe) {
+            var output = {};
+            for (var prop in keyframe) {
+                var value = keyframe[prop];
+                var transformer = rules[prop];
+                if (!transformer) {
+                    output[prop] = value;
+                    continue;
+                }
+                transformer(value, output);
+            }
+            return output;
+        };
+    }
+
     var easings = {
         'easeInCubic': 'cubic-bezier(0.550, 0.055, 0.675, 0.190)',
         'easeOutCubic': 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
@@ -591,7 +640,12 @@
             });
         }
         JustAnimate.inject = function (animations) {
-            Array.prototype.push.apply(DEFAULT_ANIMATIONS, animations);
+            var animationDefs = map(animations, function (animationOptions) { return ({
+                name: animationOptions.name,
+                timings: extend({}, animationOptions.timings),
+                keyframes: map(animationOptions.keyframes, keyframeTransformer)
+            }); });
+            Array.prototype.push.apply(DEFAULT_ANIMATIONS, animationDefs);
         };
         JustAnimate.prototype.animate = function (keyframesOrName, el, timings) {
             return new ElementAnimator(this, keyframesOrName, el, timings);
@@ -606,7 +660,12 @@
             return this._registry[name] || undefined;
         };
         JustAnimate.prototype.register = function (animationOptions) {
-            this._registry[animationOptions.name] = animationOptions;
+            var animationDef = {
+                name: animationOptions.name,
+                timings: extend({}, animationOptions.timings),
+                keyframes: map(animationOptions.keyframes, keyframeTransformer)
+            };
+            this._registry[animationDef.name] = animationDef;
             return this;
         };
         return JustAnimate;

@@ -1,6 +1,7 @@
 /// <reference path="./just-animate.d.ts" />
 "use strict";
-var helpers_1 = require('./core/helpers');
+var Helpers_1 = require('./core/Helpers');
+var KeyframeTransformers_1 = require('./core/KeyframeTransformers');
 var ElementAnimator_1 = require('./core/ElementAnimator');
 var SequenceAnimator_1 = require('./core/SequenceAnimator');
 var TimelineAnimator_1 = require('./core/TimelineAnimator');
@@ -23,7 +24,7 @@ var JustAnimate = (function () {
             fill: 'both'
         };
         this._registry = {};
-        helpers_1.each(DEFAULT_ANIMATIONS, function (a) {
+        Helpers_1.each(DEFAULT_ANIMATIONS, function (a) {
             _this._registry[a.name] = a;
         });
     }
@@ -34,7 +35,12 @@ var JustAnimate = (function () {
      * @param {ja.IAnimationOptions[]} animations (description)
      */
     JustAnimate.inject = function (animations) {
-        Array.prototype.push.apply(DEFAULT_ANIMATIONS, animations);
+        var animationDefs = Helpers_1.map(animations, function (animationOptions) { return ({
+            name: animationOptions.name,
+            timings: Helpers_1.extend({}, animationOptions.timings),
+            keyframes: Helpers_1.map(animationOptions.keyframes, KeyframeTransformers_1.keyframeTransformer)
+        }); });
+        Array.prototype.push.apply(DEFAULT_ANIMATIONS, animationDefs);
     };
     /**
      * (description)
@@ -81,7 +87,12 @@ var JustAnimate = (function () {
      * @returns {ja.IAnimationManager} (description)
      */
     JustAnimate.prototype.register = function (animationOptions) {
-        this._registry[animationOptions.name] = animationOptions;
+        var animationDef = {
+            name: animationOptions.name,
+            timings: Helpers_1.extend({}, animationOptions.timings),
+            keyframes: Helpers_1.map(animationOptions.keyframes, KeyframeTransformers_1.keyframeTransformer)
+        };
+        this._registry[animationDef.name] = animationDef;
         return this;
     };
     return JustAnimate;

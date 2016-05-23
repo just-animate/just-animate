@@ -1,6 +1,6 @@
 /// <reference path="../just-animate.d.ts" />
 
-import {extend, isFunction, map, noop} from './helpers';
+import {extend, isFunction, map, noop} from './Helpers';
 
 /**
  * (description)

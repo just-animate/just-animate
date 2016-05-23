@@ -1,9 +1,9 @@
 /// <reference path="../just-animate.d.ts" />
 "use strict";
 var easings_1 = require('../easings');
-var helpers_1 = require('./helpers');
+var Helpers_1 = require('./Helpers');
 /**
- * (description)
+ * Animates one or more elements
  *
  * @export
  * @class ElementAnimator
@@ -13,10 +13,10 @@ var ElementAnimator = (function () {
     /**
      * Creates an instance of ElementAnimator.
      *
-     * @param {ja.IAnimationManager} manager (description)
-     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
-     * @param {ja.ElementSource} el (description)
-     * @param {ja.IAnimationEffectTiming} [timings] (description)
+     * @param {ja.IAnimationManager} manager JustAnimate instance
+     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName keyframe definition or name of registered animation
+     * @param {ja.ElementSource} el element or element source to animate
+     * @param {ja.IAnimationEffectTiming} [timings] optional timing overrides.  required when passing in keyframes
      */
     function ElementAnimator(manager, keyframesOrName, el, timings) {
         var _this = this;
@@ -24,12 +24,12 @@ var ElementAnimator = (function () {
             return;
         }
         var keyframes;
-        if (helpers_1.isString(keyframesOrName)) {
+        if (Helpers_1.isString(keyframesOrName)) {
             // if keyframes is a string, lookup keyframes from registry
             var definition = manager.findAnimation(keyframesOrName);
             keyframes = definition.keyframes;
             // use registered timings as default, then load timings from params           
-            timings = helpers_1.extend({}, definition.timings, timings);
+            timings = Helpers_1.extend({}, definition.timings, timings);
         }
         else {
             // otherwise, keyframes are actually keyframes
@@ -47,7 +47,7 @@ var ElementAnimator = (function () {
         // get list of elements to animate
         var elements = getElements(el);
         // call .animate on all elements and get a list of their players        
-        this._animators = helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
+        this._animators = Helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
             // todo: try to find a better way than just listening to one of them
@@ -61,101 +61,101 @@ var ElementAnimator = (function () {
     }
     Object.defineProperty(ElementAnimator.prototype, "playbackRate", {
         /**
-         * (description)
+         * Returns 0 when not playing, 1 when playing forward, and -1 when playing backward
          *
          * @type {number}
          */
         get: function () {
-            var first = helpers_1.head(this._animators);
+            var first = Helpers_1.head(this._animators);
             return first ? first.playbackRate : 0;
         },
         /**
-         * (description)
+         * Sets the playbackRate to the specified value
          */
         set: function (val) {
-            helpers_1.each(this._animators, function (a) { return a.playbackRate = val; });
+            Helpers_1.each(this._animators, function (a) { return a.playbackRate = val; });
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(ElementAnimator.prototype, "currentTime", {
         /**
-         * (description)
+         * Returns current time of the animation
          *
          * @type {number}
          */
         get: function () {
-            return helpers_1.max(this._animators, 'currentTime') || 0;
+            return Helpers_1.max(this._animators, 'currentTime') || 0;
         },
         /**
-         * (description)
+         * Sets the animation current time
          */
         set: function (elapsed) {
-            helpers_1.each(this._animators, function (a) { return a.currentTime = elapsed; });
+            Helpers_1.each(this._animators, function (a) { return a.currentTime = elapsed; });
         },
         enumerable: true,
         configurable: true
     });
     /**
-     * (description)
+     * Finishes the current animation
      *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator} this instance of the Element Animator
      */
     ElementAnimator.prototype.finish = function (fn) {
         var _this = this;
-        helpers_1.multiapply(this._animators, 'finish', [], fn);
+        Helpers_1.multiapply(this._animators, 'finish', [], fn);
         if (this.playbackRate < 0) {
-            helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
+            Helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
         }
         else {
-            helpers_1.each(this._animators, function (a) { return a.currentTime = _this.duration; });
+            Helpers_1.each(this._animators, function (a) { return a.currentTime = _this.duration; });
         }
-        if (helpers_1.isFunction(this.onfinish)) {
+        if (Helpers_1.isFunction(this.onfinish)) {
             this.onfinish(this);
         }
         return this;
     };
     /**
-     * (description)
+     * Plays the animation
      *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.play = function (fn) {
-        helpers_1.multiapply(this._animators, 'play', [], fn);
+        Helpers_1.multiapply(this._animators, 'play', [], fn);
         return this;
     };
     /**
-     * (description)
+     * Pauses the animation
      *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator}  this instance of Element Animator
      */
     ElementAnimator.prototype.pause = function (fn) {
-        helpers_1.multiapply(this._animators, 'pause', [], fn);
+        Helpers_1.multiapply(this._animators, 'pause', [], fn);
         return this;
     };
     /**
-     * (description)
+     * Reverses the direction of the animation
      *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.reverse = function (fn) {
-        helpers_1.multiapply(this._animators, 'reverse', [], fn);
+        Helpers_1.multiapply(this._animators, 'reverse', [], fn);
         return this;
     };
     /**
-     * (description)
+     * Cancels the animation
      *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
+     * @param {ja.ICallbackHandler} [fn] optional error handler
+     * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.cancel = function (fn) {
-        helpers_1.multiapply(this._animators, 'cancel', [], fn);
-        helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
-        if (helpers_1.isFunction(this.oncancel)) {
+        Helpers_1.multiapply(this._animators, 'cancel', [], fn);
+        Helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
+        if (Helpers_1.isFunction(this.oncancel)) {
             this.oncancel(this);
         }
         return this;
@@ -164,34 +164,34 @@ var ElementAnimator = (function () {
 }());
 exports.ElementAnimator = ElementAnimator;
 /**
- * (description)
+ * Recursively resolves the element source from dom, selector, jquery, array, and function sources
  *
- * @param {ja.ElementSource} source (description)
- * @returns {Element[]} (description)
+ * @param {ja.ElementSource} source from which to locate elements
+ * @returns {Element[]} array of elements found
  */
 function getElements(source) {
     if (!source) {
         throw Error('source is undefined');
     }
-    if (helpers_1.isString(source)) {
+    if (Helpers_1.isString(source)) {
         // if query selector, search for elements 
         var nodeResults = document.querySelectorAll(source);
-        return helpers_1.toArray(nodeResults);
+        return Helpers_1.toArray(nodeResults);
     }
     if (source instanceof Element) {
         // if a single element, wrap in array 
         return [source];
     }
-    if (helpers_1.isFunction(source)) {
+    if (Helpers_1.isFunction(source)) {
         // if function, call it and call this function
         var provider = source;
         var result = provider();
         return getElements(result);
     }
-    if (helpers_1.isArray(source)) {
+    if (Helpers_1.isArray(source)) {
         // if array or jQuery object, flatten to an array
         var elements_1 = [];
-        helpers_1.each(source, function (i) {
+        Helpers_1.each(source, function (i) {
             // recursively call this function in case of nested elements
             var innerElements = getElements(i);
             elements_1.push.apply(elements_1, innerElements);
