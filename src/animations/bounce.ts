@@ -2,7 +2,7 @@ export const bounce: ja.IAnimationOptions = {
   keyframes: [
     {
       offset: 0,
-      translate3d: ['0', '0', '0']
+      translate3d: '0'
     },
     {
       offset: 0.2,

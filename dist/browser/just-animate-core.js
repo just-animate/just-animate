@@ -215,13 +215,13 @@
                         rotate[z] = arr[z];
                         continue;
                     }
-                    if (isNumber(value)) {
+                    if (isString(value)) {
                         rotate[x] = value;
                         rotate[y] = value;
                         rotate[z] = value;
                         continue;
                     }
-                    throw Error('rotate3d requires a number or number[]');
+                    throw Error('rotate3d requires a string or string[]');
                 case 'rotate':
                     if (isArray(value)) {
                         var arr = value;
@@ -232,30 +232,30 @@
                         rotate[y] = arr[y];
                         continue;
                     }
-                    if (isNumber(value)) {
+                    if (isString(value)) {
                         rotate[x] = value;
                         rotate[y] = value;
                         continue;
                     }
-                    throw Error('rotate requires a number or number[]');
+                    throw Error('rotate requires a string or string[]');
                 case 'rotateX':
-                    if (isNumber(value)) {
+                    if (isString(value)) {
                         rotate[x] = value;
                         continue;
                     }
-                    throw Error('rotateX requires a number');
+                    throw Error('rotateX requires a string');
                 case 'rotateY':
-                    if (isNumber(value)) {
+                    if (isString(value)) {
                         rotate[y] = value;
                         continue;
                     }
-                    throw Error('rotateY requires a number');
+                    throw Error('rotateY requires a string');
                 case 'rotateZ':
-                    if (isNumber(value)) {
+                    if (isString(value)) {
                         rotate[z] = value;
                         continue;
                     }
-                    throw Error('rotateZ requires a number');
+                    throw Error('rotateZ requires a string');
                 case 'translate3d':
                     if (isArray(value)) {
                         var arr = value;
@@ -267,7 +267,7 @@
                         translate[z] = arr[z];
                         continue;
                     }
-                    if (isNumber(value)) {
+                    if (isString(value) || isNumber(value)) {
                         translate[x] = value;
                         translate[y] = value;
                         translate[z] = value;
@@ -284,26 +284,26 @@
                         translate[y] = arr[y];
                         continue;
                     }
-                    if (isNumber(value)) {
+                    if (isString(value) || isNumber(value)) {
                         translate[x] = value;
                         translate[y] = value;
                         continue;
                     }
                     throw Error('translate requires a number, string, string[], or number[]');
                 case 'translateX':
-                    if (isNumber(value)) {
+                    if (isString(value) || isNumber(value)) {
                         translate[x] = value;
                         continue;
                     }
                     throw Error('translateX requires a number or string');
                 case 'translateY':
-                    if (isNumber(value)) {
+                    if (isString(value) || isNumber(value)) {
                         translate[y] = value;
                         continue;
                     }
                     throw Error('translateY requires a number or string');
                 case 'translateZ':
-                    if (isNumber(value)) {
+                    if (isString(value) || isNumber(value)) {
                         translate[z] = value;
                         continue;
                     }

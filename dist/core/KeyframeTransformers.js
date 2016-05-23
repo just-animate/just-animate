@@ -131,13 +131,13 @@ function keyframeTransformer(keyframe) {
                     rotate[z] = arr[z];
                     continue;
                 }
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value)) {
                     rotate[x] = value;
                     rotate[y] = value;
                     rotate[z] = value;
                     continue;
                 }
-                throw Error('rotate3d requires a number or number[]');
+                throw Error('rotate3d requires a string or string[]');
             case 'rotate':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
@@ -148,30 +148,30 @@ function keyframeTransformer(keyframe) {
                     rotate[y] = arr[y];
                     continue;
                 }
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value)) {
                     rotate[x] = value;
                     rotate[y] = value;
                     continue;
                 }
-                throw Error('rotate requires a number or number[]');
+                throw Error('rotate requires a string or string[]');
             case 'rotateX':
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value)) {
                     rotate[x] = value;
                     continue;
                 }
-                throw Error('rotateX requires a number');
+                throw Error('rotateX requires a string');
             case 'rotateY':
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value)) {
                     rotate[y] = value;
                     continue;
                 }
-                throw Error('rotateY requires a number');
+                throw Error('rotateY requires a string');
             case 'rotateZ':
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value)) {
                     rotate[z] = value;
                     continue;
                 }
-                throw Error('rotateZ requires a number');
+                throw Error('rotateZ requires a string');
             case 'translate3d':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
@@ -183,7 +183,7 @@ function keyframeTransformer(keyframe) {
                     translate[z] = arr[z];
                     continue;
                 }
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value) || Helpers_1.isNumber(value)) {
                     translate[x] = value;
                     translate[y] = value;
                     translate[z] = value;
@@ -200,26 +200,26 @@ function keyframeTransformer(keyframe) {
                     translate[y] = arr[y];
                     continue;
                 }
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value) || Helpers_1.isNumber(value)) {
                     translate[x] = value;
                     translate[y] = value;
                     continue;
                 }
                 throw Error('translate requires a number, string, string[], or number[]');
             case 'translateX':
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value) || Helpers_1.isNumber(value)) {
                     translate[x] = value;
                     continue;
                 }
                 throw Error('translateX requires a number or string');
             case 'translateY':
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value) || Helpers_1.isNumber(value)) {
                     translate[y] = value;
                     continue;
                 }
                 throw Error('translateY requires a number or string');
             case 'translateZ':
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value) || Helpers_1.isNumber(value)) {
                     translate[z] = value;
                     continue;
                 }
