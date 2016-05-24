@@ -1,19 +1,19 @@
 "use strict";
 exports.rotateOutUpLeft = {
-    'keyframes': [
+    keyframes: [
         {
             'transform-origin': 'left bottom',
-            'transform': 'none',
-            'opacity': 1
+            transform: 'none',
+            opacity: 1
         },
         {
             'transform-origin': 'left bottom',
-            'transform': 'rotate3d(0, 0, 1, -45deg)',
-            'opacity': 0
+            transform: 'rotate3d(0, 0, 1, -45deg)',
+            opacity: 0
         }
     ],
-    'timings': {
-        'duration': 1000
+    timings: {
+        duration: 1000
     },
-    'name': 'rotateOutUpLeft'
+    name: 'rotateOutUpLeft'
 };

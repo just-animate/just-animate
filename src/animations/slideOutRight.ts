@@ -1,16 +1,16 @@
-export const slideOutRight = {
-  'keyframes': [
+export const slideOutRight: ja.IAnimationOptions = {
+  keyframes: [
     {
-      'visibility': 'visible',
-      'transform': 'translate3d(0, 0, 0)'
+      visibility: 'visible',
+      transform: 'translate3d(0, 0, 0)'
     },
     {
-      'visibility': 'hidden',
-      'transform': 'translate3d(100%, 0, 0)'
+      visibility: 'hidden',
+      transform: 'translate3d(100%, 0, 0)'
     }
   ],
-  'timings': {
-    'duration': 1000
+  timings: {
+    duration: 1000
   },
-  'name': 'slideOutRight'
+  name: 'slideOutRight'
 };

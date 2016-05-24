@@ -860,38 +860,35 @@ declare module ja {
          */
         'right'?: string;
         /**
-         * Shortform for 'transform: rotate()'.
-         * Pass a single string to rotate the same amount in all directions,
-         * or an array of 2 strings to set the X, Y, Z axes
+         * Alias for rotateZ
          * 
-         * @type {(string|string[])}
+         * @type {string}
          */
-        'rotate'?: string | string[];
+        'rotate'?: string;
         /**
          * Shortform for 'transform: rotate3d()'.
-         * Pass a single string to rotate the same amount in all directions,
-         * or an array of 3 strings to set the X, Y, Z axes
+         * Pass an array of 3 numbers and then a string to set the X, Y, Z axes and angle
          * 
-         * @type {(string|string[])}
+         * @type {(number|string)[]}
          */
-        'rotate3d'?: string | string[];
+        'rotate3d'?: (number|string)[];
         /**
-         * Shortform for 'transform: rotateX()'.
-         * Pass a single string 
+         * Shortform for 'transform: rotate3d(1, 0, 0, angle)'.
+         * Pass a single string with the angle
          * 
          * @type {string}
          */
         'rotateX'?: string;
         /**
-         * Shortform for 'transform: rotateY()'.
-         * Pass a single string 
+         * Shortform for 'transform: rotate3d(0, 1, 0, angle)'.
+         * Pass a single string with the angle
          * 
          * @type {string}
          */
         'rotateY'?: string;
         /**
-         * Shortform for 'transform: rotateZ()'.
-         * Pass a single string 
+         * Shortform for 'transform: rotate3d(0, 0, 1, angle)'.
+         * Pass a single string with the angle
          * 
          * @type {string}
          */

@@ -1,24 +1,24 @@
-export const bounceOutLeft = {
-  'keyframes': [
+export const bounceOutLeft: ja.IAnimationOptions = {
+  keyframes: [
     {
-      'offset': 0,
-      'opacity': 1,
-      'transform': 'none'
+      offset: 0,
+      opacity: 1,
+      transform: 'none'
     },
     {
-      'offset': 0.2,
-      'opacity': 1,
-      'transform': 'translate3d(20px, 0, 0)'
+      offset: 0.2,
+      opacity: 1,
+      transform: 'translate3d(20px, 0, 0)'
     },
     {
-      'offset': 1,
-      'opacity': 0,
-      'transform': 'translate3d(-2000px, 0, 0)'
+      offset: 1,
+      opacity: 0,
+      transform: 'translate3d(-2000px, 0, 0)'
     }
   ],
-  'timings': {
-    'duration': 900,
-    'fill': 'both'
+  timings: {
+    duration: 900,
+    fill: 'both'
   },
-  'name': 'bounceOutLeft'
+  name: 'bounceOutLeft'
 };

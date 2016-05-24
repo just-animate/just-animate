@@ -514,992 +514,223 @@ declare module "just-animate/animations/bounceInDown" {
     export const bounceInDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceInLeft" {
-    export const bounceInLeft: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const bounceInLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceInRight" {
-    export const bounceInRight: {
-        'keyframes': ({
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        } | {
-            'offset': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const bounceInRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceInUp" {
-    export const bounceInUp: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const bounceInUp: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceOut" {
-    export const bounceOut: {
-        'keyframes': ({
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        } | {
-            'offset': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const bounceOut: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceOutDown" {
-    export const bounceOutDown: {
-        'keyframes': ({
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        } | {
-            'offset': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const bounceOutDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceOutLeft" {
-    export const bounceOutLeft: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const bounceOutLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceOutRight" {
-    export const bounceOutRight: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const bounceOutRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/bounceOutUp" {
-    export const bounceOutUp: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const bounceOutUp: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeIn" {
-    export const fadeIn: {
-        'keyframes': {
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const fadeIn: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeInDown" {
-    export const fadeInDown: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeInDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeInDownBig" {
-    export const fadeInDownBig: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeInDownBig: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeInLeft" {
-    export const fadeInLeft: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeInLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeInLeftBig" {
-    export const fadeInLeftBig: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeInLeftBig: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeInRight" {
-    export const fadeInRight: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeInRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeInRightBig" {
-    export const fadeInRightBig: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeInRightBig: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeInUp" {
-    export const fadeInUp: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeInUp: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeInUpBig" {
-    export const fadeInUpBig: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeInUpBig: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOut" {
-    export const fadeOut: {
-        'keyframes': {
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-        };
-        'name': string;
-    };
+    export const fadeOut: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOutDown" {
-    export const fadeOutDown: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const fadeOutDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOutDownBig" {
-    export const fadeOutDownBig: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const fadeOutDownBig: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOutLeft" {
-    export const fadeOutLeft: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const fadeOutLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOutLeftBig" {
-    export const fadeOutLeftBig: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const fadeOutLeftBig: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOutRight" {
-    export const fadeOutRight: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const fadeOutRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOutRightBig" {
-    export const fadeOutRightBig: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const fadeOutRightBig: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOutUp" {
-    export const fadeOutUp: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const fadeOutUp: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/fadeOutUpBig" {
-    export const fadeOutUpBig: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const fadeOutUpBig: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/flash" {
-    export const flash: {
-        'keyframes': {
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const flash: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/flip" {
-    export const flip: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const flip: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/flipInX" {
-    export const flipInX: {
-        'keyframes': ({
-            'offset': number;
-            'transform': string;
-            'easing': string;
-            'opacity': number;
-        } | {
-            'offset': number;
-            'transform': string;
-            'easing': string;
-        } | {
-            'offset': number;
-            'transform': string;
-            'opacity': number;
-        } | {
-            'offset': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const flipInX: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/flipInY" {
-    export const flipInY: {
-        'keyframes': ({
-            'offset': number;
-            'transform': string;
-            'opacity': number;
-        } | {
-            'offset': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const flipInY: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/flipOutX" {
-    export const flipOutX: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const flipOutX: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/flipOutY" {
-    export const flipOutY: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const flipOutY: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/headShake" {
-    export const headShake: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const headShake: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/hinge" {
-    export const hinge: {
-        'keyframes': ({
-            'transform': string;
-            'transform-origin': string;
-            'opacity': number;
-        } | {
-            'transform': string;
-            'opacity': number;
-        })[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const hinge: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/jello" {
-    export const jello: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const jello: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/lightSpeedIn" {
-    export const lightSpeedIn: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const lightSpeedIn: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/lightSpeedOut" {
-    export const lightSpeedOut: {
-        'keyframes': {
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-            'fill': string;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const lightSpeedOut: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/pulse" {
-    export const pulse: {
-        'keyframes': {
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const pulse: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rollIn" {
-    export const rollIn: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rollIn: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rollOut" {
-    export const rollOut: {
-        'keyframes': {
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rollOut: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateIn" {
-    export const rotateIn: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateIn: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateInDownLeft" {
-    export const rotateInDownLeft: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateInDownLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateInDownRight" {
-    export const rotateInDownRight: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateInDownRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateInUpLeft" {
-    export const rotateInUpLeft: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateInUpLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateInUpRight" {
-    export const rotateInUpRight: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateInUpRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateOut" {
-    export const rotateOut: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateOut: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateOutDownLeft" {
-    export const rotateOutDownLeft: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateOutDownLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateOutDownRight" {
-    export const rotateOutDownRight: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateOutDownRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateOutUpLeft" {
-    export const rotateOutUpLeft: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateOutUpLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rotateOutUpRight" {
-    export const rotateOutUpRight: {
-        'keyframes': {
-            'transform-origin': string;
-            'transform': string;
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rotateOutUpRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/rubberBand" {
-    export const rubberBand: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const rubberBand: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/shake" {
-    export const shake: {
-        'keyframes': {
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const shake: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/slideInDown" {
-    export const slideInDown: {
-        'keyframes': {
-            'transform': string;
-            'visibility': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const slideInDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/slideInLeft" {
-    export const slideInLeft: {
-        'keyframes': {
-            'transform': string;
-            'visibility': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const slideInLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/slideInRight" {
-    export const slideInRight: {
-        'keyframes': {
-            'transform': string;
-            'visibility': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const slideInRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/slideInUp" {
-    export const slideInUp: {
-        'keyframes': {
-            'transform': string;
-            'visibility': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const slideInUp: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/slideOutDown" {
-    export const slideOutDown: {
-        'keyframes': {
-            'transform': string;
-            'visibility': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const slideOutDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/slideOutLeft" {
-    export const slideOutLeft: {
-        'keyframes': {
-            'visibility': string;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const slideOutLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/slideOutRight" {
-    export const slideOutRight: {
-        'keyframes': {
-            'visibility': string;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const slideOutRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/slideOutUp" {
-    export const slideOutUp: {
-        'keyframes': {
-            'visibility': string;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const slideOutUp: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/swing" {
-    export const swing: {
-        'keyframes': {
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const swing: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/tada" {
-    export const tada: {
-        'keyframes': {
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const tada: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/wobble" {
-    export const wobble: {
-        'keyframes': {
-            'offset': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    };
+    export const wobble: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomIn" {
-    export const zoomIn: {
-        'keyframes': ({
-            'opacity': number;
-            'transform': string;
-        } | {
-            'opacity': number;
-        })[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomIn: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomInDown" {
-    export const zoomInDown: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomInDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomInLeft" {
-    export const zoomInLeft: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomInLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomInRight" {
-    export const zoomInRight: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomInRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomInUp" {
-    export const zoomInUp: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomInUp: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomOut" {
-    export const zoomOut: {
-        'keyframes': ({
-            'opacity': number;
-            'transform': string;
-            'transform-origin': string;
-        } | {
-            'opacity': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomOut: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomOutDown" {
-    export const zoomOutDown: {
-        'keyframes': {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-            'transform-origin': string;
-        }[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomOutDown: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomOutLeft" {
-    export const zoomOutLeft: {
-        'keyframes': ({
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-            'transform-origin': string;
-        } | {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomOutLeft: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomOutRight" {
-    export const zoomOutRight: {
-        'keyframes': ({
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-            'transform-origin': string;
-        } | {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomOutRight: ja.IAnimationOptions;
 }
 declare module "just-animate/animations/zoomOutUp" {
-    export const zoomOutUp: {
-        'keyframes': ({
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-            'transform-origin': string;
-        } | {
-            'offset': number;
-            'opacity': number;
-            'transform': string;
-        })[];
-        'timings': {
-            'duration': number;
-            'easing': string;
-        };
-        'name': string;
-    };
+    export const zoomOutUp: ja.IAnimationOptions;
 }
 declare module "just-animate/animations" {
     import { bounce } from "just-animate/animations/bounce";
@@ -1578,23 +809,7 @@ declare module "just-animate/animations" {
     import { zoomOutLeft } from "just-animate/animations/zoomOutLeft";
     import { zoomOutRight } from "just-animate/animations/zoomOutRight";
     import { zoomOutUp } from "just-animate/animations/zoomOutUp";
-    export const ANIMATE_CSS: (ja.IAnimationOptions | {
-        'keyframes': {
-            'opacity': number;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    } | {
-        'keyframes': {
-            'transform': string;
-        }[];
-        'timings': {
-            'duration': number;
-        };
-        'name': string;
-    })[];
+    export const ANIMATE_CSS: ja.IAnimationOptions[];
     export { bounce };
     export { bounceIn };
     export { bounceInDown };

@@ -1,30 +1,30 @@
-export const lightSpeedIn = {
-  'keyframes': [
+export const lightSpeedIn: ja.IAnimationOptions = {
+  keyframes: [
     {
-      'offset': 0,
-      'transform': 'translate3d(100%, 0, 0) skewX(-30deg)',
-      'opacity': 0
+      offset: 0,
+      transform: 'translate3d(100%, 0, 0) skewX(-30deg)',
+      opacity: 0
     },
     {
-      'offset': 0.6,
-      'transform': 'skewX(20deg)',
-      'opacity': 1
+      offset: 0.6,
+      transform: 'skewX(20deg)',
+      opacity: 1
     },
     {
-      'offset': 0.8,
-      'transform': 'skewX(-5deg)',
-      'opacity': 1
+      offset: 0.8,
+      transform: 'skewX(-5deg)',
+      opacity: 1
     },
     {
-      'offset': 1,
-      'transform': 'none',
-      'opacity': 1
+      offset: 1,
+      transform: 'none',
+      opacity: 1
     }
   ],
-  'timings': {
-    'duration': 1000,
-    'fill': 'both',
-    'easing': 'ease-out'
+  timings: {
+    duration: 1000,
+    fill: 'both',
+    easing: 'ease-out'
   },
-  'name': 'lightSpeedIn'
+  name: 'lightSpeedIn'
 };

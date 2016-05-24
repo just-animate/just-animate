@@ -10,9 +10,9 @@ function keyframeTransformer(keyframe) {
     // transform properties
     var scale = new Array(3);
     var skew = new Array(3);
-    var rotate = new Array(3);
     var translate = new Array(3);
     var output = {};
+    var transform = '';
     for (var prop in keyframe) {
         var value = keyframe[prop];
         switch (prop) {
@@ -123,52 +123,29 @@ function keyframeTransformer(keyframe) {
             case 'rotate3d':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
-                    if (arr.length != 3) {
-                        throw Error('rotate3d requires x, y, & z');
+                    if (arr.length != 4) {
+                        throw Error('rotate3d requires x, y, z, & a');
                     }
-                    rotate[x] = arr[x];
-                    rotate[y] = arr[y];
-                    rotate[z] = arr[z];
+                    transform += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
                     continue;
                 }
-                if (Helpers_1.isString(value)) {
-                    rotate[x] = value;
-                    rotate[y] = value;
-                    rotate[z] = value;
-                    continue;
-                }
-                throw Error('rotate3d requires a string or string[]');
-            case 'rotate':
-                if (Helpers_1.isArray(value)) {
-                    var arr = value;
-                    if (arr.length != 2) {
-                        throw Error('rotate requires x & y');
-                    }
-                    rotate[x] = arr[x];
-                    rotate[y] = arr[y];
-                    continue;
-                }
-                if (Helpers_1.isString(value)) {
-                    rotate[x] = value;
-                    rotate[y] = value;
-                    continue;
-                }
-                throw Error('rotate requires a string or string[]');
+                throw Error('rotate3d requires an []');
             case 'rotateX':
                 if (Helpers_1.isString(value)) {
-                    rotate[x] = value;
+                    transform += " rotate3d(1, 0, 0, " + value + ")";
                     continue;
                 }
                 throw Error('rotateX requires a string');
             case 'rotateY':
                 if (Helpers_1.isString(value)) {
-                    rotate[y] = value;
+                    transform += " rotate3d(0, 1, 0, " + value + ")";
                     continue;
                 }
                 throw Error('rotateY requires a string');
+            case 'rotate':
             case 'rotateZ':
                 if (Helpers_1.isString(value)) {
-                    rotate[z] = value;
+                    transform += " rotate3d(0, 0, 1, " + value + ")";
                     continue;
                 }
                 throw Error('rotateZ requires a string');
@@ -224,12 +201,14 @@ function keyframeTransformer(keyframe) {
                     continue;
                 }
                 throw Error('translateZ requires a number or string');
+            case 'transform':
+                transform += ' ' + value;
+                break;
             default:
                 output[prop] = value;
                 break;
         }
     }
-    var transform = '';
     // combine scale
     var isScaleX = scale[x] !== undefined;
     var isScaleY = scale[y] !== undefined;
@@ -271,28 +250,6 @@ function keyframeTransformer(keyframe) {
     }
     else if (isskewZ) {
         transform += " skewX(" + skew[z] + ")";
-    }
-    else {
-    }
-    // combine rotate
-    var isrotateX = rotate[x] !== undefined;
-    var isrotateY = rotate[y] !== undefined;
-    var isrotateZ = rotate[z] !== undefined;
-    if (isrotateX && isrotateZ || isrotateY && isrotateZ) {
-        var rotateString = rotate.map(function (s) { return s || '1'; }).join(',');
-        transform += " rotate3d(" + rotateString + ")";
-    }
-    else if (isrotateX && isrotateY) {
-        transform += " rotate(" + (rotate[x] || 1) + ", " + (rotate[y] || 1) + ")";
-    }
-    else if (isrotateX) {
-        transform += " rotateX(" + rotate[x] + ")";
-    }
-    else if (isrotateY) {
-        transform += " rotateX(" + rotate[y] + ")";
-    }
-    else if (isrotateZ) {
-        transform += " rotateX(" + rotate[z] + ")";
     }
     else {
     }

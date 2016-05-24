@@ -243,9 +243,9 @@ System.register("just-animate/core/KeyframeTransformers", ["just-animate/core/He
         // transform properties
         var scale = new Array(3);
         var skew = new Array(3);
-        var rotate = new Array(3);
         var translate = new Array(3);
         var output = {};
+        var transform = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
             switch (prop) {
@@ -356,52 +356,29 @@ System.register("just-animate/core/KeyframeTransformers", ["just-animate/core/He
                 case 'rotate3d':
                     if (Helpers_1.isArray(value)) {
                         var arr = value;
-                        if (arr.length != 3) {
-                            throw Error('rotate3d requires x, y, & z');
+                        if (arr.length != 4) {
+                            throw Error('rotate3d requires x, y, z, & a');
                         }
-                        rotate[x] = arr[x];
-                        rotate[y] = arr[y];
-                        rotate[z] = arr[z];
+                        transform += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
                         continue;
                     }
-                    if (Helpers_1.isString(value)) {
-                        rotate[x] = value;
-                        rotate[y] = value;
-                        rotate[z] = value;
-                        continue;
-                    }
-                    throw Error('rotate3d requires a string or string[]');
-                case 'rotate':
-                    if (Helpers_1.isArray(value)) {
-                        var arr = value;
-                        if (arr.length != 2) {
-                            throw Error('rotate requires x & y');
-                        }
-                        rotate[x] = arr[x];
-                        rotate[y] = arr[y];
-                        continue;
-                    }
-                    if (Helpers_1.isString(value)) {
-                        rotate[x] = value;
-                        rotate[y] = value;
-                        continue;
-                    }
-                    throw Error('rotate requires a string or string[]');
+                    throw Error('rotate3d requires an []');
                 case 'rotateX':
                     if (Helpers_1.isString(value)) {
-                        rotate[x] = value;
+                        transform += " rotate3d(1, 0, 0, " + value + ")";
                         continue;
                     }
                     throw Error('rotateX requires a string');
                 case 'rotateY':
                     if (Helpers_1.isString(value)) {
-                        rotate[y] = value;
+                        transform += " rotate3d(0, 1, 0, " + value + ")";
                         continue;
                     }
                     throw Error('rotateY requires a string');
+                case 'rotate':
                 case 'rotateZ':
                     if (Helpers_1.isString(value)) {
-                        rotate[z] = value;
+                        transform += " rotate3d(0, 0, 1, " + value + ")";
                         continue;
                     }
                     throw Error('rotateZ requires a string');
@@ -457,12 +434,14 @@ System.register("just-animate/core/KeyframeTransformers", ["just-animate/core/He
                         continue;
                     }
                     throw Error('translateZ requires a number or string');
+                case 'transform':
+                    transform += ' ' + value;
+                    break;
                 default:
                     output[prop] = value;
                     break;
             }
         }
-        var transform = '';
         // combine scale
         var isScaleX = scale[x] !== undefined;
         var isScaleY = scale[y] !== undefined;
@@ -504,28 +483,6 @@ System.register("just-animate/core/KeyframeTransformers", ["just-animate/core/He
         }
         else if (isskewZ) {
             transform += " skewX(" + skew[z] + ")";
-        }
-        else {
-        }
-        // combine rotate
-        var isrotateX = rotate[x] !== undefined;
-        var isrotateY = rotate[y] !== undefined;
-        var isrotateZ = rotate[z] !== undefined;
-        if (isrotateX && isrotateZ || isrotateY && isrotateZ) {
-            var rotateString = rotate.map(function (s) { return s || '1'; }).join(',');
-            transform += " rotate3d(" + rotateString + ")";
-        }
-        else if (isrotateX && isrotateY) {
-            transform += " rotate(" + (rotate[x] || 1) + ", " + (rotate[y] || 1) + ")";
-        }
-        else if (isrotateX) {
-            transform += " rotateX(" + rotate[x] + ")";
-        }
-        else if (isrotateY) {
-            transform += " rotateX(" + rotate[y] + ")";
-        }
-        else if (isrotateZ) {
-            transform += " rotateX(" + rotate[z] + ")";
         }
         else {
         }
@@ -1582,39 +1539,39 @@ System.register("just-animate/animations/bounceInLeft", [], function(exports_11,
         setters:[],
         execute: function() {
             exports_11("bounceInLeft", bounceInLeft = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 0,
-                        'transform': 'translate3d(-3000px, 0, 0)'
+                        offset: 0,
+                        opacity: 0,
+                        transform: 'translate3d(-3000px, 0, 0)'
                     },
                     {
-                        'offset': 0.6,
-                        'opacity': 1,
-                        'transform': 'translate3d(25px, 0, 0)'
+                        offset: 0.6,
+                        opacity: 1,
+                        transform: 'translate3d(25px, 0, 0)'
                     },
                     {
-                        'offset': 0.75,
-                        'opacity': 1,
-                        'transform': 'translate3d(-10px, 0, 0)'
+                        offset: 0.75,
+                        opacity: 1,
+                        transform: 'translate3d(-10px, 0, 0)'
                     },
                     {
-                        'offset': 0.9,
-                        'opacity': 1,
-                        'transform': 'translate3d(5px, 0, 0)'
+                        offset: 0.9,
+                        opacity: 1,
+                        transform: 'translate3d(5px, 0, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 1,
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 900,
-                    'fill': 'both',
-                    'easing': 'easeOutCubic'
+                timings: {
+                    duration: 900,
+                    fill: 'both',
+                    easing: 'easeOutCubic'
                 },
-                'name': 'bounceInLeft'
+                name: 'bounceInLeft'
             });
         }
     }
@@ -1627,37 +1584,37 @@ System.register("just-animate/animations/bounceInRight", [], function(exports_12
         setters:[],
         execute: function() {
             exports_12("bounceInRight", bounceInRight = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 0,
-                        'transform': 'translate3d(3000px, 0, 0)'
+                        offset: 0,
+                        opacity: 0,
+                        transform: 'translate3d(3000px, 0, 0)'
                     },
                     {
-                        'offset': 0.6,
-                        'opacity': 1,
-                        'transform': 'translate3d(-25px, 0, 0)'
+                        offset: 0.6,
+                        opacity: 1,
+                        transform: 'translate3d(-25px, 0, 0)'
                     },
                     {
-                        'offset': 0.75,
-                        'transform': 'translate3d(10px, 0, 0)'
+                        offset: 0.75,
+                        transform: 'translate3d(10px, 0, 0)'
                     },
                     {
-                        'offset': 0.9,
-                        'transform': 'translate3d(-5px, 0, 0)'
+                        offset: 0.9,
+                        transform: 'translate3d(-5px, 0, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 1,
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 900,
-                    'fill': 'both',
-                    'easing': 'easeOutCubic'
+                timings: {
+                    duration: 900,
+                    fill: 'both',
+                    easing: 'easeOutCubic'
                 },
-                'name': 'bounceInRight'
+                name: 'bounceInRight'
             });
         }
     }
@@ -1670,39 +1627,39 @@ System.register("just-animate/animations/bounceInUp", [], function(exports_13, c
         setters:[],
         execute: function() {
             exports_13("bounceInUp", bounceInUp = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 0,
-                        'transform': 'translate3d(0, 3000px, 0)'
+                        offset: 0,
+                        opacity: 0,
+                        transform: 'translate3d(0, 3000px, 0)'
                     },
                     {
-                        'offset': 0.6,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, -20px, 0)'
+                        offset: 0.6,
+                        opacity: 1,
+                        transform: 'translate3d(0, -20px, 0)'
                     },
                     {
-                        'offset': 0.75,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, 10px, 0)'
+                        offset: 0.75,
+                        opacity: 1,
+                        transform: 'translate3d(0, 10px, 0)'
                     },
                     {
-                        'offset': 0.9,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, -5px, 0)'
+                        offset: 0.9,
+                        opacity: 1,
+                        transform: 'translate3d(0, -5px, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, 0, 0)'
+                        offset: 1,
+                        opacity: 1,
+                        transform: 'translate3d(0, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 900,
-                    'fill': 'both',
-                    'easing': 'easeOutCubic'
+                timings: {
+                    duration: 900,
+                    fill: 'both',
+                    easing: 'easeOutCubic'
                 },
-                'name': 'bounceInUp'
+                name: 'bounceInUp'
             });
         }
     }
@@ -1715,37 +1672,37 @@ System.register("just-animate/animations/bounceOut", [], function(exports_14, co
         setters:[],
         execute: function() {
             exports_14("bounceOut", bounceOut = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'offset': 0.2,
-                        'transform': 'scale3d(.9, .9, .9)'
+                        offset: 0.2,
+                        transform: 'scale3d(.9, .9, .9)'
                     },
                     {
-                        'offset': 0.5,
-                        'opacity': 1,
-                        'transform': 'scale3d(1.1, 1.1, 1.1)'
+                        offset: 0.5,
+                        opacity: 1,
+                        transform: 'scale3d(1.1, 1.1, 1.1)'
                     },
                     {
-                        'offset': 0.55,
-                        'opacity': 1,
-                        'transform': 'scale3d(1.1, 1.1, 1.1)'
+                        offset: 0.55,
+                        opacity: 1,
+                        transform: 'scale3d(1.1, 1.1, 1.1)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'scale3d(.3, .3, .3)'
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'scale3d(.3, .3, .3)'
                     }
                 ],
-                'timings': {
-                    'duration': 900,
-                    'fill': 'both'
+                timings: {
+                    duration: 900,
+                    fill: 'both'
                 },
-                'name': 'bounceOut'
+                name: 'bounceOut'
             });
         }
     }
@@ -1758,37 +1715,37 @@ System.register("just-animate/animations/bounceOutDown", [], function(exports_15
         setters:[],
         execute: function() {
             exports_15("bounceOutDown", bounceOutDown = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'offset': 0.2,
-                        'transform': 'translate3d(0, 10px, 0)'
+                        offset: 0.2,
+                        transform: 'translate3d(0, 10px, 0)'
                     },
                     {
-                        'offset': 0.4,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, -20px, 0)'
+                        offset: 0.4,
+                        opacity: 1,
+                        transform: 'translate3d(0, -20px, 0)'
                     },
                     {
-                        'offset': 0.45,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, -20px, 0)'
+                        offset: 0.45,
+                        opacity: 1,
+                        transform: 'translate3d(0, -20px, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'translate3d(0, 2000px, 0)'
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'translate3d(0, 2000px, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 900,
-                    'fill': 'both'
+                timings: {
+                    duration: 900,
+                    fill: 'both'
                 },
-                'name': 'bounceOutDown'
+                name: 'bounceOutDown'
             });
         }
     }
@@ -1801,28 +1758,28 @@ System.register("just-animate/animations/bounceOutLeft", [], function(exports_16
         setters:[],
         execute: function() {
             exports_16("bounceOutLeft", bounceOutLeft = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'offset': 0.2,
-                        'opacity': 1,
-                        'transform': 'translate3d(20px, 0, 0)'
+                        offset: 0.2,
+                        opacity: 1,
+                        transform: 'translate3d(20px, 0, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'translate3d(-2000px, 0, 0)'
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'translate3d(-2000px, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 900,
-                    'fill': 'both'
+                timings: {
+                    duration: 900,
+                    fill: 'both'
                 },
-                'name': 'bounceOutLeft'
+                name: 'bounceOutLeft'
             });
         }
     }
@@ -1835,28 +1792,28 @@ System.register("just-animate/animations/bounceOutRight", [], function(exports_1
         setters:[],
         execute: function() {
             exports_17("bounceOutRight", bounceOutRight = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'offset': 0.2,
-                        'opacity': 1,
-                        'transform': 'translate3d(-20px, 0, 0)'
+                        offset: 0.2,
+                        opacity: 1,
+                        transform: 'translate3d(-20px, 0, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'translate3d(2000px, 0, 0)'
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'translate3d(2000px, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 900,
-                    'fill': 'both'
+                timings: {
+                    duration: 900,
+                    fill: 'both'
                 },
-                'name': 'bounceOutRight'
+                name: 'bounceOutRight'
             });
         }
     }
@@ -1869,38 +1826,38 @@ System.register("just-animate/animations/bounceOutUp", [], function(exports_18, 
         setters:[],
         execute: function() {
             exports_18("bounceOutUp", bounceOutUp = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'offset': 0.2,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, -10px, 0)'
+                        offset: 0.2,
+                        opacity: 1,
+                        transform: 'translate3d(0, -10px, 0)'
                     },
                     {
-                        'offset': 0.4,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, 20px, 0)'
+                        offset: 0.4,
+                        opacity: 1,
+                        transform: 'translate3d(0, 20px, 0)'
                     },
                     {
-                        'offset': 0.45,
-                        'opacity': 1,
-                        'transform': 'translate3d(0, 20px, 0)'
+                        offset: 0.45,
+                        opacity: 1,
+                        transform: 'translate3d(0, 20px, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'translate3d(0, -2000px, 0)'
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'translate3d(0, -2000px, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 900,
-                    'fill': 'both'
+                timings: {
+                    duration: 900,
+                    fill: 'both'
                 },
-                'name': 'bounceOutUp'
+                name: 'bounceOutUp'
             });
         }
     }
@@ -1913,20 +1870,20 @@ System.register("just-animate/animations/fadeIn", [], function(exports_19, conte
         setters:[],
         execute: function() {
             exports_19("fadeIn", fadeIn = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0
+                        opacity: 0
                     },
                     {
-                        'opacity': 1
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 650,
-                    'fill': 'both',
-                    'easing': 'ease-in'
+                timings: {
+                    duration: 650,
+                    fill: 'both',
+                    easing: 'ease-in'
                 },
-                'name': 'fadeIn'
+                name: 'fadeIn'
             });
         }
     }
@@ -1939,21 +1896,21 @@ System.register("just-animate/animations/fadeInDown", [], function(exports_20, c
         setters:[],
         execute: function() {
             exports_20("fadeInDown", fadeInDown = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(0, -100%, 0)'
+                        opacity: 0,
+                        translate3d: ['0', '-100%', '0']
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 650,
-                    'fill': 'both'
+                timings: {
+                    duration: 650,
+                    fill: 'both'
                 },
-                'name': 'fadeInDown'
+                name: 'fadeInDown'
             });
         }
     }
@@ -1966,21 +1923,22 @@ System.register("just-animate/animations/fadeInDownBig", [], function(exports_21
         setters:[],
         execute: function() {
             exports_21("fadeInDownBig", fadeInDownBig = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(0, -2000px, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(0, -2000px, 0)'
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1300,
-                    'fill': 'both'
+                timings: {
+                    duration: 1300,
+                    fill: 'both',
+                    easing: 'ease-out'
                 },
-                'name': 'fadeInDownBig'
+                name: 'fadeInDownBig'
             });
         }
     }
@@ -1993,21 +1951,22 @@ System.register("just-animate/animations/fadeInLeft", [], function(exports_22, c
         setters:[],
         execute: function() {
             exports_22("fadeInLeft", fadeInLeft = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(-100%, 0, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(-100%, 0, 0)'
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 650,
-                    'fill': 'both'
+                timings: {
+                    duration: 650,
+                    fill: 'both',
+                    easing: 'ease-in'
                 },
-                'name': 'fadeInLeft'
+                name: 'fadeInLeft'
             });
         }
     }
@@ -2020,21 +1979,22 @@ System.register("just-animate/animations/fadeInLeftBig", [], function(exports_23
         setters:[],
         execute: function() {
             exports_23("fadeInLeftBig", fadeInLeftBig = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(-2000px, 0, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(-2000px, 0, 0)'
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1300,
-                    'fill': 'both'
+                timings: {
+                    duration: 1300,
+                    fill: 'both',
+                    easing: 'ease-out'
                 },
-                'name': 'fadeInLeftBig'
+                name: 'fadeInLeftBig'
             });
         }
     }
@@ -2047,21 +2007,22 @@ System.register("just-animate/animations/fadeInRight", [], function(exports_24, 
         setters:[],
         execute: function() {
             exports_24("fadeInRight", fadeInRight = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(100%, 0, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(100%, 0, 0)'
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 650,
-                    'fill': 'both'
+                timings: {
+                    duration: 650,
+                    fill: 'both',
+                    easing: 'ease-in'
                 },
-                'name': 'fadeInRight'
+                name: 'fadeInRight'
             });
         }
     }
@@ -2074,21 +2035,22 @@ System.register("just-animate/animations/fadeInRightBig", [], function(exports_2
         setters:[],
         execute: function() {
             exports_25("fadeInRightBig", fadeInRightBig = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(2000px, 0, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(2000px, 0, 0)'
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1300,
-                    'fill': 'both'
+                timings: {
+                    duration: 1300,
+                    fill: 'both',
+                    easing: 'ease-out'
                 },
-                'name': 'fadeInRightBig'
+                name: 'fadeInRightBig'
             });
         }
     }
@@ -2101,21 +2063,22 @@ System.register("just-animate/animations/fadeInUp", [], function(exports_26, con
         setters:[],
         execute: function() {
             exports_26("fadeInUp", fadeInUp = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(0, 100%, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(0, 100%, 0)'
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 650,
-                    'fill': 'both'
+                timings: {
+                    duration: 650,
+                    fill: 'both',
+                    easing: 'ease-in'
                 },
-                'name': 'fadeInUp'
+                name: 'fadeInUp'
             });
         }
     }
@@ -2128,21 +2091,22 @@ System.register("just-animate/animations/fadeInUpBig", [], function(exports_27, 
         setters:[],
         execute: function() {
             exports_27("fadeInUpBig", fadeInUpBig = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(0, 2000px, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(0, 2000px, 0)'
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1300,
-                    'fill': 'both'
+                timings: {
+                    duration: 1300,
+                    fill: 'both',
+                    easing: 'ease-out'
                 },
-                'name': 'fadeInUpBig'
+                name: 'fadeInUpBig'
             });
         }
     }
@@ -2155,19 +2119,19 @@ System.register("just-animate/animations/fadeOut", [], function(exports_28, cont
         setters:[],
         execute: function() {
             exports_28("fadeOut", fadeOut = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1
+                        opacity: 1
                     },
                     {
-                        'opacity': 0
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 650,
-                    'fill': 'both'
+                timings: {
+                    duration: 650,
+                    fill: 'both'
                 },
-                'name': 'fadeOut'
+                name: 'fadeOut'
             });
         }
     }
@@ -2180,20 +2144,20 @@ System.register("just-animate/animations/fadeOutDown", [], function(exports_29, 
         setters:[],
         execute: function() {
             exports_29("fadeOutDown", fadeOutDown = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(0, 100%, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(0, 100%, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 650
+                timings: {
+                    duration: 650
                 },
-                'name': 'fadeOutDown'
+                name: 'fadeOutDown'
             });
         }
     }
@@ -2206,20 +2170,20 @@ System.register("just-animate/animations/fadeOutDownBig", [], function(exports_3
         setters:[],
         execute: function() {
             exports_30("fadeOutDownBig", fadeOutDownBig = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(0, 2000px, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(0, 2000px, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1300
+                timings: {
+                    duration: 1300
                 },
-                'name': 'fadeOutDownBig'
+                name: 'fadeOutDownBig'
             });
         }
     }
@@ -2232,20 +2196,20 @@ System.register("just-animate/animations/fadeOutLeft", [], function(exports_31, 
         setters:[],
         execute: function() {
             exports_31("fadeOutLeft", fadeOutLeft = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(-100%, 0, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(-100%, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 650
+                timings: {
+                    duration: 650
                 },
-                'name': 'fadeOutLeft'
+                name: 'fadeOutLeft'
             });
         }
     }
@@ -2258,20 +2222,20 @@ System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_3
         setters:[],
         execute: function() {
             exports_32("fadeOutLeftBig", fadeOutLeftBig = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(-2000px, 0, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(-2000px, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1300
+                timings: {
+                    duration: 1300
                 },
-                'name': 'fadeOutLeftBig'
+                name: 'fadeOutLeftBig'
             });
         }
     }
@@ -2284,20 +2248,20 @@ System.register("just-animate/animations/fadeOutRight", [], function(exports_33,
         setters:[],
         execute: function() {
             exports_33("fadeOutRight", fadeOutRight = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(100%, 0, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(100%, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 650
+                timings: {
+                    duration: 650
                 },
-                'name': 'fadeOutRight'
+                name: 'fadeOutRight'
             });
         }
     }
@@ -2310,20 +2274,20 @@ System.register("just-animate/animations/fadeOutRightBig", [], function(exports_
         setters:[],
         execute: function() {
             exports_34("fadeOutRightBig", fadeOutRightBig = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(2000px, 0, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(2000px, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1300
+                timings: {
+                    duration: 1300
                 },
-                'name': 'fadeOutRightBig'
+                name: 'fadeOutRightBig'
             });
         }
     }
@@ -2336,20 +2300,20 @@ System.register("just-animate/animations/fadeOutUp", [], function(exports_35, co
         setters:[],
         execute: function() {
             exports_35("fadeOutUp", fadeOutUp = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(0, -100%, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(0, -100%, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 650
+                timings: {
+                    duration: 650
                 },
-                'name': 'fadeOutUp'
+                name: 'fadeOutUp'
             });
         }
     }
@@ -2362,20 +2326,20 @@ System.register("just-animate/animations/fadeOutUpBig", [], function(exports_36,
         setters:[],
         execute: function() {
             exports_36("fadeOutUpBig", fadeOutUpBig = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(0, -2000px, 0)'
+                        opacity: 0,
+                        transform: 'translate3d(0, -2000px, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1300
+                timings: {
+                    duration: 1300
                 },
-                'name': 'fadeOutUpBig'
+                name: 'fadeOutUpBig'
             });
         }
     }
@@ -2388,27 +2352,27 @@ System.register("just-animate/animations/flash", [], function(exports_37, contex
         setters:[],
         execute: function() {
             exports_37("flash", flash = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1
+                        opacity: 1
                     },
                     {
-                        'opacity': 0
+                        opacity: 0
                     },
                     {
-                        'opacity': 1
+                        opacity: 1
                     },
                     {
-                        'opacity': 0
+                        opacity: 0
                     },
                     {
-                        'opacity': 1
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'flash'
+                name: 'flash'
             });
         }
     }
@@ -2421,32 +2385,32 @@ System.register("just-animate/animations/flip", [], function(exports_38, context
         setters:[],
         execute: function() {
             exports_38("flip", flip = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'perspective(400px) rotate3d(0, 1, 0, -360deg)'
+                        offset: 0,
+                        transform: 'perspective(400px) rotate3d(0, 1, 0, -360deg)'
                     },
                     {
-                        'offset': 0.4,
-                        'transform': 'perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg)'
+                        offset: 0.4,
+                        transform: 'perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -190deg)'
                     },
                     {
-                        'offset': 0.5,
-                        'transform': 'perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg)'
+                        offset: 0.5,
+                        transform: 'perspective(400px) translate3d(0, 0, 150px) rotate3d(0, 1, 0, -170deg)'
                     },
                     {
-                        'offset': 0.8,
-                        'transform': 'perspective(400px) scale3d(.95, .95, .95)'
+                        offset: 0.8,
+                        transform: 'perspective(400px) scale3d(.95, .95, .95)'
                     },
                     {
-                        'offset': 1,
-                        'transform': 'perspective(400px)'
+                        offset: 1,
+                        transform: 'perspective(400px)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'flip'
+                name: 'flip'
             });
         }
     }
@@ -2459,37 +2423,39 @@ System.register("just-animate/animations/flipInX", [], function(exports_39, cont
         setters:[],
         execute: function() {
             exports_39("flipInX", flipInX = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'perspective(400px) rotate3d(1, 0, 0, 90deg)',
-                        'easing': 'ease-in ',
-                        'opacity': 0
+                        offset: 0,
+                        transform: 'perspective(400px)',
+                        rotateX: '90deg',
+                        opacity: 0
                     },
                     {
-                        'offset': 0.4,
-                        'transform': 'perspective(400px) rotate3d(1, 0, 0, -20deg)',
-                        'easing': 'ease-in '
+                        offset: 0.4,
+                        transform: 'perspective(400px)',
+                        rotateX: '20deg'
                     },
                     {
-                        'offset': 0.6,
-                        'transform': 'perspective(400px) rotate3d(1, 0, 0, 10deg)',
-                        'opacity': 1
+                        offset: 0.6,
+                        transform: 'perspective(400px)',
+                        rotateX: '10deg',
+                        opacity: 1
                     },
                     {
-                        'offset': 0.8,
-                        'transform': 'perspective(400px) rotate3d(1, 0, 0, -5deg)'
+                        offset: 0.8,
+                        transform: 'perspective(400px)',
+                        rotateX: '-5deg',
                     },
                     {
-                        'offset': 1,
-                        'opacity': 1,
-                        'transform': 'perspective(400px)'
+                        offset: 1,
+                        opacity: 1,
+                        transform: 'perspective(400px)'
                     }
                 ],
-                'timings': {
-                    'duration': 750
+                timings: {
+                    duration: 750
                 },
-                'name': 'flipInX'
+                name: 'flipInX'
             });
         }
     }
@@ -2502,35 +2468,39 @@ System.register("just-animate/animations/flipInY", [], function(exports_40, cont
         setters:[],
         execute: function() {
             exports_40("flipInY", flipInY = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'perspective(400px) rotate3d(0, 1, 0, 90deg)',
-                        'opacity': 0
+                        offset: 0,
+                        transform: 'perspective(400px)',
+                        rotateY: '90deg',
+                        opacity: 0
                     },
                     {
-                        'offset': 0.4,
-                        'transform': 'perspective(400px) rotate3d(0, 1, 0, -20deg)'
+                        offset: 0.4,
+                        transform: 'perspective(400px)',
+                        rotateY: '-20deg',
                     },
                     {
-                        'offset': 0.6,
-                        'transform': 'perspective(400px) rotate3d(0, 1, 0, 10deg)',
-                        'opacity': 1
+                        offset: 0.6,
+                        transform: 'perspective(400px)',
+                        rotateY: '10deg',
+                        opacity: 1
                     },
                     {
-                        'offset': 0.8,
-                        'transform': 'perspective(400px) rotate3d(0, 1, 0, -5deg)'
+                        offset: 0.8,
+                        transform: 'perspective(400px)',
+                        rotateY: '-5deg',
                     },
                     {
-                        'offset': 1,
-                        'transform': 'perspective(400px)',
-                        'opacity': 1
+                        offset: 1,
+                        transform: 'perspective(400px)',
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 750
+                timings: {
+                    duration: 750
                 },
-                'name': 'flipInY'
+                name: 'flipInY'
             });
         }
     }
@@ -2543,27 +2513,27 @@ System.register("just-animate/animations/flipOutX", [], function(exports_41, con
         setters:[],
         execute: function() {
             exports_41("flipOutX", flipOutX = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'perspective(400px)',
-                        'opacity': 1
+                        offset: 0,
+                        transform: 'perspective(400px)',
+                        opacity: 1
                     },
                     {
-                        'offset': 0.3,
-                        'transform': 'perspective(400px) rotate3d(1, 0, 0, -20deg)',
-                        'opacity': 1
+                        offset: 0.3,
+                        transform: 'perspective(400px) rotate3d(1, 0, 0, -20deg)',
+                        opacity: 1
                     },
                     {
-                        'offset': 1,
-                        'transform': 'perspective(400px) rotate3d(1, 0, 0, 90deg)',
-                        'opacity': 0
+                        offset: 1,
+                        transform: 'perspective(400px) rotate3d(1, 0, 0, 90deg)',
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 750
+                timings: {
+                    duration: 750
                 },
-                'name': 'flipOutX'
+                name: 'flipOutX'
             });
         }
     }
@@ -2576,27 +2546,27 @@ System.register("just-animate/animations/flipOutY", [], function(exports_42, con
         setters:[],
         execute: function() {
             exports_42("flipOutY", flipOutY = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'perspective(400px)',
-                        'opacity': 1
+                        offset: 0,
+                        transform: 'perspective(400px)',
+                        opacity: 1
                     },
                     {
-                        'offset': 0.3,
-                        'transform': 'perspective(400px) rotate3d(0, 1, 0, -15deg)',
-                        'opacity': 1
+                        offset: 0.3,
+                        transform: 'perspective(400px) rotate3d(0, 1, 0, -15deg)',
+                        opacity: 1
                     },
                     {
-                        'offset': 1,
-                        'transform': 'perspective(400px) rotate3d(0, 1, 0, 90deg)',
-                        'opacity': 0
+                        offset: 1,
+                        transform: 'perspective(400px) rotate3d(0, 1, 0, 90deg)',
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 750
+                timings: {
+                    duration: 750
                 },
-                'name': 'flipOutY'
+                name: 'flipOutY'
             });
         }
     }
@@ -2609,40 +2579,45 @@ System.register("just-animate/animations/headShake", [], function(exports_43, co
         setters:[],
         execute: function() {
             exports_43("headShake", headShake = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'translateX(0)'
+                        offset: 0,
+                        translateX: '0'
                     },
                     {
-                        'offset': 0.065,
-                        'transform': 'translateX(-6px) rotateY(-9deg)'
+                        offset: 0.065,
+                        translateX: '-6px',
+                        rotateY: '-9deg'
                     },
                     {
-                        'offset': 0.185,
-                        'transform': 'translateX(5px) rotateY(7deg)'
+                        offset: 0.185,
+                        translateX: '5px',
+                        rotateY: '7deg'
                     },
                     {
-                        'offset': 0.315,
-                        'transform': 'translateX(-3px) rotateY(-5deg)'
+                        offset: 0.315,
+                        translateX: '-3px',
+                        rotateY: '-5deg'
                     },
                     {
-                        'offset': 0.435,
-                        'transform': 'translateX(2px) rotateY(3deg)'
+                        offset: 0.435,
+                        translateX: '2px',
+                        rotateY: '3deg'
                     },
                     {
-                        'offset': 0.5,
-                        'transform': 'translateX(0)'
+                        offset: 0.5,
+                        translateX: '0'
                     },
                     {
-                        'offset': 1,
-                        'transform': 'translateX(0)'
+                        offset: 1,
+                        translateX: '0'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000,
+                    easing: 'ease-out'
                 },
-                'name': 'headShake'
+                name: 'headShake'
             });
         }
     }
@@ -2655,38 +2630,38 @@ System.register("just-animate/animations/hinge", [], function(exports_44, contex
         setters:[],
         execute: function() {
             exports_44("hinge", hinge = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'none',
+                        transform: 'none',
                         'transform-origin': 'top left',
-                        'opacity': 1
+                        opacity: 1
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, 80deg)',
-                        'opacity': 1
+                        transform: 'rotate3d(0, 0, 1, 80deg)',
+                        opacity: 1
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, 60deg)',
-                        'opacity': 1
+                        transform: 'rotate3d(0, 0, 1, 60deg)',
+                        opacity: 1
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, 80deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, 80deg)',
+                        opacity: 0
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, 60deg)',
-                        'opacity': 1
+                        transform: 'rotate3d(0, 0, 1, 60deg)',
+                        opacity: 1
                     },
                     {
-                        'transform': 'translate3d(0, 700px, 0)',
+                        transform: 'translate3d(0, 700px, 0)',
                         'transform-origin': 'top left',
-                        'opacity': 0
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 2000
+                timings: {
+                    duration: 2000
                 },
-                'name': 'hinge'
+                name: 'hinge'
             });
         }
     }
@@ -2699,54 +2674,54 @@ System.register("just-animate/animations/jello", [], function(exports_45, contex
         setters:[],
         execute: function() {
             exports_45("jello", jello = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'none'
+                        offset: 0,
+                        transform: 'none'
                     },
                     {
-                        'offset': 0.111,
-                        'transform': 'none'
+                        offset: 0.111,
+                        transform: 'none'
                     },
                     {
-                        'offset': 0.222,
-                        'transform': 'skewX(-12.5deg) skewY(-12.5deg)'
+                        offset: 0.222,
+                        transform: 'skewX(-12.5deg) skewY(-12.5deg)'
                     },
                     {
-                        'offset': 0.333,
-                        'transform': 'skewX(6.25deg) skewY(6.25deg)'
+                        offset: 0.333,
+                        transform: 'skewX(6.25deg) skewY(6.25deg)'
                     },
                     {
-                        'offset': 0.444,
-                        'transform': 'skewX(-3.125deg) skewY(-3.125deg)'
+                        offset: 0.444,
+                        transform: 'skewX(-3.125deg) skewY(-3.125deg)'
                     },
                     {
-                        'offset': 0.555,
-                        'transform': 'skewX(1.5625deg) skewY(1.5625deg)'
+                        offset: 0.555,
+                        transform: 'skewX(1.5625deg) skewY(1.5625deg)'
                     },
                     {
-                        'offset': 0.666,
-                        'transform': 'skewX(-0.78125deg) skewY(-0.78125deg)'
+                        offset: 0.666,
+                        transform: 'skewX(-0.78125deg) skewY(-0.78125deg)'
                     },
                     {
-                        'offset': 0.777,
-                        'transform': 'skewX(0.390625deg) skewY(0.390625deg)'
+                        offset: 0.777,
+                        transform: 'skewX(0.390625deg) skewY(0.390625deg)'
                     },
                     {
-                        'offset': 0.888,
-                        'transform': 'skewX(-0.1953125deg) skewY(-0.1953125deg)'
+                        offset: 0.888,
+                        transform: 'skewX(-0.1953125deg) skewY(-0.1953125deg)'
                     },
                     {
-                        'offset': 1,
-                        'transform': 'none'
+                        offset: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'fill': 'both',
-                    'easing': 'ease-in-out'
+                timings: {
+                    duration: 1000,
+                    fill: 'both',
+                    easing: 'ease-in-out'
                 },
-                'name': 'jello'
+                name: 'jello'
             });
         }
     }
@@ -2759,34 +2734,34 @@ System.register("just-animate/animations/lightSpeedIn", [], function(exports_46,
         setters:[],
         execute: function() {
             exports_46("lightSpeedIn", lightSpeedIn = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'translate3d(100%, 0, 0) skewX(-30deg)',
-                        'opacity': 0
+                        offset: 0,
+                        transform: 'translate3d(100%, 0, 0) skewX(-30deg)',
+                        opacity: 0
                     },
                     {
-                        'offset': 0.6,
-                        'transform': 'skewX(20deg)',
-                        'opacity': 1
+                        offset: 0.6,
+                        transform: 'skewX(20deg)',
+                        opacity: 1
                     },
                     {
-                        'offset': 0.8,
-                        'transform': 'skewX(-5deg)',
-                        'opacity': 1
+                        offset: 0.8,
+                        transform: 'skewX(-5deg)',
+                        opacity: 1
                     },
                     {
-                        'offset': 1,
-                        'transform': 'none',
-                        'opacity': 1
+                        offset: 1,
+                        transform: 'none',
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'fill': 'both',
-                    'easing': 'ease-out'
+                timings: {
+                    duration: 1000,
+                    fill: 'both',
+                    easing: 'ease-out'
                 },
-                'name': 'lightSpeedIn'
+                name: 'lightSpeedIn'
             });
         }
     }
@@ -2799,22 +2774,22 @@ System.register("just-animate/animations/lightSpeedOut", [], function(exports_47
         setters:[],
         execute: function() {
             exports_47("lightSpeedOut", lightSpeedOut = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     },
                     {
-                        'transform': 'translate3d(100%, 0, 0) skewX(30deg)',
-                        'opacity': 0
+                        transform: 'translate3d(100%, 0, 0) skewX(30deg)',
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'fill': 'both',
-                    'easing': 'ease-in'
+                timings: {
+                    duration: 1000,
+                    fill: 'both',
+                    easing: 'ease-in'
                 },
-                'name': 'lightSpeedOut'
+                name: 'lightSpeedOut'
             });
         }
     }
@@ -2827,21 +2802,21 @@ System.register("just-animate/animations/pulse", [], function(exports_48, contex
         setters:[],
         execute: function() {
             exports_48("pulse", pulse = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'scale3d(1, 1, 1)'
+                        transform: 'scale3d(1, 1, 1)'
                     },
                     {
-                        'transform': 'scale3d(1.05, 1.05, 1.05)'
+                        transform: 'scale3d(1.05, 1.05, 1.05)'
                     },
                     {
-                        'transform': 'scale3d(1, 1, 1)'
+                        transform: 'scale3d(1, 1, 1)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'pulse'
+                name: 'pulse'
             });
         }
     }
@@ -2854,20 +2829,20 @@ System.register("just-animate/animations/rollIn", [], function(exports_49, conte
         setters:[],
         execute: function() {
             exports_49("rollIn", rollIn = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(-100%, 0, 0) rotate3d(0, 0, 1, -120deg)'
+                        opacity: 0,
+                        transform: 'translate3d(-100%, 0, 0) rotate3d(0, 0, 1, -120deg)'
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rollIn'
+                name: 'rollIn'
             });
         }
     }
@@ -2880,20 +2855,20 @@ System.register("just-animate/animations/rollOut", [], function(exports_50, cont
         setters:[],
         execute: function() {
             exports_50("rollOut", rollOut = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg)'
+                        opacity: 0,
+                        transform: 'translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rollOut'
+                name: 'rollOut'
             });
         }
     }
@@ -2906,22 +2881,22 @@ System.register("just-animate/animations/rotateIn", [], function(exports_51, con
         setters:[],
         execute: function() {
             exports_51("rotateIn", rotateIn = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'center',
-                        'transform': 'rotate3d(0, 0, 1, -200deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, -200deg)',
+                        opacity: 0
                     },
                     {
                         'transform-origin': 'center',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateIn'
+                name: 'rotateIn'
             });
         }
     }
@@ -2934,22 +2909,22 @@ System.register("just-animate/animations/rotateInDownLeft", [], function(exports
         setters:[],
         execute: function() {
             exports_52("rotateInDownLeft", rotateInDownLeft = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'left bottom',
-                        'transform': 'rotate3d(0, 0, 1, -45deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, -45deg)',
+                        opacity: 0
                     },
                     {
                         'transform-origin': 'left bottom',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateInDownLeft'
+                name: 'rotateInDownLeft'
             });
         }
     }
@@ -2962,22 +2937,22 @@ System.register("just-animate/animations/rotateInDownRight", [], function(export
         setters:[],
         execute: function() {
             exports_53("rotateInDownRight", rotateInDownRight = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'right bottom',
-                        'transform': 'rotate3d(0, 0, 1, 45deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, 45deg)',
+                        opacity: 0
                     },
                     {
                         'transform-origin': 'right bottom',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateInDownRight'
+                name: 'rotateInDownRight'
             });
         }
     }
@@ -2990,22 +2965,22 @@ System.register("just-animate/animations/rotateInUpLeft", [], function(exports_5
         setters:[],
         execute: function() {
             exports_54("rotateInUpLeft", rotateInUpLeft = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'left bottom',
-                        'transform': 'rotate3d(0, 0, 1, 45deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, 45deg)',
+                        opacity: 0
                     },
                     {
                         'transform-origin': 'left bottom',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateInUpLeft'
+                name: 'rotateInUpLeft'
             });
         }
     }
@@ -3018,22 +2993,22 @@ System.register("just-animate/animations/rotateInUpRight", [], function(exports_
         setters:[],
         execute: function() {
             exports_55("rotateInUpRight", rotateInUpRight = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'right bottom',
-                        'transform': 'rotate3d(0, 0, 1, -90deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, -90deg)',
+                        opacity: 0
                     },
                     {
                         'transform-origin': 'right bottom',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateInUpRight'
+                name: 'rotateInUpRight'
             });
         }
     }
@@ -3046,22 +3021,22 @@ System.register("just-animate/animations/rotateOut", [], function(exports_56, co
         setters:[],
         execute: function() {
             exports_56("rotateOut", rotateOut = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'center',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     },
                     {
                         'transform-origin': 'center',
-                        'transform': 'rotate3d(0, 0, 1, 200deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, 200deg)',
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateOut'
+                name: 'rotateOut'
             });
         }
     }
@@ -3074,22 +3049,22 @@ System.register("just-animate/animations/rotateOutDownLeft", [], function(export
         setters:[],
         execute: function() {
             exports_57("rotateOutDownLeft", rotateOutDownLeft = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'left bottom',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     },
                     {
                         'transform-origin': 'left bottom',
-                        'transform': 'rotate3d(0, 0, 1, 45deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, 45deg)',
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateOutDownLeft'
+                name: 'rotateOutDownLeft'
             });
         }
     }
@@ -3102,22 +3077,22 @@ System.register("just-animate/animations/rotateOutDownRight", [], function(expor
         setters:[],
         execute: function() {
             exports_58("rotateOutDownRight", rotateOutDownRight = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'right bottom',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     },
                     {
                         'transform-origin': 'right bottom',
-                        'transform': 'rotate3d(0, 0, 1, -45deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, -45deg)',
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateOutDownRight'
+                name: 'rotateOutDownRight'
             });
         }
     }
@@ -3130,22 +3105,22 @@ System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_
         setters:[],
         execute: function() {
             exports_59("rotateOutUpLeft", rotateOutUpLeft = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'left bottom',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     },
                     {
                         'transform-origin': 'left bottom',
-                        'transform': 'rotate3d(0, 0, 1, -45deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, -45deg)',
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateOutUpLeft'
+                name: 'rotateOutUpLeft'
             });
         }
     }
@@ -3158,22 +3133,22 @@ System.register("just-animate/animations/rotateOutUpRight", [], function(exports
         setters:[],
         execute: function() {
             exports_60("rotateOutUpRight", rotateOutUpRight = {
-                'keyframes': [
+                keyframes: [
                     {
                         'transform-origin': 'right bottom',
-                        'transform': 'none',
-                        'opacity': 1
+                        transform: 'none',
+                        opacity: 1
                     },
                     {
                         'transform-origin': 'right bottom',
-                        'transform': 'rotate3d(0, 0, 1, 90deg)',
-                        'opacity': 0
+                        transform: 'rotate3d(0, 0, 1, 90deg)',
+                        opacity: 0
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rotateOutUpRight'
+                name: 'rotateOutUpRight'
             });
         }
     }
@@ -3186,40 +3161,40 @@ System.register("just-animate/animations/rubberBand", [], function(exports_61, c
         setters:[],
         execute: function() {
             exports_61("rubberBand", rubberBand = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'scale3d(1, 1, 1)'
+                        offset: 0,
+                        transform: 'scale3d(1, 1, 1)'
                     },
                     {
-                        'offset': 0.3,
-                        'transform': 'scale3d(1.25, 0.75, 1)'
+                        offset: 0.3,
+                        transform: 'scale3d(1.25, 0.75, 1)'
                     },
                     {
-                        'offset': 0.4,
-                        'transform': 'scale3d(0.75, 1.25, 1)'
+                        offset: 0.4,
+                        transform: 'scale3d(0.75, 1.25, 1)'
                     },
                     {
-                        'offset': 0.5,
-                        'transform': 'scale3d(1.15, 0.85, 1)'
+                        offset: 0.5,
+                        transform: 'scale3d(1.15, 0.85, 1)'
                     },
                     {
-                        'offset': 0.65,
-                        'transform': 'scale3d(.95, 1.05, 1)'
+                        offset: 0.65,
+                        transform: 'scale3d(.95, 1.05, 1)'
                     },
                     {
-                        'offset': 0.75,
-                        'transform': 'scale3d(1.05, .95, 1)'
+                        offset: 0.75,
+                        transform: 'scale3d(1.05, .95, 1)'
                     },
                     {
-                        'offset': 1,
-                        'transform': 'scale3d(1, 1, 1)'
+                        offset: 1,
+                        transform: 'scale3d(1, 1, 1)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'rubberBand'
+                name: 'rubberBand'
             });
         }
     }
@@ -3232,45 +3207,45 @@ System.register("just-animate/animations/shake", [], function(exports_62, contex
         setters:[],
         execute: function() {
             exports_62("shake", shake = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'translate3d(0, 0, 0)'
+                        transform: 'translate3d(0, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(-10px, 0, 0)'
+                        transform: 'translate3d(-10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(10px, 0, 0)'
+                        transform: 'translate3d(10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(-10px, 0, 0)'
+                        transform: 'translate3d(-10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(10px, 0, 0)'
+                        transform: 'translate3d(10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(-10px, 0, 0)'
+                        transform: 'translate3d(-10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(10px, 0, 0)'
+                        transform: 'translate3d(10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(-10px, 0, 0)'
+                        transform: 'translate3d(-10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(10px, 0, 0)'
+                        transform: 'translate3d(10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(-10px, 0, 0)'
+                        transform: 'translate3d(-10px, 0, 0)'
                     },
                     {
-                        'transform': 'translate3d(0, 0, 0)'
+                        transform: 'translate3d(0, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'shake'
+                name: 'shake'
             });
         }
     }
@@ -3283,20 +3258,20 @@ System.register("just-animate/animations/slideInDown", [], function(exports_63, 
         setters:[],
         execute: function() {
             exports_63("slideInDown", slideInDown = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'translate3d(0, -100%, 0)',
-                        'visibility': 'hidden'
+                        transform: 'translate3d(0, -100%, 0)',
+                        visibility: 'hidden'
                     },
                     {
-                        'transform': 'translate3d(0, 0, 0)',
-                        'visibility': 'visible'
+                        transform: 'translate3d(0, 0, 0)',
+                        visibility: 'visible'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'slideInDown'
+                name: 'slideInDown'
             });
         }
     }
@@ -3309,20 +3284,20 @@ System.register("just-animate/animations/slideInLeft", [], function(exports_64, 
         setters:[],
         execute: function() {
             exports_64("slideInLeft", slideInLeft = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'translate3d(-100%, 0, 0)',
-                        'visibility': 'hidden'
+                        transform: 'translate3d(-100%, 0, 0)',
+                        visibility: 'hidden'
                     },
                     {
-                        'transform': 'translate3d(0, 0, 0)',
-                        'visibility': 'visible'
+                        transform: 'translate3d(0, 0, 0)',
+                        visibility: 'visible'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'slideInLeft'
+                name: 'slideInLeft'
             });
         }
     }
@@ -3335,20 +3310,20 @@ System.register("just-animate/animations/slideInRight", [], function(exports_65,
         setters:[],
         execute: function() {
             exports_65("slideInRight", slideInRight = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'translate3d(100%, 0, 0)',
-                        'visibility': 'hidden'
+                        transform: 'translate3d(100%, 0, 0)',
+                        visibility: 'hidden'
                     },
                     {
-                        'transform': 'translate3d(0, 0, 0)',
-                        'visibility': 'visible'
+                        transform: 'translate3d(0, 0, 0)',
+                        visibility: 'visible'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'slideInRight'
+                name: 'slideInRight'
             });
         }
     }
@@ -3361,20 +3336,20 @@ System.register("just-animate/animations/slideInUp", [], function(exports_66, co
         setters:[],
         execute: function() {
             exports_66("slideInUp", slideInUp = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'translate3d(0, 100%, 0)',
-                        'visibility': 'hidden'
+                        transform: 'translate3d(0, 100%, 0)',
+                        visibility: 'hidden'
                     },
                     {
-                        'transform': 'translate3d(0, 0, 0)',
-                        'visibility': 'visible'
+                        transform: 'translate3d(0, 0, 0)',
+                        visibility: 'visible'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'slideInUp'
+                name: 'slideInUp'
             });
         }
     }
@@ -3387,20 +3362,20 @@ System.register("just-animate/animations/slideOutDown", [], function(exports_67,
         setters:[],
         execute: function() {
             exports_67("slideOutDown", slideOutDown = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'translate3d(0, 0, 0)',
-                        'visibility': 'visible'
+                        transform: 'translate3d(0, 0, 0)',
+                        visibility: 'visible'
                     },
                     {
-                        'visibility': 'hidden',
-                        'transform': 'translate3d(0, 100%, 0)'
+                        visibility: 'hidden',
+                        transform: 'translate3d(0, 100%, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'slideOutDown'
+                name: 'slideOutDown'
             });
         }
     }
@@ -3413,20 +3388,20 @@ System.register("just-animate/animations/slideOutLeft", [], function(exports_68,
         setters:[],
         execute: function() {
             exports_68("slideOutLeft", slideOutLeft = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'visibility': 'visible',
-                        'transform': 'translate3d(0, 0, 0)'
+                        visibility: 'visible',
+                        transform: 'translate3d(0, 0, 0)'
                     },
                     {
-                        'visibility': 'hidden',
-                        'transform': 'translate3d(-100%, 0, 0)'
+                        visibility: 'hidden',
+                        transform: 'translate3d(-100%, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'slideOutLeft'
+                name: 'slideOutLeft'
             });
         }
     }
@@ -3439,20 +3414,20 @@ System.register("just-animate/animations/slideOutRight", [], function(exports_69
         setters:[],
         execute: function() {
             exports_69("slideOutRight", slideOutRight = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'visibility': 'visible',
-                        'transform': 'translate3d(0, 0, 0)'
+                        visibility: 'visible',
+                        transform: 'translate3d(0, 0, 0)'
                     },
                     {
-                        'visibility': 'hidden',
-                        'transform': 'translate3d(100%, 0, 0)'
+                        visibility: 'hidden',
+                        transform: 'translate3d(100%, 0, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'slideOutRight'
+                name: 'slideOutRight'
             });
         }
     }
@@ -3465,20 +3440,20 @@ System.register("just-animate/animations/slideOutUp", [], function(exports_70, c
         setters:[],
         execute: function() {
             exports_70("slideOutUp", slideOutUp = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'visibility': 'visible',
-                        'transform': 'translate3d(0, 0, 0)'
+                        visibility: 'visible',
+                        transform: 'translate3d(0, 0, 0)'
                     },
                     {
-                        'visibility': 'hidden',
-                        'transform': 'translate3d(0, -100%, 0)'
+                        visibility: 'hidden',
+                        transform: 'translate3d(0, -100%, 0)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'slideOutUp'
+                name: 'slideOutUp'
             });
         }
     }
@@ -3491,30 +3466,30 @@ System.register("just-animate/animations/swing", [], function(exports_71, contex
         setters:[],
         execute: function() {
             exports_71("swing", swing = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'none'
+                        transform: 'none'
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, 15deg)'
+                        transform: 'rotate3d(0, 0, 1, 15deg)'
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, -10deg)'
+                        transform: 'rotate3d(0, 0, 1, -10deg)'
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, 5deg)'
+                        transform: 'rotate3d(0, 0, 1, 5deg)'
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, -5deg)'
+                        transform: 'rotate3d(0, 0, 1, -5deg)'
                     },
                     {
-                        'transform': 'rotate3d(0, 0, 1, 0deg)'
+                        transform: 'rotate3d(0, 0, 1, 0deg)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'swing'
+                name: 'swing'
             });
         }
     }
@@ -3527,45 +3502,45 @@ System.register("just-animate/animations/tada", [], function(exports_72, context
         setters:[],
         execute: function() {
             exports_72("tada", tada = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'transform': 'scale3d(1, 1, 1)'
+                        transform: 'scale3d(1, 1, 1)'
                     },
                     {
-                        'transform': 'scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg)'
+                        transform: 'scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg)'
                     },
                     {
-                        'transform': 'scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg)'
+                        transform: 'scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg)'
                     },
                     {
-                        'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
+                        transform: 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
                     },
                     {
-                        'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
+                        transform: 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
                     },
                     {
-                        'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
+                        transform: 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
                     },
                     {
-                        'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
+                        transform: 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
                     },
                     {
-                        'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
+                        transform: 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
                     },
                     {
-                        'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
+                        transform: 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg)'
                     },
                     {
-                        'transform': 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
+                        transform: 'scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg)'
                     },
                     {
-                        'transform': 'scale3d(1, 1, 1)'
+                        transform: 'scale3d(1, 1, 1)'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'tada'
+                name: 'tada'
             });
         }
     }
@@ -3578,40 +3553,40 @@ System.register("just-animate/animations/wobble", [], function(exports_73, conte
         setters:[],
         execute: function() {
             exports_73("wobble", wobble = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'transform': 'none'
+                        offset: 0,
+                        transform: 'none'
                     },
                     {
-                        'offset': 0.15,
-                        'transform': 'translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg)'
+                        offset: 0.15,
+                        transform: 'translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg)'
                     },
                     {
-                        'offset': 0.3,
-                        'transform': 'translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg)'
+                        offset: 0.3,
+                        transform: 'translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg)'
                     },
                     {
-                        'offset': 0.45,
-                        'transform': 'translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg)'
+                        offset: 0.45,
+                        transform: 'translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg)'
                     },
                     {
-                        'offset': 0.6,
-                        'transform': 'translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg)'
+                        offset: 0.6,
+                        transform: 'translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg)'
                     },
                     {
-                        'offset': 0.75,
-                        'transform': 'translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg)'
+                        offset: 0.75,
+                        transform: 'translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg)'
                     },
                     {
-                        'offset': 1,
-                        'transform': 'none'
+                        offset: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1000
+                timings: {
+                    duration: 1000
                 },
-                'name': 'wobble'
+                name: 'wobble'
             });
         }
     }
@@ -3624,24 +3599,24 @@ System.register("just-animate/animations/zoomIn", [], function(exports_74, conte
         setters:[],
         execute: function() {
             exports_74("zoomIn", zoomIn = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 0,
-                        'transform': 'scale3d(.3, .3, .3)'
+                        opacity: 0,
+                        transform: 'scale3d(.3, .3, .3)'
                     },
                     {
-                        'opacity': 1
+                        opacity: 1
                     },
                     {
-                        'opacity': 1,
-                        'transform': 'none'
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomIn'
+                name: 'zoomIn'
             });
         }
     }
@@ -3654,28 +3629,28 @@ System.register("just-animate/animations/zoomInDown", [], function(exports_75, c
         setters:[],
         execute: function() {
             exports_75("zoomInDown", zoomInDown = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 0,
-                        'transform': 'scale3d(.1, .1, .1) translate3d(0, -1000px, 0)'
+                        offset: 0,
+                        opacity: 0,
+                        transform: 'scale3d(.1, .1, .1) translate3d(0, -1000px, 0)'
                     },
                     {
-                        'offset': 0.6,
-                        'opacity': 1,
-                        'transform': 'scale3d(.475, .475, .475) translate3d(0, 60px, 0)'
+                        offset: 0.6,
+                        opacity: 1,
+                        transform: 'scale3d(.475, .475, .475) translate3d(0, 60px, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 1,
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'easeInCubic'
+                timings: {
+                    duration: 1000,
+                    easing: 'easeInCubic'
                 },
-                'name': 'zoomInDown'
+                name: 'zoomInDown'
             });
         }
     }
@@ -3688,28 +3663,28 @@ System.register("just-animate/animations/zoomInLeft", [], function(exports_76, c
         setters:[],
         execute: function() {
             exports_76("zoomInLeft", zoomInLeft = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 0,
-                        'transform': 'scale3d(.1, .1, .1) translate3d(-1000px, 0, 0)'
+                        offset: 0,
+                        opacity: 0,
+                        transform: 'scale3d(.1, .1, .1) translate3d(-1000px, 0, 0)'
                     },
                     {
-                        'offset': 0.6,
-                        'opacity': 1,
-                        'transform': 'scale3d(.475, .475, .475) translate3d(10px, 0, 0)'
+                        offset: 0.6,
+                        opacity: 1,
+                        transform: 'scale3d(.475, .475, .475) translate3d(10px, 0, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 1,
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomInLeft'
+                name: 'zoomInLeft'
             });
         }
     }
@@ -3722,28 +3697,28 @@ System.register("just-animate/animations/zoomInRight", [], function(exports_77, 
         setters:[],
         execute: function() {
             exports_77("zoomInRight", zoomInRight = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 0,
-                        'transform': 'scale3d(.1, .1, .1) translate3d(1000px, 0, 0)'
+                        offset: 0,
+                        opacity: 0,
+                        transform: 'scale3d(.1, .1, .1) translate3d(1000px, 0, 0)'
                     },
                     {
-                        'offset': 0.6,
-                        'opacity': 1,
-                        'transform': 'scale3d(.475, .475, .475) translate3d(-10px, 0, 0)'
+                        offset: 0.6,
+                        opacity: 1,
+                        transform: 'scale3d(.475, .475, .475) translate3d(-10px, 0, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 1,
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomInRight'
+                name: 'zoomInRight'
             });
         }
     }
@@ -3756,28 +3731,28 @@ System.register("just-animate/animations/zoomInUp", [], function(exports_78, con
         setters:[],
         execute: function() {
             exports_78("zoomInUp", zoomInUp = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 0,
-                        'transform': 'scale3d(.1, .1, .1) translate3d(0, 1000px, 0)'
+                        offset: 0,
+                        opacity: 0,
+                        transform: 'scale3d(.1, .1, .1) translate3d(0, 1000px, 0)'
                     },
                     {
-                        'offset': 0.6,
-                        'opacity': 1,
-                        'transform': 'scale3d(.475, .475, .475) translate3d(0, -60px, 0)'
+                        offset: 0.6,
+                        opacity: 1,
+                        transform: 'scale3d(.475, .475, .475) translate3d(0, -60px, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 1,
-                        'transform': 'none'
+                        offset: 1,
+                        opacity: 1,
+                        transform: 'none'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomInUp'
+                name: 'zoomInUp'
             });
         }
     }
@@ -3790,27 +3765,27 @@ System.register("just-animate/animations/zoomOut", [], function(exports_79, cont
         setters:[],
         execute: function() {
             exports_79("zoomOut", zoomOut = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'opacity': 1,
-                        'transform': 'none',
+                        opacity: 1,
+                        transform: 'none',
                         'transform-origin': 'center middle'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'scale3d(.3, .3, .3)'
+                        opacity: 0,
+                        transform: 'scale3d(.3, .3, .3)'
                     },
                     {
-                        'opacity': 0,
-                        'transform': 'none',
+                        opacity: 0,
+                        transform: 'none',
                         'transform-origin': 'center middle'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomOut'
+                name: 'zoomOut'
             });
         }
     }
@@ -3823,31 +3798,31 @@ System.register("just-animate/animations/zoomOutDown", [], function(exports_80, 
         setters:[],
         execute: function() {
             exports_80("zoomOutDown", zoomOutDown = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none',
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none',
                         'transform-origin': 'center bottom'
                     },
                     {
-                        'offset': 0.4,
-                        'opacity': 1,
-                        'transform': 'scale3d(.475, .475, .475) translate3d(0, -60px, 0)',
+                        offset: 0.4,
+                        opacity: 1,
+                        transform: 'scale3d(.475, .475, .475) translate3d(0, -60px, 0)',
                         'transform-origin': 'center bottom'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'scale3d(.1, .1, .1) translate3d(0, 2000px, 0)',
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'scale3d(.1, .1, .1) translate3d(0, 2000px, 0)',
                         'transform-origin': 'center bottom'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomOutDown'
+                name: 'zoomOutDown'
             });
         }
     }
@@ -3860,30 +3835,30 @@ System.register("just-animate/animations/zoomOutLeft", [], function(exports_81, 
         setters:[],
         execute: function() {
             exports_81("zoomOutLeft", zoomOutLeft = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none',
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none',
                         'transform-origin': 'left center'
                     },
                     {
-                        'offset': 0.4,
-                        'opacity': 1,
-                        'transform': 'scale3d(.475, .475, .475) translate3d(42px, 0, 0)'
+                        offset: 0.4,
+                        opacity: 1,
+                        transform: 'scale3d(.475, .475, .475) translate3d(42px, 0, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'scale(.1) translate3d(-2000px, 0, 0)',
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'scale(.1) translate3d(-2000px, 0, 0)',
                         'transform-origin': 'left center'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomOutLeft'
+                name: 'zoomOutLeft'
             });
         }
     }
@@ -3896,30 +3871,30 @@ System.register("just-animate/animations/zoomOutRight", [], function(exports_82,
         setters:[],
         execute: function() {
             exports_82("zoomOutRight", zoomOutRight = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none',
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none',
                         'transform-origin': 'right center'
                     },
                     {
-                        'offset': 0.4,
-                        'opacity': 1,
-                        'transform': 'scale3d(.475, .475, .475) translate3d(-42px, 0, 0)'
+                        offset: 0.4,
+                        opacity: 1,
+                        transform: 'scale3d(.475, .475, .475) translate3d(-42px, 0, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'scale(.1) translate3d(2000px, 0, 0)',
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'scale(.1) translate3d(2000px, 0, 0)',
                         'transform-origin': 'right center'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomOutRight'
+                name: 'zoomOutRight'
             });
         }
     }
@@ -3932,30 +3907,30 @@ System.register("just-animate/animations/zoomOutUp", [], function(exports_83, co
         setters:[],
         execute: function() {
             exports_83("zoomOutUp", zoomOutUp = {
-                'keyframes': [
+                keyframes: [
                     {
-                        'offset': 0,
-                        'opacity': 1,
-                        'transform': 'none',
+                        offset: 0,
+                        opacity: 1,
+                        transform: 'none',
                         'transform-origin': 'center bottom'
                     },
                     {
-                        'offset': 0.4,
-                        'opacity': 1,
-                        'transform': 'scale3d(.475, .475, .475) translate3d(0, 60px, 0)'
+                        offset: 0.4,
+                        opacity: 1,
+                        transform: 'scale3d(.475, .475, .475) translate3d(0, 60px, 0)'
                     },
                     {
-                        'offset': 1,
-                        'opacity': 0,
-                        'transform': 'scale3d(.1, .1, .1) translate3d(0, -2000px, 0)',
+                        offset: 1,
+                        opacity: 0,
+                        transform: 'scale3d(.1, .1, .1) translate3d(0, -2000px, 0)',
                         'transform-origin': 'center bottom'
                     }
                 ],
-                'timings': {
-                    'duration': 1000,
-                    'easing': 'elegantSlowStartEnd'
+                timings: {
+                    duration: 1000,
+                    easing: 'elegantSlowStartEnd'
                 },
-                'name': 'zoomOutUp'
+                name: 'zoomOutUp'
             });
         }
     }

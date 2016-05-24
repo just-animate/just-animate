@@ -11,10 +11,10 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     // transform properties
     const scale = new Array<number>(3);
     const skew = new Array<string | number>(3);
-    const rotate = new Array<number>(3);
     const translate = new Array<string | number>(3);
-
+    
     const output: ja.IKeyframe = {};
+    let transform = '';
 
     for (let prop in keyframe) {
         const value = keyframe[prop];
@@ -126,52 +126,29 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
             case 'rotate3d':
                 if (isArray(value)) {
                     const arr = value as number[];
-                    if (arr.length != 3) {
-                        throw Error('rotate3d requires x, y, & z');
+                    if (arr.length != 4) {
+                        throw Error('rotate3d requires x, y, z, & a');
                     }
-                    rotate[x] = arr[x];
-                    rotate[y] = arr[y];
-                    rotate[z] = arr[z];
+                    transform += ` rotate3d(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`;
                     continue;
                 }
-                if (isString(value)) {
-                    rotate[x] = value;
-                    rotate[y] = value;
-                    rotate[z] = value;
-                    continue;
-                }
-                throw Error('rotate3d requires a string or string[]');
-            case 'rotate':
-                if (isArray(value)) {
-                    const arr = value as number[];
-                    if (arr.length != 2) {
-                        throw Error('rotate requires x & y');
-                    }
-                    rotate[x] = arr[x];
-                    rotate[y] = arr[y];
-                    continue;
-                }
-                if (isString(value)) {
-                    rotate[x] = value;
-                    rotate[y] = value;
-                    continue;
-                }
-                throw Error('rotate requires a string or string[]');
+                throw Error('rotate3d requires an []');
             case 'rotateX':
                 if (isString(value)) {
-                    rotate[x] = value;
+                    transform += ` rotate3d(1, 0, 0, ${value})`;
                     continue;
                 }
                 throw Error('rotateX requires a string');
             case 'rotateY':
                 if (isString(value)) {
-                    rotate[y] = value;
+                    transform += ` rotate3d(0, 1, 0, ${value})`;
                     continue;
                 }
                 throw Error('rotateY requires a string');
+            case 'rotate':
             case 'rotateZ':
                 if (isString(value)) {
-                    rotate[z] = value;
+                    transform += ` rotate3d(0, 0, 1, ${value})`;
                     continue;
                 }
                 throw Error('rotateZ requires a string');
@@ -227,13 +204,14 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
                     continue;
                 }
                 throw Error('translateZ requires a number or string');
+            case 'transform':
+                transform += ' ' + value;
+                break;
             default:
                 output[prop] = value;
                 break;
         }
     }
-
-    let transform = '';
 
     // combine scale
     const isScaleX = scale[x] !== undefined;
@@ -269,25 +247,6 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
         transform += ` skewX(${skew[y]})`;
     } else if (isskewZ) {
         transform += ` skewX(${skew[z]})`;
-    } else {
-        // do nothing
-    }
-
-    // combine rotate
-    const isrotateX = rotate[x] !== undefined;
-    const isrotateY = rotate[y] !== undefined;
-    const isrotateZ = rotate[z] !== undefined;
-    if (isrotateX && isrotateZ || isrotateY && isrotateZ) {
-        const rotateString = rotate.map(s => s || '1').join(',');
-        transform += ` rotate3d(${rotateString})`;
-    } else if (isrotateX && isrotateY) {
-        transform += ` rotate(${rotate[x] || 1}, ${rotate[y] || 1})`;
-    } else if (isrotateX) {
-        transform += ` rotateX(${rotate[x]})`;
-    } else if (isrotateY) {
-        transform += ` rotateX(${rotate[y]})`;
-    } else if (isrotateZ) {
-        transform += ` rotateX(${rotate[z]})`;
     } else {
         // do nothing
     }
