@@ -10,7 +10,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
 
     // transform properties
     const scale = new Array<number>(3);
-    const skew = new Array<string | number>(3);
+    const skew = new Array<string | number>(2);
     const translate = new Array<string | number>(3);
     
     const output: ja.IKeyframe = {};
@@ -235,19 +235,13 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     // combine skew
     const isskewX = skew[x] !== undefined;
     const isskewY = skew[y] !== undefined;
-    const isskewZ = skew[z] !== undefined;
-    if (isskewX && isskewZ || isskewY && isskewZ) {
-        const skewString = skew.map(s => s || '1').join(',');
-        transform += ` skew3d(${skewString})`;
-    } else if (isskewX && isskewY) {
+    if (isskewX && isskewY) {
         transform += ` skew(${skew[x] || 1}, ${skew[y] || 1})`;
     } else if (isskewX) {
         transform += ` skewX(${skew[x]})`;
     } else if (isskewY) {
         transform += ` skewX(${skew[y]})`;
-    } else if (isskewZ) {
-        transform += ` skewX(${skew[z]})`;
-    } else {
+    }  else {
         // do nothing
     }
 

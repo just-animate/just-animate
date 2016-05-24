@@ -9,7 +9,7 @@ function keyframeTransformer(keyframe) {
     var z = 2;
     // transform properties
     var scale = new Array(3);
-    var skew = new Array(3);
+    var skew = new Array(2);
     var translate = new Array(3);
     var output = {};
     var transform = '';
@@ -234,12 +234,7 @@ function keyframeTransformer(keyframe) {
     // combine skew
     var isskewX = skew[x] !== undefined;
     var isskewY = skew[y] !== undefined;
-    var isskewZ = skew[z] !== undefined;
-    if (isskewX && isskewZ || isskewY && isskewZ) {
-        var skewString = skew.map(function (s) { return s || '1'; }).join(',');
-        transform += " skew3d(" + skewString + ")";
-    }
-    else if (isskewX && isskewY) {
+    if (isskewX && isskewY) {
         transform += " skew(" + (skew[x] || 1) + ", " + (skew[y] || 1) + ")";
     }
     else if (isskewX) {
@@ -247,9 +242,6 @@ function keyframeTransformer(keyframe) {
     }
     else if (isskewY) {
         transform += " skewX(" + skew[y] + ")";
-    }
-    else if (isskewZ) {
-        transform += " skewX(" + skew[z] + ")";
     }
     else {
     }
