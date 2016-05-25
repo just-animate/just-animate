@@ -1,10 +1,11 @@
-import {each, extend, map} from './core/Helpers';
-import { keyframeTransformer } from './core/KeyframeTransformers';
+import {each, map} from './core/Helpers';
+import {animationTransformer} from './core/Transformers';
 import {ElementAnimator} from './core/ElementAnimator';
 import {SequenceAnimator} from './core/SequenceAnimator';
 import {TimelineAnimator} from './core/TimelineAnimator';
 
 const DEFAULT_ANIMATIONS: ja.IAnimationOptions[] = [];
+
 
 /**
  * (description)
@@ -23,12 +24,8 @@ export class JustAnimate implements ja.IAnimationManager {
      * @param {ja.IAnimationOptions[]} animations (description)
      */
     public static inject(animations: ja.IAnimationOptions[]): void {
-        const animationDefs = map(animations, (a: ja.IAnimationOptions) => ({
-            keyframes: map(a.keyframes, keyframeTransformer),
-            name: a.name,
-            timings: extend({}, a.timings)
-        }));
-        Array.prototype.push.apply(DEFAULT_ANIMATIONS, animationDefs);
+        
+        Array.prototype.push.apply(DEFAULT_ANIMATIONS, map(animations, animationTransformer));
     }
 
     /**
@@ -85,14 +82,8 @@ export class JustAnimate implements ja.IAnimationManager {
      * @param {ja.IAnimationOptions} animationOptions (description)
      * @returns {ja.IAnimationManager} (description)
      */
-    public register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager {
-        const animationDef: ja.IAnimationOptions = {
-            keyframes: map(animationOptions.keyframes, keyframeTransformer),
-            name: animationOptions.name,
-            timings: extend({}, animationOptions.timings)
-        };
-        
-        this._registry[animationDef.name] = animationDef;
+    public register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager {        
+        this._registry[animationOptions.name] = animationTransformer(animationOptions);
         return this;
     }
 }

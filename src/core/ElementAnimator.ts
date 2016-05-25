@@ -1,7 +1,8 @@
 /// <reference path="../just-animate.d.ts" />
 
 import {easings} from '../easings';
-import {head, multiapply, each, extend, isArray, isFunction, isString, toArray, max} from './Helpers';
+import {head, multiapply, map, each, extend, isArray, isFunction, isString, toArray, max} from './Helpers';
+import {keyframeTransformer} from './Transformers';
 
 /**
  * Animates one or more elements
@@ -71,8 +72,8 @@ export class ElementAnimator implements ja.IAnimator {
             // use registered timings as default, then load timings from params           
             timings = extend({}, definition.timings, timings);
         } else {
-            // otherwise, keyframes are actually keyframes
-            keyframes = keyframesOrName;
+            // otherwise, translate keyframe properties
+            keyframes = map(keyframesOrName as ja.IKeyframe[], keyframeTransformer);
         }
 
         if (timings && timings.easing) {

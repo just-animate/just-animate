@@ -229,10 +229,24 @@ System.register("just-animate/core/Helpers", [], function(exports_1, context_1) 
         }
     }
 });
-System.register("just-animate/core/KeyframeTransformers", ["just-animate/core/Helpers"], function(exports_2, context_2) {
+System.register("just-animate/core/Transformers", ["just-animate/core/Helpers"], function(exports_2, context_2) {
     "use strict";
     var __moduleName = context_2 && context_2.id;
     var Helpers_1;
+    function replaceCamelCased(match, p1, p2) {
+        return p1 + p2.toUpperCase();
+    }
+    /**
+     * Handles converting animations options to a usable format
+     */
+    function animationTransformer(a) {
+        return {
+            keyframes: Helpers_1.map(a.keyframes, keyframeTransformer),
+            name: a.name,
+            timings: Helpers_1.extend({}, a.timings)
+        };
+    }
+    exports_2("animationTransformer", animationTransformer);
     /**
      * Handles transforming short hand key properties into their native form
      */
@@ -438,7 +452,8 @@ System.register("just-animate/core/KeyframeTransformers", ["just-animate/core/He
                     transform += ' ' + value;
                     break;
                 default:
-                    output[prop] = value;
+                    var prop2 = prop.replace(/([a-z])-([a-z])/ig, replaceCamelCased);
+                    output[prop2] = value;
                     break;
             }
         }
@@ -553,10 +568,10 @@ System.register("just-animate/easings", [], function(exports_3, context_3) {
     }
 });
 /// <reference path="../just-animate.d.ts" />
-System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/core/Helpers"], function(exports_4, context_4) {
+System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/core/Helpers", "just-animate/core/Transformers"], function(exports_4, context_4) {
     "use strict";
     var __moduleName = context_4 && context_4.id;
-    var easings_1, Helpers_2;
+    var easings_1, Helpers_2, Transformers_1;
     var ElementAnimator;
     /**
      * Recursively resolves the element source from dom, selector, jquery, array, and function sources
@@ -603,6 +618,9 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
             },
             function (Helpers_2_1) {
                 Helpers_2 = Helpers_2_1;
+            },
+            function (Transformers_1_1) {
+                Transformers_1 = Transformers_1_1;
             }],
         execute: function() {
             /**
@@ -635,8 +653,8 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                         timings = Helpers_2.extend({}, definition.timings, timings);
                     }
                     else {
-                        // otherwise, keyframes are actually keyframes
-                        keyframes = keyframesOrName;
+                        // otherwise, translate keyframe properties
+                        keyframes = Helpers_2.map(keyframesOrName, Transformers_1.keyframeTransformer);
                     }
                     if (timings && timings.easing) {
                         // if timings contains an easing property, 
@@ -1261,18 +1279,18 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helper
         }
     }
 });
-System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-animate/core/KeyframeTransformers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_7, context_7) {
+System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-animate/core/Transformers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_7, context_7) {
     "use strict";
     var __moduleName = context_7 && context_7.id;
-    var Helpers_5, KeyframeTransformers_1, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
+    var Helpers_5, Transformers_2, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
     var DEFAULT_ANIMATIONS, JustAnimate;
     return {
         setters:[
             function (Helpers_5_1) {
                 Helpers_5 = Helpers_5_1;
             },
-            function (KeyframeTransformers_1_1) {
-                KeyframeTransformers_1 = KeyframeTransformers_1_1;
+            function (Transformers_2_1) {
+                Transformers_2 = Transformers_2_1;
             },
             function (ElementAnimator_1_1) {
                 ElementAnimator_1 = ElementAnimator_1_1;
@@ -1308,12 +1326,7 @@ System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-
                  * @param {ja.IAnimationOptions[]} animations (description)
                  */
                 JustAnimate.inject = function (animations) {
-                    var animationDefs = Helpers_5.map(animations, function (a) { return ({
-                        keyframes: Helpers_5.map(a.keyframes, KeyframeTransformers_1.keyframeTransformer),
-                        name: a.name,
-                        timings: Helpers_5.extend({}, a.timings)
-                    }); });
-                    Array.prototype.push.apply(DEFAULT_ANIMATIONS, animationDefs);
+                    Array.prototype.push.apply(DEFAULT_ANIMATIONS, Helpers_5.map(animations, Transformers_2.animationTransformer));
                 };
                 /**
                  * (description)
@@ -1360,12 +1373,7 @@ System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-
                  * @returns {ja.IAnimationManager} (description)
                  */
                 JustAnimate.prototype.register = function (animationOptions) {
-                    var animationDef = {
-                        keyframes: Helpers_5.map(animationOptions.keyframes, KeyframeTransformers_1.keyframeTransformer),
-                        name: animationOptions.name,
-                        timings: Helpers_5.extend({}, animationOptions.timings)
-                    };
-                    this._registry[animationDef.name] = animationDef;
+                    this._registry[animationOptions.name] = Transformers_2.animationTransformer(animationOptions);
                     return this;
                 };
                 return JustAnimate;

@@ -128,7 +128,11 @@ declare module "just-animate/core/Helpers" {
      */
     export function multiapply(targets: ja.IIndexed<any>, fnName: string, args: ja.IIndexed<any>, cb?: ja.ICallbackHandler): any[];
 }
-declare module "just-animate/core/KeyframeTransformers" {
+declare module "just-animate/core/Transformers" {
+    /**
+     * Handles converting animations options to a usable format
+     */
+    export function animationTransformer(a: ja.IAnimationOptions): ja.IAnimationOptions;
     /**
      * Handles transforming short hand key properties into their native form
      */

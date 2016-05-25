@@ -2,6 +2,7 @@
 "use strict";
 var easings_1 = require('../easings');
 var Helpers_1 = require('./Helpers');
+var Transformers_1 = require('./Transformers');
 /**
  * Animates one or more elements
  *
@@ -32,8 +33,8 @@ var ElementAnimator = (function () {
             timings = Helpers_1.extend({}, definition.timings, timings);
         }
         else {
-            // otherwise, keyframes are actually keyframes
-            keyframes = keyframesOrName;
+            // otherwise, translate keyframe properties
+            keyframes = Helpers_1.map(keyframesOrName, Transformers_1.keyframeTransformer);
         }
         if (timings && timings.easing) {
             // if timings contains an easing property, 

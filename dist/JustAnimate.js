@@ -1,6 +1,6 @@
 "use strict";
 var Helpers_1 = require('./core/Helpers');
-var KeyframeTransformers_1 = require('./core/KeyframeTransformers');
+var Transformers_1 = require('./core/Transformers');
 var ElementAnimator_1 = require('./core/ElementAnimator');
 var SequenceAnimator_1 = require('./core/SequenceAnimator');
 var TimelineAnimator_1 = require('./core/TimelineAnimator');
@@ -28,12 +28,7 @@ var JustAnimate = (function () {
      * @param {ja.IAnimationOptions[]} animations (description)
      */
     JustAnimate.inject = function (animations) {
-        var animationDefs = Helpers_1.map(animations, function (a) { return ({
-            keyframes: Helpers_1.map(a.keyframes, KeyframeTransformers_1.keyframeTransformer),
-            name: a.name,
-            timings: Helpers_1.extend({}, a.timings)
-        }); });
-        Array.prototype.push.apply(DEFAULT_ANIMATIONS, animationDefs);
+        Array.prototype.push.apply(DEFAULT_ANIMATIONS, Helpers_1.map(animations, Transformers_1.animationTransformer));
     };
     /**
      * (description)
@@ -80,12 +75,7 @@ var JustAnimate = (function () {
      * @returns {ja.IAnimationManager} (description)
      */
     JustAnimate.prototype.register = function (animationOptions) {
-        var animationDef = {
-            keyframes: Helpers_1.map(animationOptions.keyframes, KeyframeTransformers_1.keyframeTransformer),
-            name: animationOptions.name,
-            timings: Helpers_1.extend({}, animationOptions.timings)
-        };
-        this._registry[animationDef.name] = animationDef;
+        this._registry[animationOptions.name] = Transformers_1.animationTransformer(animationOptions);
         return this;
     };
     return JustAnimate;

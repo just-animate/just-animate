@@ -88,6 +88,16 @@
         return results;
     }
 
+    function replaceCamelCased(match, p1, p2) {
+        return p1 + p2.toUpperCase();
+    }
+    function animationTransformer(a) {
+        return {
+            keyframes: map(a.keyframes, keyframeTransformer),
+            name: a.name,
+            timings: extend({}, a.timings)
+        };
+    }
     function keyframeTransformer(keyframe) {
         var x = 0;
         var y = 1;
@@ -289,7 +299,8 @@
                     transform += ' ' + value;
                     break;
                 default:
-                    output[prop] = value;
+                    var prop2 = prop.replace(/([a-z])-([a-z])/ig, replaceCamelCased);
+                    output[prop2] = value;
                     break;
             }
         }
@@ -395,7 +406,7 @@
                 timings = extend({}, definition.timings, timings);
             }
             else {
-                keyframes = keyframesOrName;
+                keyframes = map(keyframesOrName, keyframeTransformer);
             }
             if (timings && timings.easing) {
                 var easing = easings[timings.easing];
@@ -851,12 +862,7 @@
             each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
         }
         JustAnimate.inject = function (animations) {
-            var animationDefs = map(animations, function (a) { return ({
-                keyframes: map(a.keyframes, keyframeTransformer),
-                name: a.name,
-                timings: extend({}, a.timings)
-            }); });
-            Array.prototype.push.apply(DEFAULT_ANIMATIONS, animationDefs);
+            Array.prototype.push.apply(DEFAULT_ANIMATIONS, map(animations, animationTransformer));
         };
         JustAnimate.prototype.animate = function (keyframesOrName, el, timings) {
             return new ElementAnimator(this, keyframesOrName, el, timings);
@@ -871,12 +877,7 @@
             return this._registry[name] || undefined;
         };
         JustAnimate.prototype.register = function (animationOptions) {
-            var animationDef = {
-                keyframes: map(animationOptions.keyframes, keyframeTransformer),
-                name: animationOptions.name,
-                timings: extend({}, animationOptions.timings)
-            };
-            this._registry[animationDef.name] = animationDef;
+            this._registry[animationOptions.name] = animationTransformer(animationOptions);
             return this;
         };
         return JustAnimate;
