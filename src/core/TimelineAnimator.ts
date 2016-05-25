@@ -230,7 +230,7 @@ export class TimelineAnimator implements ja.IAnimator {
         this._isInEffect = false;
         this._lastTick = undefined;
         this.playbackRate = 0;
-        each(this._events, evt => {
+        each(this._events, (evt: TimelineEvent) => {
             evt.isInEffect = false;
             evt.animator.pause();
         });
@@ -243,7 +243,7 @@ export class TimelineAnimator implements ja.IAnimator {
         this._isFinished = false;
         this._isPaused = false;
         this._isInEffect = false;
-        each(this._events, evt => {
+        each(this._events, (evt: TimelineEvent) => {
             evt.isInEffect = false;
         });
     }

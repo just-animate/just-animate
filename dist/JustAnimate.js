@@ -1,4 +1,3 @@
-/// <reference path="./just-animate.d.ts" />
 "use strict";
 var Helpers_1 = require('./core/Helpers');
 var KeyframeTransformers_1 = require('./core/KeyframeTransformers');
@@ -19,14 +18,8 @@ var JustAnimate = (function () {
      */
     function JustAnimate() {
         var _this = this;
-        this._timings = {
-            duration: 1000,
-            fill: 'both'
-        };
         this._registry = {};
-        Helpers_1.each(DEFAULT_ANIMATIONS, function (a) {
-            _this._registry[a.name] = a;
-        });
+        Helpers_1.each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
     }
     /**
      * (description)
@@ -35,10 +28,10 @@ var JustAnimate = (function () {
      * @param {ja.IAnimationOptions[]} animations (description)
      */
     JustAnimate.inject = function (animations) {
-        var animationDefs = Helpers_1.map(animations, function (animationOptions) { return ({
-            name: animationOptions.name,
-            timings: Helpers_1.extend({}, animationOptions.timings),
-            keyframes: Helpers_1.map(animationOptions.keyframes, KeyframeTransformers_1.keyframeTransformer)
+        var animationDefs = Helpers_1.map(animations, function (a) { return ({
+            keyframes: Helpers_1.map(a.keyframes, KeyframeTransformers_1.keyframeTransformer),
+            name: a.name,
+            timings: Helpers_1.extend({}, a.timings)
         }); });
         Array.prototype.push.apply(DEFAULT_ANIMATIONS, animationDefs);
     };
@@ -88,9 +81,9 @@ var JustAnimate = (function () {
      */
     JustAnimate.prototype.register = function (animationOptions) {
         var animationDef = {
+            keyframes: Helpers_1.map(animationOptions.keyframes, KeyframeTransformers_1.keyframeTransformer),
             name: animationOptions.name,
-            timings: Helpers_1.extend({}, animationOptions.timings),
-            keyframes: Helpers_1.map(animationOptions.keyframes, KeyframeTransformers_1.keyframeTransformer)
+            timings: Helpers_1.extend({}, animationOptions.timings)
         };
         this._registry[animationDef.name] = animationDef;
         return this;

@@ -1,4 +1,3 @@
-///<reference path="just-animate.d.ts" />
 declare var window: Window & { Just: ja.IAnimationManager & ja.IAnimationInjectable };
 declare var angular: any;
 
@@ -11,7 +10,7 @@ if (typeof angular !== 'undefined') {
 
 // create manager if it doesn't yet exist
 let animationManager: ja.IAnimationManager = undefined;
-function getManager() {
+function getManager(): ja.IAnimationManager {
     if (animationManager === undefined) {
         animationManager = new JustAnimate();
     }
@@ -19,7 +18,7 @@ function getManager() {
 }
 
 // add animation properties to global Just
-const Just: ja.IAnimationManager & ja.IAnimationInjectable = {
+const just: ja.IAnimationManager & ja.IAnimationInjectable = {
     animate(keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, el: ja.ElementSource, timings?: ja.IAnimationEffectTiming): ja.IAnimator {
         return getManager().animate(keyframesOrName, el, timings);
     },
@@ -36,7 +35,7 @@ const Just: ja.IAnimationManager & ja.IAnimationInjectable = {
         if (animationManager !== undefined) {
             console.warn('Animations must be injected prior to using Just.*');
         }
-        JustAnimate.inject(animations)  
+        JustAnimate.inject(animations);
     },
     register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager {
         return getManager().register(animationOptions);
@@ -44,4 +43,4 @@ const Just: ja.IAnimationManager & ja.IAnimationInjectable = {
 };
 
 
-window.Just = Just;
+window.Just = just;

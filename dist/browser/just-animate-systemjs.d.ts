@@ -136,31 +136,31 @@ declare module "just-animate/core/KeyframeTransformers" {
 }
 declare module "just-animate/easings" {
     export const easings: {
-        'easeInCubic': string;
-        'easeOutCubic': string;
-        'easeInOutCubic': string;
-        'easeInCirc': string;
-        'easeOutCirc': string;
-        'easeInOutCirc': string;
-        'easeInExpo': string;
-        'easeOutExpo': string;
-        'easeInOutExpo': string;
-        'easeInQuad': string;
-        'easeOutQuad': string;
-        'easeInOutQuad': string;
-        'easeInQuart': string;
-        'easeOutQuart': string;
-        'easeInOutQuart': string;
-        'easeInQuint': string;
-        'easeOutQuint': string;
-        'easeInOutQuint': string;
-        'easeInSine': string;
-        'easeOutSine': string;
-        'easeInOutSine': string;
-        'easeInBack': string;
-        'easeOutBack': string;
-        'easeInOutBack': string;
-        'elegantSlowStartEnd': string;
+        easeInBack: string;
+        easeInCirc: string;
+        easeInCubic: string;
+        easeInExpo: string;
+        easeInOutBack: string;
+        easeInOutCirc: string;
+        easeInOutCubic: string;
+        easeInOutExpo: string;
+        easeInOutQuad: string;
+        easeInOutQuart: string;
+        easeInOutQuint: string;
+        easeInOutSine: string;
+        easeInQuad: string;
+        easeInQuart: string;
+        easeInQuint: string;
+        easeInSine: string;
+        easeOutBack: string;
+        easeOutCirc: string;
+        easeOutCubic: string;
+        easeOutExpo: string;
+        easeOutQuad: string;
+        easeOutQuart: string;
+        easeOutQuint: string;
+        easeOutSine: string;
+        elegantSlowStartEnd: string;
     };
 }
 declare module "just-animate/core/ElementAnimator" {
@@ -453,7 +453,6 @@ declare module "just-animate/JustAnimate" {
      */
     export class JustAnimate implements ja.IAnimationManager {
         private _registry;
-        private _timings;
         /**
          * (description)
          *
@@ -810,82 +809,7 @@ declare module "just-animate/animations" {
     import { zoomOutRight } from "just-animate/animations/zoomOutRight";
     import { zoomOutUp } from "just-animate/animations/zoomOutUp";
     export const ANIMATE_CSS: ja.IAnimationOptions[];
-    export { bounce };
-    export { bounceIn };
-    export { bounceInDown };
-    export { bounceInLeft };
-    export { bounceInRight };
-    export { bounceInUp };
-    export { bounceOut };
-    export { bounceOutDown };
-    export { bounceOutLeft };
-    export { bounceOutRight };
-    export { bounceOutUp };
-    export { fadeIn };
-    export { fadeInDown };
-    export { fadeInDownBig };
-    export { fadeInLeft };
-    export { fadeInLeftBig };
-    export { fadeInRight };
-    export { fadeInRightBig };
-    export { fadeInUp };
-    export { fadeInUpBig };
-    export { fadeOut };
-    export { fadeOutDown };
-    export { fadeOutDownBig };
-    export { fadeOutLeft };
-    export { fadeOutLeftBig };
-    export { fadeOutRight };
-    export { fadeOutRightBig };
-    export { fadeOutUp };
-    export { fadeOutUpBig };
-    export { flash };
-    export { flip };
-    export { flipInX };
-    export { flipInY };
-    export { flipOutX };
-    export { flipOutY };
-    export { headShake };
-    export { hinge };
-    export { jello };
-    export { lightSpeedIn };
-    export { lightSpeedOut };
-    export { pulse };
-    export { rollIn };
-    export { rollOut };
-    export { rotateIn };
-    export { rotateInDownLeft };
-    export { rotateInDownRight };
-    export { rotateInUpLeft };
-    export { rotateInUpRight };
-    export { rotateOut };
-    export { rotateOutDownLeft };
-    export { rotateOutDownRight };
-    export { rotateOutUpLeft };
-    export { rotateOutUpRight };
-    export { rubberBand };
-    export { shake };
-    export { slideInDown };
-    export { slideInLeft };
-    export { slideInRight };
-    export { slideInUp };
-    export { slideOutDown };
-    export { slideOutLeft };
-    export { slideOutRight };
-    export { slideOutUp };
-    export { swing };
-    export { tada };
-    export { wobble };
-    export { zoomIn };
-    export { zoomInDown };
-    export { zoomInLeft };
-    export { zoomInRight };
-    export { zoomInUp };
-    export { zoomOut };
-    export { zoomOutDown };
-    export { zoomOutLeft };
-    export { zoomOutRight };
-    export { zoomOutUp };
+    export { bounce, bounceIn, bounceInDown, bounceInLeft, bounceInRight, bounceInUp, bounceOut, bounceOutDown, bounceOutLeft, bounceOutRight, bounceOutUp, fadeIn, fadeInDown, fadeInDownBig, fadeInLeft, fadeInLeftBig, fadeInRight, fadeInRightBig, fadeInUp, fadeInUpBig, fadeOut, fadeOutDown, fadeOutDownBig, fadeOutLeft, fadeOutLeftBig, fadeOutRight, fadeOutRightBig, fadeOutUp, fadeOutUpBig, flash, flip, flipInX, flipInY, flipOutX, flipOutY, headShake, hinge, jello, lightSpeedIn, lightSpeedOut, pulse, rollIn, rollOut, rotateIn, rotateInDownLeft, rotateInDownRight, rotateInUpLeft, rotateInUpRight, rotateOut, rotateOutDownLeft, rotateOutDownRight, rotateOutUpLeft, rotateOutUpRight, rubberBand, shake, slideInDown, slideInLeft, slideInRight, slideInUp, slideOutDown, slideOutLeft, slideOutRight, slideOutUp, swing, tada, wobble, zoomIn, zoomInDown, zoomInLeft, zoomInRight, zoomInUp, zoomOut, zoomOutDown, zoomOutLeft, zoomOutRight, zoomOutUp };
 }
 declare module "just-animate/index" {
     import * as animations from "just-animate/animations";

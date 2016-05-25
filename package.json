@@ -5,6 +5,7 @@
     "del-cli": "^0.2.0",
     "rollup": "^0.26.1",
     "rollup-plugin-typescript": "^0.7.5",
+    "tslint": "^3.10.2",
     "typescript": "^1.8.10",
     "uglify": "^0.1.5"
   },

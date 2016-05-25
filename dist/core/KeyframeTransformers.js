@@ -19,7 +19,7 @@ function keyframeTransformer(keyframe) {
             case 'scale3d':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
-                    if (arr.length != 3) {
+                    if (arr.length !== 3) {
                         throw Error('scale3d requires x, y, & z');
                     }
                     scale[x] = arr[x];
@@ -37,7 +37,7 @@ function keyframeTransformer(keyframe) {
             case 'scale':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
-                    if (arr.length != 2) {
+                    if (arr.length !== 2) {
                         throw Error('scale requires x & y');
                     }
                     scale[x] = arr[x];
@@ -71,7 +71,7 @@ function keyframeTransformer(keyframe) {
             case 'skew3d':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
-                    if (arr.length != 3) {
+                    if (arr.length !== 3) {
                         throw Error('skew3d requires x, y, & z');
                     }
                     skew[x] = arr[x];
@@ -89,7 +89,7 @@ function keyframeTransformer(keyframe) {
             case 'skew':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
-                    if (arr.length != 2) {
+                    if (arr.length !== 2) {
                         throw Error('skew requires x & y');
                     }
                     skew[x] = arr[x];
@@ -123,7 +123,7 @@ function keyframeTransformer(keyframe) {
             case 'rotate3d':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
-                    if (arr.length != 4) {
+                    if (arr.length !== 4) {
                         throw Error('rotate3d requires x, y, z, & a');
                     }
                     transform += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
@@ -152,7 +152,7 @@ function keyframeTransformer(keyframe) {
             case 'translate3d':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
-                    if (arr.length != 3) {
+                    if (arr.length !== 3) {
                         throw Error('translate3d requires x, y, & z');
                     }
                     translate[x] = arr[x];
@@ -170,7 +170,7 @@ function keyframeTransformer(keyframe) {
             case 'translate':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
-                    if (arr.length != 2) {
+                    if (arr.length !== 2) {
                         throw Error('translate requires x & y');
                     }
                     translate[x] = arr[x];

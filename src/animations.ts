@@ -75,7 +75,7 @@ import { zoomOutLeft } from './animations/zoomOutLeft';
 import { zoomOutRight } from './animations/zoomOutRight';
 import { zoomOutUp } from './animations/zoomOutUp';
 
-export const ANIMATE_CSS = [
+export const ANIMATE_CSS: ja.IAnimationOptions[] = [
     bounce,
     bounceIn,
     bounceInDown,
@@ -154,79 +154,81 @@ export const ANIMATE_CSS = [
     zoomOutUp
 ];
 
-export { bounce }
-export { bounceIn }
-export { bounceInDown }
-export { bounceInLeft }
-export { bounceInRight }
-export { bounceInUp }
-export { bounceOut }
-export { bounceOutDown }
-export { bounceOutLeft }
-export { bounceOutRight }
-export { bounceOutUp }
-export { fadeIn }
-export { fadeInDown }
-export { fadeInDownBig }
-export { fadeInLeft }
-export { fadeInLeftBig }
-export { fadeInRight }
-export { fadeInRightBig }
-export { fadeInUp }
-export { fadeInUpBig }
-export { fadeOut }
-export { fadeOutDown }
-export { fadeOutDownBig }
-export { fadeOutLeft }
-export { fadeOutLeftBig }
-export { fadeOutRight }
-export { fadeOutRightBig }
-export { fadeOutUp }
-export { fadeOutUpBig }
-export { flash }
-export { flip }
-export { flipInX }
-export { flipInY }
-export { flipOutX }
-export { flipOutY }
-export { headShake }
-export { hinge }
-export { jello }
-export { lightSpeedIn }
-export { lightSpeedOut }
-export { pulse }
-export { rollIn }
-export { rollOut }
-export { rotateIn }
-export { rotateInDownLeft }
-export { rotateInDownRight }
-export { rotateInUpLeft }
-export { rotateInUpRight }
-export { rotateOut }
-export { rotateOutDownLeft }
-export { rotateOutDownRight }
-export { rotateOutUpLeft }
-export { rotateOutUpRight }
-export { rubberBand }
-export { shake }
-export { slideInDown }
-export { slideInLeft }
-export { slideInRight }
-export { slideInUp }
-export { slideOutDown }
-export { slideOutLeft }
-export { slideOutRight }
-export { slideOutUp }
-export { swing }
-export { tada }
-export { wobble }
-export { zoomIn }
-export { zoomInDown }
-export { zoomInLeft }
-export { zoomInRight }
-export { zoomInUp }
-export { zoomOut }
-export { zoomOutDown }
-export { zoomOutLeft }
-export { zoomOutRight }
-export { zoomOutUp }
+export {
+bounce,
+bounceIn,
+bounceInDown,
+bounceInLeft,
+bounceInRight,
+bounceInUp,
+bounceOut,
+bounceOutDown,
+bounceOutLeft,
+bounceOutRight,
+bounceOutUp,
+fadeIn,
+fadeInDown,
+fadeInDownBig,
+fadeInLeft,
+fadeInLeftBig,
+fadeInRight,
+fadeInRightBig,
+fadeInUp,
+fadeInUpBig,
+fadeOut,
+fadeOutDown,
+fadeOutDownBig,
+fadeOutLeft,
+fadeOutLeftBig,
+fadeOutRight,
+fadeOutRightBig,
+fadeOutUp,
+fadeOutUpBig,
+flash,
+flip,
+flipInX,
+flipInY,
+flipOutX,
+flipOutY,
+headShake,
+hinge,
+jello,
+lightSpeedIn,
+lightSpeedOut,
+pulse,
+rollIn,
+rollOut,
+rotateIn,
+rotateInDownLeft,
+rotateInDownRight,
+rotateInUpLeft,
+rotateInUpRight,
+rotateOut,
+rotateOutDownLeft,
+rotateOutDownRight,
+rotateOutUpLeft,
+rotateOutUpRight,
+rubberBand,
+shake,
+slideInDown,
+slideInLeft,
+slideInRight,
+slideInUp,
+slideOutDown,
+slideOutLeft,
+slideOutRight,
+slideOutUp,
+swing,
+tada,
+wobble,
+zoomIn,
+zoomInDown,
+zoomInLeft,
+zoomInRight,
+zoomInUp,
+zoomOut,
+zoomOutDown,
+zoomOutLeft,
+zoomOutRight,
+zoomOutUp
+};

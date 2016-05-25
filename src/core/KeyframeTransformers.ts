@@ -22,7 +22,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
             case 'scale3d':
                 if (isArray(value)) {
                     const arr = value as number[];
-                    if (arr.length != 3) {
+                    if (arr.length !== 3) {
                         throw Error('scale3d requires x, y, & z');
                     }
                     scale[x] = arr[x];
@@ -40,7 +40,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
             case 'scale':
                 if (isArray(value)) {
                     const arr = value as number[];
-                    if (arr.length != 2) {
+                    if (arr.length !== 2) {
                         throw Error('scale requires x & y');
                     }
                     scale[x] = arr[x];
@@ -74,7 +74,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
             case 'skew3d':
                 if (isArray(value)) {
                     const arr = value as number[];
-                    if (arr.length != 3) {
+                    if (arr.length !== 3) {
                         throw Error('skew3d requires x, y, & z');
                     }
                     skew[x] = arr[x];
@@ -92,7 +92,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
             case 'skew':
                 if (isArray(value)) {
                     const arr = value as number[];
-                    if (arr.length != 2) {
+                    if (arr.length !== 2) {
                         throw Error('skew requires x & y');
                     }
                     skew[x] = arr[x];
@@ -126,7 +126,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
             case 'rotate3d':
                 if (isArray(value)) {
                     const arr = value as number[];
-                    if (arr.length != 4) {
+                    if (arr.length !== 4) {
                         throw Error('rotate3d requires x, y, z, & a');
                     }
                     transform += ` rotate3d(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`;
@@ -155,7 +155,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
             case 'translate3d':
                 if (isArray(value)) {
                     const arr = value as (number|string)[];
-                    if (arr.length != 3) {
+                    if (arr.length !== 3) {
                         throw Error('translate3d requires x, y, & z');
                     }
                     translate[x] = arr[x];
@@ -173,7 +173,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
             case 'translate':
                 if (isArray(value)) {
                     const arr = value as (number|string)[];
-                    if (arr.length != 2) {
+                    if (arr.length !== 2) {
                         throw Error('translate requires x & y');
                     }
                     translate[x] = arr[x];
@@ -218,7 +218,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     const isScaleY = scale[y] !== undefined;
     const isScaleZ = scale[z] !== undefined;
     if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
-        const scaleString = scale.map(s => s || '1').join(',');
+        const scaleString = scale.map((s: number) => s || '1').join(',');
         transform += ` scale3d(${scaleString})`;
     } else if (isScaleX && isScaleY) {
         transform += ` scale(${scale[x] || 1}, ${scale[y] || 1})`;
@@ -250,7 +250,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     const istranslateY = translate[y] !== undefined;
     const istranslateZ = translate[z] !== undefined;
     if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
-        const translateString = translate.map(s => s || '1').join(',');
+        const translateString = translate.map((s: string) => s || '1').join(',');
         transform += ` translate3d(${translateString})`;
     } else if (istranslateX && istranslateY) {
         transform += ` translate(${translate[x] || 1}, ${translate[y] || 1})`;

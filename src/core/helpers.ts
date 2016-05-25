@@ -133,7 +133,7 @@ export function max<T1>(items: ja.IIndexed<T1>, propertyName: string): any {
     for (let i = 0, len = items.length; i < len; i++) {
         const prop = items[i][propertyName];
         if (max < prop) {
-           max = prop
+            max = prop;
         }
     }
     return max;

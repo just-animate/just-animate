@@ -81,7 +81,7 @@ export class SequenceAnimator implements ja.IAnimator {
      * @type {number}
      */
     get duration(): number {
-        return this._steps.reduce((c, n) => c + (n.timings.duration || 0), 0);
+        return this._steps.reduce((c: number, n: IInnerSequenceEvent) => c + (n.timings.duration || 0), 0);
     }
 
     /**
@@ -202,7 +202,7 @@ export class SequenceAnimator implements ja.IAnimator {
             }
         }
         if (isFunction(this.oncancel)) {
-            this.oncancel(this)
+            this.oncancel(this);
         }
         return this;
     }

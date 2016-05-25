@@ -893,7 +893,7 @@ declare module ja {
          * @type {string}
          */
         'rotateZ'?: string;
-                /**
+        /**
          * Shortform for 'transform: scale()'.
          * Pass a single number to scale the same amount in all directions,
          * or an array of 2 numbers to set the X, Y, Z axes
