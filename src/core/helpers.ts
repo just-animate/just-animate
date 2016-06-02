@@ -131,7 +131,8 @@ export function each<T1>(items: ja.IIndexed<T1>, fn: ja.IConsumer<T1>): void {
 export function max<T1>(items: ja.IIndexed<T1>, propertyName: string): any {
     let max: any = '';
     for (let i = 0, len = items.length; i < len; i++) {
-        const prop = items[i][propertyName];
+        const item = items[i] as any;
+        const prop = item[propertyName] as any;
         if (max < prop) {
             max = prop;
         }
@@ -195,7 +196,7 @@ export function multiapply(targets: ja.IIndexed<any>, fnName: string, args: ja.I
     for (let i = 0, len = targets.length; i < len; i++) {
         try {
             const target = targets[i];
-            let result;
+            let result: any;
             if (fnName) {
                 result = target[fnName].apply(target, args);
             } else {

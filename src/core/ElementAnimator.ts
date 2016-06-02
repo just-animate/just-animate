@@ -63,7 +63,7 @@ export class ElementAnimator implements ja.IAnimator {
             return;
         }
         
-        let keyframes;
+        let keyframes: ja.IIndexed<ja.IKeyframe>;
         if (isString(keyframesOrName)) {
             // if keyframes is a string, lookup keyframes from registry
             const definition = manager.findAnimation(keyframesOrName as string);
@@ -211,7 +211,7 @@ function getElements(source: ja.ElementSource): Element[] {
     }
     if (isArray(source)) {
         // if array or jQuery object, flatten to an array
-        const elements = [];
+        const elements: Element[] = [];
         each(source as ja.IIndexed<any>, (i: any) => {
             // recursively call this function in case of nested elements
             const innerElements = getElements(i);

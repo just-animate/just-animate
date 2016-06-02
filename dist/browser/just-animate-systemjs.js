@@ -132,7 +132,8 @@ System.register("just-animate/core/Helpers", [], function(exports_1, context_1) 
     function max(items, propertyName) {
         var max = '';
         for (var i = 0, len = items.length; i < len; i++) {
-            var prop = items[i][propertyName];
+            var item = items[i];
+            var prop = item[propertyName];
             if (max < prop) {
                 max = prop;
             }
@@ -516,7 +517,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/Helpers"],
         else {
         }
         if (transform) {
-            output.transform = transform;
+            output['transform'] = transform;
         }
         return output;
     }
@@ -4337,6 +4338,52 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
             }],
         execute: function() {
             exports_85("animations", animations);
+        }
+    }
+});
+System.register("just-animate/core/TImingHelpers", [], function(exports_86, context_86) {
+    "use strict";
+    var __moduleName = context_86 && context_86.id;
+    var linear, SUBDIVISION_EPSILON;
+    function bezier(n1, n2, t) {
+        return 3 * n1 * (1 - t) * (1 - t) * t
+            + 3 * n2 * (1 - t) * (t * t)
+            + (t * t * t);
+    }
+    function cubic(p0, p1, p2, p3) {
+        if (p0 < 0 || p0 > 1 || p2 < 0 || p2 > 1) {
+            return linear;
+        }
+        return function (x) {
+            if (x === 0 || x === 1) {
+                return x;
+            }
+            var start = 0;
+            var end = 1;
+            var limit = 10;
+            while (--limit) {
+                var t = (start + end) / 2;
+                var xEst = bezier(p0, p2, t);
+                if (Math.abs(x - xEst) < SUBDIVISION_EPSILON) {
+                    return bezier(p1, p3, t);
+                }
+                if (xEst < x) {
+                    start = t;
+                }
+                else {
+                    end = t;
+                }
+            }
+            // should not end up here        
+            return x;
+        };
+    }
+    exports_86("cubic", cubic);
+    return {
+        setters:[],
+        execute: function() {
+            linear = function (x) { return x; };
+            SUBDIVISION_EPSILON = 0.0001;
         }
     }
 });

@@ -139,33 +139,7 @@ declare module "just-animate/core/Transformers" {
     export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe;
 }
 declare module "just-animate/easings" {
-    export const easings: {
-        easeInBack: string;
-        easeInCirc: string;
-        easeInCubic: string;
-        easeInExpo: string;
-        easeInOutBack: string;
-        easeInOutCirc: string;
-        easeInOutCubic: string;
-        easeInOutExpo: string;
-        easeInOutQuad: string;
-        easeInOutQuart: string;
-        easeInOutQuint: string;
-        easeInOutSine: string;
-        easeInQuad: string;
-        easeInQuart: string;
-        easeInQuint: string;
-        easeInSine: string;
-        easeOutBack: string;
-        easeOutCirc: string;
-        easeOutCubic: string;
-        easeOutExpo: string;
-        easeOutQuad: string;
-        easeOutQuart: string;
-        easeOutQuint: string;
-        easeOutSine: string;
-        elegantSlowStartEnd: string;
-    };
+    export const easings: ja.IMap<string>;
 }
 declare module "just-animate/core/ElementAnimator" {
     /**
@@ -819,4 +793,7 @@ declare module "just-animate/index" {
     import * as animations from "just-animate/animations";
     export { animations };
     export { JustAnimate } from "just-animate/JustAnimate";
+}
+declare module "just-animate/core/TImingHelpers" {
+    export function cubic(p0: number, p1: number, p2: number, p3: number): ja.IFunc<number>;
 }

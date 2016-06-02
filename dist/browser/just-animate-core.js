@@ -31,7 +31,8 @@
     function max(items, propertyName) {
         var max = '';
         for (var i = 0, len = items.length; i < len; i++) {
-            var prop = items[i][propertyName];
+            var item = items[i];
+            var prop = item[propertyName];
             if (max < prop) {
                 max = prop;
             }
@@ -360,7 +361,7 @@
         else {
         }
         if (transform) {
-            output.transform = transform;
+            output['transform'] = transform;
         }
         return output;
     }

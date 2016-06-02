@@ -283,7 +283,7 @@ function keyframeTransformer(keyframe) {
     else {
     }
     if (transform) {
-        output.transform = transform;
+        output['transform'] = transform;
     }
     return output;
 }

@@ -8,7 +8,15 @@
         "removeComments": false,
         "inlineSourceMap": false,
         "allowUnreachableCode": false,
-        "declaration": false
+        "declaration": false,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "forceConsistentCasingInFileNames": true,
+        "newLine": "LF",
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "watch": true
     },
     "exclude": [
         "node_modules", 

@@ -860,6 +860,77 @@ declare module ja {
          */
         'right'?: string;
         /**
+         * Alias for rotateZ
+         * 
+         * @type {string}
+         */
+        'rotate'?: string;
+        /**
+         * Shortform for 'transform: rotate3d()'.
+         * Pass an array of 3 numbers and then a string to set the X, Y, Z axes and angle
+         * 
+         * @type {(number|string)[]}
+         */
+        'rotate3d'?: (number|string)[];
+        /**
+         * Shortform for 'transform: rotate3d(1, 0, 0, angle)'.
+         * Pass a single string with the angle
+         * 
+         * @type {string}
+         */
+        'rotateX'?: string;
+        /**
+         * Shortform for 'transform: rotate3d(0, 1, 0, angle)'.
+         * Pass a single string with the angle
+         * 
+         * @type {string}
+         */
+        'rotateY'?: string;
+        /**
+         * Shortform for 'transform: rotate3d(0, 0, 1, angle)'.
+         * Pass a single string with the angle
+         * 
+         * @type {string}
+         */
+        'rotateZ'?: string;
+        /**
+         * Shortform for 'transform: scale()'.
+         * Pass a single number to scale the same amount in all directions,
+         * or an array of 2 numbers to set the X, Y, Z axes
+         * 
+         * @type {(number|number[])}
+         */
+        'scale'?: number | number[];
+        /**
+         * Shortform for 'transform: scale3d()'.
+         * Pass a single number to scale the same amount in all directions,
+         * or an array of 3 numbers to set the X, Y, Z axes
+         * 
+         * @type {(number|number[])}
+         */
+        'scale3d'?: number | number[];
+        /**
+         * Shortform for 'transform: scaleX()'.
+         * Pass a single number 
+         * 
+         * @type {number}
+         */
+        'scaleX'?: number;
+        /**
+         * Shortform for 'transform: scaleY()'.
+         * Pass a single number 
+         * 
+         * @type {number}
+         */
+        'scaleY'?: number;
+        /**
+         * Shortform for 'transform: scaleZ()'.
+         * Pass a single number 
+         * 
+         * @type {number}
+         */
+        'scaleZ'?: number;
+        /**
          * (description)
          * 
          * @type {string}
@@ -871,6 +942,43 @@ declare module ja {
          * @type {string}
          */
         'scroll-snap-destination'?: string;
+        /**
+         * Shortform for 'transform: skew()'.
+         * Pass a single string to skew the same amount in all directions,
+         * or an array of 2 strings to set the X, Y, Z axes
+         * 
+         * @type {(string|string[])}
+         */
+        'skew'?: string | string[];
+        /**
+         * Shortform for 'transform: skew3d()'.
+         * Pass a single string to skew the same amount in all directions,
+         * or an array of 3 strings to set the X, Y, Z axes
+         * 
+         * @type {(string|string[])}
+         */
+        'skew3d'?: string | string[];
+        /**
+         * Shortform for 'transform: skewX()'.
+         * Pass a single string 
+         * 
+         * @type {string}
+         */
+        'skewX'?: string;
+        /**
+         * Shortform for 'transform: skewY()'.
+         * Pass a single string 
+         * 
+         * @type {string}
+         */
+        'skewY'?: string;
+        /**
+         * Shortform for 'transform: skewZ()'.
+         * Pass a single string 
+         * 
+         * @type {string}
+         */
+        'skewZ'?: string;
         /**
          * (description)
          * 
@@ -943,6 +1051,43 @@ declare module ja {
          * @type {string}
          */
         'transform-origin'?: string;
+        /**
+         * Shortform for 'transform: translate()'.
+         * Pass a single string to translate the same amount in all directions,
+         * or an array of 2 strings to set the X, Y, Z axes
+         * 
+         * @type {(string|string[])}
+         */
+        'translate'?: string | string[];
+        /**
+         * Shortform for 'transform: translate3d()'.
+         * Pass a single string to translate the same amount in all directions,
+         * or an array of 3 strings to set the X, Y, Z axes
+         * 
+         * @type {(string|string[])}
+         */
+        'translate3d'?: string | string[];
+        /**
+         * Shortform for 'transform: translateX()'.
+         * Pass a single string 
+         * 
+         * @type {string}
+         */
+        'translateX'?: string;
+        /**
+         * Shortform for 'transform: translateY()'.
+         * Pass a single string 
+         * 
+         * @type {string}
+         */
+        'translateY'?: string;
+        /**
+         * Shortform for 'transform: translateZ()'.
+         * Pass a single string 
+         * 
+         * @type {string}
+         */
+        'translateZ'?: string;
         /**
          * (description)
          * 
@@ -1017,6 +1162,17 @@ declare module ja {
      */
     export interface IMapper<T1, T2> {
         (mapable: T1): T2;
+    }
+
+    /**
+     * (description)
+     * 
+     * @export T1
+     * @interface IFunc
+     * @template T1
+     */
+    export interface IFunc<T1> {
+        (mapable: T1): T1;
     }
 
     /**

@@ -28,9 +28,9 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     const skew = new Array<string | number>(2);
     const translate = new Array<string | number>(3);
     
-    const output: ja.IKeyframe = {};
+    const output: ja.IMap<any> = {};
     let transform = '';
-
+ 
     for (let prop in keyframe) {
         const value = keyframe[prop];
         switch (prop) {
@@ -281,7 +281,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     }
 
     if (transform) {
-        output.transform = transform;
+        output['transform'] = transform;
     }
 
     return output;

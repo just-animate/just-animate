@@ -1167,6 +1167,17 @@ declare module ja {
     /**
      * (description)
      * 
+     * @export T1
+     * @interface IFunc
+     * @template T1
+     */
+    export interface IFunc<T1> {
+        (mapable: T1): T1;
+    }
+
+    /**
+     * (description)
+     * 
      * @export
      * @interface ISequenceEvent
      */
