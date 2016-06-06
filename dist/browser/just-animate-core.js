@@ -110,6 +110,9 @@
         var transform = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
+            if (value === undefined || value === null || value === '') {
+                continue;
+            }
             switch (prop) {
                 case 'scale3d':
                     if (isArray(value)) {
@@ -163,24 +166,6 @@
                         continue;
                     }
                     throw Error('scaleZ requires a number');
-                case 'skew3d':
-                    if (isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 3) {
-                            throw Error('skew3d requires x, y, & z');
-                        }
-                        skew[x] = arr[x];
-                        skew[y] = arr[y];
-                        skew[z] = arr[z];
-                        continue;
-                    }
-                    if (isNumber(value)) {
-                        skew[x] = value;
-                        skew[y] = value;
-                        skew[z] = value;
-                        continue;
-                    }
-                    throw Error('skew3d requires a number, string, string[], or number[]');
                 case 'skew':
                     if (isArray(value)) {
                         var arr = value;
@@ -198,23 +183,17 @@
                     }
                     throw Error('skew requires a number, string, string[], or number[]');
                 case 'skewX':
-                    if (isNumber(value)) {
+                    if (isString(value)) {
                         skew[x] = value;
                         continue;
                     }
                     throw Error('skewX requires a number or string');
                 case 'skewY':
-                    if (isNumber(value)) {
+                    if (isString(value)) {
                         skew[y] = value;
                         continue;
                     }
                     throw Error('skewY requires a number or string');
-                case 'skewZ':
-                    if (isNumber(value)) {
-                        skew[z] = value;
-                        continue;
-                    }
-                    throw Error('skewZ requires a number or string');
                 case 'rotate3d':
                     if (isArray(value)) {
                         var arr = value;
@@ -394,6 +373,33 @@
         elegantSlowStartEnd: 'cubic-bezier(0.175, 0.885, 0.320, 1.275)'
     };
 
+    function resolveElements(source) {
+        if (!source) {
+            throw Error('source is undefined');
+        }
+        if (isString(source)) {
+            var nodeResults = document.querySelectorAll(source);
+            return toArray(nodeResults);
+        }
+        if (source instanceof Element) {
+            return [source];
+        }
+        if (isFunction(source)) {
+            var provider = source;
+            var result = provider();
+            return resolveElements(result);
+        }
+        if (isArray(source)) {
+            var elements_1 = [];
+            each(source, function (i) {
+                var innerElements = resolveElements(i);
+                elements_1.push.apply(elements_1, innerElements);
+            });
+            return elements_1;
+        }
+        return [];
+    }
+
     var ElementAnimator = (function () {
         function ElementAnimator(manager, keyframesOrName, el, timings) {
             var _this = this;
@@ -416,7 +422,7 @@
                 }
             }
             this.duration = timings.duration;
-            var elements = getElements(el);
+            var elements = resolveElements(el);
             this._animators = multiapply(elements, 'animate', [keyframes, timings]);
             if (this._animators.length > 0) {
                 this._animators[0].onfinish = function () {
@@ -481,32 +487,6 @@
         };
         return ElementAnimator;
     }());
-    function getElements(source) {
-        if (!source) {
-            throw Error('source is undefined');
-        }
-        if (isString(source)) {
-            var nodeResults = document.querySelectorAll(source);
-            return toArray(nodeResults);
-        }
-        if (source instanceof Element) {
-            return [source];
-        }
-        if (isFunction(source)) {
-            var provider = source;
-            var result = provider();
-            return getElements(result);
-        }
-        if (isArray(source)) {
-            var elements_1 = [];
-            each(source, function (i) {
-                var innerElements = getElements(i);
-                elements_1.push.apply(elements_1, innerElements);
-            });
-            return elements_1;
-        }
-        return [];
-    }
 
     var SequenceAnimator = (function () {
         function SequenceAnimator(manager, options) {

@@ -29,6 +29,9 @@ function keyframeTransformer(keyframe) {
     var transform = '';
     for (var prop in keyframe) {
         var value = keyframe[prop];
+        if (value === undefined || value === null /* tslint:enable */ || value === '') {
+            continue;
+        }
         switch (prop) {
             case 'scale3d':
                 if (Helpers_1.isArray(value)) {
@@ -82,24 +85,6 @@ function keyframeTransformer(keyframe) {
                     continue;
                 }
                 throw Error('scaleZ requires a number');
-            case 'skew3d':
-                if (Helpers_1.isArray(value)) {
-                    var arr = value;
-                    if (arr.length !== 3) {
-                        throw Error('skew3d requires x, y, & z');
-                    }
-                    skew[x] = arr[x];
-                    skew[y] = arr[y];
-                    skew[z] = arr[z];
-                    continue;
-                }
-                if (Helpers_1.isNumber(value)) {
-                    skew[x] = value;
-                    skew[y] = value;
-                    skew[z] = value;
-                    continue;
-                }
-                throw Error('skew3d requires a number, string, string[], or number[]');
             case 'skew':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;
@@ -117,23 +102,17 @@ function keyframeTransformer(keyframe) {
                 }
                 throw Error('skew requires a number, string, string[], or number[]');
             case 'skewX':
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value)) {
                     skew[x] = value;
                     continue;
                 }
                 throw Error('skewX requires a number or string');
             case 'skewY':
-                if (Helpers_1.isNumber(value)) {
+                if (Helpers_1.isString(value)) {
                     skew[y] = value;
                     continue;
                 }
                 throw Error('skewY requires a number or string');
-            case 'skewZ':
-                if (Helpers_1.isNumber(value)) {
-                    skew[z] = value;
-                    continue;
-                }
-                throw Error('skewZ requires a number or string');
             case 'rotate3d':
                 if (Helpers_1.isArray(value)) {
                     var arr = value;

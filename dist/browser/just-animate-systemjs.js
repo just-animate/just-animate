@@ -1,4 +1,3 @@
-/// <reference path="../just-animate.d.ts" />
 System.register("just-animate/core/Helpers", [], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
@@ -263,6 +262,9 @@ System.register("just-animate/core/Transformers", ["just-animate/core/Helpers"],
         var transform = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
+            if (value === undefined || value === null /* tslint:enable */ || value === '') {
+                continue;
+            }
             switch (prop) {
                 case 'scale3d':
                     if (Helpers_1.isArray(value)) {
@@ -316,24 +318,6 @@ System.register("just-animate/core/Transformers", ["just-animate/core/Helpers"],
                         continue;
                     }
                     throw Error('scaleZ requires a number');
-                case 'skew3d':
-                    if (Helpers_1.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 3) {
-                            throw Error('skew3d requires x, y, & z');
-                        }
-                        skew[x] = arr[x];
-                        skew[y] = arr[y];
-                        skew[z] = arr[z];
-                        continue;
-                    }
-                    if (Helpers_1.isNumber(value)) {
-                        skew[x] = value;
-                        skew[y] = value;
-                        skew[z] = value;
-                        continue;
-                    }
-                    throw Error('skew3d requires a number, string, string[], or number[]');
                 case 'skew':
                     if (Helpers_1.isArray(value)) {
                         var arr = value;
@@ -351,23 +335,17 @@ System.register("just-animate/core/Transformers", ["just-animate/core/Helpers"],
                     }
                     throw Error('skew requires a number, string, string[], or number[]');
                 case 'skewX':
-                    if (Helpers_1.isNumber(value)) {
+                    if (Helpers_1.isString(value)) {
                         skew[x] = value;
                         continue;
                     }
                     throw Error('skewX requires a number or string');
                 case 'skewY':
-                    if (Helpers_1.isNumber(value)) {
+                    if (Helpers_1.isString(value)) {
                         skew[y] = value;
                         continue;
                     }
                     throw Error('skewY requires a number or string');
-                case 'skewZ':
-                    if (Helpers_1.isNumber(value)) {
-                        skew[z] = value;
-                        continue;
-                    }
-                    throw Error('skewZ requires a number or string');
                 case 'rotate3d':
                     if (Helpers_1.isArray(value)) {
                         var arr = value;
@@ -568,19 +546,17 @@ System.register("just-animate/easings", [], function(exports_3, context_3) {
         }
     }
 });
-/// <reference path="../just-animate.d.ts" />
-System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/core/Helpers", "just-animate/core/Transformers"], function(exports_4, context_4) {
+System.register("just-animate/core/ElementResolver", ["just-animate/core/Helpers"], function(exports_4, context_4) {
     "use strict";
     var __moduleName = context_4 && context_4.id;
-    var easings_1, Helpers_2, Transformers_1;
-    var ElementAnimator;
+    var Helpers_2;
     /**
      * Recursively resolves the element source from dom, selector, jquery, array, and function sources
      *
      * @param {ja.ElementSource} source from which to locate elements
      * @returns {Element[]} array of elements found
      */
-    function getElements(source) {
+    function resolveElements(source) {
         if (!source) {
             throw Error('source is undefined');
         }
@@ -597,14 +573,14 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
             // if function, call it and call this function
             var provider = source;
             var result = provider();
-            return getElements(result);
+            return resolveElements(result);
         }
         if (Helpers_2.isArray(source)) {
             // if array or jQuery object, flatten to an array
             var elements_1 = [];
             Helpers_2.each(source, function (i) {
                 // recursively call this function in case of nested elements
-                var innerElements = getElements(i);
+                var innerElements = resolveElements(i);
                 elements_1.push.apply(elements_1, innerElements);
             });
             return elements_1;
@@ -612,16 +588,34 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
         // otherwise return empty    
         return [];
     }
+    exports_4("resolveElements", resolveElements);
+    return {
+        setters:[
+            function (Helpers_2_1) {
+                Helpers_2 = Helpers_2_1;
+            }],
+        execute: function() {
+        }
+    }
+});
+System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/core/Helpers", "just-animate/core/Transformers", "just-animate/core/ElementResolver"], function(exports_5, context_5) {
+    "use strict";
+    var __moduleName = context_5 && context_5.id;
+    var easings_1, Helpers_3, Transformers_1, ElementResolver_1;
+    var ElementAnimator;
     return {
         setters:[
             function (easings_1_1) {
                 easings_1 = easings_1_1;
             },
-            function (Helpers_2_1) {
-                Helpers_2 = Helpers_2_1;
+            function (Helpers_3_1) {
+                Helpers_3 = Helpers_3_1;
             },
             function (Transformers_1_1) {
                 Transformers_1 = Transformers_1_1;
+            },
+            function (ElementResolver_1_1) {
+                ElementResolver_1 = ElementResolver_1_1;
             }],
         execute: function() {
             /**
@@ -646,16 +640,16 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                         return;
                     }
                     var keyframes;
-                    if (Helpers_2.isString(keyframesOrName)) {
+                    if (Helpers_3.isString(keyframesOrName)) {
                         // if keyframes is a string, lookup keyframes from registry
                         var definition = manager.findAnimation(keyframesOrName);
                         keyframes = definition.keyframes;
                         // use registered timings as default, then load timings from params           
-                        timings = Helpers_2.extend({}, definition.timings, timings);
+                        timings = Helpers_3.extend({}, definition.timings, timings);
                     }
                     else {
                         // otherwise, translate keyframe properties
-                        keyframes = Helpers_2.map(keyframesOrName, Transformers_1.keyframeTransformer);
+                        keyframes = Helpers_3.map(keyframesOrName, Transformers_1.keyframeTransformer);
                     }
                     if (timings && timings.easing) {
                         // if timings contains an easing property, 
@@ -667,9 +661,9 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                     // add duration to object    
                     this.duration = timings.duration;
                     // get list of elements to animate
-                    var elements = getElements(el);
+                    var elements = ElementResolver_1.resolveElements(el);
                     // call .animate on all elements and get a list of their players        
-                    this._animators = Helpers_2.multiapply(elements, 'animate', [keyframes, timings]);
+                    this._animators = Helpers_3.multiapply(elements, 'animate', [keyframes, timings]);
                     // hookup finish event for when it happens naturally    
                     if (this._animators.length > 0) {
                         // todo: try to find a better way than just listening to one of them
@@ -688,14 +682,14 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                      * @type {number}
                      */
                     get: function () {
-                        var first = Helpers_2.head(this._animators);
+                        var first = Helpers_3.head(this._animators);
                         return first ? first.playbackRate : 0;
                     },
                     /**
                      * Sets the playbackRate to the specified value
                      */
                     set: function (val) {
-                        Helpers_2.each(this._animators, function (a) { return a.playbackRate = val; });
+                        Helpers_3.each(this._animators, function (a) { return a.playbackRate = val; });
                     },
                     enumerable: true,
                     configurable: true
@@ -707,13 +701,13 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                      * @type {number}
                      */
                     get: function () {
-                        return Helpers_2.max(this._animators, 'currentTime') || 0;
+                        return Helpers_3.max(this._animators, 'currentTime') || 0;
                     },
                     /**
                      * Sets the animation current time
                      */
                     set: function (elapsed) {
-                        Helpers_2.each(this._animators, function (a) { return a.currentTime = elapsed; });
+                        Helpers_3.each(this._animators, function (a) { return a.currentTime = elapsed; });
                     },
                     enumerable: true,
                     configurable: true
@@ -726,14 +720,14 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  */
                 ElementAnimator.prototype.finish = function (fn) {
                     var _this = this;
-                    Helpers_2.multiapply(this._animators, 'finish', [], fn);
+                    Helpers_3.multiapply(this._animators, 'finish', [], fn);
                     if (this.playbackRate < 0) {
-                        Helpers_2.each(this._animators, function (a) { return a.currentTime = 0; });
+                        Helpers_3.each(this._animators, function (a) { return a.currentTime = 0; });
                     }
                     else {
-                        Helpers_2.each(this._animators, function (a) { return a.currentTime = _this.duration; });
+                        Helpers_3.each(this._animators, function (a) { return a.currentTime = _this.duration; });
                     }
-                    if (Helpers_2.isFunction(this.onfinish)) {
+                    if (Helpers_3.isFunction(this.onfinish)) {
                         this.onfinish(this);
                     }
                     return this;
@@ -745,7 +739,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.play = function (fn) {
-                    Helpers_2.multiapply(this._animators, 'play', [], fn);
+                    Helpers_3.multiapply(this._animators, 'play', [], fn);
                     return this;
                 };
                 /**
@@ -755,7 +749,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator}  this instance of Element Animator
                  */
                 ElementAnimator.prototype.pause = function (fn) {
-                    Helpers_2.multiapply(this._animators, 'pause', [], fn);
+                    Helpers_3.multiapply(this._animators, 'pause', [], fn);
                     return this;
                 };
                 /**
@@ -765,7 +759,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.reverse = function (fn) {
-                    Helpers_2.multiapply(this._animators, 'reverse', [], fn);
+                    Helpers_3.multiapply(this._animators, 'reverse', [], fn);
                     return this;
                 };
                 /**
@@ -775,29 +769,28 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.cancel = function (fn) {
-                    Helpers_2.multiapply(this._animators, 'cancel', [], fn);
-                    Helpers_2.each(this._animators, function (a) { return a.currentTime = 0; });
-                    if (Helpers_2.isFunction(this.oncancel)) {
+                    Helpers_3.multiapply(this._animators, 'cancel', [], fn);
+                    Helpers_3.each(this._animators, function (a) { return a.currentTime = 0; });
+                    if (Helpers_3.isFunction(this.oncancel)) {
                         this.oncancel(this);
                     }
                     return this;
                 };
                 return ElementAnimator;
             }());
-            exports_4("ElementAnimator", ElementAnimator);
+            exports_5("ElementAnimator", ElementAnimator);
         }
     }
 });
-/// <reference path="../just-animate.d.ts" />
-System.register("just-animate/core/SequenceAnimator", ["just-animate/core/Helpers"], function(exports_5, context_5) {
+System.register("just-animate/core/SequenceAnimator", ["just-animate/core/Helpers"], function(exports_6, context_6) {
     "use strict";
-    var __moduleName = context_5 && context_5.id;
-    var Helpers_3;
+    var __moduleName = context_6 && context_6.id;
+    var Helpers_4;
     var SequenceAnimator;
     return {
         setters:[
-            function (Helpers_3_1) {
-                Helpers_3 = Helpers_3_1;
+            function (Helpers_4_1) {
+                Helpers_4 = Helpers_4_1;
             }],
         execute: function() {
             /**
@@ -821,14 +814,14 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/Helper
                      * @param {ja.ISequenceEvent} step (description)
                      * @returns (description)
                      */
-                    var steps = Helpers_3.map(options.steps, function (step) {
+                    var steps = Helpers_4.map(options.steps, function (step) {
                         if (step.command || !step.name) {
                             return step;
                         }
                         var definition = manager.findAnimation(step.name);
-                        var timings = Helpers_3.extend({}, definition.timings);
+                        var timings = Helpers_4.extend({}, definition.timings);
                         if (step.timings) {
-                            timings = Helpers_3.extend(timings, step.timings);
+                            timings = Helpers_4.extend(timings, step.timings);
                         }
                         return {
                             el: step.el,
@@ -836,7 +829,7 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/Helper
                             timings: definition.timings
                         };
                     });
-                    this.onfinish = Helpers_3.noop;
+                    this.onfinish = Helpers_4.noop;
                     this._currentIndex = -1;
                     this._manager = manager;
                     this._steps = steps;
@@ -910,7 +903,7 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/Helper
                             step.animator.cancel(fn);
                         }
                     }
-                    if (Helpers_3.isFunction(this.onfinish)) {
+                    if (Helpers_4.isFunction(this.onfinish)) {
                         this.onfinish(this);
                     }
                     return this;
@@ -971,7 +964,7 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/Helper
                             step.animator.cancel(fn);
                         }
                     }
-                    if (Helpers_3.isFunction(this.oncancel)) {
+                    if (Helpers_4.isFunction(this.oncancel)) {
                         this.oncancel(this);
                     }
                     return this;
@@ -1019,20 +1012,19 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/Helper
                 };
                 return SequenceAnimator;
             }());
-            exports_5("SequenceAnimator", SequenceAnimator);
+            exports_6("SequenceAnimator", SequenceAnimator);
         }
     }
 });
-/// <reference path="../just-animate.d.ts" />
-System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helpers"], function(exports_6, context_6) {
+System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helpers"], function(exports_7, context_7) {
     "use strict";
-    var __moduleName = context_6 && context_6.id;
-    var Helpers_4;
+    var __moduleName = context_7 && context_7.id;
+    var Helpers_5;
     var animationPadding, TimelineAnimator, TimelineEvent;
     return {
         setters:[
-            function (Helpers_4_1) {
-                Helpers_4 = Helpers_4_1;
+            function (Helpers_5_1) {
+                Helpers_5 = Helpers_5_1;
             }],
         execute: function() {
             // fixme!: this controls the amount of time left before the timeline gives up 
@@ -1061,7 +1053,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helper
                     this.playbackRate = 0;
                     this.duration = options.duration;
                     this.currentTime = 0;
-                    this._events = Helpers_4.map(options.events, function (evt) { return new TimelineEvent(manager, duration, evt); });
+                    this._events = Helpers_5.map(options.events, function (evt) { return new TimelineEvent(manager, duration, evt); });
                     this._isPaused = false;
                     this._manager = manager;
                     // ensure context of tick is this instance        
@@ -1174,7 +1166,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helper
                         return;
                     }
                     // start animations if should be active and currently aren't        
-                    Helpers_4.each(this._events, function (evt) {
+                    Helpers_5.each(this._events, function (evt) {
                         var startTimeMs = _this.playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
                         var endTimeMs = _this.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
                         var shouldBeActive = startTimeMs <= _this.currentTime && _this.currentTime < endTimeMs;
@@ -1190,15 +1182,15 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helper
                 };
                 TimelineAnimator.prototype._triggerFinish = function () {
                     this._reset();
-                    Helpers_4.each(this._events, function (evt) { return evt.animator.finish(); });
-                    if (Helpers_4.isFunction(this.onfinish)) {
+                    Helpers_5.each(this._events, function (evt) { return evt.animator.finish(); });
+                    if (Helpers_5.isFunction(this.onfinish)) {
                         this.onfinish(this);
                     }
                 };
                 TimelineAnimator.prototype._triggerCancel = function () {
                     this._reset();
-                    Helpers_4.each(this._events, function (evt) { return evt.animator.cancel(); });
-                    if (Helpers_4.isFunction(this.oncancel)) {
+                    Helpers_5.each(this._events, function (evt) { return evt.animator.cancel(); });
+                    if (Helpers_5.isFunction(this.oncancel)) {
                         this.oncancel(this);
                     }
                 };
@@ -1207,7 +1199,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helper
                     this._isInEffect = false;
                     this._lastTick = undefined;
                     this.playbackRate = 0;
-                    Helpers_4.each(this._events, function (evt) {
+                    Helpers_5.each(this._events, function (evt) {
                         evt.isInEffect = false;
                         evt.animator.pause();
                     });
@@ -1219,13 +1211,13 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helper
                     this._isFinished = false;
                     this._isPaused = false;
                     this._isInEffect = false;
-                    Helpers_4.each(this._events, function (evt) {
+                    Helpers_5.each(this._events, function (evt) {
                         evt.isInEffect = false;
                     });
                 };
                 return TimelineAnimator;
             }());
-            exports_6("TimelineAnimator", TimelineAnimator);
+            exports_7("TimelineAnimator", TimelineAnimator);
             TimelineEvent = (function () {
                 function TimelineEvent(manager, timelineDuration, evt) {
                     var keyframes;
@@ -1233,9 +1225,9 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helper
                     var el;
                     if (evt.name) {
                         var definition = manager.findAnimation(evt.name);
-                        var timings2 = Helpers_4.extend({}, definition.timings);
+                        var timings2 = Helpers_5.extend({}, definition.timings);
                         if (evt.timings) {
-                            timings = Helpers_4.extend(timings2, evt.timings);
+                            timings = Helpers_5.extend(timings2, evt.timings);
                         }
                         keyframes = definition.keyframes;
                         timings = timings2;
@@ -1280,15 +1272,15 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/Helper
         }
     }
 });
-System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-animate/core/Transformers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_7, context_7) {
+System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-animate/core/Transformers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_8, context_8) {
     "use strict";
-    var __moduleName = context_7 && context_7.id;
-    var Helpers_5, Transformers_2, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
+    var __moduleName = context_8 && context_8.id;
+    var Helpers_6, Transformers_2, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
     var DEFAULT_ANIMATIONS, JustAnimate;
     return {
         setters:[
-            function (Helpers_5_1) {
-                Helpers_5 = Helpers_5_1;
+            function (Helpers_6_1) {
+                Helpers_6 = Helpers_6_1;
             },
             function (Transformers_2_1) {
                 Transformers_2 = Transformers_2_1;
@@ -1318,7 +1310,7 @@ System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-
                 function JustAnimate() {
                     var _this = this;
                     this._registry = {};
-                    Helpers_5.each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
+                    Helpers_6.each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
                 }
                 /**
                  * (description)
@@ -1327,7 +1319,7 @@ System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-
                  * @param {ja.IAnimationOptions[]} animations (description)
                  */
                 JustAnimate.inject = function (animations) {
-                    Array.prototype.push.apply(DEFAULT_ANIMATIONS, Helpers_5.map(animations, Transformers_2.animationTransformer));
+                    Array.prototype.push.apply(DEFAULT_ANIMATIONS, Helpers_6.map(animations, Transformers_2.animationTransformer));
                 };
                 /**
                  * (description)
@@ -1379,18 +1371,18 @@ System.register("just-animate/JustAnimate", ["just-animate/core/Helpers", "just-
                 };
                 return JustAnimate;
             }());
-            exports_7("JustAnimate", JustAnimate);
+            exports_8("JustAnimate", JustAnimate);
         }
     }
 });
-System.register("just-animate/animations/bounce", [], function(exports_8, context_8) {
+System.register("just-animate/animations/bounce", [], function(exports_9, context_9) {
     "use strict";
-    var __moduleName = context_8 && context_8.id;
+    var __moduleName = context_9 && context_9.id;
     var bounce;
     return {
         setters:[],
         execute: function() {
-            exports_8("bounce", bounce = {
+            exports_9("bounce", bounce = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1439,14 +1431,14 @@ System.register("just-animate/animations/bounce", [], function(exports_8, contex
         }
     }
 });
-System.register("just-animate/animations/bounceIn", [], function(exports_9, context_9) {
+System.register("just-animate/animations/bounceIn", [], function(exports_10, context_10) {
     "use strict";
-    var __moduleName = context_9 && context_9.id;
+    var __moduleName = context_10 && context_10.id;
     var bounceIn;
     return {
         setters:[],
         execute: function() {
-            exports_9("bounceIn", bounceIn = {
+            exports_10("bounceIn", bounceIn = {
                 name: 'bounceIn',
                 keyframes: [
                     {
@@ -1480,14 +1472,14 @@ System.register("just-animate/animations/bounceIn", [], function(exports_9, cont
         }
     }
 });
-System.register("just-animate/animations/bounceInDown", [], function(exports_10, context_10) {
+System.register("just-animate/animations/bounceInDown", [], function(exports_11, context_11) {
     "use strict";
-    var __moduleName = context_10 && context_10.id;
+    var __moduleName = context_11 && context_11.id;
     var bounceInDown;
     return {
         setters:[],
         execute: function() {
-            exports_10("bounceInDown", bounceInDown = {
+            exports_11("bounceInDown", bounceInDown = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1525,14 +1517,14 @@ System.register("just-animate/animations/bounceInDown", [], function(exports_10,
         }
     }
 });
-System.register("just-animate/animations/bounceInLeft", [], function(exports_11, context_11) {
+System.register("just-animate/animations/bounceInLeft", [], function(exports_12, context_12) {
     "use strict";
-    var __moduleName = context_11 && context_11.id;
+    var __moduleName = context_12 && context_12.id;
     var bounceInLeft;
     return {
         setters:[],
         execute: function() {
-            exports_11("bounceInLeft", bounceInLeft = {
+            exports_12("bounceInLeft", bounceInLeft = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1570,14 +1562,14 @@ System.register("just-animate/animations/bounceInLeft", [], function(exports_11,
         }
     }
 });
-System.register("just-animate/animations/bounceInRight", [], function(exports_12, context_12) {
+System.register("just-animate/animations/bounceInRight", [], function(exports_13, context_13) {
     "use strict";
-    var __moduleName = context_12 && context_12.id;
+    var __moduleName = context_13 && context_13.id;
     var bounceInRight;
     return {
         setters:[],
         execute: function() {
-            exports_12("bounceInRight", bounceInRight = {
+            exports_13("bounceInRight", bounceInRight = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1613,14 +1605,14 @@ System.register("just-animate/animations/bounceInRight", [], function(exports_12
         }
     }
 });
-System.register("just-animate/animations/bounceInUp", [], function(exports_13, context_13) {
+System.register("just-animate/animations/bounceInUp", [], function(exports_14, context_14) {
     "use strict";
-    var __moduleName = context_13 && context_13.id;
+    var __moduleName = context_14 && context_14.id;
     var bounceInUp;
     return {
         setters:[],
         execute: function() {
-            exports_13("bounceInUp", bounceInUp = {
+            exports_14("bounceInUp", bounceInUp = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1658,14 +1650,14 @@ System.register("just-animate/animations/bounceInUp", [], function(exports_13, c
         }
     }
 });
-System.register("just-animate/animations/bounceOut", [], function(exports_14, context_14) {
+System.register("just-animate/animations/bounceOut", [], function(exports_15, context_15) {
     "use strict";
-    var __moduleName = context_14 && context_14.id;
+    var __moduleName = context_15 && context_15.id;
     var bounceOut;
     return {
         setters:[],
         execute: function() {
-            exports_14("bounceOut", bounceOut = {
+            exports_15("bounceOut", bounceOut = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1701,14 +1693,14 @@ System.register("just-animate/animations/bounceOut", [], function(exports_14, co
         }
     }
 });
-System.register("just-animate/animations/bounceOutDown", [], function(exports_15, context_15) {
+System.register("just-animate/animations/bounceOutDown", [], function(exports_16, context_16) {
     "use strict";
-    var __moduleName = context_15 && context_15.id;
+    var __moduleName = context_16 && context_16.id;
     var bounceOutDown;
     return {
         setters:[],
         execute: function() {
-            exports_15("bounceOutDown", bounceOutDown = {
+            exports_16("bounceOutDown", bounceOutDown = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1744,14 +1736,14 @@ System.register("just-animate/animations/bounceOutDown", [], function(exports_15
         }
     }
 });
-System.register("just-animate/animations/bounceOutLeft", [], function(exports_16, context_16) {
+System.register("just-animate/animations/bounceOutLeft", [], function(exports_17, context_17) {
     "use strict";
-    var __moduleName = context_16 && context_16.id;
+    var __moduleName = context_17 && context_17.id;
     var bounceOutLeft;
     return {
         setters:[],
         execute: function() {
-            exports_16("bounceOutLeft", bounceOutLeft = {
+            exports_17("bounceOutLeft", bounceOutLeft = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1778,14 +1770,14 @@ System.register("just-animate/animations/bounceOutLeft", [], function(exports_16
         }
     }
 });
-System.register("just-animate/animations/bounceOutRight", [], function(exports_17, context_17) {
+System.register("just-animate/animations/bounceOutRight", [], function(exports_18, context_18) {
     "use strict";
-    var __moduleName = context_17 && context_17.id;
+    var __moduleName = context_18 && context_18.id;
     var bounceOutRight;
     return {
         setters:[],
         execute: function() {
-            exports_17("bounceOutRight", bounceOutRight = {
+            exports_18("bounceOutRight", bounceOutRight = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1812,14 +1804,14 @@ System.register("just-animate/animations/bounceOutRight", [], function(exports_1
         }
     }
 });
-System.register("just-animate/animations/bounceOutUp", [], function(exports_18, context_18) {
+System.register("just-animate/animations/bounceOutUp", [], function(exports_19, context_19) {
     "use strict";
-    var __moduleName = context_18 && context_18.id;
+    var __moduleName = context_19 && context_19.id;
     var bounceOutUp;
     return {
         setters:[],
         execute: function() {
-            exports_18("bounceOutUp", bounceOutUp = {
+            exports_19("bounceOutUp", bounceOutUp = {
                 keyframes: [
                     {
                         offset: 0,
@@ -1856,14 +1848,14 @@ System.register("just-animate/animations/bounceOutUp", [], function(exports_18, 
         }
     }
 });
-System.register("just-animate/animations/fadeIn", [], function(exports_19, context_19) {
+System.register("just-animate/animations/fadeIn", [], function(exports_20, context_20) {
     "use strict";
-    var __moduleName = context_19 && context_19.id;
+    var __moduleName = context_20 && context_20.id;
     var fadeIn;
     return {
         setters:[],
         execute: function() {
-            exports_19("fadeIn", fadeIn = {
+            exports_20("fadeIn", fadeIn = {
                 keyframes: [
                     {
                         opacity: 0
@@ -1882,14 +1874,14 @@ System.register("just-animate/animations/fadeIn", [], function(exports_19, conte
         }
     }
 });
-System.register("just-animate/animations/fadeInDown", [], function(exports_20, context_20) {
+System.register("just-animate/animations/fadeInDown", [], function(exports_21, context_21) {
     "use strict";
-    var __moduleName = context_20 && context_20.id;
+    var __moduleName = context_21 && context_21.id;
     var fadeInDown;
     return {
         setters:[],
         execute: function() {
-            exports_20("fadeInDown", fadeInDown = {
+            exports_21("fadeInDown", fadeInDown = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -1909,14 +1901,14 @@ System.register("just-animate/animations/fadeInDown", [], function(exports_20, c
         }
     }
 });
-System.register("just-animate/animations/fadeInDownBig", [], function(exports_21, context_21) {
+System.register("just-animate/animations/fadeInDownBig", [], function(exports_22, context_22) {
     "use strict";
-    var __moduleName = context_21 && context_21.id;
+    var __moduleName = context_22 && context_22.id;
     var fadeInDownBig;
     return {
         setters:[],
         execute: function() {
-            exports_21("fadeInDownBig", fadeInDownBig = {
+            exports_22("fadeInDownBig", fadeInDownBig = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -1937,14 +1929,14 @@ System.register("just-animate/animations/fadeInDownBig", [], function(exports_21
         }
     }
 });
-System.register("just-animate/animations/fadeInLeft", [], function(exports_22, context_22) {
+System.register("just-animate/animations/fadeInLeft", [], function(exports_23, context_23) {
     "use strict";
-    var __moduleName = context_22 && context_22.id;
+    var __moduleName = context_23 && context_23.id;
     var fadeInLeft;
     return {
         setters:[],
         execute: function() {
-            exports_22("fadeInLeft", fadeInLeft = {
+            exports_23("fadeInLeft", fadeInLeft = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -1965,14 +1957,14 @@ System.register("just-animate/animations/fadeInLeft", [], function(exports_22, c
         }
     }
 });
-System.register("just-animate/animations/fadeInLeftBig", [], function(exports_23, context_23) {
+System.register("just-animate/animations/fadeInLeftBig", [], function(exports_24, context_24) {
     "use strict";
-    var __moduleName = context_23 && context_23.id;
+    var __moduleName = context_24 && context_24.id;
     var fadeInLeftBig;
     return {
         setters:[],
         execute: function() {
-            exports_23("fadeInLeftBig", fadeInLeftBig = {
+            exports_24("fadeInLeftBig", fadeInLeftBig = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -1993,14 +1985,14 @@ System.register("just-animate/animations/fadeInLeftBig", [], function(exports_23
         }
     }
 });
-System.register("just-animate/animations/fadeInRight", [], function(exports_24, context_24) {
+System.register("just-animate/animations/fadeInRight", [], function(exports_25, context_25) {
     "use strict";
-    var __moduleName = context_24 && context_24.id;
+    var __moduleName = context_25 && context_25.id;
     var fadeInRight;
     return {
         setters:[],
         execute: function() {
-            exports_24("fadeInRight", fadeInRight = {
+            exports_25("fadeInRight", fadeInRight = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -2021,14 +2013,14 @@ System.register("just-animate/animations/fadeInRight", [], function(exports_24, 
         }
     }
 });
-System.register("just-animate/animations/fadeInRightBig", [], function(exports_25, context_25) {
+System.register("just-animate/animations/fadeInRightBig", [], function(exports_26, context_26) {
     "use strict";
-    var __moduleName = context_25 && context_25.id;
+    var __moduleName = context_26 && context_26.id;
     var fadeInRightBig;
     return {
         setters:[],
         execute: function() {
-            exports_25("fadeInRightBig", fadeInRightBig = {
+            exports_26("fadeInRightBig", fadeInRightBig = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -2049,14 +2041,14 @@ System.register("just-animate/animations/fadeInRightBig", [], function(exports_2
         }
     }
 });
-System.register("just-animate/animations/fadeInUp", [], function(exports_26, context_26) {
+System.register("just-animate/animations/fadeInUp", [], function(exports_27, context_27) {
     "use strict";
-    var __moduleName = context_26 && context_26.id;
+    var __moduleName = context_27 && context_27.id;
     var fadeInUp;
     return {
         setters:[],
         execute: function() {
-            exports_26("fadeInUp", fadeInUp = {
+            exports_27("fadeInUp", fadeInUp = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -2077,14 +2069,14 @@ System.register("just-animate/animations/fadeInUp", [], function(exports_26, con
         }
     }
 });
-System.register("just-animate/animations/fadeInUpBig", [], function(exports_27, context_27) {
+System.register("just-animate/animations/fadeInUpBig", [], function(exports_28, context_28) {
     "use strict";
-    var __moduleName = context_27 && context_27.id;
+    var __moduleName = context_28 && context_28.id;
     var fadeInUpBig;
     return {
         setters:[],
         execute: function() {
-            exports_27("fadeInUpBig", fadeInUpBig = {
+            exports_28("fadeInUpBig", fadeInUpBig = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -2105,14 +2097,14 @@ System.register("just-animate/animations/fadeInUpBig", [], function(exports_27, 
         }
     }
 });
-System.register("just-animate/animations/fadeOut", [], function(exports_28, context_28) {
+System.register("just-animate/animations/fadeOut", [], function(exports_29, context_29) {
     "use strict";
-    var __moduleName = context_28 && context_28.id;
+    var __moduleName = context_29 && context_29.id;
     var fadeOut;
     return {
         setters:[],
         execute: function() {
-            exports_28("fadeOut", fadeOut = {
+            exports_29("fadeOut", fadeOut = {
                 keyframes: [
                     {
                         opacity: 1
@@ -2130,14 +2122,14 @@ System.register("just-animate/animations/fadeOut", [], function(exports_28, cont
         }
     }
 });
-System.register("just-animate/animations/fadeOutDown", [], function(exports_29, context_29) {
+System.register("just-animate/animations/fadeOutDown", [], function(exports_30, context_30) {
     "use strict";
-    var __moduleName = context_29 && context_29.id;
+    var __moduleName = context_30 && context_30.id;
     var fadeOutDown;
     return {
         setters:[],
         execute: function() {
-            exports_29("fadeOutDown", fadeOutDown = {
+            exports_30("fadeOutDown", fadeOutDown = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2156,14 +2148,14 @@ System.register("just-animate/animations/fadeOutDown", [], function(exports_29, 
         }
     }
 });
-System.register("just-animate/animations/fadeOutDownBig", [], function(exports_30, context_30) {
+System.register("just-animate/animations/fadeOutDownBig", [], function(exports_31, context_31) {
     "use strict";
-    var __moduleName = context_30 && context_30.id;
+    var __moduleName = context_31 && context_31.id;
     var fadeOutDownBig;
     return {
         setters:[],
         execute: function() {
-            exports_30("fadeOutDownBig", fadeOutDownBig = {
+            exports_31("fadeOutDownBig", fadeOutDownBig = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2182,14 +2174,14 @@ System.register("just-animate/animations/fadeOutDownBig", [], function(exports_3
         }
     }
 });
-System.register("just-animate/animations/fadeOutLeft", [], function(exports_31, context_31) {
+System.register("just-animate/animations/fadeOutLeft", [], function(exports_32, context_32) {
     "use strict";
-    var __moduleName = context_31 && context_31.id;
+    var __moduleName = context_32 && context_32.id;
     var fadeOutLeft;
     return {
         setters:[],
         execute: function() {
-            exports_31("fadeOutLeft", fadeOutLeft = {
+            exports_32("fadeOutLeft", fadeOutLeft = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2208,14 +2200,14 @@ System.register("just-animate/animations/fadeOutLeft", [], function(exports_31, 
         }
     }
 });
-System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_32, context_32) {
+System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_33, context_33) {
     "use strict";
-    var __moduleName = context_32 && context_32.id;
+    var __moduleName = context_33 && context_33.id;
     var fadeOutLeftBig;
     return {
         setters:[],
         execute: function() {
-            exports_32("fadeOutLeftBig", fadeOutLeftBig = {
+            exports_33("fadeOutLeftBig", fadeOutLeftBig = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2234,14 +2226,14 @@ System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_3
         }
     }
 });
-System.register("just-animate/animations/fadeOutRight", [], function(exports_33, context_33) {
+System.register("just-animate/animations/fadeOutRight", [], function(exports_34, context_34) {
     "use strict";
-    var __moduleName = context_33 && context_33.id;
+    var __moduleName = context_34 && context_34.id;
     var fadeOutRight;
     return {
         setters:[],
         execute: function() {
-            exports_33("fadeOutRight", fadeOutRight = {
+            exports_34("fadeOutRight", fadeOutRight = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2260,14 +2252,14 @@ System.register("just-animate/animations/fadeOutRight", [], function(exports_33,
         }
     }
 });
-System.register("just-animate/animations/fadeOutRightBig", [], function(exports_34, context_34) {
+System.register("just-animate/animations/fadeOutRightBig", [], function(exports_35, context_35) {
     "use strict";
-    var __moduleName = context_34 && context_34.id;
+    var __moduleName = context_35 && context_35.id;
     var fadeOutRightBig;
     return {
         setters:[],
         execute: function() {
-            exports_34("fadeOutRightBig", fadeOutRightBig = {
+            exports_35("fadeOutRightBig", fadeOutRightBig = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2286,14 +2278,14 @@ System.register("just-animate/animations/fadeOutRightBig", [], function(exports_
         }
     }
 });
-System.register("just-animate/animations/fadeOutUp", [], function(exports_35, context_35) {
+System.register("just-animate/animations/fadeOutUp", [], function(exports_36, context_36) {
     "use strict";
-    var __moduleName = context_35 && context_35.id;
+    var __moduleName = context_36 && context_36.id;
     var fadeOutUp;
     return {
         setters:[],
         execute: function() {
-            exports_35("fadeOutUp", fadeOutUp = {
+            exports_36("fadeOutUp", fadeOutUp = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2312,14 +2304,14 @@ System.register("just-animate/animations/fadeOutUp", [], function(exports_35, co
         }
     }
 });
-System.register("just-animate/animations/fadeOutUpBig", [], function(exports_36, context_36) {
+System.register("just-animate/animations/fadeOutUpBig", [], function(exports_37, context_37) {
     "use strict";
-    var __moduleName = context_36 && context_36.id;
+    var __moduleName = context_37 && context_37.id;
     var fadeOutUpBig;
     return {
         setters:[],
         execute: function() {
-            exports_36("fadeOutUpBig", fadeOutUpBig = {
+            exports_37("fadeOutUpBig", fadeOutUpBig = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2338,14 +2330,14 @@ System.register("just-animate/animations/fadeOutUpBig", [], function(exports_36,
         }
     }
 });
-System.register("just-animate/animations/flash", [], function(exports_37, context_37) {
+System.register("just-animate/animations/flash", [], function(exports_38, context_38) {
     "use strict";
-    var __moduleName = context_37 && context_37.id;
+    var __moduleName = context_38 && context_38.id;
     var flash;
     return {
         setters:[],
         execute: function() {
-            exports_37("flash", flash = {
+            exports_38("flash", flash = {
                 keyframes: [
                     {
                         opacity: 1
@@ -2371,14 +2363,14 @@ System.register("just-animate/animations/flash", [], function(exports_37, contex
         }
     }
 });
-System.register("just-animate/animations/flip", [], function(exports_38, context_38) {
+System.register("just-animate/animations/flip", [], function(exports_39, context_39) {
     "use strict";
-    var __moduleName = context_38 && context_38.id;
+    var __moduleName = context_39 && context_39.id;
     var flip;
     return {
         setters:[],
         execute: function() {
-            exports_38("flip", flip = {
+            exports_39("flip", flip = {
                 keyframes: [
                     {
                         offset: 0,
@@ -2409,14 +2401,14 @@ System.register("just-animate/animations/flip", [], function(exports_38, context
         }
     }
 });
-System.register("just-animate/animations/flipInX", [], function(exports_39, context_39) {
+System.register("just-animate/animations/flipInX", [], function(exports_40, context_40) {
     "use strict";
-    var __moduleName = context_39 && context_39.id;
+    var __moduleName = context_40 && context_40.id;
     var flipInX;
     return {
         setters:[],
         execute: function() {
-            exports_39("flipInX", flipInX = {
+            exports_40("flipInX", flipInX = {
                 keyframes: [
                     {
                         offset: 0,
@@ -2454,14 +2446,14 @@ System.register("just-animate/animations/flipInX", [], function(exports_39, cont
         }
     }
 });
-System.register("just-animate/animations/flipInY", [], function(exports_40, context_40) {
+System.register("just-animate/animations/flipInY", [], function(exports_41, context_41) {
     "use strict";
-    var __moduleName = context_40 && context_40.id;
+    var __moduleName = context_41 && context_41.id;
     var flipInY;
     return {
         setters:[],
         execute: function() {
-            exports_40("flipInY", flipInY = {
+            exports_41("flipInY", flipInY = {
                 keyframes: [
                     {
                         offset: 0,
@@ -2499,14 +2491,14 @@ System.register("just-animate/animations/flipInY", [], function(exports_40, cont
         }
     }
 });
-System.register("just-animate/animations/flipOutX", [], function(exports_41, context_41) {
+System.register("just-animate/animations/flipOutX", [], function(exports_42, context_42) {
     "use strict";
-    var __moduleName = context_41 && context_41.id;
+    var __moduleName = context_42 && context_42.id;
     var flipOutX;
     return {
         setters:[],
         execute: function() {
-            exports_41("flipOutX", flipOutX = {
+            exports_42("flipOutX", flipOutX = {
                 keyframes: [
                     {
                         offset: 0,
@@ -2532,14 +2524,14 @@ System.register("just-animate/animations/flipOutX", [], function(exports_41, con
         }
     }
 });
-System.register("just-animate/animations/flipOutY", [], function(exports_42, context_42) {
+System.register("just-animate/animations/flipOutY", [], function(exports_43, context_43) {
     "use strict";
-    var __moduleName = context_42 && context_42.id;
+    var __moduleName = context_43 && context_43.id;
     var flipOutY;
     return {
         setters:[],
         execute: function() {
-            exports_42("flipOutY", flipOutY = {
+            exports_43("flipOutY", flipOutY = {
                 keyframes: [
                     {
                         offset: 0,
@@ -2565,14 +2557,14 @@ System.register("just-animate/animations/flipOutY", [], function(exports_42, con
         }
     }
 });
-System.register("just-animate/animations/headShake", [], function(exports_43, context_43) {
+System.register("just-animate/animations/headShake", [], function(exports_44, context_44) {
     "use strict";
-    var __moduleName = context_43 && context_43.id;
+    var __moduleName = context_44 && context_44.id;
     var headShake;
     return {
         setters:[],
         execute: function() {
-            exports_43("headShake", headShake = {
+            exports_44("headShake", headShake = {
                 keyframes: [
                     {
                         offset: 0,
@@ -2616,14 +2608,14 @@ System.register("just-animate/animations/headShake", [], function(exports_43, co
         }
     }
 });
-System.register("just-animate/animations/hinge", [], function(exports_44, context_44) {
+System.register("just-animate/animations/hinge", [], function(exports_45, context_45) {
     "use strict";
-    var __moduleName = context_44 && context_44.id;
+    var __moduleName = context_45 && context_45.id;
     var hinge;
     return {
         setters:[],
         execute: function() {
-            exports_44("hinge", hinge = {
+            exports_45("hinge", hinge = {
                 keyframes: [
                     {
                         transform: 'none',
@@ -2660,14 +2652,14 @@ System.register("just-animate/animations/hinge", [], function(exports_44, contex
         }
     }
 });
-System.register("just-animate/animations/jello", [], function(exports_45, context_45) {
+System.register("just-animate/animations/jello", [], function(exports_46, context_46) {
     "use strict";
-    var __moduleName = context_45 && context_45.id;
+    var __moduleName = context_46 && context_46.id;
     var jello;
     return {
         setters:[],
         execute: function() {
-            exports_45("jello", jello = {
+            exports_46("jello", jello = {
                 keyframes: [
                     {
                         offset: 0,
@@ -2720,14 +2712,14 @@ System.register("just-animate/animations/jello", [], function(exports_45, contex
         }
     }
 });
-System.register("just-animate/animations/lightSpeedIn", [], function(exports_46, context_46) {
+System.register("just-animate/animations/lightSpeedIn", [], function(exports_47, context_47) {
     "use strict";
-    var __moduleName = context_46 && context_46.id;
+    var __moduleName = context_47 && context_47.id;
     var lightSpeedIn;
     return {
         setters:[],
         execute: function() {
-            exports_46("lightSpeedIn", lightSpeedIn = {
+            exports_47("lightSpeedIn", lightSpeedIn = {
                 keyframes: [
                     {
                         offset: 0,
@@ -2760,14 +2752,14 @@ System.register("just-animate/animations/lightSpeedIn", [], function(exports_46,
         }
     }
 });
-System.register("just-animate/animations/lightSpeedOut", [], function(exports_47, context_47) {
+System.register("just-animate/animations/lightSpeedOut", [], function(exports_48, context_48) {
     "use strict";
-    var __moduleName = context_47 && context_47.id;
+    var __moduleName = context_48 && context_48.id;
     var lightSpeedOut;
     return {
         setters:[],
         execute: function() {
-            exports_47("lightSpeedOut", lightSpeedOut = {
+            exports_48("lightSpeedOut", lightSpeedOut = {
                 keyframes: [
                     {
                         transform: 'none',
@@ -2788,14 +2780,14 @@ System.register("just-animate/animations/lightSpeedOut", [], function(exports_47
         }
     }
 });
-System.register("just-animate/animations/pulse", [], function(exports_48, context_48) {
+System.register("just-animate/animations/pulse", [], function(exports_49, context_49) {
     "use strict";
-    var __moduleName = context_48 && context_48.id;
+    var __moduleName = context_49 && context_49.id;
     var pulse;
     return {
         setters:[],
         execute: function() {
-            exports_48("pulse", pulse = {
+            exports_49("pulse", pulse = {
                 keyframes: [
                     {
                         transform: 'scale3d(1, 1, 1)'
@@ -2815,14 +2807,14 @@ System.register("just-animate/animations/pulse", [], function(exports_48, contex
         }
     }
 });
-System.register("just-animate/animations/rollIn", [], function(exports_49, context_49) {
+System.register("just-animate/animations/rollIn", [], function(exports_50, context_50) {
     "use strict";
-    var __moduleName = context_49 && context_49.id;
+    var __moduleName = context_50 && context_50.id;
     var rollIn;
     return {
         setters:[],
         execute: function() {
-            exports_49("rollIn", rollIn = {
+            exports_50("rollIn", rollIn = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -2841,14 +2833,14 @@ System.register("just-animate/animations/rollIn", [], function(exports_49, conte
         }
     }
 });
-System.register("just-animate/animations/rollOut", [], function(exports_50, context_50) {
+System.register("just-animate/animations/rollOut", [], function(exports_51, context_51) {
     "use strict";
-    var __moduleName = context_50 && context_50.id;
+    var __moduleName = context_51 && context_51.id;
     var rollOut;
     return {
         setters:[],
         execute: function() {
-            exports_50("rollOut", rollOut = {
+            exports_51("rollOut", rollOut = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -2867,14 +2859,14 @@ System.register("just-animate/animations/rollOut", [], function(exports_50, cont
         }
     }
 });
-System.register("just-animate/animations/rotateIn", [], function(exports_51, context_51) {
+System.register("just-animate/animations/rotateIn", [], function(exports_52, context_52) {
     "use strict";
-    var __moduleName = context_51 && context_51.id;
+    var __moduleName = context_52 && context_52.id;
     var rotateIn;
     return {
         setters:[],
         execute: function() {
-            exports_51("rotateIn", rotateIn = {
+            exports_52("rotateIn", rotateIn = {
                 keyframes: [
                     {
                         'transform-origin': 'center',
@@ -2895,14 +2887,14 @@ System.register("just-animate/animations/rotateIn", [], function(exports_51, con
         }
     }
 });
-System.register("just-animate/animations/rotateInDownLeft", [], function(exports_52, context_52) {
+System.register("just-animate/animations/rotateInDownLeft", [], function(exports_53, context_53) {
     "use strict";
-    var __moduleName = context_52 && context_52.id;
+    var __moduleName = context_53 && context_53.id;
     var rotateInDownLeft;
     return {
         setters:[],
         execute: function() {
-            exports_52("rotateInDownLeft", rotateInDownLeft = {
+            exports_53("rotateInDownLeft", rotateInDownLeft = {
                 keyframes: [
                     {
                         'transform-origin': 'left bottom',
@@ -2923,14 +2915,14 @@ System.register("just-animate/animations/rotateInDownLeft", [], function(exports
         }
     }
 });
-System.register("just-animate/animations/rotateInDownRight", [], function(exports_53, context_53) {
+System.register("just-animate/animations/rotateInDownRight", [], function(exports_54, context_54) {
     "use strict";
-    var __moduleName = context_53 && context_53.id;
+    var __moduleName = context_54 && context_54.id;
     var rotateInDownRight;
     return {
         setters:[],
         execute: function() {
-            exports_53("rotateInDownRight", rotateInDownRight = {
+            exports_54("rotateInDownRight", rotateInDownRight = {
                 keyframes: [
                     {
                         'transform-origin': 'right bottom',
@@ -2951,14 +2943,14 @@ System.register("just-animate/animations/rotateInDownRight", [], function(export
         }
     }
 });
-System.register("just-animate/animations/rotateInUpLeft", [], function(exports_54, context_54) {
+System.register("just-animate/animations/rotateInUpLeft", [], function(exports_55, context_55) {
     "use strict";
-    var __moduleName = context_54 && context_54.id;
+    var __moduleName = context_55 && context_55.id;
     var rotateInUpLeft;
     return {
         setters:[],
         execute: function() {
-            exports_54("rotateInUpLeft", rotateInUpLeft = {
+            exports_55("rotateInUpLeft", rotateInUpLeft = {
                 keyframes: [
                     {
                         'transform-origin': 'left bottom',
@@ -2979,14 +2971,14 @@ System.register("just-animate/animations/rotateInUpLeft", [], function(exports_5
         }
     }
 });
-System.register("just-animate/animations/rotateInUpRight", [], function(exports_55, context_55) {
+System.register("just-animate/animations/rotateInUpRight", [], function(exports_56, context_56) {
     "use strict";
-    var __moduleName = context_55 && context_55.id;
+    var __moduleName = context_56 && context_56.id;
     var rotateInUpRight;
     return {
         setters:[],
         execute: function() {
-            exports_55("rotateInUpRight", rotateInUpRight = {
+            exports_56("rotateInUpRight", rotateInUpRight = {
                 keyframes: [
                     {
                         'transform-origin': 'right bottom',
@@ -3007,14 +2999,14 @@ System.register("just-animate/animations/rotateInUpRight", [], function(exports_
         }
     }
 });
-System.register("just-animate/animations/rotateOut", [], function(exports_56, context_56) {
+System.register("just-animate/animations/rotateOut", [], function(exports_57, context_57) {
     "use strict";
-    var __moduleName = context_56 && context_56.id;
+    var __moduleName = context_57 && context_57.id;
     var rotateOut;
     return {
         setters:[],
         execute: function() {
-            exports_56("rotateOut", rotateOut = {
+            exports_57("rotateOut", rotateOut = {
                 keyframes: [
                     {
                         'transform-origin': 'center',
@@ -3035,14 +3027,14 @@ System.register("just-animate/animations/rotateOut", [], function(exports_56, co
         }
     }
 });
-System.register("just-animate/animations/rotateOutDownLeft", [], function(exports_57, context_57) {
+System.register("just-animate/animations/rotateOutDownLeft", [], function(exports_58, context_58) {
     "use strict";
-    var __moduleName = context_57 && context_57.id;
+    var __moduleName = context_58 && context_58.id;
     var rotateOutDownLeft;
     return {
         setters:[],
         execute: function() {
-            exports_57("rotateOutDownLeft", rotateOutDownLeft = {
+            exports_58("rotateOutDownLeft", rotateOutDownLeft = {
                 keyframes: [
                     {
                         'transform-origin': 'left bottom',
@@ -3063,14 +3055,14 @@ System.register("just-animate/animations/rotateOutDownLeft", [], function(export
         }
     }
 });
-System.register("just-animate/animations/rotateOutDownRight", [], function(exports_58, context_58) {
+System.register("just-animate/animations/rotateOutDownRight", [], function(exports_59, context_59) {
     "use strict";
-    var __moduleName = context_58 && context_58.id;
+    var __moduleName = context_59 && context_59.id;
     var rotateOutDownRight;
     return {
         setters:[],
         execute: function() {
-            exports_58("rotateOutDownRight", rotateOutDownRight = {
+            exports_59("rotateOutDownRight", rotateOutDownRight = {
                 keyframes: [
                     {
                         'transform-origin': 'right bottom',
@@ -3091,14 +3083,14 @@ System.register("just-animate/animations/rotateOutDownRight", [], function(expor
         }
     }
 });
-System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_59, context_59) {
+System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_60, context_60) {
     "use strict";
-    var __moduleName = context_59 && context_59.id;
+    var __moduleName = context_60 && context_60.id;
     var rotateOutUpLeft;
     return {
         setters:[],
         execute: function() {
-            exports_59("rotateOutUpLeft", rotateOutUpLeft = {
+            exports_60("rotateOutUpLeft", rotateOutUpLeft = {
                 keyframes: [
                     {
                         'transform-origin': 'left bottom',
@@ -3119,14 +3111,14 @@ System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_
         }
     }
 });
-System.register("just-animate/animations/rotateOutUpRight", [], function(exports_60, context_60) {
+System.register("just-animate/animations/rotateOutUpRight", [], function(exports_61, context_61) {
     "use strict";
-    var __moduleName = context_60 && context_60.id;
+    var __moduleName = context_61 && context_61.id;
     var rotateOutUpRight;
     return {
         setters:[],
         execute: function() {
-            exports_60("rotateOutUpRight", rotateOutUpRight = {
+            exports_61("rotateOutUpRight", rotateOutUpRight = {
                 keyframes: [
                     {
                         'transform-origin': 'right bottom',
@@ -3147,14 +3139,14 @@ System.register("just-animate/animations/rotateOutUpRight", [], function(exports
         }
     }
 });
-System.register("just-animate/animations/rubberBand", [], function(exports_61, context_61) {
+System.register("just-animate/animations/rubberBand", [], function(exports_62, context_62) {
     "use strict";
-    var __moduleName = context_61 && context_61.id;
+    var __moduleName = context_62 && context_62.id;
     var rubberBand;
     return {
         setters:[],
         execute: function() {
-            exports_61("rubberBand", rubberBand = {
+            exports_62("rubberBand", rubberBand = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3193,14 +3185,14 @@ System.register("just-animate/animations/rubberBand", [], function(exports_61, c
         }
     }
 });
-System.register("just-animate/animations/shake", [], function(exports_62, context_62) {
+System.register("just-animate/animations/shake", [], function(exports_63, context_63) {
     "use strict";
-    var __moduleName = context_62 && context_62.id;
+    var __moduleName = context_63 && context_63.id;
     var shake;
     return {
         setters:[],
         execute: function() {
-            exports_62("shake", shake = {
+            exports_63("shake", shake = {
                 keyframes: [
                     {
                         transform: 'translate3d(0, 0, 0)'
@@ -3244,14 +3236,14 @@ System.register("just-animate/animations/shake", [], function(exports_62, contex
         }
     }
 });
-System.register("just-animate/animations/slideInDown", [], function(exports_63, context_63) {
+System.register("just-animate/animations/slideInDown", [], function(exports_64, context_64) {
     "use strict";
-    var __moduleName = context_63 && context_63.id;
+    var __moduleName = context_64 && context_64.id;
     var slideInDown;
     return {
         setters:[],
         execute: function() {
-            exports_63("slideInDown", slideInDown = {
+            exports_64("slideInDown", slideInDown = {
                 keyframes: [
                     {
                         transform: 'translate3d(0, -100%, 0)',
@@ -3270,14 +3262,14 @@ System.register("just-animate/animations/slideInDown", [], function(exports_63, 
         }
     }
 });
-System.register("just-animate/animations/slideInLeft", [], function(exports_64, context_64) {
+System.register("just-animate/animations/slideInLeft", [], function(exports_65, context_65) {
     "use strict";
-    var __moduleName = context_64 && context_64.id;
+    var __moduleName = context_65 && context_65.id;
     var slideInLeft;
     return {
         setters:[],
         execute: function() {
-            exports_64("slideInLeft", slideInLeft = {
+            exports_65("slideInLeft", slideInLeft = {
                 keyframes: [
                     {
                         transform: 'translate3d(-100%, 0, 0)',
@@ -3296,14 +3288,14 @@ System.register("just-animate/animations/slideInLeft", [], function(exports_64, 
         }
     }
 });
-System.register("just-animate/animations/slideInRight", [], function(exports_65, context_65) {
+System.register("just-animate/animations/slideInRight", [], function(exports_66, context_66) {
     "use strict";
-    var __moduleName = context_65 && context_65.id;
+    var __moduleName = context_66 && context_66.id;
     var slideInRight;
     return {
         setters:[],
         execute: function() {
-            exports_65("slideInRight", slideInRight = {
+            exports_66("slideInRight", slideInRight = {
                 keyframes: [
                     {
                         transform: 'translate3d(100%, 0, 0)',
@@ -3322,14 +3314,14 @@ System.register("just-animate/animations/slideInRight", [], function(exports_65,
         }
     }
 });
-System.register("just-animate/animations/slideInUp", [], function(exports_66, context_66) {
+System.register("just-animate/animations/slideInUp", [], function(exports_67, context_67) {
     "use strict";
-    var __moduleName = context_66 && context_66.id;
+    var __moduleName = context_67 && context_67.id;
     var slideInUp;
     return {
         setters:[],
         execute: function() {
-            exports_66("slideInUp", slideInUp = {
+            exports_67("slideInUp", slideInUp = {
                 keyframes: [
                     {
                         transform: 'translate3d(0, 100%, 0)',
@@ -3348,14 +3340,14 @@ System.register("just-animate/animations/slideInUp", [], function(exports_66, co
         }
     }
 });
-System.register("just-animate/animations/slideOutDown", [], function(exports_67, context_67) {
+System.register("just-animate/animations/slideOutDown", [], function(exports_68, context_68) {
     "use strict";
-    var __moduleName = context_67 && context_67.id;
+    var __moduleName = context_68 && context_68.id;
     var slideOutDown;
     return {
         setters:[],
         execute: function() {
-            exports_67("slideOutDown", slideOutDown = {
+            exports_68("slideOutDown", slideOutDown = {
                 keyframes: [
                     {
                         transform: 'translate3d(0, 0, 0)',
@@ -3374,14 +3366,14 @@ System.register("just-animate/animations/slideOutDown", [], function(exports_67,
         }
     }
 });
-System.register("just-animate/animations/slideOutLeft", [], function(exports_68, context_68) {
+System.register("just-animate/animations/slideOutLeft", [], function(exports_69, context_69) {
     "use strict";
-    var __moduleName = context_68 && context_68.id;
+    var __moduleName = context_69 && context_69.id;
     var slideOutLeft;
     return {
         setters:[],
         execute: function() {
-            exports_68("slideOutLeft", slideOutLeft = {
+            exports_69("slideOutLeft", slideOutLeft = {
                 keyframes: [
                     {
                         visibility: 'visible',
@@ -3400,14 +3392,14 @@ System.register("just-animate/animations/slideOutLeft", [], function(exports_68,
         }
     }
 });
-System.register("just-animate/animations/slideOutRight", [], function(exports_69, context_69) {
+System.register("just-animate/animations/slideOutRight", [], function(exports_70, context_70) {
     "use strict";
-    var __moduleName = context_69 && context_69.id;
+    var __moduleName = context_70 && context_70.id;
     var slideOutRight;
     return {
         setters:[],
         execute: function() {
-            exports_69("slideOutRight", slideOutRight = {
+            exports_70("slideOutRight", slideOutRight = {
                 keyframes: [
                     {
                         visibility: 'visible',
@@ -3426,14 +3418,14 @@ System.register("just-animate/animations/slideOutRight", [], function(exports_69
         }
     }
 });
-System.register("just-animate/animations/slideOutUp", [], function(exports_70, context_70) {
+System.register("just-animate/animations/slideOutUp", [], function(exports_71, context_71) {
     "use strict";
-    var __moduleName = context_70 && context_70.id;
+    var __moduleName = context_71 && context_71.id;
     var slideOutUp;
     return {
         setters:[],
         execute: function() {
-            exports_70("slideOutUp", slideOutUp = {
+            exports_71("slideOutUp", slideOutUp = {
                 keyframes: [
                     {
                         visibility: 'visible',
@@ -3452,14 +3444,14 @@ System.register("just-animate/animations/slideOutUp", [], function(exports_70, c
         }
     }
 });
-System.register("just-animate/animations/swing", [], function(exports_71, context_71) {
+System.register("just-animate/animations/swing", [], function(exports_72, context_72) {
     "use strict";
-    var __moduleName = context_71 && context_71.id;
+    var __moduleName = context_72 && context_72.id;
     var swing;
     return {
         setters:[],
         execute: function() {
-            exports_71("swing", swing = {
+            exports_72("swing", swing = {
                 keyframes: [
                     {
                         transform: 'none'
@@ -3488,14 +3480,14 @@ System.register("just-animate/animations/swing", [], function(exports_71, contex
         }
     }
 });
-System.register("just-animate/animations/tada", [], function(exports_72, context_72) {
+System.register("just-animate/animations/tada", [], function(exports_73, context_73) {
     "use strict";
-    var __moduleName = context_72 && context_72.id;
+    var __moduleName = context_73 && context_73.id;
     var tada;
     return {
         setters:[],
         execute: function() {
-            exports_72("tada", tada = {
+            exports_73("tada", tada = {
                 keyframes: [
                     {
                         transform: 'scale3d(1, 1, 1)'
@@ -3539,14 +3531,14 @@ System.register("just-animate/animations/tada", [], function(exports_72, context
         }
     }
 });
-System.register("just-animate/animations/wobble", [], function(exports_73, context_73) {
+System.register("just-animate/animations/wobble", [], function(exports_74, context_74) {
     "use strict";
-    var __moduleName = context_73 && context_73.id;
+    var __moduleName = context_74 && context_74.id;
     var wobble;
     return {
         setters:[],
         execute: function() {
-            exports_73("wobble", wobble = {
+            exports_74("wobble", wobble = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3585,14 +3577,14 @@ System.register("just-animate/animations/wobble", [], function(exports_73, conte
         }
     }
 });
-System.register("just-animate/animations/zoomIn", [], function(exports_74, context_74) {
+System.register("just-animate/animations/zoomIn", [], function(exports_75, context_75) {
     "use strict";
-    var __moduleName = context_74 && context_74.id;
+    var __moduleName = context_75 && context_75.id;
     var zoomIn;
     return {
         setters:[],
         execute: function() {
-            exports_74("zoomIn", zoomIn = {
+            exports_75("zoomIn", zoomIn = {
                 keyframes: [
                     {
                         opacity: 0,
@@ -3615,14 +3607,14 @@ System.register("just-animate/animations/zoomIn", [], function(exports_74, conte
         }
     }
 });
-System.register("just-animate/animations/zoomInDown", [], function(exports_75, context_75) {
+System.register("just-animate/animations/zoomInDown", [], function(exports_76, context_76) {
     "use strict";
-    var __moduleName = context_75 && context_75.id;
+    var __moduleName = context_76 && context_76.id;
     var zoomInDown;
     return {
         setters:[],
         execute: function() {
-            exports_75("zoomInDown", zoomInDown = {
+            exports_76("zoomInDown", zoomInDown = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3649,14 +3641,14 @@ System.register("just-animate/animations/zoomInDown", [], function(exports_75, c
         }
     }
 });
-System.register("just-animate/animations/zoomInLeft", [], function(exports_76, context_76) {
+System.register("just-animate/animations/zoomInLeft", [], function(exports_77, context_77) {
     "use strict";
-    var __moduleName = context_76 && context_76.id;
+    var __moduleName = context_77 && context_77.id;
     var zoomInLeft;
     return {
         setters:[],
         execute: function() {
-            exports_76("zoomInLeft", zoomInLeft = {
+            exports_77("zoomInLeft", zoomInLeft = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3683,14 +3675,14 @@ System.register("just-animate/animations/zoomInLeft", [], function(exports_76, c
         }
     }
 });
-System.register("just-animate/animations/zoomInRight", [], function(exports_77, context_77) {
+System.register("just-animate/animations/zoomInRight", [], function(exports_78, context_78) {
     "use strict";
-    var __moduleName = context_77 && context_77.id;
+    var __moduleName = context_78 && context_78.id;
     var zoomInRight;
     return {
         setters:[],
         execute: function() {
-            exports_77("zoomInRight", zoomInRight = {
+            exports_78("zoomInRight", zoomInRight = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3717,14 +3709,14 @@ System.register("just-animate/animations/zoomInRight", [], function(exports_77, 
         }
     }
 });
-System.register("just-animate/animations/zoomInUp", [], function(exports_78, context_78) {
+System.register("just-animate/animations/zoomInUp", [], function(exports_79, context_79) {
     "use strict";
-    var __moduleName = context_78 && context_78.id;
+    var __moduleName = context_79 && context_79.id;
     var zoomInUp;
     return {
         setters:[],
         execute: function() {
-            exports_78("zoomInUp", zoomInUp = {
+            exports_79("zoomInUp", zoomInUp = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3751,14 +3743,14 @@ System.register("just-animate/animations/zoomInUp", [], function(exports_78, con
         }
     }
 });
-System.register("just-animate/animations/zoomOut", [], function(exports_79, context_79) {
+System.register("just-animate/animations/zoomOut", [], function(exports_80, context_80) {
     "use strict";
-    var __moduleName = context_79 && context_79.id;
+    var __moduleName = context_80 && context_80.id;
     var zoomOut;
     return {
         setters:[],
         execute: function() {
-            exports_79("zoomOut", zoomOut = {
+            exports_80("zoomOut", zoomOut = {
                 keyframes: [
                     {
                         opacity: 1,
@@ -3784,14 +3776,14 @@ System.register("just-animate/animations/zoomOut", [], function(exports_79, cont
         }
     }
 });
-System.register("just-animate/animations/zoomOutDown", [], function(exports_80, context_80) {
+System.register("just-animate/animations/zoomOutDown", [], function(exports_81, context_81) {
     "use strict";
-    var __moduleName = context_80 && context_80.id;
+    var __moduleName = context_81 && context_81.id;
     var zoomOutDown;
     return {
         setters:[],
         execute: function() {
-            exports_80("zoomOutDown", zoomOutDown = {
+            exports_81("zoomOutDown", zoomOutDown = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3821,14 +3813,14 @@ System.register("just-animate/animations/zoomOutDown", [], function(exports_80, 
         }
     }
 });
-System.register("just-animate/animations/zoomOutLeft", [], function(exports_81, context_81) {
+System.register("just-animate/animations/zoomOutLeft", [], function(exports_82, context_82) {
     "use strict";
-    var __moduleName = context_81 && context_81.id;
+    var __moduleName = context_82 && context_82.id;
     var zoomOutLeft;
     return {
         setters:[],
         execute: function() {
-            exports_81("zoomOutLeft", zoomOutLeft = {
+            exports_82("zoomOutLeft", zoomOutLeft = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3857,14 +3849,14 @@ System.register("just-animate/animations/zoomOutLeft", [], function(exports_81, 
         }
     }
 });
-System.register("just-animate/animations/zoomOutRight", [], function(exports_82, context_82) {
+System.register("just-animate/animations/zoomOutRight", [], function(exports_83, context_83) {
     "use strict";
-    var __moduleName = context_82 && context_82.id;
+    var __moduleName = context_83 && context_83.id;
     var zoomOutRight;
     return {
         setters:[],
         execute: function() {
-            exports_82("zoomOutRight", zoomOutRight = {
+            exports_83("zoomOutRight", zoomOutRight = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3893,14 +3885,14 @@ System.register("just-animate/animations/zoomOutRight", [], function(exports_82,
         }
     }
 });
-System.register("just-animate/animations/zoomOutUp", [], function(exports_83, context_83) {
+System.register("just-animate/animations/zoomOutUp", [], function(exports_84, context_84) {
     "use strict";
-    var __moduleName = context_83 && context_83.id;
+    var __moduleName = context_84 && context_84.id;
     var zoomOutUp;
     return {
         setters:[],
         execute: function() {
-            exports_83("zoomOutUp", zoomOutUp = {
+            exports_84("zoomOutUp", zoomOutUp = {
                 keyframes: [
                     {
                         offset: 0,
@@ -3929,9 +3921,9 @@ System.register("just-animate/animations/zoomOutUp", [], function(exports_83, co
         }
     }
 });
-System.register("just-animate/animations", ["just-animate/animations/bounce", "just-animate/animations/bounceIn", "just-animate/animations/bounceInDown", "just-animate/animations/bounceInLeft", "just-animate/animations/bounceInRight", "just-animate/animations/bounceInUp", "just-animate/animations/bounceOut", "just-animate/animations/bounceOutDown", "just-animate/animations/bounceOutLeft", "just-animate/animations/bounceOutRight", "just-animate/animations/bounceOutUp", "just-animate/animations/fadeIn", "just-animate/animations/fadeInDown", "just-animate/animations/fadeInDownBig", "just-animate/animations/fadeInLeft", "just-animate/animations/fadeInLeftBig", "just-animate/animations/fadeInRight", "just-animate/animations/fadeInRightBig", "just-animate/animations/fadeInUp", "just-animate/animations/fadeInUpBig", "just-animate/animations/fadeOut", "just-animate/animations/fadeOutDown", "just-animate/animations/fadeOutDownBig", "just-animate/animations/fadeOutLeft", "just-animate/animations/fadeOutLeftBig", "just-animate/animations/fadeOutRight", "just-animate/animations/fadeOutRightBig", "just-animate/animations/fadeOutUp", "just-animate/animations/fadeOutUpBig", "just-animate/animations/flash", "just-animate/animations/flip", "just-animate/animations/flipInX", "just-animate/animations/flipInY", "just-animate/animations/flipOutX", "just-animate/animations/flipOutY", "just-animate/animations/headShake", "just-animate/animations/hinge", "just-animate/animations/jello", "just-animate/animations/lightSpeedIn", "just-animate/animations/lightSpeedOut", "just-animate/animations/pulse", "just-animate/animations/rollIn", "just-animate/animations/rollOut", "just-animate/animations/rotateIn", "just-animate/animations/rotateInDownLeft", "just-animate/animations/rotateInDownRight", "just-animate/animations/rotateInUpLeft", "just-animate/animations/rotateInUpRight", "just-animate/animations/rotateOut", "just-animate/animations/rotateOutDownLeft", "just-animate/animations/rotateOutDownRight", "just-animate/animations/rotateOutUpLeft", "just-animate/animations/rotateOutUpRight", "just-animate/animations/rubberBand", "just-animate/animations/shake", "just-animate/animations/slideInDown", "just-animate/animations/slideInLeft", "just-animate/animations/slideInRight", "just-animate/animations/slideInUp", "just-animate/animations/slideOutDown", "just-animate/animations/slideOutLeft", "just-animate/animations/slideOutRight", "just-animate/animations/slideOutUp", "just-animate/animations/swing", "just-animate/animations/tada", "just-animate/animations/wobble", "just-animate/animations/zoomIn", "just-animate/animations/zoomInDown", "just-animate/animations/zoomInLeft", "just-animate/animations/zoomInRight", "just-animate/animations/zoomInUp", "just-animate/animations/zoomOut", "just-animate/animations/zoomOutDown", "just-animate/animations/zoomOutLeft", "just-animate/animations/zoomOutRight", "just-animate/animations/zoomOutUp"], function(exports_84, context_84) {
+System.register("just-animate/animations", ["just-animate/animations/bounce", "just-animate/animations/bounceIn", "just-animate/animations/bounceInDown", "just-animate/animations/bounceInLeft", "just-animate/animations/bounceInRight", "just-animate/animations/bounceInUp", "just-animate/animations/bounceOut", "just-animate/animations/bounceOutDown", "just-animate/animations/bounceOutLeft", "just-animate/animations/bounceOutRight", "just-animate/animations/bounceOutUp", "just-animate/animations/fadeIn", "just-animate/animations/fadeInDown", "just-animate/animations/fadeInDownBig", "just-animate/animations/fadeInLeft", "just-animate/animations/fadeInLeftBig", "just-animate/animations/fadeInRight", "just-animate/animations/fadeInRightBig", "just-animate/animations/fadeInUp", "just-animate/animations/fadeInUpBig", "just-animate/animations/fadeOut", "just-animate/animations/fadeOutDown", "just-animate/animations/fadeOutDownBig", "just-animate/animations/fadeOutLeft", "just-animate/animations/fadeOutLeftBig", "just-animate/animations/fadeOutRight", "just-animate/animations/fadeOutRightBig", "just-animate/animations/fadeOutUp", "just-animate/animations/fadeOutUpBig", "just-animate/animations/flash", "just-animate/animations/flip", "just-animate/animations/flipInX", "just-animate/animations/flipInY", "just-animate/animations/flipOutX", "just-animate/animations/flipOutY", "just-animate/animations/headShake", "just-animate/animations/hinge", "just-animate/animations/jello", "just-animate/animations/lightSpeedIn", "just-animate/animations/lightSpeedOut", "just-animate/animations/pulse", "just-animate/animations/rollIn", "just-animate/animations/rollOut", "just-animate/animations/rotateIn", "just-animate/animations/rotateInDownLeft", "just-animate/animations/rotateInDownRight", "just-animate/animations/rotateInUpLeft", "just-animate/animations/rotateInUpRight", "just-animate/animations/rotateOut", "just-animate/animations/rotateOutDownLeft", "just-animate/animations/rotateOutDownRight", "just-animate/animations/rotateOutUpLeft", "just-animate/animations/rotateOutUpRight", "just-animate/animations/rubberBand", "just-animate/animations/shake", "just-animate/animations/slideInDown", "just-animate/animations/slideInLeft", "just-animate/animations/slideInRight", "just-animate/animations/slideInUp", "just-animate/animations/slideOutDown", "just-animate/animations/slideOutLeft", "just-animate/animations/slideOutRight", "just-animate/animations/slideOutUp", "just-animate/animations/swing", "just-animate/animations/tada", "just-animate/animations/wobble", "just-animate/animations/zoomIn", "just-animate/animations/zoomInDown", "just-animate/animations/zoomInLeft", "just-animate/animations/zoomInRight", "just-animate/animations/zoomInUp", "just-animate/animations/zoomOut", "just-animate/animations/zoomOutDown", "just-animate/animations/zoomOutLeft", "just-animate/animations/zoomOutRight", "just-animate/animations/zoomOutUp"], function(exports_85, context_85) {
     "use strict";
-    var __moduleName = context_84 && context_84.id;
+    var __moduleName = context_85 && context_85.id;
     var bounce_1, bounceIn_1, bounceInDown_1, bounceInLeft_1, bounceInRight_1, bounceInUp_1, bounceOut_1, bounceOutDown_1, bounceOutLeft_1, bounceOutRight_1, bounceOutUp_1, fadeIn_1, fadeInDown_1, fadeInDownBig_1, fadeInLeft_1, fadeInLeftBig_1, fadeInRight_1, fadeInRightBig_1, fadeInUp_1, fadeInUpBig_1, fadeOut_1, fadeOutDown_1, fadeOutDownBig_1, fadeOutLeft_1, fadeOutLeftBig_1, fadeOutRight_1, fadeOutRightBig_1, fadeOutUp_1, fadeOutUpBig_1, flash_1, flip_1, flipInX_1, flipInY_1, flipOutX_1, flipOutY_1, headShake_1, hinge_1, jello_1, lightSpeedIn_1, lightSpeedOut_1, pulse_1, rollIn_1, rollOut_1, rotateIn_1, rotateInDownLeft_1, rotateInDownRight_1, rotateInUpLeft_1, rotateInUpRight_1, rotateOut_1, rotateOutDownLeft_1, rotateOutDownRight_1, rotateOutUpLeft_1, rotateOutUpRight_1, rubberBand_1, shake_1, slideInDown_1, slideInLeft_1, slideInRight_1, slideInUp_1, slideOutDown_1, slideOutLeft_1, slideOutRight_1, slideOutUp_1, swing_1, tada_1, wobble_1, zoomIn_1, zoomInDown_1, zoomInLeft_1, zoomInRight_1, zoomInUp_1, zoomOut_1, zoomOutDown_1, zoomOutLeft_1, zoomOutRight_1, zoomOutUp_1;
     var ANIMATE_CSS;
     return {
@@ -4165,7 +4157,7 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
                 zoomOutUp_1 = zoomOutUp_1_1;
             }],
         execute: function() {
-            exports_84("ANIMATE_CSS", ANIMATE_CSS = [
+            exports_85("ANIMATE_CSS", ANIMATE_CSS = [
                 bounce_1.bounce,
                 bounceIn_1.bounceIn,
                 bounceInDown_1.bounceInDown,
@@ -4243,88 +4235,88 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
                 zoomOutRight_1.zoomOutRight,
                 zoomOutUp_1.zoomOutUp
             ]);
-            exports_84("bounce", bounce_1.bounce);
-            exports_84("bounceIn", bounceIn_1.bounceIn);
-            exports_84("bounceInDown", bounceInDown_1.bounceInDown);
-            exports_84("bounceInLeft", bounceInLeft_1.bounceInLeft);
-            exports_84("bounceInRight", bounceInRight_1.bounceInRight);
-            exports_84("bounceInUp", bounceInUp_1.bounceInUp);
-            exports_84("bounceOut", bounceOut_1.bounceOut);
-            exports_84("bounceOutDown", bounceOutDown_1.bounceOutDown);
-            exports_84("bounceOutLeft", bounceOutLeft_1.bounceOutLeft);
-            exports_84("bounceOutRight", bounceOutRight_1.bounceOutRight);
-            exports_84("bounceOutUp", bounceOutUp_1.bounceOutUp);
-            exports_84("fadeIn", fadeIn_1.fadeIn);
-            exports_84("fadeInDown", fadeInDown_1.fadeInDown);
-            exports_84("fadeInDownBig", fadeInDownBig_1.fadeInDownBig);
-            exports_84("fadeInLeft", fadeInLeft_1.fadeInLeft);
-            exports_84("fadeInLeftBig", fadeInLeftBig_1.fadeInLeftBig);
-            exports_84("fadeInRight", fadeInRight_1.fadeInRight);
-            exports_84("fadeInRightBig", fadeInRightBig_1.fadeInRightBig);
-            exports_84("fadeInUp", fadeInUp_1.fadeInUp);
-            exports_84("fadeInUpBig", fadeInUpBig_1.fadeInUpBig);
-            exports_84("fadeOut", fadeOut_1.fadeOut);
-            exports_84("fadeOutDown", fadeOutDown_1.fadeOutDown);
-            exports_84("fadeOutDownBig", fadeOutDownBig_1.fadeOutDownBig);
-            exports_84("fadeOutLeft", fadeOutLeft_1.fadeOutLeft);
-            exports_84("fadeOutLeftBig", fadeOutLeftBig_1.fadeOutLeftBig);
-            exports_84("fadeOutRight", fadeOutRight_1.fadeOutRight);
-            exports_84("fadeOutRightBig", fadeOutRightBig_1.fadeOutRightBig);
-            exports_84("fadeOutUp", fadeOutUp_1.fadeOutUp);
-            exports_84("fadeOutUpBig", fadeOutUpBig_1.fadeOutUpBig);
-            exports_84("flash", flash_1.flash);
-            exports_84("flip", flip_1.flip);
-            exports_84("flipInX", flipInX_1.flipInX);
-            exports_84("flipInY", flipInY_1.flipInY);
-            exports_84("flipOutX", flipOutX_1.flipOutX);
-            exports_84("flipOutY", flipOutY_1.flipOutY);
-            exports_84("headShake", headShake_1.headShake);
-            exports_84("hinge", hinge_1.hinge);
-            exports_84("jello", jello_1.jello);
-            exports_84("lightSpeedIn", lightSpeedIn_1.lightSpeedIn);
-            exports_84("lightSpeedOut", lightSpeedOut_1.lightSpeedOut);
-            exports_84("pulse", pulse_1.pulse);
-            exports_84("rollIn", rollIn_1.rollIn);
-            exports_84("rollOut", rollOut_1.rollOut);
-            exports_84("rotateIn", rotateIn_1.rotateIn);
-            exports_84("rotateInDownLeft", rotateInDownLeft_1.rotateInDownLeft);
-            exports_84("rotateInDownRight", rotateInDownRight_1.rotateInDownRight);
-            exports_84("rotateInUpLeft", rotateInUpLeft_1.rotateInUpLeft);
-            exports_84("rotateInUpRight", rotateInUpRight_1.rotateInUpRight);
-            exports_84("rotateOut", rotateOut_1.rotateOut);
-            exports_84("rotateOutDownLeft", rotateOutDownLeft_1.rotateOutDownLeft);
-            exports_84("rotateOutDownRight", rotateOutDownRight_1.rotateOutDownRight);
-            exports_84("rotateOutUpLeft", rotateOutUpLeft_1.rotateOutUpLeft);
-            exports_84("rotateOutUpRight", rotateOutUpRight_1.rotateOutUpRight);
-            exports_84("rubberBand", rubberBand_1.rubberBand);
-            exports_84("shake", shake_1.shake);
-            exports_84("slideInDown", slideInDown_1.slideInDown);
-            exports_84("slideInLeft", slideInLeft_1.slideInLeft);
-            exports_84("slideInRight", slideInRight_1.slideInRight);
-            exports_84("slideInUp", slideInUp_1.slideInUp);
-            exports_84("slideOutDown", slideOutDown_1.slideOutDown);
-            exports_84("slideOutLeft", slideOutLeft_1.slideOutLeft);
-            exports_84("slideOutRight", slideOutRight_1.slideOutRight);
-            exports_84("slideOutUp", slideOutUp_1.slideOutUp);
-            exports_84("swing", swing_1.swing);
-            exports_84("tada", tada_1.tada);
-            exports_84("wobble", wobble_1.wobble);
-            exports_84("zoomIn", zoomIn_1.zoomIn);
-            exports_84("zoomInDown", zoomInDown_1.zoomInDown);
-            exports_84("zoomInLeft", zoomInLeft_1.zoomInLeft);
-            exports_84("zoomInRight", zoomInRight_1.zoomInRight);
-            exports_84("zoomInUp", zoomInUp_1.zoomInUp);
-            exports_84("zoomOut", zoomOut_1.zoomOut);
-            exports_84("zoomOutDown", zoomOutDown_1.zoomOutDown);
-            exports_84("zoomOutLeft", zoomOutLeft_1.zoomOutLeft);
-            exports_84("zoomOutRight", zoomOutRight_1.zoomOutRight);
-            exports_84("zoomOutUp", zoomOutUp_1.zoomOutUp);
+            exports_85("bounce", bounce_1.bounce);
+            exports_85("bounceIn", bounceIn_1.bounceIn);
+            exports_85("bounceInDown", bounceInDown_1.bounceInDown);
+            exports_85("bounceInLeft", bounceInLeft_1.bounceInLeft);
+            exports_85("bounceInRight", bounceInRight_1.bounceInRight);
+            exports_85("bounceInUp", bounceInUp_1.bounceInUp);
+            exports_85("bounceOut", bounceOut_1.bounceOut);
+            exports_85("bounceOutDown", bounceOutDown_1.bounceOutDown);
+            exports_85("bounceOutLeft", bounceOutLeft_1.bounceOutLeft);
+            exports_85("bounceOutRight", bounceOutRight_1.bounceOutRight);
+            exports_85("bounceOutUp", bounceOutUp_1.bounceOutUp);
+            exports_85("fadeIn", fadeIn_1.fadeIn);
+            exports_85("fadeInDown", fadeInDown_1.fadeInDown);
+            exports_85("fadeInDownBig", fadeInDownBig_1.fadeInDownBig);
+            exports_85("fadeInLeft", fadeInLeft_1.fadeInLeft);
+            exports_85("fadeInLeftBig", fadeInLeftBig_1.fadeInLeftBig);
+            exports_85("fadeInRight", fadeInRight_1.fadeInRight);
+            exports_85("fadeInRightBig", fadeInRightBig_1.fadeInRightBig);
+            exports_85("fadeInUp", fadeInUp_1.fadeInUp);
+            exports_85("fadeInUpBig", fadeInUpBig_1.fadeInUpBig);
+            exports_85("fadeOut", fadeOut_1.fadeOut);
+            exports_85("fadeOutDown", fadeOutDown_1.fadeOutDown);
+            exports_85("fadeOutDownBig", fadeOutDownBig_1.fadeOutDownBig);
+            exports_85("fadeOutLeft", fadeOutLeft_1.fadeOutLeft);
+            exports_85("fadeOutLeftBig", fadeOutLeftBig_1.fadeOutLeftBig);
+            exports_85("fadeOutRight", fadeOutRight_1.fadeOutRight);
+            exports_85("fadeOutRightBig", fadeOutRightBig_1.fadeOutRightBig);
+            exports_85("fadeOutUp", fadeOutUp_1.fadeOutUp);
+            exports_85("fadeOutUpBig", fadeOutUpBig_1.fadeOutUpBig);
+            exports_85("flash", flash_1.flash);
+            exports_85("flip", flip_1.flip);
+            exports_85("flipInX", flipInX_1.flipInX);
+            exports_85("flipInY", flipInY_1.flipInY);
+            exports_85("flipOutX", flipOutX_1.flipOutX);
+            exports_85("flipOutY", flipOutY_1.flipOutY);
+            exports_85("headShake", headShake_1.headShake);
+            exports_85("hinge", hinge_1.hinge);
+            exports_85("jello", jello_1.jello);
+            exports_85("lightSpeedIn", lightSpeedIn_1.lightSpeedIn);
+            exports_85("lightSpeedOut", lightSpeedOut_1.lightSpeedOut);
+            exports_85("pulse", pulse_1.pulse);
+            exports_85("rollIn", rollIn_1.rollIn);
+            exports_85("rollOut", rollOut_1.rollOut);
+            exports_85("rotateIn", rotateIn_1.rotateIn);
+            exports_85("rotateInDownLeft", rotateInDownLeft_1.rotateInDownLeft);
+            exports_85("rotateInDownRight", rotateInDownRight_1.rotateInDownRight);
+            exports_85("rotateInUpLeft", rotateInUpLeft_1.rotateInUpLeft);
+            exports_85("rotateInUpRight", rotateInUpRight_1.rotateInUpRight);
+            exports_85("rotateOut", rotateOut_1.rotateOut);
+            exports_85("rotateOutDownLeft", rotateOutDownLeft_1.rotateOutDownLeft);
+            exports_85("rotateOutDownRight", rotateOutDownRight_1.rotateOutDownRight);
+            exports_85("rotateOutUpLeft", rotateOutUpLeft_1.rotateOutUpLeft);
+            exports_85("rotateOutUpRight", rotateOutUpRight_1.rotateOutUpRight);
+            exports_85("rubberBand", rubberBand_1.rubberBand);
+            exports_85("shake", shake_1.shake);
+            exports_85("slideInDown", slideInDown_1.slideInDown);
+            exports_85("slideInLeft", slideInLeft_1.slideInLeft);
+            exports_85("slideInRight", slideInRight_1.slideInRight);
+            exports_85("slideInUp", slideInUp_1.slideInUp);
+            exports_85("slideOutDown", slideOutDown_1.slideOutDown);
+            exports_85("slideOutLeft", slideOutLeft_1.slideOutLeft);
+            exports_85("slideOutRight", slideOutRight_1.slideOutRight);
+            exports_85("slideOutUp", slideOutUp_1.slideOutUp);
+            exports_85("swing", swing_1.swing);
+            exports_85("tada", tada_1.tada);
+            exports_85("wobble", wobble_1.wobble);
+            exports_85("zoomIn", zoomIn_1.zoomIn);
+            exports_85("zoomInDown", zoomInDown_1.zoomInDown);
+            exports_85("zoomInLeft", zoomInLeft_1.zoomInLeft);
+            exports_85("zoomInRight", zoomInRight_1.zoomInRight);
+            exports_85("zoomInUp", zoomInUp_1.zoomInUp);
+            exports_85("zoomOut", zoomOut_1.zoomOut);
+            exports_85("zoomOutDown", zoomOutDown_1.zoomOutDown);
+            exports_85("zoomOutLeft", zoomOutLeft_1.zoomOutLeft);
+            exports_85("zoomOutRight", zoomOutRight_1.zoomOutRight);
+            exports_85("zoomOutUp", zoomOutUp_1.zoomOutUp);
         }
     }
 });
-System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_85, context_85) {
+System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_86, context_86) {
     "use strict";
-    var __moduleName = context_85 && context_85.id;
+    var __moduleName = context_86 && context_86.id;
     var animations;
     return {
         setters:[
@@ -4332,18 +4324,18 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
                 animations = animations_1;
             },
             function (JustAnimate_1_1) {
-                exports_85({
+                exports_86({
                     "JustAnimate": JustAnimate_1_1["JustAnimate"]
                 });
             }],
         execute: function() {
-            exports_85("animations", animations);
+            exports_86("animations", animations);
         }
     }
 });
-System.register("just-animate/core/TImingHelpers", [], function(exports_86, context_86) {
+System.register("just-animate/core/TImingHelpers", [], function(exports_87, context_87) {
     "use strict";
-    var __moduleName = context_86 && context_86.id;
+    var __moduleName = context_87 && context_87.id;
     var linear, SUBDIVISION_EPSILON;
     function bezier(n1, n2, t) {
         return 3 * n1 * (1 - t) * (1 - t) * t
@@ -4378,7 +4370,7 @@ System.register("just-animate/core/TImingHelpers", [], function(exports_86, cont
             return x;
         };
     }
-    exports_86("cubic", cubic);
+    exports_87("cubic", cubic);
     return {
         setters:[],
         execute: function() {

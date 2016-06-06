@@ -1,4 +1,3 @@
-/// <reference path="../../src/just-animate.d.ts" />
 declare module "just-animate/core/Helpers" {
     /**
      * No operation function: a placeholder
@@ -140,6 +139,15 @@ declare module "just-animate/core/Transformers" {
 }
 declare module "just-animate/easings" {
     export const easings: ja.IMap<string>;
+}
+declare module "just-animate/core/ElementResolver" {
+    /**
+     * Recursively resolves the element source from dom, selector, jquery, array, and function sources
+     *
+     * @param {ja.ElementSource} source from which to locate elements
+     * @returns {Element[]} array of elements found
+     */
+    export function resolveElements(source: ja.ElementSource): Element[];
 }
 declare module "just-animate/core/ElementAnimator" {
     /**

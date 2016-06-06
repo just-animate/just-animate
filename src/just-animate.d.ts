@@ -306,55 +306,6 @@ declare module ja {
          * @type {number}
          */
         offset?: number;
-        // css animation properties
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        '-moz-outline-radius'?: number;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        '-moz-outline-radius-bottomleft'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        '-moz-outline-radius-bottomright'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        '-moz-outline-radius-topleft'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        '-moz-outline-radius-topright'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        '-webkit-text-stroke'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        '-webkit-text-stroke-color'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        '-webkit-touch-callout'?: string;
         /**
          * (description)
          * 
@@ -583,6 +534,9 @@ declare module ja {
          * @type {string}
          */
         'columns'?: string;
+        fill?: string;
+        fillOpacity?: string;
+        fillRule?: string;
         /**
          * (description)
          * 
@@ -951,14 +905,6 @@ declare module ja {
          */
         'skew'?: string | string[];
         /**
-         * Shortform for 'transform: skew3d()'.
-         * Pass a single string to skew the same amount in all directions,
-         * or an array of 3 strings to set the X, Y, Z axes
-         * 
-         * @type {(string|string[])}
-         */
-        'skew3d'?: string | string[];
-        /**
          * Shortform for 'transform: skewX()'.
          * Pass a single string 
          * 
@@ -972,13 +918,6 @@ declare module ja {
          * @type {string}
          */
         'skewY'?: string;
-        /**
-         * Shortform for 'transform: skewZ()'.
-         * Pass a single string 
-         * 
-         * @type {string}
-         */
-        'skewZ'?: string;
         /**
          * (description)
          * 
@@ -997,6 +936,14 @@ declare module ja {
          * @type {string}
          */
         'shape-outside'?: string;
+        stroke?: string;
+        strokeDasharray?: string;
+        strokeDashoffset?: string;
+        strokeLinecap?: string;
+        strokeLinejoin?: string;
+        strokeMiterlimit?: string;
+        strokeOpacity?: number;
+        strokeWidth?: string;
         /**
          * (description)
          * 

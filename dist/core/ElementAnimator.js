@@ -1,8 +1,8 @@
-/// <reference path="../just-animate.d.ts" />
 "use strict";
 var easings_1 = require('../easings');
 var Helpers_1 = require('./Helpers');
 var Transformers_1 = require('./Transformers');
+var ElementResolver_1 = require('./ElementResolver');
 /**
  * Animates one or more elements
  *
@@ -46,7 +46,7 @@ var ElementAnimator = (function () {
         // add duration to object    
         this.duration = timings.duration;
         // get list of elements to animate
-        var elements = getElements(el);
+        var elements = ElementResolver_1.resolveElements(el);
         // call .animate on all elements and get a list of their players        
         this._animators = Helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
         // hookup finish event for when it happens naturally    
@@ -164,41 +164,3 @@ var ElementAnimator = (function () {
     return ElementAnimator;
 }());
 exports.ElementAnimator = ElementAnimator;
-/**
- * Recursively resolves the element source from dom, selector, jquery, array, and function sources
- *
- * @param {ja.ElementSource} source from which to locate elements
- * @returns {Element[]} array of elements found
- */
-function getElements(source) {
-    if (!source) {
-        throw Error('source is undefined');
-    }
-    if (Helpers_1.isString(source)) {
-        // if query selector, search for elements 
-        var nodeResults = document.querySelectorAll(source);
-        return Helpers_1.toArray(nodeResults);
-    }
-    if (source instanceof Element) {
-        // if a single element, wrap in array 
-        return [source];
-    }
-    if (Helpers_1.isFunction(source)) {
-        // if function, call it and call this function
-        var provider = source;
-        var result = provider();
-        return getElements(result);
-    }
-    if (Helpers_1.isArray(source)) {
-        // if array or jQuery object, flatten to an array
-        var elements_1 = [];
-        Helpers_1.each(source, function (i) {
-            // recursively call this function in case of nested elements
-            var innerElements = getElements(i);
-            elements_1.push.apply(elements_1, innerElements);
-        });
-        return elements_1;
-    }
-    // otherwise return empty    
-    return [];
-}

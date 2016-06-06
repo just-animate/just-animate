@@ -1,4 +1,3 @@
-/// <reference path="../just-animate.d.ts" />
 "use strict";
 var Helpers_1 = require('./Helpers');
 // fixme!: this controls the amount of time left before the timeline gives up 

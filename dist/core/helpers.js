@@ -1,4 +1,3 @@
-/// <reference path="../just-animate.d.ts" />
 "use strict";
 var ostring = Object.prototype.toString;
 var slice = Array.prototype.slice;

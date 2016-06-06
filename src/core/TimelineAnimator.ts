@@ -1,5 +1,3 @@
-/// <reference path="../just-animate.d.ts" />
-
 import {each, extend, isFunction, map} from './Helpers';
 
 // fixme!: this controls the amount of time left before the timeline gives up 
