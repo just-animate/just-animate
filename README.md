@@ -3,6 +3,10 @@
 
 `Just Animate is an easy to use Animation library that lets you add animations and *just* move on.
 
+## Documentation
+
+Check out the [Full Documentation Here](https://just-animate.github.io)
+
 ## Demos
   - [Basic Animations](http://codepen.io/notoriousb1t/pen/BjgGmY)
   - [Basic Animation with Angular 1.x](http://codepen.io/notoriousb1t/pen/Rrzvjb)
@@ -213,5 +217,4 @@
 JustAnimate is licensed under the MIT license. (http://opensource.org/licenses/MIT)
 
 ## Contributing
-Pull requests are the best way.  At this point, I am still developing the core experience, 
-but would love to hear suggestions on how to make this better.
+Pull requests are the best way.  If you have an idea, create an issue so we can talk through it.
