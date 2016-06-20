@@ -1,6 +1,6 @@
 import {easings} from '../easings';
 import {head, multiapply, map, each, extend, isFunction, isString, max} from './Helpers';
-import {keyframeTransformer} from './Transformers';
+import {keyframeTransformer, normalizeKeyframes } from './Transformers';
 import {resolveElements} from './ElementResolver';
 
 /**
@@ -72,7 +72,7 @@ export class ElementAnimator implements ja.IAnimator {
             timings = extend({}, definition.timings, timings);
         } else {
             // otherwise, translate keyframe properties
-            keyframes = map(keyframesOrName as ja.IKeyframe[], keyframeTransformer);
+            keyframes = normalizeKeyframes(map(keyframesOrName as ja.IKeyframe[], keyframeTransformer));
         }
 
         if (timings && timings.easing) {

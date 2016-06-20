@@ -58,6 +58,10 @@ function isArray(a) {
     return !isString(a) && isNumber(a.length);
 }
 exports.isArray = isArray;
+function isDefined(a) {
+    return a !== undefined && a !== null && a !== '';
+}
+exports.isDefined = isDefined;
 /**
  * Tests if object is a function
  *

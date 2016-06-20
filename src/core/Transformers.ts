@@ -1,4 +1,8 @@
-import { isNumber, isString, isArray, map, extend } from './Helpers';
+import { isDefined, isNumber, isString, isArray, map, extend } from './Helpers';
+
+const x = 0;
+const y = 1;
+const z = 2;
 
 function replaceCamelCased(match: string, p1: string, p2: string): string {
     return p1 + p2.toUpperCase();
@@ -8,32 +12,68 @@ function replaceCamelCased(match: string, p1: string, p2: string): string {
  * Handles converting animations options to a usable format
  */
 export function animationTransformer(a: ja.IAnimationOptions): ja.IAnimationOptions {
+    const keyframes = map(a.keyframes, keyframeTransformer);
     return {
-        keyframes: map(a.keyframes, keyframeTransformer),
+        keyframes: normalizeKeyframes(keyframes),
         name: a.name,
         timings: extend({}, a.timings)
-    };   
+    };
+}
+
+/**
+ * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
+ */
+export function normalizeKeyframes(keyframes: ja.IKeyframe[]): ja.IKeyframe[] {
+    const len = keyframes.length;
+
+    // don't attempt to fill animation if only two frames
+    if (len < 2) {
+        return keyframes;
+    }
+
+    const first = keyframes[0];
+    const last = keyframes[len - 1];
+
+    // fill initial keyframe
+    for (let i = 1; i < len; i++) {
+        const keyframe = keyframes[i];
+        for (let prop in keyframe) {
+            if (prop === 'offset' || isDefined(first[prop])) {
+                continue;
+            }
+            first[prop] = keyframe[prop];
+        }
+    }
+
+    // fill end keyframe
+    for (let i = len - 2; i > -1; i--) {
+        const keyframe = keyframes[i];
+        for (let prop in keyframe) {
+            if (prop === 'offset' || isDefined(last[prop])) {
+                continue;
+            }
+            last[prop] = keyframe[prop];
+        }
+    }
+
+    return keyframes;
 }
 
 /**
  * Handles transforming short hand key properties into their native form
  */
 export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
-    const x = 0;
-    const y = 1;
-    const z = 2;
-
     // transform properties
     const scale = new Array<number>(3);
     const skew = new Array<string | number>(2);
     const translate = new Array<string | number>(3);
-    
+
     const output: ja.IMap<any> = {};
     let transform = '';
- 
+
     for (let prop in keyframe) {
         const value = keyframe[prop];
-             
+
         if (value === undefined || /* tslint:disable */ value === null /* tslint:enable */ || value === '') {
             continue;
         }
@@ -150,7 +190,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
                 throw Error('rotateZ requires a string');
             case 'translate3d':
                 if (isArray(value)) {
-                    const arr = value as (number|string)[];
+                    const arr = value as (number | string)[];
                     if (arr.length !== 3) {
                         throw Error('translate3d requires x, y, & z');
                     }
@@ -168,7 +208,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
                 throw Error('translate3d requires a number, string, string[], or number[]');
             case 'translate':
                 if (isArray(value)) {
-                    const arr = value as (number|string)[];
+                    const arr = value as (number | string)[];
                     if (arr.length !== 2) {
                         throw Error('translate requires x & y');
                     }
@@ -238,7 +278,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
         transform += ` skewX(${skew[x]})`;
     } else if (isskewY) {
         transform += ` skewX(${skew[y]})`;
-    }  else {
+    } else {
         // do nothing
     }
 

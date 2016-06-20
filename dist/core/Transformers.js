@@ -1,5 +1,8 @@
 "use strict";
 var Helpers_1 = require('./Helpers');
+var x = 0;
+var y = 1;
+var z = 2;
 function replaceCamelCased(match, p1, p2) {
     return p1 + p2.toUpperCase();
 }
@@ -7,20 +10,52 @@ function replaceCamelCased(match, p1, p2) {
  * Handles converting animations options to a usable format
  */
 function animationTransformer(a) {
+    var keyframes = Helpers_1.map(a.keyframes, keyframeTransformer);
     return {
-        keyframes: Helpers_1.map(a.keyframes, keyframeTransformer),
+        keyframes: normalizeKeyframes(keyframes),
         name: a.name,
         timings: Helpers_1.extend({}, a.timings)
     };
 }
 exports.animationTransformer = animationTransformer;
 /**
+ * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
+ */
+function normalizeKeyframes(keyframes) {
+    var len = keyframes.length;
+    // don't attempt to fill animation if only two frames
+    if (len < 2) {
+        return keyframes;
+    }
+    var first = keyframes[0];
+    var last = keyframes[len - 1];
+    // fill initial keyframe
+    for (var i = 1; i < len; i++) {
+        var keyframe = keyframes[i];
+        for (var prop in keyframe) {
+            if (prop === 'offset' || Helpers_1.isDefined(first[prop])) {
+                continue;
+            }
+            first[prop] = keyframe[prop];
+        }
+    }
+    // fill end keyframe
+    for (var i = len - 2; i > -1; i--) {
+        var keyframe = keyframes[i];
+        for (var prop in keyframe) {
+            if (prop === 'offset' || Helpers_1.isDefined(last[prop])) {
+                continue;
+            }
+            last[prop] = keyframe[prop];
+        }
+    }
+    return keyframes;
+}
+exports.normalizeKeyframes = normalizeKeyframes;
+/**
  * Handles transforming short hand key properties into their native form
  */
 function keyframeTransformer(keyframe) {
-    var x = 0;
-    var y = 1;
-    var z = 2;
     // transform properties
     var scale = new Array(3);
     var skew = new Array(2);

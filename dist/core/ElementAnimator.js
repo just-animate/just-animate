@@ -34,7 +34,7 @@ var ElementAnimator = (function () {
         }
         else {
             // otherwise, translate keyframe properties
-            keyframes = Helpers_1.map(keyframesOrName, Transformers_1.keyframeTransformer);
+            keyframes = Transformers_1.normalizeKeyframes(Helpers_1.map(keyframesOrName, Transformers_1.keyframeTransformer));
         }
         if (timings && timings.easing) {
             // if timings contains an easing property, 

@@ -2,7 +2,9 @@
   "author": "christopher.j.wallis@gmail.com",
   "dependencies": {},
   "devDependencies": {
+    "chai": "^3.5.0",
     "del-cli": "^0.2.0",
+    "mocha": "^2.5.3",
     "rollup": "^0.26.1",
     "rollup-plugin-typescript": "^0.7.5",
     "tslint": "^3.10.2",
@@ -23,13 +25,14 @@
     "build-core": "rollup -c rollup-core.config.js",
     "build-commonjs": "tsc -p tsconfig-commonjs.json",
     "build-systemjs": "tsc -p tsconfig-systemjs.json && node ./scripts/systemjs-fix-namespaces",
+    "debug": "tsc -p tsconfig.json",
     "clean": "del -f ./dist",
     "minify-core": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-core.min.js dist/browser/just-animate-core.js",
     "minify-animations": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-animations.min.js dist/browser/just-animate-animations.js",
     "npm-publish": "npm run build && node ./scripts/copy-npm-resources.js && cd ./dist && npm publish",
     "prepublish": "npm run build",
     "rebuild": "npm run clean && npm run build",
-    "debug": "tsc -p tsconfig.json",
-    "start": "npm run debug"
+    "start": "npm run debug",
+    "test": "mocha"
   }
 }

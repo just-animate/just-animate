@@ -57,6 +57,10 @@ export function isArray(a: any): boolean {
     return !isString(a) && isNumber(a.length);
 }
 
+export function isDefined(a: any): boolean {
+    return a !== undefined && a !== null && a !== '';
+}
+
 /**
  * Tests if object is a function
  * 

@@ -41,6 +41,7 @@ declare module "just-animate/core/Helpers" {
      * @returns {boolean} true if is not a string and length property is a number
      */
     export function isArray(a: any): boolean;
+    export function isDefined(a: any): boolean;
     /**
      * Tests if object is a function
      *
@@ -132,6 +133,10 @@ declare module "just-animate/core/Transformers" {
      * Handles converting animations options to a usable format
      */
     export function animationTransformer(a: ja.IAnimationOptions): ja.IAnimationOptions;
+    /**
+     * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
+     */
+    export function normalizeKeyframes(keyframes: ja.IKeyframe[]): ja.IKeyframe[];
     /**
      * Handles transforming short hand key properties into their native form
      */

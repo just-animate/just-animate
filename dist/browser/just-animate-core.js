@@ -11,6 +11,9 @@
     function isArray(a) {
         return !isString(a) && isNumber(a.length);
     }
+    function isDefined(a) {
+        return a !== undefined && a !== null && a !== '';
+    }
     function isFunction(a) {
         return ostring.call(a) === '[object Function]';
     }
@@ -89,20 +92,48 @@
         return results;
     }
 
+    var x = 0;
+    var y = 1;
+    var z = 2;
     function replaceCamelCased(match, p1, p2) {
         return p1 + p2.toUpperCase();
     }
     function animationTransformer(a) {
+        var keyframes = map(a.keyframes, keyframeTransformer);
         return {
-            keyframes: map(a.keyframes, keyframeTransformer),
+            keyframes: normalizeKeyframes(keyframes),
             name: a.name,
             timings: extend({}, a.timings)
         };
     }
+    function normalizeKeyframes(keyframes) {
+        var len = keyframes.length;
+        if (len < 2) {
+            return keyframes;
+        }
+        var first = keyframes[0];
+        var last = keyframes[len - 1];
+        for (var i = 1; i < len; i++) {
+            var keyframe = keyframes[i];
+            for (var prop in keyframe) {
+                if (prop === 'offset' || isDefined(first[prop])) {
+                    continue;
+                }
+                first[prop] = keyframe[prop];
+            }
+        }
+        for (var i = len - 2; i > -1; i--) {
+            var keyframe = keyframes[i];
+            for (var prop in keyframe) {
+                if (prop === 'offset' || isDefined(last[prop])) {
+                    continue;
+                }
+                last[prop] = keyframe[prop];
+            }
+        }
+        return keyframes;
+    }
     function keyframeTransformer(keyframe) {
-        var x = 0;
-        var y = 1;
-        var z = 2;
         var scale = new Array(3);
         var skew = new Array(2);
         var translate = new Array(3);
@@ -413,7 +444,7 @@
                 timings = extend({}, definition.timings, timings);
             }
             else {
-                keyframes = map(keyframesOrName, keyframeTransformer);
+                keyframes = normalizeKeyframes(map(keyframesOrName, keyframeTransformer));
             }
             if (timings && timings.easing) {
                 var easing = easings[timings.easing];
