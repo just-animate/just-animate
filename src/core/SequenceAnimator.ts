@@ -1,4 +1,4 @@
-import {extend, isFunction, map, noop} from './Helpers';
+import {extend, isFunction, map, noop} from './utils';
 
 /**
  * (description)

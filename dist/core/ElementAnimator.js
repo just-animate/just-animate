@@ -1,6 +1,6 @@
 "use strict";
 var easings_1 = require('../easings');
-var Helpers_1 = require('./Helpers');
+var utils_1 = require('./utils');
 var Transformers_1 = require('./Transformers');
 var ElementResolver_1 = require('./ElementResolver');
 /**
@@ -25,16 +25,16 @@ var ElementAnimator = (function () {
             return;
         }
         var keyframes;
-        if (Helpers_1.isString(keyframesOrName)) {
+        if (utils_1.isString(keyframesOrName)) {
             // if keyframes is a string, lookup keyframes from registry
             var definition = manager.findAnimation(keyframesOrName);
             keyframes = definition.keyframes;
             // use registered timings as default, then load timings from params           
-            timings = Helpers_1.extend({}, definition.timings, timings);
+            timings = utils_1.extend({}, definition.timings, timings);
         }
         else {
             // otherwise, translate keyframe properties
-            keyframes = Transformers_1.normalizeKeyframes(Helpers_1.map(keyframesOrName, Transformers_1.keyframeTransformer));
+            keyframes = Transformers_1.normalizeKeyframes(utils_1.map(keyframesOrName, Transformers_1.keyframeTransformer));
         }
         if (timings && timings.easing) {
             // if timings contains an easing property, 
@@ -48,7 +48,7 @@ var ElementAnimator = (function () {
         // get list of elements to animate
         var elements = ElementResolver_1.resolveElements(el);
         // call .animate on all elements and get a list of their players        
-        this._animators = Helpers_1.multiapply(elements, 'animate', [keyframes, timings]);
+        this._animators = utils_1.multiapply(elements, 'animate', [keyframes, timings]);
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
             // todo: try to find a better way than just listening to one of them
@@ -67,14 +67,14 @@ var ElementAnimator = (function () {
          * @type {number}
          */
         get: function () {
-            var first = Helpers_1.head(this._animators);
+            var first = utils_1.head(this._animators);
             return first ? first.playbackRate : 0;
         },
         /**
          * Sets the playbackRate to the specified value
          */
         set: function (val) {
-            Helpers_1.each(this._animators, function (a) { return a.playbackRate = val; });
+            utils_1.each(this._animators, function (a) { return a.playbackRate = val; });
         },
         enumerable: true,
         configurable: true
@@ -86,13 +86,13 @@ var ElementAnimator = (function () {
          * @type {number}
          */
         get: function () {
-            return Helpers_1.max(this._animators, 'currentTime') || 0;
+            return utils_1.max(this._animators, 'currentTime') || 0;
         },
         /**
          * Sets the animation current time
          */
         set: function (elapsed) {
-            Helpers_1.each(this._animators, function (a) { return a.currentTime = elapsed; });
+            utils_1.each(this._animators, function (a) { return a.currentTime = elapsed; });
         },
         enumerable: true,
         configurable: true
@@ -105,14 +105,14 @@ var ElementAnimator = (function () {
      */
     ElementAnimator.prototype.finish = function (fn) {
         var _this = this;
-        Helpers_1.multiapply(this._animators, 'finish', [], fn);
+        utils_1.multiapply(this._animators, 'finish', [], fn);
         if (this.playbackRate < 0) {
-            Helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
+            utils_1.each(this._animators, function (a) { return a.currentTime = 0; });
         }
         else {
-            Helpers_1.each(this._animators, function (a) { return a.currentTime = _this.duration; });
+            utils_1.each(this._animators, function (a) { return a.currentTime = _this.duration; });
         }
-        if (Helpers_1.isFunction(this.onfinish)) {
+        if (utils_1.isFunction(this.onfinish)) {
             this.onfinish(this);
         }
         return this;
@@ -124,7 +124,7 @@ var ElementAnimator = (function () {
      * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.play = function (fn) {
-        Helpers_1.multiapply(this._animators, 'play', [], fn);
+        utils_1.multiapply(this._animators, 'play', [], fn);
         return this;
     };
     /**
@@ -134,7 +134,7 @@ var ElementAnimator = (function () {
      * @returns {ja.IAnimator}  this instance of Element Animator
      */
     ElementAnimator.prototype.pause = function (fn) {
-        Helpers_1.multiapply(this._animators, 'pause', [], fn);
+        utils_1.multiapply(this._animators, 'pause', [], fn);
         return this;
     };
     /**
@@ -144,7 +144,7 @@ var ElementAnimator = (function () {
      * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.reverse = function (fn) {
-        Helpers_1.multiapply(this._animators, 'reverse', [], fn);
+        utils_1.multiapply(this._animators, 'reverse', [], fn);
         return this;
     };
     /**
@@ -154,9 +154,9 @@ var ElementAnimator = (function () {
      * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.cancel = function (fn) {
-        Helpers_1.multiapply(this._animators, 'cancel', [], fn);
-        Helpers_1.each(this._animators, function (a) { return a.currentTime = 0; });
-        if (Helpers_1.isFunction(this.oncancel)) {
+        utils_1.multiapply(this._animators, 'cancel', [], fn);
+        utils_1.each(this._animators, function (a) { return a.currentTime = 0; });
+        if (utils_1.isFunction(this.oncancel)) {
             this.oncancel(this);
         }
         return this;

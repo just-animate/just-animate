@@ -1,5 +1,5 @@
 import {easings} from '../easings';
-import {head, multiapply, map, each, extend, isFunction, isString, max} from './Helpers';
+import {head, multiapply, map, each, extend, isFunction, isString, max} from './utils';
 import {keyframeTransformer, normalizeKeyframes } from './Transformers';
 import {resolveElements} from './ElementResolver';
 

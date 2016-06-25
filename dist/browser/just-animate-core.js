@@ -113,6 +113,33 @@
         }
         var first = keyframes[0];
         var last = keyframes[len - 1];
+        if (first.offset !== 0) {
+            first.offset = 0;
+        }
+        if (last.offset !== 1) {
+            last.offset = 1;
+        }
+        var lasti = len - 1;
+        for (var i = 1; i < lasti; i++) {
+            var target = keyframes[i];
+            if (isNumber(target.offset)) {
+                continue;
+            }
+            for (var j = i + 1; j < len; j++) {
+                if (!isNumber(keyframes[j].offset)) {
+                    continue;
+                }
+                var startTime = keyframes[i - 1].offset;
+                var endTime = keyframes[j].offset;
+                var timeDelta = endTime - startTime;
+                var deltaLength = j - i + 1;
+                for (var k = 1; k < deltaLength; k++) {
+                    keyframes[k - 1 + i].offset = ((k / j) * timeDelta) + startTime;
+                }
+                i = j;
+                break;
+            }
+        }
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {

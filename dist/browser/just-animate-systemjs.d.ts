@@ -1,4 +1,4 @@
-declare module "just-animate/core/Helpers" {
+declare module "just-animate/core/utils" {
     /**
      * No operation function: a placeholder
      *

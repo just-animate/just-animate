@@ -1,4 +1,4 @@
-import { isDefined, isNumber, isString, isArray, map, extend } from './Helpers';
+import { isDefined, isNumber, isString, isArray, map, extend } from './utils';
 
 const x = 0;
 const y = 1;
@@ -26,15 +26,59 @@ export function animationTransformer(a: ja.IAnimationOptions): ja.IAnimationOpti
 export function normalizeKeyframes(keyframes: ja.IKeyframe[]): ja.IKeyframe[] {
     const len = keyframes.length;
 
-    // don't attempt to fill animation if only two frames
+    // don't attempt to fill animation if less than 2 keyframes
     if (len < 2) {
         return keyframes;
     }
 
     const first = keyframes[0];
-    const last = keyframes[len - 1];
+    // ensure first offset    
+    if (first.offset !== 0) {
+        first.offset = 0;
+    }
 
-    // fill initial keyframe
+    const last = keyframes[len - 1];    
+    // ensure last offset
+    if (last.offset !== 1) {
+        last.offset = 1;
+    }
+
+    // explicitly set implicit offsets
+    const lasti = len - 1;
+    for (let i = 1; i < lasti; i++) {
+        const target = keyframes[i];
+
+        // skip entries that have an offset        
+        if (isNumber(target.offset)) {
+            continue;
+        }        
+
+        // search for the next offset with a value        
+        for (let j = i + 1; j < len; j++) {
+            // pass if offset is not set
+            if (!isNumber(keyframes[j].offset)) {
+                continue;
+            }
+            
+            // calculate timing/position info
+            const startTime = keyframes[i - 1].offset;
+            const endTime = keyframes[j].offset;
+            const timeDelta = endTime - startTime;
+            const deltaLength = j - i + 1; 
+            
+            // set the values of all keyframes between i and j (exclusive)
+            for (let k = 1; k < deltaLength; k++) {
+                // set to percentage of change over time delta + starting time
+                keyframes[k - 1 + i].offset = ((k / j) * timeDelta) + startTime;
+            }
+
+            // move i past this keyframe since all frames between should be processed
+            i = j;
+            break;
+        }
+    }
+
+    // fill initial keyframe with missing props
     for (let i = 1; i < len; i++) {
         const keyframe = keyframes[i];
         for (let prop in keyframe) {
@@ -45,7 +89,7 @@ export function normalizeKeyframes(keyframes: ja.IKeyframe[]): ja.IKeyframe[] {
         }
     }
 
-    // fill end keyframe
+    // fill end keyframe with missing props
     for (let i = len - 2; i > -1; i--) {
         const keyframe = keyframes[i];
         for (let prop in keyframe) {

@@ -1,4 +1,4 @@
-import {each, map} from './core/Helpers';
+import {each, map} from './core/utils';
 import {animationTransformer} from './core/Transformers';
 import {ElementAnimator} from './core/ElementAnimator';
 import {SequenceAnimator} from './core/SequenceAnimator';
