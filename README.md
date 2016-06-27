@@ -9,6 +9,14 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
 
 ## Demos
   - [Basic Animations](http://codepen.io/notoriousb1t/pen/BjgGmY)
+  
+<iframe height='300' scrolling='no' src='//codepen.io/notoriousb1t/embed/BjgGmY/?height=300&theme-id=16438&default-tab=html,result&embed-version=2' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='http://codepen.io/notoriousb1t/pen/BjgGmY/'>Just Animate - Basic</a> by Christopher Wallis (<a href='http://codepen.io/notoriousb1t'>@notoriousb1t</a>) on <a href='http://codepen.io'>CodePen</a>.
+</iframe>
+
+
+<p data-height="300" data-theme-id="16438" data-slug-hash="BjgGmY" data-default-tab="html,result" data-user="notoriousb1t" data-embed-version="2" class="codepen">See the Pen <a href="http://codepen.io/notoriousb1t/pen/BjgGmY/">Just Animate - Basic</a> by Christopher Wallis (<a href="http://codepen.io/notoriousb1t">@notoriousb1t</a>) on <a href="http://codepen.io">CodePen</a>.</p>
+<script async src="//assets.codepen.io/assets/embed/ei.js"></script>
+
   - [Basic Animation with Angular 1.x](http://codepen.io/notoriousb1t/pen/Rrzvjb)
   - [Basic Animation with JQuery](http://codepen.io/notoriousb1t/pen/obrmMr)
   - [Animating Multiple Elements](http://codepen.io/notoriousb1t/pen/Wwevxv)
