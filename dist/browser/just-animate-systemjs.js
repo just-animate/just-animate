@@ -263,11 +263,11 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
             return keyframes;
         }
         var first = keyframes[0];
-        var last = keyframes[len - 1];
         // ensure first offset    
         if (first.offset !== 0) {
             first.offset = 0;
         }
+        var last = keyframes[len - 1];
         // ensure last offset
         if (last.offset !== 1) {
             last.offset = 1;
@@ -280,21 +280,23 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
             if (utils_1.isNumber(target.offset)) {
                 continue;
             }
+            // search for the next offset with a value        
             for (var j = i + 1; j < len; j++) {
-                // skip if offset is not set
+                // pass if offset is not set
                 if (!utils_1.isNumber(keyframes[j].offset)) {
                     continue;
                 }
-                // find the value of the offset
+                // calculate timing/position info
                 var startTime = keyframes[i - 1].offset;
                 var endTime = keyframes[j].offset;
                 var timeDelta = endTime - startTime;
                 var deltaLength = j - i + 1;
+                // set the values of all keyframes between i and j (exclusive)
                 for (var k = 1; k < deltaLength; k++) {
-                    // percentage of change over time delta + starting time
+                    // set to percentage of change over time delta + starting time
                     keyframes[k - 1 + i].offset = ((k / j) * timeDelta) + startTime;
                 }
-                // move the i past this keyframe since all frames between should be processed
+                // move i past this keyframe since all frames between should be processed
                 i = j;
                 break;
             }

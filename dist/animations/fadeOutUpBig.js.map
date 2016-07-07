@@ -1,1 +1,0 @@
-{"version":3,"file":"fadeOutUpBig.js","sourceRoot":"","sources":["../../src/animations/fadeOutUpBig.ts"],"names":[],"mappings":";AAAa,oBAAY,GAAyB;IAChD,SAAS,EAAE;QACT;YACE,OAAO,EAAE,CAAC;YACV,SAAS,EAAE,MAAM;SAClB;QACD;YACE,OAAO,EAAE,CAAC;YACV,SAAS,EAAE,4BAA4B;SACxC;KACF;IACD,OAAO,EAAE;QACP,QAAQ,EAAE,IAAI;KACf;IACD,IAAI,EAAE,cAAc;CACrB,CAAC"}
