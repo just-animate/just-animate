@@ -1,6 +1,6 @@
-import typescript from 'rollup-plugin-typescript';
+var typescript = require('rollup-plugin-typescript');
 
-export default {
+module.exports = {
     entry: './src/just-animate-core.ts',
     dest: './dist/browser/just-animate-core.js',
     format: 'iife',

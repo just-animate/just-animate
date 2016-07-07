@@ -112,10 +112,10 @@
             return keyframes;
         }
         var first = keyframes[0];
-        var last = keyframes[len - 1];
         if (first.offset !== 0) {
             first.offset = 0;
         }
+        var last = keyframes[len - 1];
         if (last.offset !== 1) {
             last.offset = 1;
         }

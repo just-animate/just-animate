@@ -5,8 +5,8 @@
     "chai": "^3.5.0",
     "del-cli": "^0.2.0",
     "mocha": "^2.5.3",
-    "rollup": "^0.26.1",
-    "rollup-plugin-typescript": "^0.7.5",
+    "rollup": "^0.33.0",
+    "rollup-plugin-typescript": "^0.7.6",
     "tslint": "^3.10.2",
     "typescript": "^1.8.10",
     "uglify": "^0.1.5"
@@ -20,7 +20,7 @@
     "url": "https://github.com/just-animate/just-animate"
   },
   "scripts": {
-    "build": "npm run build-systemjs && npm run build-commonjs && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
+    "build": "npm run build-systemjs && npm run minify-systemjs && npm run build-commonjs && npm run build-core && npm run minify-core && npm run build-animations && npm run minify-animations",
     "build-animations": "rollup -c rollup-animations.config.js",
     "build-core": "rollup -c rollup-core.config.js",
     "build-commonjs": "tsc -p tsconfig-commonjs.json",
@@ -28,6 +28,7 @@
     "debug": "tsc -p tsconfig.json",
     "clean": "del -f ./dist",
     "minify-core": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-core.min.js dist/browser/just-animate-core.js",
+    "minify-systemjs": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-systemjs.min.js dist/browser/just-animate-systemjs.js",
     "minify-animations": "uglifyjs --c --m --screw-ie8 --o dist/browser/just-animate-animations.min.js dist/browser/just-animate-animations.js",
     "npm-publish": "npm run build && node ./scripts/copy-npm-resources.js && cd ./dist && npm publish",
     "prepublish": "npm run build",

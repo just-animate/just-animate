@@ -2,3 +2,5 @@ node_modules
 .vscode
 .idea
 .vs
+npm-debug.log*
+**/*.map

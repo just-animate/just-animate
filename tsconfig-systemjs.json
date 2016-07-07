@@ -9,7 +9,7 @@
     "removeComments": false,
     "suppressImplicitAnyIndexErrors": true,
     "outFile": "./dist/browser/just-animate-systemjs.js",
-    "declaration": true,
+    "declaration": false,
     "rootDir": "."
   },
   "exclude": [

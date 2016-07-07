@@ -28,16 +28,4 @@ replaceInFile('/../dist/browser/just-animate-systemjs.js', [
     }
 ]);
 
-// replace "src/ with "just-animate/, replace just-animate/index with just-animate
-replaceInFile('/../dist/browser/just-animate-systemjs.d.ts', [
-    {
-        pattern: /\"src\//g,
-        replacement: '"just-animate/'
-    },
-    {
-        pattern: /\"just-animate\/index\""/g,
-        replace: '"just-animate"'
-    }
-]);
-
 console.log('finished fixing namespaces')
