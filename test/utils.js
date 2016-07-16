@@ -95,4 +95,13 @@ describe('utils', function () {
     });
   });
 
+  describe('isNumber()', function () {
+    it('returns true when a number', function () {
+      assert.equal(true, utils.isNumber(1));
+    });
+    it('returns false when not a number', function () {
+      assert.equal(false, utils.isNumber('1'));
+    });
+  });
+
 });
