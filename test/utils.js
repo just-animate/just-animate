@@ -45,13 +45,53 @@ describe('utils', function () {
 
     it('returns true when an array-like object is passed', function () {
       assert.equal(true, utils.isArray({
-        0: 0,
-        length: 1
+        length: 0
       }));
     });
 
     it('returns false when a normal object is passed', function () {
       assert.equal(false, utils.isArray({}));
+    });
+  });
+
+  describe('isDefined()', function () {
+    it('returns false when undefined', function () {
+      assert.equal(false, utils.isDefined(undefined));
+      assert.equal(false, utils.isDefined(null));
+      assert.equal(false, utils.isDefined(''));
+    });
+
+    it('returns true when defined', function () {
+      assert.equal(true, utils.isDefined(' '));
+      assert.equal(true, utils.isDefined(0));
+      assert.equal(true, utils.isDefined(1));
+      assert.equal(true, utils.isDefined([]));
+      assert.equal(true, utils.isDefined({}));
+      assert.equal(true, utils.isDefined(false));
+      assert.equal(true, utils.isDefined(true));
+    });
+  });
+
+  describe('isFunction()', function () {
+    it('returns true when a function', function () {
+      assert.equal(true, utils.isFunction(function () { }));
+    });
+    it('returns true when a function', function () {
+      var s = function () { };
+      s.prototype.methodOne = function () { };
+
+      assert.equal(true, utils.isFunction(s));
+      assert.equal(true, utils.isFunction(new s().methodOne));
+    });
+
+    it('returns false when not a function', function () {
+      assert.equal(false, utils.isFunction(' '));
+      assert.equal(false, utils.isFunction(0));
+      assert.equal(false, utils.isFunction(1));
+      assert.equal(false, utils.isFunction([]));
+      assert.equal(false, utils.isFunction({}));
+      assert.equal(false, utils.isFunction(false));
+      assert.equal(false, utils.isFunction(true));
     });
   });
 
