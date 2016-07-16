@@ -8,7 +8,7 @@
     "rollup": "^0.33.0",
     "rollup-plugin-typescript": "^0.7.6",
     "tslint": "^3.10.2",
-    "typescript": "^1.8.10",
+    "typescript": "2.1.0-dev.20160715",
     "uglify": "^0.1.5"
   },
   "license": "MIT",
@@ -34,6 +34,6 @@
     "prepublish": "npm run build",
     "rebuild": "npm run clean && npm run build",
     "start": "npm run debug",
-    "test": "mocha"
+    "test": "./node_modules/.bin/mocha --reporter spec"
   }
 }
