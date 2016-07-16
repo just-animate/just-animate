@@ -13,12 +13,11 @@ function toTime(val) {
     var unit = match[3];
     var value = parseFloat(match[2]);
     var valueMs;
-    if (unit === 's') {
-        valueMs = value * 1000;
-    }
-    else if (!unit || unit === 'ms') {
-        console.log(unit);
+    if (unit === undefined || unit === 'ms') {
         valueMs = value;
+    }
+    else if (unit === 's') {
+        valueMs = value * 1000;
     }
     else {
         throw Error('bad time format');
