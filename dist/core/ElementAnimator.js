@@ -1,11 +1,11 @@
 "use strict";
 var easings_1 = require('../easings');
+var elements_1 = require('../helpers/elements');
 var functions_1 = require('../helpers/functions');
 var objects_1 = require('../helpers/objects');
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
 var Transformers_1 = require('./Transformers');
-var ElementResolver_1 = require('./ElementResolver');
 /**
  * Animates one or more elements
  *
@@ -49,15 +49,12 @@ var ElementAnimator = (function () {
         // add duration to object    
         this.duration = timings.duration;
         // get list of elements to animate
-        var elements = ElementResolver_1.resolveElements(el);
+        var elements = elements_1.queryElements(el);
         // call .animate on all elements and get a list of their players        
         this._animators = functions_1.multiapply(elements, 'animate', [keyframes, timings]);
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
             // todo: try to find a better way than just listening to one of them
-            /**
-             * (description)
-             */
             this._animators[0].onfinish = function () {
                 _this.finish();
             };

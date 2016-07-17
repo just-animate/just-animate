@@ -1,50 +1,18 @@
 import { extend } from '../helpers/objects';
-import {each, map} from '../helpers/lists';
-import {isFunction} from '../helpers/type';
+import { each, map } from '../helpers/lists';
+import { isFunction } from '../helpers/type';
 
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 const animationPadding = 1.0 / 30;
 
-/**
- * (description)
- * 
- * @export
- * @class TimelineAnimator
- * @implements {ja.IAnimator}
- */
 export class TimelineAnimator implements ja.IAnimator {
-    
-    /**
-     * (description)
-     * 
-     * @type {number}
-     */
+
     public currentTime: number;
-    /**
-     * (description)
-     * 
-     * @type {number}
-     */
     public duration: number;
-    /**
-     * (description)
-     * 
-     * @type {number}
-     */
     public playbackRate: number;
-    /**
-     * (description)
-     * 
-     * @type {ja.IConsumer<ja.IAnimator>}
-     */
     public onfinish: ja.IConsumer<ja.IAnimator>;
-    /**
-     * (description)
-     * 
-     * @type {ja.IConsumer<ja.IAnimator>}
-     */
     public oncancel: ja.IConsumer<ja.IAnimator>;
 
     private _events: TimelineEvent[];
@@ -53,7 +21,7 @@ export class TimelineAnimator implements ja.IAnimator {
     private _isCanceled: boolean;
     private _isPaused: boolean;
     private _lastTick: number;
-    private _manager: ja.IAnimationManager;  
+    private _manager: ja.IAnimationManager;
 
     /**
      * Creates an instance of TimelineAnimator.
@@ -80,24 +48,11 @@ export class TimelineAnimator implements ja.IAnimator {
             this.play();
         }
     }
-    
-    /**
-     * (description)
-     * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
+
     public finish(fn?: ja.ICallbackHandler): ja.IAnimator {
         this._isFinished = true;
         return this;
     }
-    
-    /**
-     * (description)
-     * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     public play(fn?: ja.ICallbackHandler): ja.IAnimator {
         this.playbackRate = 1;
         this._isPaused = false;
@@ -113,24 +68,12 @@ export class TimelineAnimator implements ja.IAnimator {
         window.requestAnimationFrame(this._tick);
         return this;
     }
-    /**
-     * (description)
-     * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     public pause(fn?: ja.ICallbackHandler): ja.IAnimator {
         if (this._isInEffect) {
             this._isPaused = true;
         }
         return this;
     }
-    /**
-     * (description)
-     * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     public reverse(fn?: ja.ICallbackHandler): ja.IAnimator {
         this.playbackRate = -1;
         this._isPaused = false;
@@ -145,18 +88,12 @@ export class TimelineAnimator implements ja.IAnimator {
         window.requestAnimationFrame(this._tick);
         return this;
     }
-    /**
-     * (description)
-     * 
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     public cancel(fn?: ja.ICallbackHandler): ja.IAnimator {
         this.playbackRate = 0;
         this._isCanceled = true;
         return this;
     }
-    
+
     private _tick(): void {
         // handle cancelation and finishing early
         if (this._isCanceled) {
@@ -208,7 +145,6 @@ export class TimelineAnimator implements ja.IAnimator {
 
         window.requestAnimationFrame(this._tick);
     }
-
     private _triggerFinish(): void {
         this._reset();
         each(this._events, (evt: TimelineEvent) => evt.animator.finish());
@@ -216,7 +152,6 @@ export class TimelineAnimator implements ja.IAnimator {
             this.onfinish(this);
         }
     }
-
     private _triggerCancel(): void {
         this._reset();
         each(this._events, (evt: TimelineEvent) => evt.animator.cancel());
@@ -224,7 +159,6 @@ export class TimelineAnimator implements ja.IAnimator {
             this.oncancel(this);
         }
     }
-
     private _triggerPause(): void {
         this._isPaused = true;
         this._isInEffect = false;
@@ -235,7 +169,6 @@ export class TimelineAnimator implements ja.IAnimator {
             evt.animator.pause();
         });
     }
-
     private _reset(): void {
         this.currentTime = 0;
         this._lastTick = undefined;
@@ -268,8 +201,8 @@ class TimelineEvent implements ja.ITimelineEvent {
             this._animator.pause();
         }
         return this._animator;
-    }    
-    
+    }
+
     constructor(manager: ja.IAnimationManager, timelineDuration: number, evt: ja.ITimelineEvent) {
         let keyframes: ja.IIndexed<ja.IKeyframe>;
         let timings: ja.IAnimationEffectTiming;
@@ -309,5 +242,5 @@ class TimelineEvent implements ja.ITimelineEvent {
         this.startTimeMs = startTime;
         this.timings = timings;
         this._manager = manager;
-    }    
+    }
 }

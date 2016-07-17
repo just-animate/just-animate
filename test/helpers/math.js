@@ -17,4 +17,26 @@ describe('math', function () {
         });
     });
 
+    describe('cubicBezier()', function () {
+
+        it('linear should return the same value', function () {
+            var linear = math.cubicBezier(0,0,1,1);
+
+            assert.closeTo(0, linear(0), 0.0001);
+            assert.closeTo(.25, linear(.25), 0.0001);
+            assert.closeTo(.50, linear(.50), 0.0001);
+            assert.closeTo(1, linear(1), 0.0001);
+        });
+
+        it('linear should return the same value', function () {
+            var slowmo = math.cubicBezier(0,1,1,0);
+
+            assert.equal(0, slowmo(0));
+            assert.closeTo(.345, slowmo(.07), 0.001);
+            assert.equal(.5, slowmo(.5));
+            assert.closeTo(.655, slowmo(.93), 0.001);
+            assert.equal(1, slowmo(1));
+        });
+
+    });
 });

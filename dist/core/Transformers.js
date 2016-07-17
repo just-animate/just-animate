@@ -1,13 +1,11 @@
 "use strict";
 var lists_1 = require('../helpers/lists');
 var objects_1 = require('../helpers/objects');
+var strings_1 = require('../helpers/strings');
 var type_1 = require('../helpers/type');
 var x = 0;
 var y = 1;
 var z = 2;
-function replaceCamelCased(match, p1, p2) {
-    return p1 + p2.toUpperCase();
-}
 /**
  * Handles converting animations options to a usable format
  */
@@ -103,7 +101,7 @@ function keyframeTransformer(keyframe) {
     var transform = '';
     for (var prop in keyframe) {
         var value = keyframe[prop];
-        if (value === undefined || value === null /* tslint:enable */ || value === '') {
+        if (!type_1.isDefined(value)) {
             continue;
         }
         switch (prop) {
@@ -272,7 +270,7 @@ function keyframeTransformer(keyframe) {
                 transform += ' ' + value;
                 break;
             default:
-                var prop2 = prop.replace(/([a-z])-([a-z])/ig, replaceCamelCased);
+                var prop2 = strings_1.toCamelCase(prop);
                 output[prop2] = value;
                 break;
         }

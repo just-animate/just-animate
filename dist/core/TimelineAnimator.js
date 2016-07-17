@@ -6,13 +6,6 @@ var type_1 = require('../helpers/type');
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 var animationPadding = 1.0 / 30;
-/**
- * (description)
- *
- * @export
- * @class TimelineAnimator
- * @implements {ja.IAnimator}
- */
 var TimelineAnimator = (function () {
     /**
      * Creates an instance of TimelineAnimator.
@@ -37,22 +30,10 @@ var TimelineAnimator = (function () {
             this.play();
         }
     }
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     TimelineAnimator.prototype.finish = function (fn) {
         this._isFinished = true;
         return this;
     };
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     TimelineAnimator.prototype.play = function (fn) {
         this.playbackRate = 1;
         this._isPaused = false;
@@ -68,24 +49,12 @@ var TimelineAnimator = (function () {
         window.requestAnimationFrame(this._tick);
         return this;
     };
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     TimelineAnimator.prototype.pause = function (fn) {
         if (this._isInEffect) {
             this._isPaused = true;
         }
         return this;
     };
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     TimelineAnimator.prototype.reverse = function (fn) {
         this.playbackRate = -1;
         this._isPaused = false;
@@ -98,12 +67,6 @@ var TimelineAnimator = (function () {
         window.requestAnimationFrame(this._tick);
         return this;
     };
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     TimelineAnimator.prototype.cancel = function (fn) {
         this.playbackRate = 0;
         this._isCanceled = true;

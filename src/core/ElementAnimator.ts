@@ -1,10 +1,11 @@
 import {easings} from '../easings';
-import { multiapply } from '../helpers/functions';
-import { extend } from '../helpers/objects';
+import {queryElements} from '../helpers/elements';
+import {multiapply} from '../helpers/functions';
+import {extend} from '../helpers/objects';
 import {head, map, each, max} from '../helpers/lists';
 import {isFunction, isString} from '../helpers/type';
-import {keyframeTransformer, normalizeKeyframes } from './Transformers';
-import {resolveElements} from './ElementResolver';
+import {keyframeTransformer, normalizeKeyframes} from './Transformers';
+
 
 /**
  * Animates one or more elements
@@ -32,7 +33,7 @@ export class ElementAnimator implements ja.IAnimator {
      * @type {ja.IConsumer<ja.IAnimator>}
      */
     public oncancel: ja.IConsumer<ja.IAnimator>;
-    
+
     private _animators: ja.IAnimator[];
 
     /**
@@ -49,7 +50,7 @@ export class ElementAnimator implements ja.IAnimator {
      */
     public set playbackRate(val: number) {
         each(this._animators, (a: ja.IAnimator) => a.playbackRate = val);
-    }    
+    }
 
     /**
      * Creates an instance of ElementAnimator.
@@ -59,12 +60,15 @@ export class ElementAnimator implements ja.IAnimator {
      * @param {ja.ElementSource} el element or element source to animate
      * @param {ja.IAnimationEffectTiming} [timings] optional timing overrides.  required when passing in keyframes
      */
-    constructor(manager: ja.IAnimationManager, keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, 
-                el: ja.ElementSource, timings?: ja.IAnimationEffectTiming) {
+    constructor(manager: ja.IAnimationManager, 
+                keyframesOrName: string | ja.IIndexed<ja.IKeyframe>,
+                el: ja.ElementSource, 
+                timings?: ja.IAnimationEffectTiming) {
+
         if (!keyframesOrName) {
             return;
         }
-        
+
         let keyframes: ja.IIndexed<ja.IKeyframe>;
         if (isString(keyframesOrName)) {
             // if keyframes is a string, lookup keyframes from registry
@@ -87,10 +91,10 @@ export class ElementAnimator implements ja.IAnimator {
         }
 
         // add duration to object    
-        this.duration = timings.duration;        
+        this.duration = timings.duration;
 
         // get list of elements to animate
-        const elements = resolveElements(el);
+        const elements = queryElements(el);
 
         // call .animate on all elements and get a list of their players        
         this._animators = multiapply(elements, 'animate', [keyframes, timings]) as ja.IAnimator[];
@@ -98,13 +102,10 @@ export class ElementAnimator implements ja.IAnimator {
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
             // todo: try to find a better way than just listening to one of them
-            /**
-             * (description)
-             */
             this._animators[0].onfinish = () => {
                 this.finish();
             };
-        }        
+        }
     }
 
     /**

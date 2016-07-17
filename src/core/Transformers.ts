@@ -1,14 +1,11 @@
 import { map } from '../helpers/lists';
 import { extend } from '../helpers/objects';
-import {isDefined, isNumber, isString, isArray} from '../helpers/type';
+import { toCamelCase } from '../helpers/strings';
+import { isDefined, isNumber, isString, isArray } from '../helpers/type';
 
 const x = 0;
 const y = 1;
 const z = 2;
-
-function replaceCamelCased(match: string, p1: string, p2: string): string {
-    return p1 + p2.toUpperCase();
-}
 
 /**
  * Handles converting animations options to a usable format
@@ -120,7 +117,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     for (let prop in keyframe) {
         const value = keyframe[prop];
 
-        if (value === undefined || /* tslint:disable */ value === null /* tslint:enable */ || value === '') {
+        if (!isDefined(value)) {
             continue;
         }
 
@@ -290,7 +287,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
                 transform += ' ' + value;
                 break;
             default:
-                const prop2 = prop.replace(/([a-z])-([a-z])/ig, replaceCamelCased);
+                const prop2 = toCamelCase(prop);
                 output[prop2] = value;
                 break;
         }

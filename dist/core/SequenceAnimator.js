@@ -48,12 +48,6 @@ var SequenceAnimator = (function () {
         }
     }
     Object.defineProperty(SequenceAnimator.prototype, "currentTime", {
-        /**
-         * (description)
-         *
-         * @readonly
-         * @type {number}
-         */
         get: function () {
             var currentIndex = this._currentIndex;
             var len = this._steps.length;
@@ -86,30 +80,18 @@ var SequenceAnimator = (function () {
         configurable: true
     });
     Object.defineProperty(SequenceAnimator.prototype, "duration", {
-        /**
-         * (description)
-         *
-         * @readonly
-         * @type {number}
-         */
         get: function () {
             return this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
         },
         enumerable: true,
         configurable: true
     });
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     SequenceAnimator.prototype.finish = function (fn) {
         this._errorCallback = fn;
         this._currentIndex = -1;
         for (var x = 0; x < this._steps.length; x++) {
             var step = this._steps[x];
-            if (step.animator !== undefined) {
+            if (type_1.isDefined(step.animator)) {
                 step.animator.cancel(fn);
             }
         }
@@ -118,24 +100,12 @@ var SequenceAnimator = (function () {
         }
         return this;
     };
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     SequenceAnimator.prototype.play = function (fn) {
         this._errorCallback = fn;
         this.playbackRate = 1;
         this._playThisStep();
         return this;
     };
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     SequenceAnimator.prototype.pause = function (fn) {
         this._errorCallback = fn;
         // ignore pause if not relevant
@@ -146,31 +116,19 @@ var SequenceAnimator = (function () {
         animator.pause(fn);
         return this;
     };
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     SequenceAnimator.prototype.reverse = function (fn) {
         this._errorCallback = fn;
         this.playbackRate = -1;
         this._playThisStep();
         return this;
     };
-    /**
-     * (description)
-     *
-     * @param {ja.ICallbackHandler} [fn] (description)
-     * @returns {ja.IAnimator} (description)
-     */
     SequenceAnimator.prototype.cancel = function (fn) {
         this._errorCallback = fn;
         this.playbackRate = undefined;
         this._currentIndex = -1;
         for (var x = 0; x < this._steps.length; x++) {
             var step = this._steps[x];
-            if (step.animator !== undefined) {
+            if (type_1.isDefined(step.animator)) {
                 step.animator.cancel(fn);
             }
         }
@@ -215,9 +173,7 @@ var SequenceAnimator = (function () {
             }
         }
         var animator = this._getAnimator();
-        animator.onfinish = function (evt) {
-            _this._playNextStep(evt);
-        };
+        animator.onfinish = function (evt) { _this._playNextStep(evt); };
         animator.play(this._errorCallback);
     };
     return SequenceAnimator;

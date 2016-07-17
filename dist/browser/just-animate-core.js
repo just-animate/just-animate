@@ -66,12 +66,17 @@
         return typeof a === 'string';
     }
 
+    var camelCaseRegex = /([a-z])[- ]([a-z])/ig;
+    function camelCaseReplacer(match, p1, p2) {
+        return p1 + p2.toUpperCase();
+    }
+    function toCamelCase(value) {
+        return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : undefined;
+    }
+
     var x = 0;
     var y = 1;
     var z = 2;
-    function replaceCamelCased(match, p1, p2) {
-        return p1 + p2.toUpperCase();
-    }
     function animationTransformer(a) {
         var keyframes = map(a.keyframes, keyframeTransformer);
         return {
@@ -142,7 +147,7 @@
         var transform = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
-            if (value === undefined || value === null || value === '') {
+            if (!isDefined(value)) {
                 continue;
             }
             switch (prop) {
@@ -311,7 +316,7 @@
                     transform += ' ' + value;
                     break;
                 default:
-                    var prop2 = prop.replace(/([a-z])-([a-z])/ig, replaceCamelCased);
+                    var prop2 = toCamelCase(prop);
                     output[prop2] = value;
                     break;
             }
@@ -405,6 +410,33 @@
         elegantSlowStartEnd: 'cubic-bezier(0.175, 0.885, 0.320, 1.275)'
     };
 
+    function queryElements(source) {
+        if (!source) {
+            throw Error('no elements');
+        }
+        if (isString(source)) {
+            var nodeResults = document.querySelectorAll(source);
+            return toArray(nodeResults);
+        }
+        if (source instanceof Element) {
+            return [source];
+        }
+        if (isFunction(source)) {
+            var provider = source;
+            var result = provider();
+            return queryElements(result);
+        }
+        if (isArray(source)) {
+            var elements_1 = [];
+            each(source, function (i) {
+                var innerElements = queryElements(i);
+                elements_1.push.apply(elements_1, innerElements);
+            });
+            return elements_1;
+        }
+        return [];
+    }
+
     function multiapply(targets, fnName, args, cb) {
         var errors = [];
         var results = [];
@@ -434,33 +466,6 @@
     function noop() {
     }
 
-    function resolveElements(source) {
-        if (!source) {
-            throw Error('source is undefined');
-        }
-        if (isString(source)) {
-            var nodeResults = document.querySelectorAll(source);
-            return toArray(nodeResults);
-        }
-        if (source instanceof Element) {
-            return [source];
-        }
-        if (isFunction(source)) {
-            var provider = source;
-            var result = provider();
-            return resolveElements(result);
-        }
-        if (isArray(source)) {
-            var elements_1 = [];
-            each(source, function (i) {
-                var innerElements = resolveElements(i);
-                elements_1.push.apply(elements_1, innerElements);
-            });
-            return elements_1;
-        }
-        return [];
-    }
-
     var ElementAnimator = (function () {
         function ElementAnimator(manager, keyframesOrName, el, timings) {
             var _this = this;
@@ -483,7 +488,7 @@
                 }
             }
             this.duration = timings.duration;
-            var elements = resolveElements(el);
+            var elements = queryElements(el);
             this._animators = multiapply(elements, 'animate', [keyframes, timings]);
             if (this._animators.length > 0) {
                 this._animators[0].onfinish = function () {
@@ -618,7 +623,7 @@
             this._currentIndex = -1;
             for (var x = 0; x < this._steps.length; x++) {
                 var step = this._steps[x];
-                if (step.animator !== undefined) {
+                if (isDefined(step.animator)) {
                     step.animator.cancel(fn);
                 }
             }
@@ -654,7 +659,7 @@
             this._currentIndex = -1;
             for (var x = 0; x < this._steps.length; x++) {
                 var step = this._steps[x];
-                if (step.animator !== undefined) {
+                if (isDefined(step.animator)) {
                     step.animator.cancel(fn);
                 }
             }
@@ -699,9 +704,7 @@
                 }
             }
             var animator = this._getAnimator();
-            animator.onfinish = function (evt) {
-                _this._playNextStep(evt);
-            };
+            animator.onfinish = function (evt) { _this._playNextStep(evt); };
             animator.play(this._errorCallback);
         };
         return SequenceAnimator;
