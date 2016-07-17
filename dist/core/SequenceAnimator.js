@@ -1,5 +1,7 @@
 "use strict";
-var utils_1 = require('./utils');
+var objects_1 = require('../helpers/objects');
+var lists_1 = require('../helpers/lists');
+var type_1 = require('../helpers/type');
 /**
  * (description)
  *
@@ -21,14 +23,14 @@ var SequenceAnimator = (function () {
          * @param {ja.ISequenceEvent} step (description)
          * @returns (description)
          */
-        var steps = utils_1.map(options.steps, function (step) {
+        var steps = lists_1.map(options.steps, function (step) {
             if (step.command || !step.name) {
                 return step;
             }
             var definition = manager.findAnimation(step.name);
-            var timings = utils_1.extend({}, definition.timings);
+            var timings = objects_1.extend({}, definition.timings);
             if (step.timings) {
-                timings = utils_1.extend(timings, step.timings);
+                timings = objects_1.extend(timings, step.timings);
             }
             return {
                 el: step.el,
@@ -36,7 +38,7 @@ var SequenceAnimator = (function () {
                 timings: definition.timings
             };
         });
-        this.onfinish = utils_1.noop;
+        this.onfinish = lists_1.noop;
         this._currentIndex = -1;
         this._manager = manager;
         this._steps = steps;
@@ -110,7 +112,7 @@ var SequenceAnimator = (function () {
                 step.animator.cancel(fn);
             }
         }
-        if (utils_1.isFunction(this.onfinish)) {
+        if (type_1.isFunction(this.onfinish)) {
             this.onfinish(this);
         }
         return this;
@@ -171,7 +173,7 @@ var SequenceAnimator = (function () {
                 step.animator.cancel(fn);
             }
         }
-        if (utils_1.isFunction(this.oncancel)) {
+        if (type_1.isFunction(this.oncancel)) {
             this.oncancel(this);
         }
         return this;

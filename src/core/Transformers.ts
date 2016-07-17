@@ -1,4 +1,6 @@
-import { isDefined, isNumber, isString, isArray, map, extend } from './utils';
+import { map } from '../helpers/lists';
+import { extend } from '../helpers/objects';
+import {isDefined, isNumber, isString, isArray} from '../helpers/type';
 
 const x = 0;
 const y = 1;

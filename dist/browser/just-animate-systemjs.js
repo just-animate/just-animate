@@ -2974,174 +2974,9 @@ System.register("just-animate/easings", [], function(exports_78, context_78) {
         }
     }
 });
-System.register("just-animate/core/utils", [], function(exports_79, context_79) {
+System.register("just-animate/helpers/objects", [], function(exports_79, context_79) {
     "use strict";
     var __moduleName = context_79 && context_79.id;
-    var ostring, slice;
-    /**
-     * No operation function: a placeholder
-     *
-     * @export
-     */
-    function noop() {
-        // do nothing
-    }
-    exports_79("noop", noop);
-    /**
-     * Clamps a number between the min and max
-     *
-     * @export
-     * @param {number} val number to clamp
-     * @param {number} min min number allowed
-     * @param {number} max max number allowed
-     * @returns {number} val if between min-max, min if lesser, max if greater
-     */
-    function clamp(val, min, max) {
-        return val === undefined ? undefined : val < min ? min : val > max ? max : val;
-    }
-    exports_79("clamp", clamp);
-    /**
-     * Returns the first object in the list or undefined
-     *
-     * @export
-     * @template T
-     * @param {ja.IIndexed<T>} indexed list of objects
-     * @returns {T} first object in the list or undefined
-     */
-    function head(indexed) {
-        return (!indexed || indexed.length < 1) ? undefined : indexed[0];
-    }
-    exports_79("head", head);
-    /**
-     * Returns the last object in the list or undefined
-     *
-     * @export
-     * @template T
-     * @param {ja.IIndexed<T>} indexed list of objects
-     * @returns {T} last object in the list or undefined
-     */
-    function tail(indexed) {
-        return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
-    }
-    exports_79("tail", tail);
-    /**
-     * Tests if object is a list
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if is not a string and length property is a number
-     */
-    function isArray(a) {
-        return !isString(a) && isNumber(a.length);
-    }
-    exports_79("isArray", isArray);
-    function isDefined(a) {
-        return a !== undefined && a !== null && a !== '';
-    }
-    exports_79("isDefined", isDefined);
-    /**
-     * Tests if object is a function
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if object.toString reports it as a Function
-     */
-    function isFunction(a) {
-        return ostring.call(a) === '[object Function]';
-    }
-    exports_79("isFunction", isFunction);
-    /**
-     * Tests if object is a number
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if the object is typeof number
-     */
-    function isNumber(a) {
-        return typeof a === 'number';
-    }
-    exports_79("isNumber", isNumber);
-    /**
-     * Tests if object is a string
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if object is typeof string
-     */
-    function isString(a) {
-        return typeof a === 'string';
-    }
-    exports_79("isString", isString);
-    /**
-     * Converts list to an Array.
-     * Useful for converting NodeList and arguments to []
-     *
-     * @export
-     * @template T
-     * @param {ja.IIndexed<T>} list to convert
-     * @returns {T[]} array clone of list
-     */
-    function toArray(indexed) {
-        return slice.call(indexed, 0);
-    }
-    exports_79("toArray", toArray);
-    /**
-     * Performs the function against all objects in the list
-     *
-     * @export
-     * @template T1
-     * @param {ja.IIndexed<T1>} items list of objects
-     * @param {ja.IConsumer<T1>} fn function to execute for each object
-     */
-    function each(items, fn) {
-        for (var i = 0, len = items.length; i < len; i++) {
-            fn(items[i]);
-        }
-    }
-    exports_79("each", each);
-    /**
-     * Returns the max value of a given property in a list
-     *
-     * @export
-     * @template T1
-     * @param {ja.IIndexed<T1>} items list of objects
-     * @param {string} propertyName property to evaluate
-     * @returns {*} max value of the property provided
-     */
-    function max(items, propertyName) {
-        var max = '';
-        for (var i = 0, len = items.length; i < len; i++) {
-            var item = items[i];
-            var prop = item[propertyName];
-            if (max < prop) {
-                max = prop;
-            }
-        }
-        return max;
-    }
-    exports_79("max", max);
-    /**
-     * Maps one list of objects to another.
-     * Returning undefined skips the item (effectively filtering it)
-     *
-     * @export
-     * @template T1
-     * @template T2
-     * @param {ja.IIndexed<T1>} items list of objects to map
-     * @param {ja.IMapper<T1, T2>} fn function that maps each object
-     * @returns {T2[]} new list of objects
-     */
-    function map(items, fn) {
-        var results = [];
-        for (var i = 0, len = items.length; i < len; i++) {
-            var result = fn(items[i]);
-            if (result !== undefined) {
-                results.push(result);
-            }
-        }
-        return results;
-    }
-    exports_79("map", map);
     /**
      * Extends the first object with the properties of each subsequent object
      *
@@ -3164,6 +2999,179 @@ System.register("just-animate/core/utils", [], function(exports_79, context_79) 
         return target;
     }
     exports_79("extend", extend);
+    return {
+        setters:[],
+        execute: function() {
+        }
+    }
+});
+System.register("just-animate/helpers/type", [], function(exports_80, context_80) {
+    "use strict";
+    var __moduleName = context_80 && context_80.id;
+    var ostring;
+    /**
+     * Tests if object is a list
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if is not a string and length property is a number
+     */
+    function isArray(a) {
+        return !isString(a) && isNumber(a.length);
+    }
+    exports_80("isArray", isArray);
+    function isDefined(a) {
+        return a !== undefined && a !== null && a !== '';
+    }
+    exports_80("isDefined", isDefined);
+    /**
+     * Tests if object is a function
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object.toString reports it as a Function
+     */
+    function isFunction(a) {
+        return ostring.call(a) === '[object Function]';
+    }
+    exports_80("isFunction", isFunction);
+    /**
+     * Tests if object is a number
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if the object is typeof number
+     */
+    function isNumber(a) {
+        return typeof a === 'number';
+    }
+    exports_80("isNumber", isNumber);
+    /**
+     * Tests if object is a string
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object is typeof string
+     */
+    function isString(a) {
+        return typeof a === 'string';
+    }
+    exports_80("isString", isString);
+    return {
+        setters:[],
+        execute: function() {
+            ostring = Object.prototype.toString;
+        }
+    }
+});
+System.register("just-animate/helpers/lists", ["just-animate/helpers/type"], function(exports_81, context_81) {
+    "use strict";
+    var __moduleName = context_81 && context_81.id;
+    var type_1;
+    var slice;
+    /**
+     * No operation function: a placeholder
+     *
+     * @export
+     */
+    function noop() {
+        // do nothing
+    }
+    exports_81("noop", noop);
+    /**
+     * Returns the first object in the list or undefined
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} indexed list of objects
+     * @returns {T} first object in the list or undefined
+     */
+    function head(indexed) {
+        return (!indexed || indexed.length < 1) ? undefined : indexed[0];
+    }
+    exports_81("head", head);
+    /**
+     * Returns the last object in the list or undefined
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} indexed list of objects
+     * @returns {T} last object in the list or undefined
+     */
+    function tail(indexed) {
+        return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
+    }
+    exports_81("tail", tail);
+    /**
+     * Converts list to an Array.
+     * Useful for converting NodeList and arguments to []
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} list to convert
+     * @returns {T[]} array clone of list
+     */
+    function toArray(indexed) {
+        return slice.call(indexed, 0);
+    }
+    exports_81("toArray", toArray);
+    /**
+     * Performs the function against all objects in the list
+     *
+     * @export
+     * @template T1
+     * @param {ja.IIndexed<T1>} items list of objects
+     * @param {ja.IConsumer<T1>} fn function to execute for each object
+     */
+    function each(items, fn) {
+        for (var i = 0, len = items.length; i < len; i++) {
+            fn(items[i]);
+        }
+    }
+    exports_81("each", each);
+    /**
+     * Returns the max value of a given property in a list
+     *
+     * @export
+     * @template T1
+     * @param {ja.IIndexed<T1>} items list of objects
+     * @param {string} propertyName property to evaluate
+     * @returns {*} max value of the property provided
+     */
+    function max(items, propertyName) {
+        var max = '';
+        for (var i = 0, len = items.length; i < len; i++) {
+            var item = items[i];
+            var prop = item[propertyName];
+            if (max < prop) {
+                max = prop;
+            }
+        }
+        return max;
+    }
+    exports_81("max", max);
+    /**
+     * Maps one list of objects to another.
+     * Returning undefined skips the item (effectively filtering it)
+     *
+     * @export
+     * @template T1
+     * @template T2
+     * @param {ja.IIndexed<T1>} items list of objects to map
+     * @param {ja.IMapper<T1, T2>} fn function that maps each object
+     * @returns {T2[]} new list of objects
+     */
+    function map(items, fn) {
+        var results = [];
+        for (var i = 0, len = items.length; i < len; i++) {
+            var result = fn(items[i]);
+            if (result !== undefined) {
+                results.push(result);
+            }
+        }
+        return results;
+    }
+    exports_81("map", map);
     /**
      * Calls the named function for each object in the list
      *
@@ -3195,24 +3203,26 @@ System.register("just-animate/core/utils", [], function(exports_79, context_79) 
                 errors.push(err);
             }
         }
-        if (isFunction(cb)) {
+        if (type_1.isFunction(cb)) {
             cb(errors);
         }
         return results;
     }
-    exports_79("multiapply", multiapply);
+    exports_81("multiapply", multiapply);
     return {
-        setters:[],
+        setters:[
+            function (type_1_1) {
+                type_1 = type_1_1;
+            }],
         execute: function() {
-            ostring = Object.prototype.toString;
             slice = Array.prototype.slice;
         }
     }
 });
-System.register("just-animate/core/Transformers", ["just-animate/core/utils"], function(exports_80, context_80) {
+System.register("just-animate/core/Transformers", ["just-animate/helpers/lists", "just-animate/helpers/objects", "just-animate/helpers/type"], function(exports_82, context_82) {
     "use strict";
-    var __moduleName = context_80 && context_80.id;
-    var utils_1;
+    var __moduleName = context_82 && context_82.id;
+    var lists_1, objects_1, type_2;
     var x, y, z;
     function replaceCamelCased(match, p1, p2) {
         return p1 + p2.toUpperCase();
@@ -3221,14 +3231,14 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
      * Handles converting animations options to a usable format
      */
     function animationTransformer(a) {
-        var keyframes = utils_1.map(a.keyframes, keyframeTransformer);
+        var keyframes = lists_1.map(a.keyframes, keyframeTransformer);
         return {
             keyframes: normalizeKeyframes(keyframes),
             name: a.name,
-            timings: utils_1.extend({}, a.timings)
+            timings: objects_1.extend({}, a.timings)
         };
     }
-    exports_80("animationTransformer", animationTransformer);
+    exports_82("animationTransformer", animationTransformer);
     /**
      * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
      */
@@ -3253,13 +3263,13 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
         for (var i = 1; i < lasti; i++) {
             var target = keyframes[i];
             // skip entries that have an offset        
-            if (utils_1.isNumber(target.offset)) {
+            if (type_2.isNumber(target.offset)) {
                 continue;
             }
             // search for the next offset with a value        
             for (var j = i + 1; j < len; j++) {
                 // pass if offset is not set
-                if (!utils_1.isNumber(keyframes[j].offset)) {
+                if (!type_2.isNumber(keyframes[j].offset)) {
                     continue;
                 }
                 // calculate timing/position info
@@ -3281,7 +3291,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === 'offset' || utils_1.isDefined(first[prop])) {
+                if (prop === 'offset' || type_2.isDefined(first[prop])) {
                     continue;
                 }
                 first[prop] = keyframe[prop];
@@ -3291,7 +3301,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
         for (var i = len - 2; i > -1; i--) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === 'offset' || utils_1.isDefined(last[prop])) {
+                if (prop === 'offset' || type_2.isDefined(last[prop])) {
                     continue;
                 }
                 last[prop] = keyframe[prop];
@@ -3299,7 +3309,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
         }
         return keyframes;
     }
-    exports_80("normalizeKeyframes", normalizeKeyframes);
+    exports_82("normalizeKeyframes", normalizeKeyframes);
     /**
      * Handles transforming short hand key properties into their native form
      */
@@ -3317,7 +3327,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
             }
             switch (prop) {
                 case 'scale3d':
-                    if (utils_1.isArray(value)) {
+                    if (type_2.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 3) {
                             throw Error('scale3d requires x, y, & z');
@@ -3327,7 +3337,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
                         scale[z] = arr[z];
                         continue;
                     }
-                    if (utils_1.isNumber(value)) {
+                    if (type_2.isNumber(value)) {
                         scale[x] = value;
                         scale[y] = value;
                         scale[z] = value;
@@ -3335,7 +3345,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
                     }
                     throw Error('scale3d requires a number or number[]');
                 case 'scale':
-                    if (utils_1.isArray(value)) {
+                    if (type_2.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
                             throw Error('scale requires x & y');
@@ -3344,32 +3354,32 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
                         scale[y] = arr[y];
                         continue;
                     }
-                    if (utils_1.isNumber(value)) {
+                    if (type_2.isNumber(value)) {
                         scale[x] = value;
                         scale[y] = value;
                         continue;
                     }
                     throw Error('scale requires a number or number[]');
                 case 'scaleX':
-                    if (utils_1.isNumber(value)) {
+                    if (type_2.isNumber(value)) {
                         scale[x] = value;
                         continue;
                     }
                     throw Error('scaleX requires a number');
                 case 'scaleY':
-                    if (utils_1.isNumber(value)) {
+                    if (type_2.isNumber(value)) {
                         scale[y] = value;
                         continue;
                     }
                     throw Error('scaleY requires a number');
                 case 'scaleZ':
-                    if (utils_1.isNumber(value)) {
+                    if (type_2.isNumber(value)) {
                         scale[z] = value;
                         continue;
                     }
                     throw Error('scaleZ requires a number');
                 case 'skew':
-                    if (utils_1.isArray(value)) {
+                    if (type_2.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
                             throw Error('skew requires x & y');
@@ -3378,26 +3388,26 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
                         skew[y] = arr[y];
                         continue;
                     }
-                    if (utils_1.isNumber(value)) {
+                    if (type_2.isNumber(value)) {
                         skew[x] = value;
                         skew[y] = value;
                         continue;
                     }
                     throw Error('skew requires a number, string, string[], or number[]');
                 case 'skewX':
-                    if (utils_1.isString(value)) {
+                    if (type_2.isString(value)) {
                         skew[x] = value;
                         continue;
                     }
                     throw Error('skewX requires a number or string');
                 case 'skewY':
-                    if (utils_1.isString(value)) {
+                    if (type_2.isString(value)) {
                         skew[y] = value;
                         continue;
                     }
                     throw Error('skewY requires a number or string');
                 case 'rotate3d':
-                    if (utils_1.isArray(value)) {
+                    if (type_2.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 4) {
                             throw Error('rotate3d requires x, y, z, & a');
@@ -3407,26 +3417,26 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
                     }
                     throw Error('rotate3d requires an []');
                 case 'rotateX':
-                    if (utils_1.isString(value)) {
+                    if (type_2.isString(value)) {
                         transform += " rotate3d(1, 0, 0, " + value + ")";
                         continue;
                     }
                     throw Error('rotateX requires a string');
                 case 'rotateY':
-                    if (utils_1.isString(value)) {
+                    if (type_2.isString(value)) {
                         transform += " rotate3d(0, 1, 0, " + value + ")";
                         continue;
                     }
                     throw Error('rotateY requires a string');
                 case 'rotate':
                 case 'rotateZ':
-                    if (utils_1.isString(value)) {
+                    if (type_2.isString(value)) {
                         transform += " rotate3d(0, 0, 1, " + value + ")";
                         continue;
                     }
                     throw Error('rotateZ requires a string');
                 case 'translate3d':
-                    if (utils_1.isArray(value)) {
+                    if (type_2.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 3) {
                             throw Error('translate3d requires x, y, & z');
@@ -3436,7 +3446,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
                         translate[z] = arr[z];
                         continue;
                     }
-                    if (utils_1.isString(value) || utils_1.isNumber(value)) {
+                    if (type_2.isString(value) || type_2.isNumber(value)) {
                         translate[x] = value;
                         translate[y] = value;
                         translate[z] = value;
@@ -3444,7 +3454,7 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
                     }
                     throw Error('translate3d requires a number, string, string[], or number[]');
                 case 'translate':
-                    if (utils_1.isArray(value)) {
+                    if (type_2.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
                             throw Error('translate requires x & y');
@@ -3453,26 +3463,26 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
                         translate[y] = arr[y];
                         continue;
                     }
-                    if (utils_1.isString(value) || utils_1.isNumber(value)) {
+                    if (type_2.isString(value) || type_2.isNumber(value)) {
                         translate[x] = value;
                         translate[y] = value;
                         continue;
                     }
                     throw Error('translate requires a number, string, string[], or number[]');
                 case 'translateX':
-                    if (utils_1.isString(value) || utils_1.isNumber(value)) {
+                    if (type_2.isString(value) || type_2.isNumber(value)) {
                         translate[x] = value;
                         continue;
                     }
                     throw Error('translateX requires a number or string');
                 case 'translateY':
-                    if (utils_1.isString(value) || utils_1.isNumber(value)) {
+                    if (type_2.isString(value) || type_2.isNumber(value)) {
                         translate[y] = value;
                         continue;
                     }
                     throw Error('translateY requires a number or string');
                 case 'translateZ':
-                    if (utils_1.isString(value) || utils_1.isNumber(value)) {
+                    if (type_2.isString(value) || type_2.isNumber(value)) {
                         translate[z] = value;
                         continue;
                     }
@@ -3549,11 +3559,17 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
         }
         return output;
     }
-    exports_80("keyframeTransformer", keyframeTransformer);
+    exports_82("keyframeTransformer", keyframeTransformer);
     return {
         setters:[
-            function (utils_1_1) {
-                utils_1 = utils_1_1;
+            function (lists_1_1) {
+                lists_1 = lists_1_1;
+            },
+            function (objects_1_1) {
+                objects_1 = objects_1_1;
+            },
+            function (type_2_1) {
+                type_2 = type_2_1;
             }],
         execute: function() {
             x = 0;
@@ -3562,10 +3578,10 @@ System.register("just-animate/core/Transformers", ["just-animate/core/utils"], f
         }
     }
 });
-System.register("just-animate/core/ElementResolver", ["just-animate/core/utils"], function(exports_81, context_81) {
+System.register("just-animate/core/ElementResolver", ["just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_83, context_83) {
     "use strict";
-    var __moduleName = context_81 && context_81.id;
-    var utils_2;
+    var __moduleName = context_83 && context_83.id;
+    var lists_2, type_3;
     /**
      * Recursively resolves the element source from dom, selector, jquery, array, and function sources
      *
@@ -3576,25 +3592,25 @@ System.register("just-animate/core/ElementResolver", ["just-animate/core/utils"]
         if (!source) {
             throw Error('source is undefined');
         }
-        if (utils_2.isString(source)) {
+        if (type_3.isString(source)) {
             // if query selector, search for elements 
             var nodeResults = document.querySelectorAll(source);
-            return utils_2.toArray(nodeResults);
+            return lists_2.toArray(nodeResults);
         }
         if (source instanceof Element) {
             // if a single element, wrap in array 
             return [source];
         }
-        if (utils_2.isFunction(source)) {
+        if (type_3.isFunction(source)) {
             // if function, call it and call this function
             var provider = source;
             var result = provider();
             return resolveElements(result);
         }
-        if (utils_2.isArray(source)) {
+        if (type_3.isArray(source)) {
             // if array or jQuery object, flatten to an array
             var elements_1 = [];
-            utils_2.each(source, function (i) {
+            lists_2.each(source, function (i) {
                 // recursively call this function in case of nested elements
                 var innerElements = resolveElements(i);
                 elements_1.push.apply(elements_1, innerElements);
@@ -3604,28 +3620,37 @@ System.register("just-animate/core/ElementResolver", ["just-animate/core/utils"]
         // otherwise return empty    
         return [];
     }
-    exports_81("resolveElements", resolveElements);
+    exports_83("resolveElements", resolveElements);
     return {
         setters:[
-            function (utils_2_1) {
-                utils_2 = utils_2_1;
+            function (lists_2_1) {
+                lists_2 = lists_2_1;
+            },
+            function (type_3_1) {
+                type_3 = type_3_1;
             }],
         execute: function() {
         }
     }
 });
-System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/core/utils", "just-animate/core/Transformers", "just-animate/core/ElementResolver"], function(exports_82, context_82) {
+System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/core/Transformers", "just-animate/core/ElementResolver"], function(exports_84, context_84) {
     "use strict";
-    var __moduleName = context_82 && context_82.id;
-    var easings_1, utils_3, Transformers_1, ElementResolver_1;
+    var __moduleName = context_84 && context_84.id;
+    var easings_1, objects_2, lists_3, type_4, Transformers_1, ElementResolver_1;
     var ElementAnimator;
     return {
         setters:[
             function (easings_1_1) {
                 easings_1 = easings_1_1;
             },
-            function (utils_3_1) {
-                utils_3 = utils_3_1;
+            function (objects_2_1) {
+                objects_2 = objects_2_1;
+            },
+            function (lists_3_1) {
+                lists_3 = lists_3_1;
+            },
+            function (type_4_1) {
+                type_4 = type_4_1;
             },
             function (Transformers_1_1) {
                 Transformers_1 = Transformers_1_1;
@@ -3656,16 +3681,16 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                         return;
                     }
                     var keyframes;
-                    if (utils_3.isString(keyframesOrName)) {
+                    if (type_4.isString(keyframesOrName)) {
                         // if keyframes is a string, lookup keyframes from registry
                         var definition = manager.findAnimation(keyframesOrName);
                         keyframes = definition.keyframes;
                         // use registered timings as default, then load timings from params           
-                        timings = utils_3.extend({}, definition.timings, timings);
+                        timings = objects_2.extend({}, definition.timings, timings);
                     }
                     else {
                         // otherwise, translate keyframe properties
-                        keyframes = Transformers_1.normalizeKeyframes(utils_3.map(keyframesOrName, Transformers_1.keyframeTransformer));
+                        keyframes = Transformers_1.normalizeKeyframes(lists_3.map(keyframesOrName, Transformers_1.keyframeTransformer));
                     }
                     if (timings && timings.easing) {
                         // if timings contains an easing property, 
@@ -3679,7 +3704,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                     // get list of elements to animate
                     var elements = ElementResolver_1.resolveElements(el);
                     // call .animate on all elements and get a list of their players        
-                    this._animators = utils_3.multiapply(elements, 'animate', [keyframes, timings]);
+                    this._animators = lists_3.multiapply(elements, 'animate', [keyframes, timings]);
                     // hookup finish event for when it happens naturally    
                     if (this._animators.length > 0) {
                         // todo: try to find a better way than just listening to one of them
@@ -3698,14 +3723,14 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                      * @type {number}
                      */
                     get: function () {
-                        var first = utils_3.head(this._animators);
+                        var first = lists_3.head(this._animators);
                         return first ? first.playbackRate : 0;
                     },
                     /**
                      * Sets the playbackRate to the specified value
                      */
                     set: function (val) {
-                        utils_3.each(this._animators, function (a) { return a.playbackRate = val; });
+                        lists_3.each(this._animators, function (a) { return a.playbackRate = val; });
                     },
                     enumerable: true,
                     configurable: true
@@ -3717,13 +3742,13 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                      * @type {number}
                      */
                     get: function () {
-                        return utils_3.max(this._animators, 'currentTime') || 0;
+                        return lists_3.max(this._animators, 'currentTime') || 0;
                     },
                     /**
                      * Sets the animation current time
                      */
                     set: function (elapsed) {
-                        utils_3.each(this._animators, function (a) { return a.currentTime = elapsed; });
+                        lists_3.each(this._animators, function (a) { return a.currentTime = elapsed; });
                     },
                     enumerable: true,
                     configurable: true
@@ -3736,14 +3761,14 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  */
                 ElementAnimator.prototype.finish = function (fn) {
                     var _this = this;
-                    utils_3.multiapply(this._animators, 'finish', [], fn);
+                    lists_3.multiapply(this._animators, 'finish', [], fn);
                     if (this.playbackRate < 0) {
-                        utils_3.each(this._animators, function (a) { return a.currentTime = 0; });
+                        lists_3.each(this._animators, function (a) { return a.currentTime = 0; });
                     }
                     else {
-                        utils_3.each(this._animators, function (a) { return a.currentTime = _this.duration; });
+                        lists_3.each(this._animators, function (a) { return a.currentTime = _this.duration; });
                     }
-                    if (utils_3.isFunction(this.onfinish)) {
+                    if (type_4.isFunction(this.onfinish)) {
                         this.onfinish(this);
                     }
                     return this;
@@ -3755,7 +3780,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.play = function (fn) {
-                    utils_3.multiapply(this._animators, 'play', [], fn);
+                    lists_3.multiapply(this._animators, 'play', [], fn);
                     return this;
                 };
                 /**
@@ -3765,7 +3790,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator}  this instance of Element Animator
                  */
                 ElementAnimator.prototype.pause = function (fn) {
-                    utils_3.multiapply(this._animators, 'pause', [], fn);
+                    lists_3.multiapply(this._animators, 'pause', [], fn);
                     return this;
                 };
                 /**
@@ -3775,7 +3800,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.reverse = function (fn) {
-                    utils_3.multiapply(this._animators, 'reverse', [], fn);
+                    lists_3.multiapply(this._animators, 'reverse', [], fn);
                     return this;
                 };
                 /**
@@ -3785,28 +3810,34 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.cancel = function (fn) {
-                    utils_3.multiapply(this._animators, 'cancel', [], fn);
-                    utils_3.each(this._animators, function (a) { return a.currentTime = 0; });
-                    if (utils_3.isFunction(this.oncancel)) {
+                    lists_3.multiapply(this._animators, 'cancel', [], fn);
+                    lists_3.each(this._animators, function (a) { return a.currentTime = 0; });
+                    if (type_4.isFunction(this.oncancel)) {
                         this.oncancel(this);
                     }
                     return this;
                 };
                 return ElementAnimator;
             }());
-            exports_82("ElementAnimator", ElementAnimator);
+            exports_84("ElementAnimator", ElementAnimator);
         }
     }
 });
-System.register("just-animate/core/SequenceAnimator", ["just-animate/core/utils"], function(exports_83, context_83) {
+System.register("just-animate/core/SequenceAnimator", ["just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_85, context_85) {
     "use strict";
-    var __moduleName = context_83 && context_83.id;
-    var utils_4;
+    var __moduleName = context_85 && context_85.id;
+    var objects_3, lists_4, type_5;
     var SequenceAnimator;
     return {
         setters:[
-            function (utils_4_1) {
-                utils_4 = utils_4_1;
+            function (objects_3_1) {
+                objects_3 = objects_3_1;
+            },
+            function (lists_4_1) {
+                lists_4 = lists_4_1;
+            },
+            function (type_5_1) {
+                type_5 = type_5_1;
             }],
         execute: function() {
             /**
@@ -3830,14 +3861,14 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/utils"
                      * @param {ja.ISequenceEvent} step (description)
                      * @returns (description)
                      */
-                    var steps = utils_4.map(options.steps, function (step) {
+                    var steps = lists_4.map(options.steps, function (step) {
                         if (step.command || !step.name) {
                             return step;
                         }
                         var definition = manager.findAnimation(step.name);
-                        var timings = utils_4.extend({}, definition.timings);
+                        var timings = objects_3.extend({}, definition.timings);
                         if (step.timings) {
-                            timings = utils_4.extend(timings, step.timings);
+                            timings = objects_3.extend(timings, step.timings);
                         }
                         return {
                             el: step.el,
@@ -3845,7 +3876,7 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/utils"
                             timings: definition.timings
                         };
                     });
-                    this.onfinish = utils_4.noop;
+                    this.onfinish = lists_4.noop;
                     this._currentIndex = -1;
                     this._manager = manager;
                     this._steps = steps;
@@ -3919,7 +3950,7 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/utils"
                             step.animator.cancel(fn);
                         }
                     }
-                    if (utils_4.isFunction(this.onfinish)) {
+                    if (type_5.isFunction(this.onfinish)) {
                         this.onfinish(this);
                     }
                     return this;
@@ -3980,7 +4011,7 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/utils"
                             step.animator.cancel(fn);
                         }
                     }
-                    if (utils_4.isFunction(this.oncancel)) {
+                    if (type_5.isFunction(this.oncancel)) {
                         this.oncancel(this);
                     }
                     return this;
@@ -4028,19 +4059,25 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/core/utils"
                 };
                 return SequenceAnimator;
             }());
-            exports_83("SequenceAnimator", SequenceAnimator);
+            exports_85("SequenceAnimator", SequenceAnimator);
         }
     }
 });
-System.register("just-animate/core/TimelineAnimator", ["just-animate/core/utils"], function(exports_84, context_84) {
+System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_86, context_86) {
     "use strict";
-    var __moduleName = context_84 && context_84.id;
-    var utils_5;
+    var __moduleName = context_86 && context_86.id;
+    var objects_4, lists_5, type_6;
     var animationPadding, TimelineAnimator, TimelineEvent;
     return {
         setters:[
-            function (utils_5_1) {
-                utils_5 = utils_5_1;
+            function (objects_4_1) {
+                objects_4 = objects_4_1;
+            },
+            function (lists_5_1) {
+                lists_5 = lists_5_1;
+            },
+            function (type_6_1) {
+                type_6 = type_6_1;
             }],
         execute: function() {
             // fixme!: this controls the amount of time left before the timeline gives up 
@@ -4069,7 +4106,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/utils"
                     this.playbackRate = 0;
                     this.duration = options.duration;
                     this.currentTime = 0;
-                    this._events = utils_5.map(options.events, function (evt) { return new TimelineEvent(manager, duration, evt); });
+                    this._events = lists_5.map(options.events, function (evt) { return new TimelineEvent(manager, duration, evt); });
                     this._isPaused = false;
                     this._manager = manager;
                     // ensure context of tick is this instance        
@@ -4182,7 +4219,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/utils"
                         return;
                     }
                     // start animations if should be active and currently aren't        
-                    utils_5.each(this._events, function (evt) {
+                    lists_5.each(this._events, function (evt) {
                         var startTimeMs = _this.playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
                         var endTimeMs = _this.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
                         var shouldBeActive = startTimeMs <= _this.currentTime && _this.currentTime < endTimeMs;
@@ -4198,15 +4235,15 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/utils"
                 };
                 TimelineAnimator.prototype._triggerFinish = function () {
                     this._reset();
-                    utils_5.each(this._events, function (evt) { return evt.animator.finish(); });
-                    if (utils_5.isFunction(this.onfinish)) {
+                    lists_5.each(this._events, function (evt) { return evt.animator.finish(); });
+                    if (type_6.isFunction(this.onfinish)) {
                         this.onfinish(this);
                     }
                 };
                 TimelineAnimator.prototype._triggerCancel = function () {
                     this._reset();
-                    utils_5.each(this._events, function (evt) { return evt.animator.cancel(); });
-                    if (utils_5.isFunction(this.oncancel)) {
+                    lists_5.each(this._events, function (evt) { return evt.animator.cancel(); });
+                    if (type_6.isFunction(this.oncancel)) {
                         this.oncancel(this);
                     }
                 };
@@ -4215,7 +4252,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/utils"
                     this._isInEffect = false;
                     this._lastTick = undefined;
                     this.playbackRate = 0;
-                    utils_5.each(this._events, function (evt) {
+                    lists_5.each(this._events, function (evt) {
                         evt.isInEffect = false;
                         evt.animator.pause();
                     });
@@ -4227,13 +4264,13 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/utils"
                     this._isFinished = false;
                     this._isPaused = false;
                     this._isInEffect = false;
-                    utils_5.each(this._events, function (evt) {
+                    lists_5.each(this._events, function (evt) {
                         evt.isInEffect = false;
                     });
                 };
                 return TimelineAnimator;
             }());
-            exports_84("TimelineAnimator", TimelineAnimator);
+            exports_86("TimelineAnimator", TimelineAnimator);
             TimelineEvent = (function () {
                 function TimelineEvent(manager, timelineDuration, evt) {
                     var keyframes;
@@ -4241,9 +4278,9 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/utils"
                     var el;
                     if (evt.name) {
                         var definition = manager.findAnimation(evt.name);
-                        var timings2 = utils_5.extend({}, definition.timings);
+                        var timings2 = objects_4.extend({}, definition.timings);
                         if (evt.timings) {
-                            timings = utils_5.extend(timings2, evt.timings);
+                            timings = objects_4.extend(timings2, evt.timings);
                         }
                         keyframes = definition.keyframes;
                         timings = timings2;
@@ -4288,9 +4325,9 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/core/utils"
         }
     }
 });
-System.register("just-animate/core/TImingHelpers", [], function(exports_85, context_85) {
+System.register("just-animate/core/TImingHelpers", [], function(exports_87, context_87) {
     "use strict";
-    var __moduleName = context_85 && context_85.id;
+    var __moduleName = context_87 && context_87.id;
     var linear, SUBDIVISION_EPSILON;
     function bezier(n1, n2, t) {
         return 3 * n1 * (1 - t) * (1 - t) * t
@@ -4325,7 +4362,7 @@ System.register("just-animate/core/TImingHelpers", [], function(exports_85, cont
             return x;
         };
     }
-    exports_85("cubic", cubic);
+    exports_87("cubic", cubic);
     return {
         setters:[],
         execute: function() {
@@ -4334,57 +4371,37 @@ System.register("just-animate/core/TImingHelpers", [], function(exports_85, cont
         }
     }
 });
-System.register("just-animate/core/types", ["just-animate/core/utils"], function(exports_86, context_86) {
+System.register("just-animate/helpers/math", [], function(exports_88, context_88) {
     "use strict";
-    var __moduleName = context_86 && context_86.id;
-    var utils_6;
-    var matcher;
-    function toTime(val) {
-        if (utils_6.isNumber(val)) {
-            return {
-                operator: '=',
-                value: val
-            };
-        }
-        var match = matcher.exec(val);
-        var operator = match[1] || '=';
-        var unit = match[3];
-        var value = parseFloat(match[2]);
-        var valueMs;
-        if (unit === undefined || unit === 'ms') {
-            valueMs = value;
-        }
-        else if (unit === 's') {
-            valueMs = value * 1000;
-        }
-        else {
-            throw Error('bad time format');
-        }
-        return {
-            operator: operator,
-            value: valueMs
-        };
+    var __moduleName = context_88 && context_88.id;
+    /**
+     * Clamps a number between the min and max
+     *
+     * @export
+     * @param {number} val number to clamp
+     * @param {number} min min number allowed
+     * @param {number} max max number allowed
+     * @returns {number} val if between min-max, min if lesser, max if greater
+     */
+    function clamp(val, min, max) {
+        return val === undefined ? undefined : val < min ? min : val > max ? max : val;
     }
-    exports_86("toTime", toTime);
+    exports_88("clamp", clamp);
     return {
-        setters:[
-            function (utils_6_1) {
-                utils_6 = utils_6_1;
-            }],
+        setters:[],
         execute: function() {
-            matcher = /([+-][=]){0,1}([0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
         }
     }
 });
-System.register("just-animate/JustAnimate", ["just-animate/core/utils", "just-animate/core/Transformers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_87, context_87) {
+System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just-animate/core/Transformers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_89, context_89) {
     "use strict";
-    var __moduleName = context_87 && context_87.id;
-    var utils_7, Transformers_2, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
+    var __moduleName = context_89 && context_89.id;
+    var lists_6, Transformers_2, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
     var DEFAULT_ANIMATIONS, JustAnimate;
     return {
         setters:[
-            function (utils_7_1) {
-                utils_7 = utils_7_1;
+            function (lists_6_1) {
+                lists_6 = lists_6_1;
             },
             function (Transformers_2_1) {
                 Transformers_2 = Transformers_2_1;
@@ -4414,7 +4431,7 @@ System.register("just-animate/JustAnimate", ["just-animate/core/utils", "just-an
                 function JustAnimate() {
                     var _this = this;
                     this._registry = {};
-                    utils_7.each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
+                    lists_6.each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
                 }
                 /**
                  * (description)
@@ -4423,7 +4440,7 @@ System.register("just-animate/JustAnimate", ["just-animate/core/utils", "just-an
                  * @param {ja.IAnimationOptions[]} animations (description)
                  */
                 JustAnimate.inject = function (animations) {
-                    Array.prototype.push.apply(DEFAULT_ANIMATIONS, utils_7.map(animations, Transformers_2.animationTransformer));
+                    Array.prototype.push.apply(DEFAULT_ANIMATIONS, lists_6.map(animations, Transformers_2.animationTransformer));
                 };
                 /**
                  * (description)
@@ -4475,13 +4492,13 @@ System.register("just-animate/JustAnimate", ["just-animate/core/utils", "just-an
                 };
                 return JustAnimate;
             }());
-            exports_87("JustAnimate", JustAnimate);
+            exports_89("JustAnimate", JustAnimate);
         }
     }
 });
-System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_88, context_88) {
+System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_90, context_90) {
     "use strict";
-    var __moduleName = context_88 && context_88.id;
+    var __moduleName = context_90 && context_90.id;
     var animations;
     return {
         setters:[
@@ -4489,12 +4506,70 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
                 animations = animations_1;
             },
             function (JustAnimate_1_1) {
-                exports_88({
+                exports_90({
                     "JustAnimate": JustAnimate_1_1["JustAnimate"]
                 });
             }],
         execute: function() {
-            exports_88("animations", animations);
+            exports_90("animations", animations);
+        }
+    }
+});
+System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], function(exports_91, context_91) {
+    "use strict";
+    var __moduleName = context_91 && context_91.id;
+    var type_7;
+    var timeExpression, Time;
+    return {
+        setters:[
+            function (type_7_1) {
+                type_7 = type_7_1;
+            }],
+        execute: function() {
+            timeExpression = /([+-][=]){0,1}([0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
+            Time = (function () {
+                function Time(value, stagger) {
+                    this.value = value;
+                    this.stagger = stagger;
+                }
+                Time.from = function (val) {
+                    if (type_7.isNumber(val)) {
+                        return new Time(val, Time.STAGGER_NONE);
+                    }
+                    var match = timeExpression.exec(val);
+                    var operator = match[1] || '=';
+                    var unit = match[3];
+                    var value = parseFloat(match[2]);
+                    var valueMs;
+                    if (unit === undefined || unit === 'ms') {
+                        valueMs = value;
+                    }
+                    else if (unit === 's') {
+                        valueMs = value * 1000;
+                    }
+                    else {
+                        throw Error('bad time format');
+                    }
+                    var operatorEnum;
+                    switch (operator) {
+                        case '+=':
+                            operatorEnum = Time.STAGGER_INCREASE;
+                            break;
+                        case '-=':
+                            operatorEnum = Time.STAGGER_DECREASE;
+                            break;
+                        default:
+                            operatorEnum = Time.STAGGER_NONE;
+                            break;
+                    }
+                    return new Time(valueMs, operatorEnum);
+                };
+                Time.STAGGER_NONE = 0;
+                Time.STAGGER_INCREASE = 1;
+                Time.STAGGER_DECREASE = -1;
+                return Time;
+            }());
+            exports_91("Time", Time);
         }
     }
 });

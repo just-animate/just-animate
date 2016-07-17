@@ -1,4 +1,6 @@
-import {extend, isFunction, map, noop} from './utils';
+import { extend } from '../helpers/objects';
+import { map, noop} from '../helpers/lists';
+import {isFunction} from '../helpers/type';
 
 /**
  * (description)

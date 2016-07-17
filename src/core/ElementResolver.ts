@@ -1,4 +1,5 @@
-import {each, isArray, isFunction, isString, toArray} from './utils';
+import {each, toArray} from '../helpers/lists';
+import {isArray, isFunction, isString} from '../helpers/type';
 
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources

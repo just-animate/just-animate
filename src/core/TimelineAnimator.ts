@@ -1,4 +1,6 @@
-import {each, extend, isFunction, map} from './utils';
+import { extend } from '../helpers/objects';
+import {each, map} from '../helpers/lists';
+import {isFunction} from '../helpers/type';
 
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks

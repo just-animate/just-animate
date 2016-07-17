@@ -1,4 +1,4 @@
-const ostring = Object.prototype.toString;
+import {isFunction} from './type';
 const slice = Array.prototype.slice;
 
 /**
@@ -10,18 +10,6 @@ export function noop(): void {
     // do nothing
 }
 
-/**
- * Clamps a number between the min and max
- * 
- * @export
- * @param {number} val number to clamp
- * @param {number} min min number allowed
- * @param {number} max max number allowed
- * @returns {number} val if between min-max, min if lesser, max if greater
- */
-export function clamp(val: number, min: number, max: number): number {
-    return val === undefined ? undefined : val < min ? min : val > max ? max : val;
-}
 
 /**
  * Returns the first object in the list or undefined
@@ -46,53 +34,6 @@ export function tail<T>(indexed: ja.IIndexed<T>): T {
     return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
 }
 
-/**
- * Tests if object is a list
- * 
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if is not a string and length property is a number
- */
-export function isArray(a: any): boolean {
-    return !isString(a) && isNumber(a.length);
-}
-
-export function isDefined(a: any): boolean {
-    return a !== undefined && a !== null && a !== '';
-}
-
-/**
- * Tests if object is a function
- * 
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if object.toString reports it as a Function
- */
-export function isFunction(a: any): boolean {
-    return ostring.call(a) === '[object Function]';
-}
-
-/**
- * Tests if object is a number
- * 
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if the object is typeof number
- */
-export function isNumber(a: any): boolean {
-    return typeof a === 'number';
-}
-
-/**
- * Tests if object is a string
- * 
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if object is typeof string
- */
-export function isString(a: any): boolean {
-    return typeof a === 'string';
-}
 
 /**
  * Converts list to an Array.
@@ -162,24 +103,6 @@ export function map<T1, T2>(items: ja.IIndexed<T1>, fn: ja.IMapper<T1, T2>): T2[
         }
     }
     return results;
-}
-
-/**
- * Extends the first object with the properties of each subsequent object
- * 
- * @export
- * @param {*} target object to extend
- * @param {...any[]} sources sources from which to inherit properties
- * @returns {*} first object
- */
-export function extend(target: any, ...sources: any[]): any {
-    for (let i = 1, len = arguments.length; i < len; i++) {
-        const source = arguments[i];
-        for (let propName in source) {
-            target[propName] = source[propName];
-        }
-    }
-    return target;
 }
 
 /**

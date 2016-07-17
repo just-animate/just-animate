@@ -2,12 +2,6 @@
     'use strict';
 
     var ostring = Object.prototype.toString;
-    var slice = Array.prototype.slice;
-    function noop() {
-    }
-    function head(indexed) {
-        return (!indexed || indexed.length < 1) ? undefined : indexed[0];
-    }
     function isArray(a) {
         return !isString(a) && isNumber(a.length);
     }
@@ -22,6 +16,13 @@
     }
     function isString(a) {
         return typeof a === 'string';
+    }
+
+    var slice = Array.prototype.slice;
+    function noop() {
+    }
+    function head(indexed) {
+        return (!indexed || indexed.length < 1) ? undefined : indexed[0];
     }
     function toArray(indexed) {
         return slice.call(indexed, 0);
@@ -52,19 +53,6 @@
         }
         return results;
     }
-    function extend(target) {
-        var sources = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            sources[_i - 1] = arguments[_i];
-        }
-        for (var i = 1, len = arguments.length; i < len; i++) {
-            var source = arguments[i];
-            for (var propName in source) {
-                target[propName] = source[propName];
-            }
-        }
-        return target;
-    }
     function multiapply(targets, fnName, args, cb) {
         var errors = [];
         var results = [];
@@ -90,6 +78,20 @@
             cb(errors);
         }
         return results;
+    }
+
+    function extend(target) {
+        var sources = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            sources[_i - 1] = arguments[_i];
+        }
+        for (var i = 1, len = arguments.length; i < len; i++) {
+            var source = arguments[i];
+            for (var propName in source) {
+                target[propName] = source[propName];
+            }
+        }
+        return target;
     }
 
     var x = 0;

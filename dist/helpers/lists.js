@@ -1,5 +1,5 @@
 "use strict";
-var ostring = Object.prototype.toString;
+var type_1 = require('./type');
 var slice = Array.prototype.slice;
 /**
  * No operation function: a placeholder
@@ -10,19 +10,6 @@ function noop() {
     // do nothing
 }
 exports.noop = noop;
-/**
- * Clamps a number between the min and max
- *
- * @export
- * @param {number} val number to clamp
- * @param {number} min min number allowed
- * @param {number} max max number allowed
- * @returns {number} val if between min-max, min if lesser, max if greater
- */
-function clamp(val, min, max) {
-    return val === undefined ? undefined : val < min ? min : val > max ? max : val;
-}
-exports.clamp = clamp;
 /**
  * Returns the first object in the list or undefined
  *
@@ -47,54 +34,6 @@ function tail(indexed) {
     return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
 }
 exports.tail = tail;
-/**
- * Tests if object is a list
- *
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if is not a string and length property is a number
- */
-function isArray(a) {
-    return !isString(a) && isNumber(a.length);
-}
-exports.isArray = isArray;
-function isDefined(a) {
-    return a !== undefined && a !== null && a !== '';
-}
-exports.isDefined = isDefined;
-/**
- * Tests if object is a function
- *
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if object.toString reports it as a Function
- */
-function isFunction(a) {
-    return ostring.call(a) === '[object Function]';
-}
-exports.isFunction = isFunction;
-/**
- * Tests if object is a number
- *
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if the object is typeof number
- */
-function isNumber(a) {
-    return typeof a === 'number';
-}
-exports.isNumber = isNumber;
-/**
- * Tests if object is a string
- *
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if object is typeof string
- */
-function isString(a) {
-    return typeof a === 'string';
-}
-exports.isString = isString;
 /**
  * Converts list to an Array.
  * Useful for converting NodeList and arguments to []
@@ -166,28 +105,6 @@ function map(items, fn) {
 }
 exports.map = map;
 /**
- * Extends the first object with the properties of each subsequent object
- *
- * @export
- * @param {*} target object to extend
- * @param {...any[]} sources sources from which to inherit properties
- * @returns {*} first object
- */
-function extend(target) {
-    var sources = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        sources[_i - 1] = arguments[_i];
-    }
-    for (var i = 1, len = arguments.length; i < len; i++) {
-        var source = arguments[i];
-        for (var propName in source) {
-            target[propName] = source[propName];
-        }
-    }
-    return target;
-}
-exports.extend = extend;
-/**
  * Calls the named function for each object in the list
  *
  * @export
@@ -218,7 +135,7 @@ function multiapply(targets, fnName, args, cb) {
             errors.push(err);
         }
     }
-    if (isFunction(cb)) {
+    if (type_1.isFunction(cb)) {
         cb(errors);
     }
     return results;
