@@ -1,5 +1,8 @@
-var assert = require('chai').assert;
-var utils = require('../dist/core/utils.js')
+var chai = require('chai');
+var utils = require('../dist/core/utils.js');
+
+var assert = chai.assert;
+var expect = chai.expect;
 
 describe('utils', function () {
 
@@ -103,5 +106,79 @@ describe('utils', function () {
       assert.equal(false, utils.isNumber('1'));
     });
   });
+
+  describe('isString()', function () {
+    it('returns true when a string', function () {
+      assert.equal(true, utils.isString(''));
+    });
+    it('returns false when not a string', function () {
+      assert.equal(false, utils.isString(null));
+    });
+  });
+
+  describe('toArray()', function () {
+    it('returns an array from an array like structure', function () {
+      expect(utils.toArray({ length: 0 })).to.deep.equal([]);
+    });
+  });  
+
+  describe('each()', function () {
+    it('iterates over each item', function () {
+      var initial = [1, 2, 3];
+      var result = [];
+      utils.each(initial, (i) => result.push(i));
+      expect(result).to.deep.equal(initial);
+    });
+  });  
+
+  describe('max()', function () {
+    it('returns the max value for a property in an array of items', function () {
+      var source = [
+        { value: 10 },
+        { value: 6078 },
+        { value: -30 }
+      ];
+      assert(6078, utils.max(source, 'value'));
+    });
+  });  
+
+  describe('map()', function () {
+    it('maps an array of items', function () {
+      var source = [
+        { letter: 't' },
+        { letter: 'e' },
+        { letter: 's' },
+        { letter: undefined },
+        { letter: 't' }
+      ];
+      assert.equal('test', utils.map(source, i => i.letter).join(''));
+    });
+  });  
+
+  describe('extend()', function () {
+    it('combines objects together', function () {
+      var first = { first: 'Jane' };
+      var last = { last: 'Smith' };
+      var name = utils.extend(first, last);
+
+      assert.equal(first, name);      
+      assert.equal('Jane Smith', name.first + ' ' + name.last);
+    });
+  });  
+
+  describe('multiapply()', function () {
+    it('calls the same function on all objects in an array', function () {
+      var result = '';
+      var source = [
+        { execute() { result += 'Jane' } },
+        { execute() { result += ' ' } },
+        { execute() { result += 'Smith' } },
+      ];
+
+      utils.multiapply(source, 'execute');
+
+      assert.equal('Jane Smith', result);
+    });
+  });  
 
 });
