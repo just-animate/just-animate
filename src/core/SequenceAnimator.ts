@@ -1,5 +1,6 @@
 import { extend } from '../helpers/objects';
-import { map, noop} from '../helpers/lists';
+import { noop } from '../helpers/functions';
+import { map} from '../helpers/lists';
 import {isFunction} from '../helpers/type';
 
 /**

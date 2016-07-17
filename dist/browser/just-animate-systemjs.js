@@ -2974,40 +2974,9 @@ System.register("just-animate/easings", [], function(exports_78, context_78) {
         }
     }
 });
-System.register("just-animate/helpers/objects", [], function(exports_79, context_79) {
+System.register("just-animate/helpers/type", [], function(exports_79, context_79) {
     "use strict";
     var __moduleName = context_79 && context_79.id;
-    /**
-     * Extends the first object with the properties of each subsequent object
-     *
-     * @export
-     * @param {*} target object to extend
-     * @param {...any[]} sources sources from which to inherit properties
-     * @returns {*} first object
-     */
-    function extend(target) {
-        var sources = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            sources[_i - 1] = arguments[_i];
-        }
-        for (var i = 1, len = arguments.length; i < len; i++) {
-            var source = arguments[i];
-            for (var propName in source) {
-                target[propName] = source[propName];
-            }
-        }
-        return target;
-    }
-    exports_79("extend", extend);
-    return {
-        setters:[],
-        execute: function() {
-        }
-    }
-});
-System.register("just-animate/helpers/type", [], function(exports_80, context_80) {
-    "use strict";
-    var __moduleName = context_80 && context_80.id;
     var ostring;
     /**
      * Tests if object is a list
@@ -3019,11 +2988,11 @@ System.register("just-animate/helpers/type", [], function(exports_80, context_80
     function isArray(a) {
         return !isString(a) && isNumber(a.length);
     }
-    exports_80("isArray", isArray);
+    exports_79("isArray", isArray);
     function isDefined(a) {
         return a !== undefined && a !== null && a !== '';
     }
-    exports_80("isDefined", isDefined);
+    exports_79("isDefined", isDefined);
     /**
      * Tests if object is a function
      *
@@ -3034,7 +3003,7 @@ System.register("just-animate/helpers/type", [], function(exports_80, context_80
     function isFunction(a) {
         return ostring.call(a) === '[object Function]';
     }
-    exports_80("isFunction", isFunction);
+    exports_79("isFunction", isFunction);
     /**
      * Tests if object is a number
      *
@@ -3045,7 +3014,7 @@ System.register("just-animate/helpers/type", [], function(exports_80, context_80
     function isNumber(a) {
         return typeof a === 'number';
     }
-    exports_80("isNumber", isNumber);
+    exports_79("isNumber", isNumber);
     /**
      * Tests if object is a string
      *
@@ -3056,7 +3025,7 @@ System.register("just-animate/helpers/type", [], function(exports_80, context_80
     function isString(a) {
         return typeof a === 'string';
     }
-    exports_80("isString", isString);
+    exports_79("isString", isString);
     return {
         setters:[],
         execute: function() {
@@ -3064,114 +3033,10 @@ System.register("just-animate/helpers/type", [], function(exports_80, context_80
         }
     }
 });
-System.register("just-animate/helpers/lists", ["just-animate/helpers/type"], function(exports_81, context_81) {
+System.register("just-animate/helpers/functions", ["just-animate/helpers/type"], function(exports_80, context_80) {
     "use strict";
-    var __moduleName = context_81 && context_81.id;
+    var __moduleName = context_80 && context_80.id;
     var type_1;
-    var slice;
-    /**
-     * No operation function: a placeholder
-     *
-     * @export
-     */
-    function noop() {
-        // do nothing
-    }
-    exports_81("noop", noop);
-    /**
-     * Returns the first object in the list or undefined
-     *
-     * @export
-     * @template T
-     * @param {ja.IIndexed<T>} indexed list of objects
-     * @returns {T} first object in the list or undefined
-     */
-    function head(indexed) {
-        return (!indexed || indexed.length < 1) ? undefined : indexed[0];
-    }
-    exports_81("head", head);
-    /**
-     * Returns the last object in the list or undefined
-     *
-     * @export
-     * @template T
-     * @param {ja.IIndexed<T>} indexed list of objects
-     * @returns {T} last object in the list or undefined
-     */
-    function tail(indexed) {
-        return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
-    }
-    exports_81("tail", tail);
-    /**
-     * Converts list to an Array.
-     * Useful for converting NodeList and arguments to []
-     *
-     * @export
-     * @template T
-     * @param {ja.IIndexed<T>} list to convert
-     * @returns {T[]} array clone of list
-     */
-    function toArray(indexed) {
-        return slice.call(indexed, 0);
-    }
-    exports_81("toArray", toArray);
-    /**
-     * Performs the function against all objects in the list
-     *
-     * @export
-     * @template T1
-     * @param {ja.IIndexed<T1>} items list of objects
-     * @param {ja.IConsumer<T1>} fn function to execute for each object
-     */
-    function each(items, fn) {
-        for (var i = 0, len = items.length; i < len; i++) {
-            fn(items[i]);
-        }
-    }
-    exports_81("each", each);
-    /**
-     * Returns the max value of a given property in a list
-     *
-     * @export
-     * @template T1
-     * @param {ja.IIndexed<T1>} items list of objects
-     * @param {string} propertyName property to evaluate
-     * @returns {*} max value of the property provided
-     */
-    function max(items, propertyName) {
-        var max = '';
-        for (var i = 0, len = items.length; i < len; i++) {
-            var item = items[i];
-            var prop = item[propertyName];
-            if (max < prop) {
-                max = prop;
-            }
-        }
-        return max;
-    }
-    exports_81("max", max);
-    /**
-     * Maps one list of objects to another.
-     * Returning undefined skips the item (effectively filtering it)
-     *
-     * @export
-     * @template T1
-     * @template T2
-     * @param {ja.IIndexed<T1>} items list of objects to map
-     * @param {ja.IMapper<T1, T2>} fn function that maps each object
-     * @returns {T2[]} new list of objects
-     */
-    function map(items, fn) {
-        var results = [];
-        for (var i = 0, len = items.length; i < len; i++) {
-            var result = fn(items[i]);
-            if (result !== undefined) {
-                results.push(result);
-            }
-        }
-        return results;
-    }
-    exports_81("map", map);
     /**
      * Calls the named function for each object in the list
      *
@@ -3208,20 +3073,164 @@ System.register("just-animate/helpers/lists", ["just-animate/helpers/type"], fun
         }
         return results;
     }
-    exports_81("multiapply", multiapply);
+    exports_80("multiapply", multiapply);
+    /**
+     * No operation function: a placeholder
+     *
+     * @export
+     */
+    function noop() {
+        // do nothing
+    }
+    exports_80("noop", noop);
     return {
         setters:[
             function (type_1_1) {
                 type_1 = type_1_1;
             }],
         execute: function() {
+        }
+    }
+});
+System.register("just-animate/helpers/objects", [], function(exports_81, context_81) {
+    "use strict";
+    var __moduleName = context_81 && context_81.id;
+    /**
+     * Extends the first object with the properties of each subsequent object
+     *
+     * @export
+     * @param {*} target object to extend
+     * @param {...any[]} sources sources from which to inherit properties
+     * @returns {*} first object
+     */
+    function extend(target) {
+        var sources = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            sources[_i - 1] = arguments[_i];
+        }
+        for (var i = 1, len = arguments.length; i < len; i++) {
+            var source = arguments[i];
+            for (var propName in source) {
+                target[propName] = source[propName];
+            }
+        }
+        return target;
+    }
+    exports_81("extend", extend);
+    return {
+        setters:[],
+        execute: function() {
+        }
+    }
+});
+System.register("just-animate/helpers/lists", [], function(exports_82, context_82) {
+    "use strict";
+    var __moduleName = context_82 && context_82.id;
+    var slice;
+    /**
+     * Returns the first object in the list or undefined
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} indexed list of objects
+     * @returns {T} first object in the list or undefined
+     */
+    function head(indexed) {
+        return (!indexed || indexed.length < 1) ? undefined : indexed[0];
+    }
+    exports_82("head", head);
+    /**
+     * Returns the last object in the list or undefined
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} indexed list of objects
+     * @returns {T} last object in the list or undefined
+     */
+    function tail(indexed) {
+        return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
+    }
+    exports_82("tail", tail);
+    /**
+     * Converts list to an Array.
+     * Useful for converting NodeList and arguments to []
+     *
+     * @export
+     * @template T
+     * @param {ja.IIndexed<T>} list to convert
+     * @returns {T[]} array clone of list
+     */
+    function toArray(indexed) {
+        return slice.call(indexed, 0);
+    }
+    exports_82("toArray", toArray);
+    /**
+     * Performs the function against all objects in the list
+     *
+     * @export
+     * @template T1
+     * @param {ja.IIndexed<T1>} items list of objects
+     * @param {ja.IConsumer<T1>} fn function to execute for each object
+     */
+    function each(items, fn) {
+        for (var i = 0, len = items.length; i < len; i++) {
+            fn(items[i]);
+        }
+    }
+    exports_82("each", each);
+    /**
+     * Returns the max value of a given property in a list
+     *
+     * @export
+     * @template T1
+     * @param {ja.IIndexed<T1>} items list of objects
+     * @param {string} propertyName property to evaluate
+     * @returns {*} max value of the property provided
+     */
+    function max(items, propertyName) {
+        var max = '';
+        for (var i = 0, len = items.length; i < len; i++) {
+            var item = items[i];
+            var prop = item[propertyName];
+            if (max < prop) {
+                max = prop;
+            }
+        }
+        return max;
+    }
+    exports_82("max", max);
+    /**
+     * Maps one list of objects to another.
+     * Returning undefined skips the item (effectively filtering it)
+     *
+     * @export
+     * @template T1
+     * @template T2
+     * @param {ja.IIndexed<T1>} items list of objects to map
+     * @param {ja.IMapper<T1, T2>} fn function that maps each object
+     * @returns {T2[]} new list of objects
+     */
+    function map(items, fn) {
+        var results = [];
+        for (var i = 0, len = items.length; i < len; i++) {
+            var result = fn(items[i]);
+            if (result !== undefined) {
+                results.push(result);
+            }
+        }
+        return results;
+    }
+    exports_82("map", map);
+    return {
+        setters:[],
+        execute: function() {
             slice = Array.prototype.slice;
         }
     }
 });
-System.register("just-animate/core/Transformers", ["just-animate/helpers/lists", "just-animate/helpers/objects", "just-animate/helpers/type"], function(exports_82, context_82) {
+System.register("just-animate/core/Transformers", ["just-animate/helpers/lists", "just-animate/helpers/objects", "just-animate/helpers/type"], function(exports_83, context_83) {
     "use strict";
-    var __moduleName = context_82 && context_82.id;
+    var __moduleName = context_83 && context_83.id;
     var lists_1, objects_1, type_2;
     var x, y, z;
     function replaceCamelCased(match, p1, p2) {
@@ -3238,7 +3247,7 @@ System.register("just-animate/core/Transformers", ["just-animate/helpers/lists",
             timings: objects_1.extend({}, a.timings)
         };
     }
-    exports_82("animationTransformer", animationTransformer);
+    exports_83("animationTransformer", animationTransformer);
     /**
      * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
      */
@@ -3309,7 +3318,7 @@ System.register("just-animate/core/Transformers", ["just-animate/helpers/lists",
         }
         return keyframes;
     }
-    exports_82("normalizeKeyframes", normalizeKeyframes);
+    exports_83("normalizeKeyframes", normalizeKeyframes);
     /**
      * Handles transforming short hand key properties into their native form
      */
@@ -3559,7 +3568,7 @@ System.register("just-animate/core/Transformers", ["just-animate/helpers/lists",
         }
         return output;
     }
-    exports_82("keyframeTransformer", keyframeTransformer);
+    exports_83("keyframeTransformer", keyframeTransformer);
     return {
         setters:[
             function (lists_1_1) {
@@ -3578,9 +3587,9 @@ System.register("just-animate/core/Transformers", ["just-animate/helpers/lists",
         }
     }
 });
-System.register("just-animate/core/ElementResolver", ["just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_83, context_83) {
+System.register("just-animate/core/ElementResolver", ["just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_84, context_84) {
     "use strict";
-    var __moduleName = context_83 && context_83.id;
+    var __moduleName = context_84 && context_84.id;
     var lists_2, type_3;
     /**
      * Recursively resolves the element source from dom, selector, jquery, array, and function sources
@@ -3620,7 +3629,7 @@ System.register("just-animate/core/ElementResolver", ["just-animate/helpers/list
         // otherwise return empty    
         return [];
     }
-    exports_83("resolveElements", resolveElements);
+    exports_84("resolveElements", resolveElements);
     return {
         setters:[
             function (lists_2_1) {
@@ -3633,15 +3642,18 @@ System.register("just-animate/core/ElementResolver", ["just-animate/helpers/list
         }
     }
 });
-System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/core/Transformers", "just-animate/core/ElementResolver"], function(exports_84, context_84) {
+System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "just-animate/helpers/functions", "just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/core/Transformers", "just-animate/core/ElementResolver"], function(exports_85, context_85) {
     "use strict";
-    var __moduleName = context_84 && context_84.id;
-    var easings_1, objects_2, lists_3, type_4, Transformers_1, ElementResolver_1;
+    var __moduleName = context_85 && context_85.id;
+    var easings_1, functions_1, objects_2, lists_3, type_4, Transformers_1, ElementResolver_1;
     var ElementAnimator;
     return {
         setters:[
             function (easings_1_1) {
                 easings_1 = easings_1_1;
+            },
+            function (functions_1_1) {
+                functions_1 = functions_1_1;
             },
             function (objects_2_1) {
                 objects_2 = objects_2_1;
@@ -3704,7 +3716,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                     // get list of elements to animate
                     var elements = ElementResolver_1.resolveElements(el);
                     // call .animate on all elements and get a list of their players        
-                    this._animators = lists_3.multiapply(elements, 'animate', [keyframes, timings]);
+                    this._animators = functions_1.multiapply(elements, 'animate', [keyframes, timings]);
                     // hookup finish event for when it happens naturally    
                     if (this._animators.length > 0) {
                         // todo: try to find a better way than just listening to one of them
@@ -3761,7 +3773,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  */
                 ElementAnimator.prototype.finish = function (fn) {
                     var _this = this;
-                    lists_3.multiapply(this._animators, 'finish', [], fn);
+                    functions_1.multiapply(this._animators, 'finish', [], fn);
                     if (this.playbackRate < 0) {
                         lists_3.each(this._animators, function (a) { return a.currentTime = 0; });
                     }
@@ -3780,7 +3792,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.play = function (fn) {
-                    lists_3.multiapply(this._animators, 'play', [], fn);
+                    functions_1.multiapply(this._animators, 'play', [], fn);
                     return this;
                 };
                 /**
@@ -3790,7 +3802,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator}  this instance of Element Animator
                  */
                 ElementAnimator.prototype.pause = function (fn) {
-                    lists_3.multiapply(this._animators, 'pause', [], fn);
+                    functions_1.multiapply(this._animators, 'pause', [], fn);
                     return this;
                 };
                 /**
@@ -3800,7 +3812,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.reverse = function (fn) {
-                    lists_3.multiapply(this._animators, 'reverse', [], fn);
+                    functions_1.multiapply(this._animators, 'reverse', [], fn);
                     return this;
                 };
                 /**
@@ -3810,7 +3822,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * @returns {ja.IAnimator} this instance of Element Animator
                  */
                 ElementAnimator.prototype.cancel = function (fn) {
-                    lists_3.multiapply(this._animators, 'cancel', [], fn);
+                    functions_1.multiapply(this._animators, 'cancel', [], fn);
                     lists_3.each(this._animators, function (a) { return a.currentTime = 0; });
                     if (type_4.isFunction(this.oncancel)) {
                         this.oncancel(this);
@@ -3819,19 +3831,22 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                 };
                 return ElementAnimator;
             }());
-            exports_84("ElementAnimator", ElementAnimator);
+            exports_85("ElementAnimator", ElementAnimator);
         }
     }
 });
-System.register("just-animate/core/SequenceAnimator", ["just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_85, context_85) {
+System.register("just-animate/core/SequenceAnimator", ["just-animate/helpers/objects", "just-animate/helpers/functions", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_86, context_86) {
     "use strict";
-    var __moduleName = context_85 && context_85.id;
-    var objects_3, lists_4, type_5;
+    var __moduleName = context_86 && context_86.id;
+    var objects_3, functions_2, lists_4, type_5;
     var SequenceAnimator;
     return {
         setters:[
             function (objects_3_1) {
                 objects_3 = objects_3_1;
+            },
+            function (functions_2_1) {
+                functions_2 = functions_2_1;
             },
             function (lists_4_1) {
                 lists_4 = lists_4_1;
@@ -3876,7 +3891,7 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/helpers/obj
                             timings: definition.timings
                         };
                     });
-                    this.onfinish = lists_4.noop;
+                    this.onfinish = functions_2.noop;
                     this._currentIndex = -1;
                     this._manager = manager;
                     this._steps = steps;
@@ -4059,13 +4074,13 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/helpers/obj
                 };
                 return SequenceAnimator;
             }());
-            exports_85("SequenceAnimator", SequenceAnimator);
+            exports_86("SequenceAnimator", SequenceAnimator);
         }
     }
 });
-System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_86, context_86) {
+System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_87, context_87) {
     "use strict";
-    var __moduleName = context_86 && context_86.id;
+    var __moduleName = context_87 && context_87.id;
     var objects_4, lists_5, type_6;
     var animationPadding, TimelineAnimator, TimelineEvent;
     return {
@@ -4270,7 +4285,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/obj
                 };
                 return TimelineAnimator;
             }());
-            exports_86("TimelineAnimator", TimelineAnimator);
+            exports_87("TimelineAnimator", TimelineAnimator);
             TimelineEvent = (function () {
                 function TimelineEvent(manager, timelineDuration, evt) {
                     var keyframes;
@@ -4325,9 +4340,9 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/obj
         }
     }
 });
-System.register("just-animate/core/TImingHelpers", [], function(exports_87, context_87) {
+System.register("just-animate/core/TImingHelpers", [], function(exports_88, context_88) {
     "use strict";
-    var __moduleName = context_87 && context_87.id;
+    var __moduleName = context_88 && context_88.id;
     var linear, SUBDIVISION_EPSILON;
     function bezier(n1, n2, t) {
         return 3 * n1 * (1 - t) * (1 - t) * t
@@ -4362,7 +4377,7 @@ System.register("just-animate/core/TImingHelpers", [], function(exports_87, cont
             return x;
         };
     }
-    exports_87("cubic", cubic);
+    exports_88("cubic", cubic);
     return {
         setters:[],
         execute: function() {
@@ -4371,9 +4386,9 @@ System.register("just-animate/core/TImingHelpers", [], function(exports_87, cont
         }
     }
 });
-System.register("just-animate/helpers/math", [], function(exports_88, context_88) {
+System.register("just-animate/helpers/math", [], function(exports_89, context_89) {
     "use strict";
-    var __moduleName = context_88 && context_88.id;
+    var __moduleName = context_89 && context_89.id;
     /**
      * Clamps a number between the min and max
      *
@@ -4386,16 +4401,16 @@ System.register("just-animate/helpers/math", [], function(exports_88, context_88
     function clamp(val, min, max) {
         return val === undefined ? undefined : val < min ? min : val > max ? max : val;
     }
-    exports_88("clamp", clamp);
+    exports_89("clamp", clamp);
     return {
         setters:[],
         execute: function() {
         }
     }
 });
-System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just-animate/core/Transformers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_89, context_89) {
+System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just-animate/core/Transformers", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_90, context_90) {
     "use strict";
-    var __moduleName = context_89 && context_89.id;
+    var __moduleName = context_90 && context_90.id;
     var lists_6, Transformers_2, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
     var DEFAULT_ANIMATIONS, JustAnimate;
     return {
@@ -4492,13 +4507,13 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                 };
                 return JustAnimate;
             }());
-            exports_89("JustAnimate", JustAnimate);
+            exports_90("JustAnimate", JustAnimate);
         }
     }
 });
-System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_90, context_90) {
+System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_91, context_91) {
     "use strict";
-    var __moduleName = context_90 && context_90.id;
+    var __moduleName = context_91 && context_91.id;
     var animations;
     return {
         setters:[
@@ -4506,18 +4521,18 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
                 animations = animations_1;
             },
             function (JustAnimate_1_1) {
-                exports_90({
+                exports_91({
                     "JustAnimate": JustAnimate_1_1["JustAnimate"]
                 });
             }],
         execute: function() {
-            exports_90("animations", animations);
+            exports_91("animations", animations);
         }
     }
 });
-System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], function(exports_91, context_91) {
+System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], function(exports_92, context_92) {
     "use strict";
-    var __moduleName = context_91 && context_91.id;
+    var __moduleName = context_92 && context_92.id;
     var type_7;
     var timeExpression, Time;
     return {
@@ -4569,7 +4584,7 @@ System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], f
                 Time.STAGGER_DECREASE = -1;
                 return Time;
             }());
-            exports_91("Time", Time);
+            exports_92("Time", Time);
         }
     }
 });

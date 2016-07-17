@@ -1,6 +1,7 @@
 import {easings} from '../easings';
+import { multiapply } from '../helpers/functions';
 import { extend } from '../helpers/objects';
-import {head, multiapply, map, each, max} from '../helpers/lists';
+import {head, map, each, max} from '../helpers/lists';
 import {isFunction, isString} from '../helpers/type';
 import {keyframeTransformer, normalizeKeyframes } from './Transformers';
 import {resolveElements} from './ElementResolver';

@@ -1,26 +1,7 @@
 (function () {
     'use strict';
 
-    var ostring = Object.prototype.toString;
-    function isArray(a) {
-        return !isString(a) && isNumber(a.length);
-    }
-    function isDefined(a) {
-        return a !== undefined && a !== null && a !== '';
-    }
-    function isFunction(a) {
-        return ostring.call(a) === '[object Function]';
-    }
-    function isNumber(a) {
-        return typeof a === 'number';
-    }
-    function isString(a) {
-        return typeof a === 'string';
-    }
-
     var slice = Array.prototype.slice;
-    function noop() {
-    }
     function head(indexed) {
         return (!indexed || indexed.length < 1) ? undefined : indexed[0];
     }
@@ -53,32 +34,6 @@
         }
         return results;
     }
-    function multiapply(targets, fnName, args, cb) {
-        var errors = [];
-        var results = [];
-        for (var i = 0, len = targets.length; i < len; i++) {
-            try {
-                var target = targets[i];
-                var result = void 0;
-                if (fnName) {
-                    result = target[fnName].apply(target, args);
-                }
-                else {
-                    result = target.apply(undefined, args);
-                }
-                if (result !== undefined) {
-                    results.push(result);
-                }
-            }
-            catch (err) {
-                errors.push(err);
-            }
-        }
-        if (isFunction(cb)) {
-            cb(errors);
-        }
-        return results;
-    }
 
     function extend(target) {
         var sources = [];
@@ -92,6 +47,23 @@
             }
         }
         return target;
+    }
+
+    var ostring = Object.prototype.toString;
+    function isArray(a) {
+        return !isString(a) && isNumber(a.length);
+    }
+    function isDefined(a) {
+        return a !== undefined && a !== null && a !== '';
+    }
+    function isFunction(a) {
+        return ostring.call(a) === '[object Function]';
+    }
+    function isNumber(a) {
+        return typeof a === 'number';
+    }
+    function isString(a) {
+        return typeof a === 'string';
     }
 
     var x = 0;
@@ -432,6 +404,35 @@
         easeOutSine: 'cubic-bezier(0.390, 0.575, 0.565, 1.000)',
         elegantSlowStartEnd: 'cubic-bezier(0.175, 0.885, 0.320, 1.275)'
     };
+
+    function multiapply(targets, fnName, args, cb) {
+        var errors = [];
+        var results = [];
+        for (var i = 0, len = targets.length; i < len; i++) {
+            try {
+                var target = targets[i];
+                var result = void 0;
+                if (fnName) {
+                    result = target[fnName].apply(target, args);
+                }
+                else {
+                    result = target.apply(undefined, args);
+                }
+                if (result !== undefined) {
+                    results.push(result);
+                }
+            }
+            catch (err) {
+                errors.push(err);
+            }
+        }
+        if (isFunction(cb)) {
+            cb(errors);
+        }
+        return results;
+    }
+    function noop() {
+    }
 
     function resolveElements(source) {
         if (!source) {

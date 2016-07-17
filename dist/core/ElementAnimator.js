@@ -1,5 +1,6 @@
 "use strict";
 var easings_1 = require('../easings');
+var functions_1 = require('../helpers/functions');
 var objects_1 = require('../helpers/objects');
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
@@ -50,7 +51,7 @@ var ElementAnimator = (function () {
         // get list of elements to animate
         var elements = ElementResolver_1.resolveElements(el);
         // call .animate on all elements and get a list of their players        
-        this._animators = lists_1.multiapply(elements, 'animate', [keyframes, timings]);
+        this._animators = functions_1.multiapply(elements, 'animate', [keyframes, timings]);
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
             // todo: try to find a better way than just listening to one of them
@@ -107,7 +108,7 @@ var ElementAnimator = (function () {
      */
     ElementAnimator.prototype.finish = function (fn) {
         var _this = this;
-        lists_1.multiapply(this._animators, 'finish', [], fn);
+        functions_1.multiapply(this._animators, 'finish', [], fn);
         if (this.playbackRate < 0) {
             lists_1.each(this._animators, function (a) { return a.currentTime = 0; });
         }
@@ -126,7 +127,7 @@ var ElementAnimator = (function () {
      * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.play = function (fn) {
-        lists_1.multiapply(this._animators, 'play', [], fn);
+        functions_1.multiapply(this._animators, 'play', [], fn);
         return this;
     };
     /**
@@ -136,7 +137,7 @@ var ElementAnimator = (function () {
      * @returns {ja.IAnimator}  this instance of Element Animator
      */
     ElementAnimator.prototype.pause = function (fn) {
-        lists_1.multiapply(this._animators, 'pause', [], fn);
+        functions_1.multiapply(this._animators, 'pause', [], fn);
         return this;
     };
     /**
@@ -146,7 +147,7 @@ var ElementAnimator = (function () {
      * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.reverse = function (fn) {
-        lists_1.multiapply(this._animators, 'reverse', [], fn);
+        functions_1.multiapply(this._animators, 'reverse', [], fn);
         return this;
     };
     /**
@@ -156,7 +157,7 @@ var ElementAnimator = (function () {
      * @returns {ja.IAnimator} this instance of Element Animator
      */
     ElementAnimator.prototype.cancel = function (fn) {
-        lists_1.multiapply(this._animators, 'cancel', [], fn);
+        functions_1.multiapply(this._animators, 'cancel', [], fn);
         lists_1.each(this._animators, function (a) { return a.currentTime = 0; });
         if (type_1.isFunction(this.oncancel)) {
             this.oncancel(this);

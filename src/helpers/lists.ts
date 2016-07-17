@@ -1,15 +1,6 @@
 import {isFunction} from './type';
 const slice = Array.prototype.slice;
 
-/**
- * No operation function: a placeholder
- * 
- * @export
- */
-export function noop(): void {
-    // do nothing
-}
-
 
 /**
  * Returns the first object in the list or undefined
@@ -101,41 +92,6 @@ export function map<T1, T2>(items: ja.IIndexed<T1>, fn: ja.IMapper<T1, T2>): T2[
         if (result !== undefined) {
             results.push(result);
         }
-    }
-    return results;
-}
-
-/**
- * Calls the named function for each object in the list
- * 
- * @export
- * @param {ja.IIndexed<any>} targets list of objects on which to call a function
- * @param {string} fnName function name to call on each object
- * @param {ja.IIndexed<any>} args list of arguments to pass to the function
- * @param {ja.ICallbackHandler} [cb] optional error handlers
- * @returns {any[]} all results as an array
- */
-export function multiapply(targets: ja.IIndexed<any>, fnName: string, args: ja.IIndexed<any>, cb?: ja.ICallbackHandler): any[] {
-    const errors = [] as any[];
-    const results = [] as any[];
-    for (let i = 0, len = targets.length; i < len; i++) {
-        try {
-            const target = targets[i];
-            let result: any;
-            if (fnName) {
-                result = target[fnName].apply(target, args);
-            } else {
-                result = target.apply(undefined, args);
-            }
-            if (result !== undefined) {
-                results.push(result);
-            }
-        } catch (err) {
-            errors.push(err);
-        }
-    }
-    if (isFunction(cb)) {
-        cb(errors);
     }
     return results;
 }

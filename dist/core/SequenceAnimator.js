@@ -1,5 +1,6 @@
 "use strict";
 var objects_1 = require('../helpers/objects');
+var functions_1 = require('../helpers/functions');
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
 /**
@@ -38,7 +39,7 @@ var SequenceAnimator = (function () {
                 timings: definition.timings
             };
         });
-        this.onfinish = lists_1.noop;
+        this.onfinish = functions_1.noop;
         this._currentIndex = -1;
         this._manager = manager;
         this._steps = steps;
