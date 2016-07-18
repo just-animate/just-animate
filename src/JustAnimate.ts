@@ -1,5 +1,5 @@
 import {each, map} from './helpers/lists';
-import {animationTransformer} from './core/Transformers';
+import {animationTransformer} from './core/WebTransformer';
 import {ElementAnimator} from './core/ElementAnimator';
 import {SequenceAnimator} from './core/SequenceAnimator';
 import {TimelineAnimator} from './core/TimelineAnimator';

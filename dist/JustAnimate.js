@@ -1,6 +1,6 @@
 "use strict";
 var lists_1 = require('./helpers/lists');
-var Transformers_1 = require('./core/Transformers');
+var WebTransformer_1 = require('./core/WebTransformer');
 var ElementAnimator_1 = require('./core/ElementAnimator');
 var SequenceAnimator_1 = require('./core/SequenceAnimator');
 var TimelineAnimator_1 = require('./core/TimelineAnimator');
@@ -28,7 +28,7 @@ var JustAnimate = (function () {
      * @param {ja.IAnimationOptions[]} animations (description)
      */
     JustAnimate.inject = function (animations) {
-        Array.prototype.push.apply(DEFAULT_ANIMATIONS, lists_1.map(animations, Transformers_1.animationTransformer));
+        Array.prototype.push.apply(DEFAULT_ANIMATIONS, lists_1.map(animations, WebTransformer_1.animationTransformer));
     };
     /**
      * (description)
@@ -75,7 +75,7 @@ var JustAnimate = (function () {
      * @returns {ja.IAnimationManager} (description)
      */
     JustAnimate.prototype.register = function (animationOptions) {
-        this._registry[animationOptions.name] = Transformers_1.animationTransformer(animationOptions);
+        this._registry[animationOptions.name] = WebTransformer_1.animationTransformer(animationOptions);
         return this;
     };
     return JustAnimate;

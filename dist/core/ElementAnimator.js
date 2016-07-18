@@ -5,7 +5,7 @@ var functions_1 = require('../helpers/functions');
 var objects_1 = require('../helpers/objects');
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
-var Transformers_1 = require('./Transformers');
+var WebTransformer_1 = require('./WebTransformer');
 /**
  * Animates one or more elements
  *
@@ -37,7 +37,7 @@ var ElementAnimator = (function () {
         }
         else {
             // otherwise, translate keyframe properties
-            keyframes = Transformers_1.normalizeKeyframes(lists_1.map(keyframesOrName, Transformers_1.keyframeTransformer));
+            keyframes = WebTransformer_1.normalizeKeyframes(lists_1.map(keyframesOrName, WebTransformer_1.keyframeTransformer));
         }
         if (timings && timings.easing) {
             // if timings contains an easing property, 

@@ -4,7 +4,7 @@ import {multiapply} from '../helpers/functions';
 import {extend} from '../helpers/objects';
 import {head, map, each, max} from '../helpers/lists';
 import {isFunction, isString} from '../helpers/type';
-import {keyframeTransformer, normalizeKeyframes} from './Transformers';
+import {keyframeTransformer, normalizeKeyframes} from './WebTransformer';
 
 
 /**
