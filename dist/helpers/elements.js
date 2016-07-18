@@ -16,7 +16,7 @@ function queryElements(source) {
         var nodeResults = document.querySelectorAll(source);
         return lists_1.toArray(nodeResults);
     }
-    if (source instanceof Element) {
+    if (typeof source['tagName'] === 'string') {
         // if a single element, wrap in array 
         return [source];
     }

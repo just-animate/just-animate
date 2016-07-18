@@ -4,7 +4,7 @@ var lists = require('../../dist/helpers/functions');
 var assert = chai.assert;
 var expect = chai.expect;
 
-describe('lists', function () {
+describe('functions', function () {
 
   describe('multiapply()', function () {
     it('calls the same function on all objects in an array', function () {

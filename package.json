@@ -4,7 +4,9 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "del-cli": "^0.2.0",
+    "jsdom": "^9.4.1",
     "mocha": "^2.5.3",
+    "mocha-jsdom": "^1.1.0",
     "rollup": "^0.33.0",
     "rollup-plugin-typescript": "^0.7.6",
     "tslint": "^3.10.2",

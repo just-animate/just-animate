@@ -16,9 +16,9 @@ export function queryElements(source: ja.ElementSource): Element[] {
         const nodeResults = document.querySelectorAll(source as string);
         return toArray(nodeResults);
     }
-    if (source instanceof Element) {
+    if (typeof source['tagName'] === 'string') {
         // if a single element, wrap in array 
-        return [source];
+        return [source] as Element[];
     }
     if (isFunction(source)) {
         // if function, call it and call this function

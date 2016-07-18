@@ -418,7 +418,7 @@
             var nodeResults = document.querySelectorAll(source);
             return toArray(nodeResults);
         }
-        if (source instanceof Element) {
+        if (typeof source['tagName'] === 'string') {
             return [source];
         }
         if (isFunction(source)) {
