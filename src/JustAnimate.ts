@@ -1,11 +1,8 @@
-import {each, map} from './helpers/lists';
+import {each} from './helpers/lists';
 import {animationTransformer} from './core/WebTransformer';
 import {ElementAnimator} from './core/ElementAnimator';
 import {SequenceAnimator} from './core/SequenceAnimator';
 import {TimelineAnimator} from './core/TimelineAnimator';
-
-const DEFAULT_ANIMATIONS: ja.IAnimationOptions[] = [];
-
 
 /**
  * (description)
@@ -15,7 +12,8 @@ const DEFAULT_ANIMATIONS: ja.IAnimationOptions[] = [];
  * @implements {ja.IAnimationManager}
  */
 export class JustAnimate implements ja.IAnimationManager {
-    private _registry: { [key: string]: ja.IKeyframeOptions };
+    private static _globalAnimations: ja.IMap<ja.IEffectOptions> = {};
+    private _registry: { [key: string]: ja.IEffectOptions } = {};
        
     /**
      * (description)
@@ -24,27 +22,18 @@ export class JustAnimate implements ja.IAnimationManager {
      * @param {ja.IAnimationOptions[]} animations (description)
      */
     public static inject(animations: ja.IAnimationOptions[]): void {
-        
-        Array.prototype.push.apply(DEFAULT_ANIMATIONS, map(animations, animationTransformer));
-    }
-
-    /**
-     * Creates an instance of JustAnimate.
-     */
-    constructor() {
-        this._registry = {};
-        each(DEFAULT_ANIMATIONS, (a: ja.IAnimationOptions) => this._registry[a.name] = a);
+        each(animations, (a: ja.IAnimationOptions) => JustAnimate._globalAnimations[a.name] = a);
     }
 
     /**
      * (description)
      * 
-     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
+     * @param {(string | ja.IKeyframeOptions[])} keyframesOrName (description)
      * @param {ja.ElementSource} el (description)
      * @param {ja.IAnimationEffectTiming} [timings] (description)
      * @returns {ja.IAnimator} (description)
      */
-    public animate(keyframesOrName: string | ja.IIndexed<ja.IKeyframe>, 
+    public animate(keyframesOrName: string | ja.IKeyframeOptions[], 
                    el: ja.ElementSource, 
                    timings?: ja.IAnimationEffectTiming): ja.IAnimator {
         return new ElementAnimator(this, keyframesOrName, el, timings);
@@ -71,10 +60,10 @@ export class JustAnimate implements ja.IAnimationManager {
      * (description)
      * 
      * @param {string} name (description)
-     * @returns {ja.IKeyframeOptions} (description)
+     * @returns {ja.IEffectOptions} (description)
      */
-    public findAnimation(name: string): ja.IKeyframeOptions {
-        return this._registry[name] || undefined;
+    public findAnimation(name: string): ja.IEffectOptions {
+        return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;
     }
     /**
      * (description)
@@ -82,8 +71,17 @@ export class JustAnimate implements ja.IAnimationManager {
      * @param {ja.IAnimationOptions} animationOptions (description)
      * @returns {ja.IAnimationManager} (description)
      */
-    public register(animationOptions: ja.IAnimationOptions): ja.IAnimationManager {        
+    public register(animationOptions: ja.IAnimationOptions): void {        
         this._registry[animationOptions.name] = animationTransformer(animationOptions);
-        return this;
+    }
+
+    /**
+     * Calls global inject function
+     * 
+     * @static
+     * @param {ja.IAnimationOptions[]} animations (description)
+     */
+    public inject(animations: ja.IAnimationOptions[]): void {
+        JustAnimate.inject(animations);
     }
 }

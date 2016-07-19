@@ -86,6 +86,7 @@
         };
     }
     function normalizeKeyframes(keyframes) {
+        var startTime2 = performance.now();
         var len = keyframes.length;
         if (len < 2) {
             return keyframes;
@@ -137,6 +138,8 @@
                 last[prop] = keyframe[prop];
             }
         }
+        var timeElapsed = performance.now() - startTime2;
+        console.log(timeElapsed);
         return keyframes;
     }
     function keyframeTransformer(keyframe) {
@@ -294,18 +297,21 @@
                         continue;
                     }
                     throw Error('translate requires a number, string, string[], or number[]');
+                case 'x':
                 case 'translateX':
                     if (isString(value) || isNumber(value)) {
                         translate[x] = value;
                         continue;
                     }
                     throw Error('translateX requires a number or string');
+                case 'y':
                 case 'translateY':
                     if (isString(value) || isNumber(value)) {
                         translate[y] = value;
                         continue;
                     }
                     throw Error('translateY requires a number or string');
+                case 'z':
                 case 'translateZ':
                     if (isString(value) || isNumber(value)) {
                         translate[z] = value;
@@ -351,7 +357,7 @@
             transform += " skewX(" + skew[x] + ")";
         }
         else if (isskewY) {
-            transform += " skewX(" + skew[y] + ")";
+            transform += " skewY(" + skew[y] + ")";
         }
         else {
         }
@@ -369,10 +375,10 @@
             transform += " translateX(" + translate[x] + ")";
         }
         else if (istranslateY) {
-            transform += " translateX(" + translate[y] + ")";
+            transform += " translateY(" + translate[y] + ")";
         }
         else if (istranslateZ) {
-            transform += " translateX(" + translate[z] + ")";
+            transform += " translateZ(" + translate[z] + ")";
         }
         else {
         }
@@ -475,7 +481,7 @@
             var keyframes;
             if (isString(keyframesOrName)) {
                 var definition = manager.findAnimation(keyframesOrName);
-                keyframes = definition.keyframes;
+                keyframes = normalizeKeyframes(map(definition.keyframes, keyframeTransformer));
                 timings = extend({}, definition.timings, timings);
             }
             else {
@@ -899,15 +905,12 @@
         return TimelineEvent;
     }());
 
-    var DEFAULT_ANIMATIONS = [];
     var JustAnimate = (function () {
         function JustAnimate() {
-            var _this = this;
             this._registry = {};
-            each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
         }
         JustAnimate.inject = function (animations) {
-            Array.prototype.push.apply(DEFAULT_ANIMATIONS, map(animations, animationTransformer));
+            each(animations, function (a) { return JustAnimate._globalAnimations[a.name] = a; });
         };
         JustAnimate.prototype.animate = function (keyframesOrName, el, timings) {
             return new ElementAnimator(this, keyframesOrName, el, timings);
@@ -919,48 +922,21 @@
             return new TimelineAnimator(this, options);
         };
         JustAnimate.prototype.findAnimation = function (name) {
-            return this._registry[name] || undefined;
+            return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;
         };
         JustAnimate.prototype.register = function (animationOptions) {
             this._registry[animationOptions.name] = animationTransformer(animationOptions);
-            return this;
         };
+        JustAnimate.prototype.inject = function (animations) {
+            JustAnimate.inject(animations);
+        };
+        JustAnimate._globalAnimations = {};
         return JustAnimate;
     }());
 
     if (typeof angular !== 'undefined') {
         angular.module('just.animate', []).service('just', JustAnimate);
     }
-    var animationManager = undefined;
-    function getManager() {
-        if (animationManager === undefined) {
-            animationManager = new JustAnimate();
-        }
-        return animationManager;
-    }
-    var just = {
-        animate: function (keyframesOrName, el, timings) {
-            return getManager().animate(keyframesOrName, el, timings);
-        },
-        animateSequence: function (options) {
-            return getManager().animateSequence(options);
-        },
-        animateTimeline: function (options) {
-            return getManager().animateTimeline(options);
-        },
-        findAnimation: function (name) {
-            return getManager().findAnimation(name);
-        },
-        inject: function (animations) {
-            if (animationManager !== undefined) {
-                console.warn('Animations must be injected prior to using Just.*');
-            }
-            JustAnimate.inject(animations);
-        },
-        register: function (animationOptions) {
-            return getManager().register(animationOptions);
-        }
-    };
-    window.Just = just;
+    window.just = new JustAnimate();
 
 }());

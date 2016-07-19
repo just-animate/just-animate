@@ -83,7 +83,7 @@ export class SequenceAnimator implements ja.IAnimator {
                 el: step.el,
                 keyframes: definition.keyframes,
                 timings: definition.timings
-            };
+            } as IInnerSequenceEvent;
         });
 
         this.onfinish = noop;
@@ -190,6 +190,6 @@ interface IInnerSequenceEvent {
     name?: string;
     command?: string;
     timings?: ja.IAnimationEffectTiming;
-    keyframes?: ja.IIndexed<ja.IKeyframe>;
+    keyframes?: ja.IKeyframeOptions[];
     animator?: ja.IAnimator;
 }

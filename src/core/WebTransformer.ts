@@ -22,7 +22,7 @@ export function animationTransformer(a: ja.IAnimationOptions): ja.IAnimationOpti
 /**
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
-export function normalizeKeyframes(keyframes: ja.IKeyframe[]): ja.IKeyframe[] {
+export function normalizeKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyframeOptions[] {
     const len = keyframes.length;
 
     // don't attempt to fill animation if less than 2 keyframes
@@ -98,14 +98,14 @@ export function normalizeKeyframes(keyframes: ja.IKeyframe[]): ja.IKeyframe[] {
             last[prop] = keyframe[prop];
         }
     }
-
+    
     return keyframes;
 }
 
 /**
  * Handles transforming short hand key properties into their native form
  */
-export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
+export function keyframeTransformer(keyframe: ja.IKeyframeOptions): ja.IKeyframeOptions {
     // transform properties
     const scale = new Array<number>(3);
     const skew = new Array<string | number>(2);
@@ -265,18 +265,21 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
                     continue;
                 }
                 throw Error('translate requires a number, string, string[], or number[]');
+            case 'x':
             case 'translateX':
                 if (isString(value) || isNumber(value)) {
                     translate[x] = value;
                     continue;
                 }
                 throw Error('translateX requires a number or string');
+            case 'y':
             case 'translateY':
                 if (isString(value) || isNumber(value)) {
                     translate[y] = value;
                     continue;
                 }
                 throw Error('translateY requires a number or string');
+            case 'z':
             case 'translateZ':
                 if (isString(value) || isNumber(value)) {
                     translate[z] = value;
@@ -320,7 +323,7 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     } else if (isskewX) {
         transform += ` skewX(${skew[x]})`;
     } else if (isskewY) {
-        transform += ` skewX(${skew[y]})`;
+        transform += ` skewY(${skew[y]})`;
     } else {
         // do nothing
     }
@@ -337,9 +340,9 @@ export function keyframeTransformer(keyframe: ja.IKeyframe): ja.IKeyframe {
     } else if (istranslateX) {
         transform += ` translateX(${translate[x]})`;
     } else if (istranslateY) {
-        transform += ` translateX(${translate[y]})`;
+        transform += ` translateY(${translate[y]})`;
     } else if (istranslateZ) {
-        transform += ` translateX(${translate[z]})`;
+        transform += ` translateZ(${translate[z]})`;
     } else {
         // do nothing
     }

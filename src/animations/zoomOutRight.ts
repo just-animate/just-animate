@@ -4,7 +4,7 @@ export const zoomOutRight: ja.IAnimationOptions = {
       offset: 0,
       opacity: 1,
       transform: 'none',
-      'transform-origin': 'right center'
+      transformOrigin: 'right center'
     },
     {
       offset: 0.4,
@@ -15,7 +15,7 @@ export const zoomOutRight: ja.IAnimationOptions = {
       offset: 1,
       opacity: 0,
       transform: 'scale(.1) translate3d(2000px, 0, 0)',
-      'transform-origin': 'right center'
+      transformOrigin: 'right center'
     }
   ],
   timings: {

@@ -1,8 +1,12 @@
-declare const Just: ja.IAnimationManager & ja.IAnimationInjectable;
+declare const just: ja.IAnimationManager;
 
 declare module ja {
     export type FillMode = "none" | "forwards" | "backwards" | "both" | "auto";
    // export type PlaybackDiraction = "normal" | "reverse" | "alternate" | "alternate-reverse";
+
+   export type Angle = string|number;
+   export type Color = string;
+   export type Distance = string|number;
 
     export type Easing = string
         | "ease"
@@ -78,33 +82,18 @@ declare module ja {
      * (description)
      * 
      * @export
-     * @interface IAnimationInjectable
-     */
-    export interface IAnimationInjectable {
-        /**
-         * (description)
-         * 
-         * @param {IAnimationOptions[]} animationOptionList (description)
-         */
-        inject(animationOptionList: IAnimationOptions[]): void;
-    }
-
-    /**
-     * (description)
-     * 
-     * @export
      * @interface IAnimationManager
      */
     export interface IAnimationManager {
         /**
          * (description)
          * 
-         * @param {(string | IIndexed<IKeyframe>)} keyframesOrName (description)
+         * @param {(string | IKeyframeOptions[])} keyframesOrName (description)
          * @param {ElementSource} el (description)
          * @param {IAnimationEffectTiming} [timings] (description)
          * @returns {IAnimator} (description)
          */
-        animate(keyframesOrName: string | IIndexed<IKeyframe>, el: ElementSource, timings?: IAnimationEffectTiming): IAnimator;
+        animate(keyframesOrName: string | IKeyframeOptions[], el: ElementSource, timings?: IAnimationEffectTiming): IAnimator;
         /**
          * (description)
          * 
@@ -123,16 +112,21 @@ declare module ja {
          * (description)
          * 
          * @param {string} name (description)
-         * @returns {IKeyframeOptions} (description)
+         * @returns {IEffectOptions} (description)
          */
-        findAnimation(name: string): IKeyframeOptions;
+        findAnimation(name: string): IEffectOptions;
+        /**
+         * (description)
+         * 
+          * @param {IAnimationOptions} animationOptions (description)
+         */
+        inject(animationOptionList: IAnimationOptions[]): void;
         /**
          * (description)
          * 
          * @param {IAnimationOptions} animationOptions (description)
-         * @returns {IAnimationManager} (description)
          */
-        register(animationOptions: IAnimationOptions): IAnimationManager;
+        register(animationOptions: IAnimationOptions): void;
     }
 
     /**
@@ -140,9 +134,9 @@ declare module ja {
      * 
      * @export
      * @interface IAnimationOptions
-     * @extends {IKeyframeOptions}
+     * @extends {IEffectOptions}
      */
-    export interface IAnimationOptions extends IKeyframeOptions {
+    export interface IAnimationOptions extends IEffectOptions {
         /**
          * (description)
          * 
@@ -152,9 +146,9 @@ declare module ja {
         /**
          * (description)
          * 
-         * @type {IIndexed<IKeyframe>}
+         * @type {IKeyframeOptions[]}
          */
-        keyframes: IIndexed<IKeyframe>;
+        keyframes: IKeyframeOptions[];
         /**
          * (description)
          * 
@@ -264,7 +258,7 @@ declare module ja {
         (consumable: T1): any;
     }
 
-    export type ElementSource = Node | IIndexed<Node> | NodeList | string | IElementProvider;
+    export type ElementSource = Node | Node[] | NodeList | string | IElementProvider;
 
     /**
      * (description)
@@ -273,33 +267,741 @@ declare module ja {
      * @interface IElementProvider
      */
     export interface IElementProvider {
-        (): Node | IIndexed<Node> | NodeList;
+        (): ElementSource;
     }
 
     /**
-     * (description)
-     * 
-     * @export
-     * @interface IIndexed
-     * @template T
-     */
-    export interface IIndexed<T> {
-        [index: number]: T;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        length: number;
-    }
-
-    /**
-     * (description)
+     * Describes an animation keyframe
      * 
      * @export
      * @interface IKeyframe
      */
-    export interface IKeyframe {
+    export interface IAnimationPropertyOptions {
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        backdropFilter?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        background?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        backgroundColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        backgroundPosition?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        backgroundSize?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        border?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|Distance|(string|Distance)[]}
+         */
+        borderBottom?: string|Distance|(string|Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        borderBottomColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderBottomLeftRadius?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderBottomRightRadius?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderBottomWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        borderColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {string|Distance|(string|Distance)[]}
+         */
+        borderLeft?: string|Distance|(string|Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        borderLeftColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderLeftWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderRadius?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|Distance|(string|Distance)[]}
+         */
+        borderRight?: string|Distance|(string|Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        borderRightColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderRightWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        borderTop?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        borderTopColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderTopLeftRadius?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderTopRightRadius?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderTopWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        borderWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|Distance|(string|Distance)[]}
+         */
+        bottom?: string|Distance|(string|Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        boxShadow?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        clip?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        clipPath?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        color?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        columnCount?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        columnGap?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        columnRule?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        columnRuleColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        columnRuleWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        columnWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        columns?: string|(string)[];
+        fill?: Color|(Color)[];
+        fillOpacity?: string|(string)[];
+        fillRule?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        filter?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        flex?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        flexBasis?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        flexGrow?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        flexShrink?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        font?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        fontSize?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        fontSizeAdjust?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        fontStretch?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        fontWeight?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        gridColumnGap?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        gridGap?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        gridRowGap?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        height?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        left?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        letterSpacing?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        lineHeight?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        margin?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        marginBottom?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        marginLeft?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        marginRight?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        marginTop?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        mask?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        maskPosition?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        maskSize?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        maxHeight?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        maxWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        minHeight?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        minWidth?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        motionOffset?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        motionRotation?: Angle|(Angle)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        objectPosition?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {number|(number)[]}
+         */
+        opacity?: number|(number)[];
+        /**
+         * (description)
+         * 
+         * @type {number|(number)[]}
+         */
+        order?: number|(number)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        outline?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        outlineColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        outlineOffset?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        outlineWidth?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|Distance|(string|Distance)[]}
+         */
+        padding?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        paddingBottom?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        paddingLeft?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        paddingRight?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        paddingTop?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        perspective?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        perspectiveOrigin?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        right?: Distance|(Distance)[];
+        /**
+         * ShortformFor transform: rotate3d(1, 0, 0, angle).
+         * PassA singleStringWithTheAngle
+         * 
+         * @type {Angle|(Angle)[]}
+         */
+        rotateX?: Angle|(Angle)[];
+        /**
+         * ShortformFor transform: rotate3d(0, 1, 0, angle).
+         * PassA singleStringWithTheAngle
+         * 
+         * @type {Angle|(Angle)[]}
+         */
+        rotateY?: Angle|(Angle)[];
+        /**
+         * ShortformFor transform: rotate3d(0, 0, 1, angle).
+         * PassA singleStringWithTheAngle
+         * 
+         * @type {Angle|(Angle)[]}
+         */
+        rotateZ?: Angle|(Angle)[];
+        /**
+         * ShortformFor transform: scale3d().
+         * PassA singleNumber 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        scale?: Distance|(Distance)[];
+        /**
+         * ShortformFor transform: scaleX().
+         * PassA singleNumber 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        scaleX?: Distance|(Distance)[];
+        /**
+         * ShortformFor transform: scaleY().
+         * PassA singleNumber 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        scaleY?: Distance|(Distance)[];
+        /**
+         * ShortformFor transform: scaleZ().
+         * PassA singleNumber 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        scaleZ?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        scrollSnapCoordinate?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        scrollSnapDestination?: string|(string)[];
+        /**
+         * ShortformFor transform: skewX().
+         * PassA singleString 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        skewX?: Distance|(Distance)[];
+        /**
+         * ShortformFor transform: skewY().
+         * PassA singleString 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        skewY?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        shapeImageThreshold?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        shapeMargin?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        shapeOutside?: string|(string)[];
+        stroke?: Color|(Color)[];
+        strokeDasharray?: string|(string)[];
+        strokeDashoffset?: string|(string)[];
+        strokeLinecap?: string|(string)[];
+        strokeLinejoin?: string|(string)[];
+        strokeMiterlimit?: string|(string)[];
+        strokeOpacity?: number|(number)[];
+        strokeWidth?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        textDecoration?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        textDecorationColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        textEmphasis?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        textEmphasisColor?: Color|(Color)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        textIndent?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        textShadow?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        top?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        transform?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        transformOrigin?: string|(string)[];
+        /**
+         * Distance
+         * 
+         * @type {string|number|(string|number)[]}
+         */
+        transformPerspective?: string|number|(string|number)[];
+        /**
+         * ShortformFor transform: translateX().
+         * PassA singleString 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        x?: Distance|(Distance)[];
+        translateX?: Distance|(Distance)[];
+        /**
+         * ShortformFor transform: translateY().
+         * PassA singleString 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        y?: Distance|(Distance)[];
+        translateY?: Distance|(Distance)[];
+        /**
+         * ShortformFor transform: translateZ().
+         * PassA singleString 
+         * 
+         * @type {Distance|(Distance)[]}
+         */
+        z?: Distance|(Distance)[];
+        translateZ?: Distance|(Distance)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        verticalAlign?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        visibility?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        width?: string|number|(string|number)[];
+        /**
+         * (description)
+         * 
+         * @type {string|(string)[]}
+         */
+        wordSpacing?: string|(string)[];
+        /**
+         * (description)
+         * 
+         * @type {number|(number)[]}
+         */
+        zIndex?: number|(number)[];
+    }
+
+    /**
+     * Describes an animation keyframe
+     * 
+     * @export
+     * @interface IKeyframe
+     */
+    export interface IKeyframeOptions {
         /**
          * (description)
          * 
@@ -307,234 +1009,234 @@ declare module ja {
          */
         offset?: number;
         /**
-         * (description)
+         * Transform function to use on this keyframe
          * 
-         * @type {string}
+         * @type {Easing}
          */
-        'all'?: string;
+        easing?: Easing;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'backdrop-filter'?: string;
+        backdropFilter?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'background'?: string;
+        background?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'background-color'?: string;
+        backgroundColor?: Color;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'background-position'?: string;
+        backgroundPosition?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'background-size'?: string;
+        backgroundSize?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border'?: string;
+        border?: string;
+        /**
+         * (description)
+         * 
+         * @type {string|Distance}
+         */
+        borderBottom?: string|Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-bottom'?: string;
+        borderBottomColor?: Color;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderBottomLeftRadius?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderBottomRightRadius?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderBottomWidth?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-bottom-color'?: string;
+        borderColor?: Color;
         /**
          * (description)
          * 
-         * @type {number}
+         * @type {string|Distance}
          */
-        'border-bottom-left-radius'?: number;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        'border-bottom-right-radius'?: number;
+        borderLeft?: string|Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-bottom-width'?: string;
+        borderLeftColor?: Color;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderLeftWidth?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderRadius?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {string|Distance}
+         */
+        borderRight?: string|Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-color'?: string;
+        borderRightColor?: Color;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderRightWidth?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-left'?: string;
+        borderTop?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-left-color'?: string;
+        borderTopColor?: Color;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderTopLeftRadius?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderTopRightRadius?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderTopWidth?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        borderWidth?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {string|Distance}
+         */
+        bottom?: string|Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-left-width'?: string;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        'border-radius'?: number;
+        boxShadow?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-right'?: string;
+        clip?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-right-color'?: string;
+        clipPath?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-right-width'?: string;
+        color?: Color;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-top'?: string;
+        columnCount?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-top-color'?: string;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        'border-top-left-radius'?: number;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        'border-top-right-radius'?: number;
+        columnGap?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-top-width'?: string;
+        columnRule?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'border-width'?: string;
+        columnRuleColor?: Color;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        columnRuleWidth?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        columnWidth?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'bottom'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'box-shadow'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'clip'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'clip-path'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'color'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'column-count'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'column-gap'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'column-rule'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'column-rule-color'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'column-rule-width'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'column-width'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'columns'?: string;
-        fill?: string;
+        columns?: string;
+        fill?: Color;
         fillOpacity?: string;
         fillRule?: string;
         /**
@@ -542,401 +1244,371 @@ declare module ja {
          * 
          * @type {string}
          */
-        'filter'?: string;
+        filter?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'flex'?: string;
+        flex?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'flex-basis'?: string;
+        flexBasis?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'flex-grow'?: string;
+        flexGrow?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'flex-shrink'?: string;
+        flexShrink?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'font'?: string;
+        font?: string;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        fontSize?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'font-size'?: string;
+        fontSizeAdjust?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'font-size-adjust'?: string;
+        fontStretch?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'font-stretch'?: string;
+        fontWeight?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'font-weight'?: string;
+        gridColumnGap?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'grid-column-gap'?: string;
+        gridGap?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'grid-gap'?: string;
+        gridRowGap?: string;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        height?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        left?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        letterSpacing?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        lineHeight?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        margin?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        marginBottom?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        marginLeft?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        marginRight?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        marginTop?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'grid-row-gap'?: string;
+        mask?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'height'?: string;
+        maskPosition?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'left'?: string;
+        maskSize?: string;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        maxHeight?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        maxWidth?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        minHeight?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        minWidth?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        motionOffset?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'letter-spacing'?: string;
+        motionRotation?: Angle;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'line-height'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'margin'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'margin-bottom'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'margin-left'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'margin-right'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'margin-top'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'mask'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'mask-position'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'mask-size'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'max-height'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'max-width'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'min-height'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'min-width'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'motion-offset'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'motion-rotation'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'object-position'?: string;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        'opacity'?: number;
+        objectPosition?: Distance;
         /**
          * (description)
          * 
          * @type {number}
          */
-        'order'?: number;
+        opacity?: number;
         /**
          * (description)
-         * 
-         * @type {string}
-         */
-        'outline'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'outline-color'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'outline-offset'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'outline-width'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'padding'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'padding-bottom'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'padding-left'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'padding-right'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'padding-top'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'perspective'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'perspective-origin'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'right'?: string;
-        /**
-         * Alias for rotateZ
-         * 
-         * @type {string}
-         */
-        'rotate'?: string;
-        /**
-         * Shortform for 'transform: rotate3d()'.
-         * Pass an array of 3 numbers and then a string to set the X, Y, Z axes and angle
-         * 
-         * @type {(number|string)[]}
-         */
-        'rotate3d'?: (number|string)[];
-        /**
-         * Shortform for 'transform: rotate3d(1, 0, 0, angle)'.
-         * Pass a single string with the angle
-         * 
-         * @type {string}
-         */
-        'rotateX'?: string;
-        /**
-         * Shortform for 'transform: rotate3d(0, 1, 0, angle)'.
-         * Pass a single string with the angle
-         * 
-         * @type {string}
-         */
-        'rotateY'?: string;
-        /**
-         * Shortform for 'transform: rotate3d(0, 0, 1, angle)'.
-         * Pass a single string with the angle
-         * 
-         * @type {string}
-         */
-        'rotateZ'?: string;
-        /**
-         * Shortform for 'transform: scale()'.
-         * Pass a single number to scale the same amount in all directions,
-         * or an array of 2 numbers to set the X, Y, Z axes
-         * 
-         * @type {(number|number[])}
-         */
-        'scale'?: number | number[];
-        /**
-         * Shortform for 'transform: scale3d()'.
-         * Pass a single number to scale the same amount in all directions,
-         * or an array of 3 numbers to set the X, Y, Z axes
-         * 
-         * @type {(number|number[])}
-         */
-        'scale3d'?: number | number[];
-        /**
-         * Shortform for 'transform: scaleX()'.
-         * Pass a single number 
          * 
          * @type {number}
          */
-        'scaleX'?: number;
-        /**
-         * Shortform for 'transform: scaleY()'.
-         * Pass a single number 
-         * 
-         * @type {number}
-         */
-        'scaleY'?: number;
-        /**
-         * Shortform for 'transform: scaleZ()'.
-         * Pass a single number 
-         * 
-         * @type {number}
-         */
-        'scaleZ'?: number;
+        order?: number;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'scroll-snap-coordinate'?: string;
+        outline?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'scroll-snap-destination'?: string;
-        /**
-         * Shortform for 'transform: skew()'.
-         * Pass a single string to skew the same amount in all directions,
-         * or an array of 2 strings to set the X, Y, Z axes
-         * 
-         * @type {(string|string[])}
-         */
-        'skew'?: string | string[];
-        /**
-         * Shortform for 'transform: skewX()'.
-         * Pass a single string 
-         * 
-         * @type {string}
-         */
-        'skewX'?: string;
-        /**
-         * Shortform for 'transform: skewY()'.
-         * Pass a single string 
-         * 
-         * @type {string}
-         */
-        'skewY'?: string;
+        outlineColor?: Color;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'shape-image-threshold'?: string;
+        outlineOffset?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'shape-margin'?: string;
+        outlineWidth?: string;
+        /**
+         * (description)
+         * 
+         * @type {string|Distance}
+         */
+        padding?: string|Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        paddingBottom?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        paddingLeft?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        paddingRight?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        paddingTop?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'shape-outside'?: string;
-        stroke?: string;
+        perspective?: string;
+        /**
+         * (description)
+         * 
+         * @type {string}
+         */
+        perspectiveOrigin?: string;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        right?: Distance;
+        /**
+         * ShortformFor transform: rotate3d(1, 0, 0, angle).
+         * PassA singleStringWithTheAngle
+         * 
+         * @type {Angle}
+         */
+        rotateX?: Angle;
+        /**
+         * ShortformFor transform: rotate3d(0, 1, 0, angle).
+         * PassA singleStringWithTheAngle
+         * 
+         * @type {Angle}
+         */
+        rotateY?: Angle;
+        /**
+         * ShortformFor transform: rotate3d(0, 0, 1, angle).
+         * PassA singleStringWithTheAngle
+         * 
+         * @type {Angle}
+         */
+        rotateZ?: Angle;
+        /**
+         * ShortformFor transform: scale3d().
+         * PassA singleNumber 
+         * 
+         * @type {Distance}
+         */
+        scale?: Distance;
+        /**
+         * ShortformFor transform: scaleX().
+         * PassA singleNumber 
+         * 
+         * @type {Distance}
+         */
+        scaleX?: Distance;
+        /**
+         * ShortformFor transform: scaleY().
+         * PassA singleNumber 
+         * 
+         * @type {Distance}
+         */
+        scaleY?: Distance;
+        /**
+         * ShortformFor transform: scaleZ().
+         * PassA singleNumber 
+         * 
+         * @type {Distance}
+         */
+        scaleZ?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {string}
+         */
+        scrollSnapCoordinate?: string;
+        /**
+         * (description)
+         * 
+         * @type {string}
+         */
+        scrollSnapDestination?: string;
+        /**
+         * ShortformFor transform: skewX().
+         * PassA singleString 
+         * 
+         * @type {Distance}
+         */
+        skewX?: Distance;
+        /**
+         * ShortformFor transform: skewY().
+         * PassA singleString 
+         * 
+         * @type {Distance}
+         */
+        skewY?: Distance;
+        /**
+         * (description)
+         * 
+         * @type {string}
+         */
+        shapeImageThreshold?: string;
+        /**
+         * (description)
+         * 
+         * @type {string}
+         */
+        shapeMargin?: string;
+        /**
+         * (description)
+         * 
+         * @type {string}
+         */
+        shapeOutside?: string;
+        stroke?: Color;
         strokeDasharray?: string;
         strokeDashoffset?: string;
         strokeLinecap?: string;
@@ -949,137 +1621,130 @@ declare module ja {
          * 
          * @type {string}
          */
-        'text-decoration'?: string;
+        textDecoration?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'text-decoration-color'?: string;
+        textDecorationColor?: Color;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'text-emphasis'?: string;
+        textEmphasis?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'text-emphasis-color'?: string;
+        textEmphasisColor?: Color;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'text-indent'?: string;
+        textIndent?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'text-shadow'?: string;
+        textShadow?: string;
+        /**
+         * (description)
+         * 
+         * @type {Distance}
+         */
+        top?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'top'?: string;
+        transform?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'transform'?: string;
+        transformOrigin?: string;
+        /**
+         * Distance
+         * 
+         * @type {string|number}
+         */
+        transformPerspective?: string|number;
+        /**
+         * ShortformFor transform: translateX().
+         * PassA singleString 
+         * 
+         * @type {Distance}
+         */
+        x?: Distance;
+        translateX?: Distance;
+        /**
+         * ShortformFor transform: translateY().
+         * PassA singleString 
+         * 
+         * @type {Distance}
+         */
+        y?: Distance;
+        translateY?: Distance;
+        /**
+         * ShortformFor transform: translateZ().
+         * PassA singleString 
+         * 
+         * @type {Distance}
+         */
+        z?: Distance;
+        translateZ?: Distance;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'transform-origin'?: string;
-        /**
-         * Shortform for 'transform: translate()'.
-         * Pass a single string to translate the same amount in all directions,
-         * or an array of 2 strings to set the X, Y, Z axes
-         * 
-         * @type {(string|string[])}
-         */
-        'translate'?: string | string[];
-        /**
-         * Shortform for 'transform: translate3d()'.
-         * Pass a single string to translate the same amount in all directions,
-         * or an array of 3 strings to set the X, Y, Z axes
-         * 
-         * @type {(string|string[])}
-         */
-        'translate3d'?: string | string[];
-        /**
-         * Shortform for 'transform: translateX()'.
-         * Pass a single string 
-         * 
-         * @type {string}
-         */
-        'translateX'?: string;
-        /**
-         * Shortform for 'transform: translateY()'.
-         * Pass a single string 
-         * 
-         * @type {string}
-         */
-        'translateY'?: string;
-        /**
-         * Shortform for 'transform: translateZ()'.
-         * Pass a single string 
-         * 
-         * @type {string}
-         */
-        'translateZ'?: string;
+        verticalAlign?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'vertical-align'?: string;
+        visibility?: string;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'visibility'?: string;
+        width?: string|number;
         /**
          * (description)
          * 
          * @type {string}
          */
-        'width'?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        'word-spacing'?: string;
+        wordSpacing?: string;
         /**
          * (description)
          * 
          * @type {number}
          */
-        'z-index'?: number;
+        zIndex?: number;
     }
 
     /**
      * (description)
      * 
      * @export
-     * @interface IKeyframeOptions
+     * @interface IEffectOptions
      */
-    export interface IKeyframeOptions {
+    export interface IEffectOptions {
         /**
          * (description)
          * 
-         * @type {IIndexed<IKeyframe>}
+         * @type {IKeyframeOptions[]}
          */
-        keyframes: IIndexed<IKeyframe>;
+        keyframes?: IKeyframeOptions[];
         /**
          * (description)
          * 
@@ -1156,9 +1821,9 @@ declare module ja {
         /**
          * (description)
          * 
-         * @type {IIndexed<IKeyframe>}
+         * @type {IKeyframeOptions[]}
          */
-        keyframes?: IIndexed<IKeyframe>;
+        keyframes?: IKeyframeOptions[];
     }
 
     /**
@@ -1216,9 +1881,9 @@ declare module ja {
         /**
          * (description)
          * 
-         * @type {IIndexed<IKeyframe>}
+         * @type {IKeyframeOptions[]}
          */
-        keyframes?: IIndexed<IKeyframe>;
+        keyframes?: IKeyframeOptions[];
     }
 
     /**

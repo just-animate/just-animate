@@ -1,11 +1,13 @@
 "use strict";
 var slice = Array.prototype.slice;
+var push = Array.prototype.push;
+;
 /**
  * Returns the first object in the list or undefined
  *
  * @export
  * @template T
- * @param {ja.IIndexed<T>} indexed list of objects
+ * @param {T[]} indexed list of objects
  * @returns {T} first object in the list or undefined
  */
 function head(indexed) {
@@ -17,7 +19,7 @@ exports.head = head;
  *
  * @export
  * @template T
- * @param {ja.IIndexed<T>} indexed list of objects
+ * @param {T[]} indexed list of objects
  * @returns {T} last object in the list or undefined
  */
 function tail(indexed) {
@@ -30,7 +32,7 @@ exports.tail = tail;
  *
  * @export
  * @template T
- * @param {ja.IIndexed<T>} list to convert
+ * @param {T[]} list to convert
  * @returns {T[]} array clone of list
  */
 function toArray(indexed) {
@@ -42,7 +44,7 @@ exports.toArray = toArray;
  *
  * @export
  * @template T1
- * @param {ja.IIndexed<T1>} items list of objects
+ * @param {T[]} items list of objects
  * @param {ja.IConsumer<T1>} fn function to execute for each object
  */
 function each(items, fn) {
@@ -56,7 +58,7 @@ exports.each = each;
  *
  * @export
  * @template T1
- * @param {ja.IIndexed<T1>} items list of objects
+ * @param {T1[]} items list of objects
  * @param {string} propertyName property to evaluate
  * @returns {*} max value of the property provided
  */
@@ -79,7 +81,7 @@ exports.max = max;
  * @export
  * @template T1
  * @template T2
- * @param {ja.IIndexed<T1>} items list of objects to map
+ * @param {T1[]} items list of objects to map
  * @param {ja.IMapper<T1, T2>} fn function that maps each object
  * @returns {T2[]} new list of objects
  */
@@ -94,3 +96,7 @@ function map(items, fn) {
     return results;
 }
 exports.map = map;
+function pushAll(source, target) {
+    push.apply(source, target);
+}
+exports.pushAll = pushAll;

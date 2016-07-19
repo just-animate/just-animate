@@ -1,16 +1,20 @@
-import {isFunction} from './type';
 const slice = Array.prototype.slice;
+const push = Array.prototype.push;
 
+export interface IList<T> { 
+    [key: number]: T; 
+    length: number; 
+};
 
 /**
  * Returns the first object in the list or undefined
  * 
  * @export
  * @template T
- * @param {ja.IIndexed<T>} indexed list of objects
+ * @param {T[]} indexed list of objects
  * @returns {T} first object in the list or undefined
  */
-export function head<T>(indexed: ja.IIndexed<T>): T {
+export function head<T>(indexed: IList<T>): T {
     return (!indexed || indexed.length < 1) ? undefined : indexed[0];
 }
 /**
@@ -18,10 +22,10 @@ export function head<T>(indexed: ja.IIndexed<T>): T {
  * 
  * @export
  * @template T
- * @param {ja.IIndexed<T>} indexed list of objects
+ * @param {T[]} indexed list of objects
  * @returns {T} last object in the list or undefined
  */
-export function tail<T>(indexed: ja.IIndexed<T>): T {
+export function tail<T>(indexed: IList<T>): T {
     return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
 }
 
@@ -32,10 +36,10 @@ export function tail<T>(indexed: ja.IIndexed<T>): T {
  * 
  * @export
  * @template T
- * @param {ja.IIndexed<T>} list to convert
+ * @param {T[]} list to convert
  * @returns {T[]} array clone of list
  */
-export function toArray<T>(indexed: ja.IIndexed<T>): T[] {
+export function toArray<T>(indexed: IList<T>): T[] {
     return slice.call(indexed, 0);
 }
 
@@ -44,10 +48,10 @@ export function toArray<T>(indexed: ja.IIndexed<T>): T[] {
  * 
  * @export
  * @template T1
- * @param {ja.IIndexed<T1>} items list of objects
+ * @param {T[]} items list of objects
  * @param {ja.IConsumer<T1>} fn function to execute for each object
  */
-export function each<T1>(items: ja.IIndexed<T1>, fn: ja.IConsumer<T1>): void {
+export function each<T1>(items: T1[], fn: ja.IConsumer<T1>): void {
     for (let i = 0, len = items.length; i < len; i++) {
         fn(items[i]);
     }
@@ -58,11 +62,11 @@ export function each<T1>(items: ja.IIndexed<T1>, fn: ja.IConsumer<T1>): void {
  * 
  * @export
  * @template T1
- * @param {ja.IIndexed<T1>} items list of objects
+ * @param {T1[]} items list of objects
  * @param {string} propertyName property to evaluate
  * @returns {*} max value of the property provided
  */
-export function max<T1>(items: ja.IIndexed<T1>, propertyName: string): any {
+export function max<T1>(items: T1[], propertyName: string): any {
     let max: any = '';
     for (let i = 0, len = items.length; i < len; i++) {
         const item = items[i] as any;
@@ -81,11 +85,11 @@ export function max<T1>(items: ja.IIndexed<T1>, propertyName: string): any {
  * @export
  * @template T1
  * @template T2
- * @param {ja.IIndexed<T1>} items list of objects to map
+ * @param {T1[]} items list of objects to map
  * @param {ja.IMapper<T1, T2>} fn function that maps each object
  * @returns {T2[]} new list of objects
  */
-export function map<T1, T2>(items: ja.IIndexed<T1>, fn: ja.IMapper<T1, T2>): T2[] {
+export function map<T1, T2>(items: IList<T1>, fn: ja.IMapper<T1, T2>): T2[] {
     const results = [] as T2[];
     for (let i = 0, len = items.length; i < len; i++) {
         const result = fn(items[i]);
@@ -94,4 +98,8 @@ export function map<T1, T2>(items: ja.IIndexed<T1>, fn: ja.IMapper<T1, T2>): T2[
         }
     }
     return results;
+}
+
+export function pushAll<T>(source: T[], target: T[]): void {
+    push.apply(source, target);  
 }

@@ -56,12 +56,12 @@ export class ElementAnimator implements ja.IAnimator {
      * Creates an instance of ElementAnimator.
      * 
      * @param {ja.IAnimationManager} manager JustAnimate instance
-     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName keyframe definition or name of registered animation
+     * @param {(string | ja.IKeyframeOptions[])} keyframesOrName keyframe definition or name of registered animation
      * @param {ja.ElementSource} el element or element source to animate
      * @param {ja.IAnimationEffectTiming} [timings] optional timing overrides.  required when passing in keyframes
      */
     constructor(manager: ja.IAnimationManager, 
-                keyframesOrName: string | ja.IIndexed<ja.IKeyframe>,
+                keyframesOrName: string | ja.IKeyframeOptions[],
                 el: ja.ElementSource, 
                 timings?: ja.IAnimationEffectTiming) {
 
@@ -69,17 +69,17 @@ export class ElementAnimator implements ja.IAnimator {
             return;
         }
 
-        let keyframes: ja.IIndexed<ja.IKeyframe>;
+        let keyframes: ja.IKeyframeOptions[];
         if (isString(keyframesOrName)) {
             // if keyframes is a string, lookup keyframes from registry
             const definition = manager.findAnimation(keyframesOrName as string);
-            keyframes = definition.keyframes;
+            keyframes = normalizeKeyframes(map(definition.keyframes, keyframeTransformer));
 
             // use registered timings as default, then load timings from params           
             timings = extend({}, definition.timings, timings);
         } else {
             // otherwise, translate keyframe properties
-            keyframes = normalizeKeyframes(map(keyframesOrName as ja.IKeyframe[], keyframeTransformer));
+            keyframes = normalizeKeyframes(map(keyframesOrName as ja.IKeyframeOptions[], keyframeTransformer));
         }
 
         if (timings && timings.easing) {

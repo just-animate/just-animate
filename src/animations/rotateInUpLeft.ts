@@ -1,12 +1,12 @@
 export const rotateInUpLeft: ja.IAnimationOptions = {
   keyframes: [
     {
-      'transform-origin': 'left bottom',
+      transformOrigin: 'left bottom',
       transform: 'rotate3d(0, 0, 1, 45deg)',
       opacity: 0
     },
     {
-      'transform-origin': 'left bottom',
+      transformOrigin: 'left bottom',
       transform: 'none',
       opacity: 1
     }

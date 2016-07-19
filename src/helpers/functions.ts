@@ -4,13 +4,13 @@ import {isFunction} from './type';
  * Calls the named function for each object in the list
  * 
  * @export
- * @param {ja.IIndexed<any>} targets list of objects on which to call a function
+ * @param {any[]} targets list of objects on which to call a function
  * @param {string} fnName function name to call on each object
- * @param {ja.IIndexed<any>} args list of arguments to pass to the function
+ * @param {any[]} args list of arguments to pass to the function
  * @param {ja.ICallbackHandler} [cb] optional error handlers
  * @returns {any[]} all results as an array
  */
-export function multiapply(targets: ja.IIndexed<any>, fnName: string, args: ja.IIndexed<any>, cb?: ja.ICallbackHandler): any[] {
+export function multiapply(targets: any[], fnName: string, args: any[], cb?: ja.ICallbackHandler): any[] {
     const errors = [] as any[];
     const results = [] as any[];
     for (let i = 0, len = targets.length; i < len; i++) {

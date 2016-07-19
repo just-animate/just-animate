@@ -3,6 +3,13 @@
 <head>
   <title>Just Animate Demo</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+  <style>
+    #animateLabel {
+      font-family: Montserrat;
+      font-size: 4em;
+    }
+  </style>
 </head>
 
 <body>
@@ -15,16 +22,7 @@
           <div class="input-group">
             <select id="animateSelect" class="form-control">
               <option>bounce</option>
-              <option>flash</option>
-              <option>pulse</option>
-              <option>rubberBand</option>
-              <option>shake</option>
-              <option>headShake</option>
-              <option>swing</option>
-              <option>tada</option>
-              <option>wobble</option>
-              <option>jello</option>
-              <option>bounceIn</option>
+              <option selected>bounceIn</option>
               <option>bounceInDown</option>
               <option>bounceInLeft</option>
               <option>bounceInRight</option>
@@ -52,13 +50,20 @@
               <option>fadeOutRightBig</option>
               <option>fadeOutUp</option>
               <option>fadeOutUpBig</option>
+              <option>flash</option>
               <option>flip</option>
               <option>flipInX</option>
               <option>flipInY</option>
               <option>flipOutX</option>
               <option>flipOutY</option>
+              <option>headShake</option>
+              <option>hinge</option>
+              <option>jello</option>
               <option>lightSpeedIn</option>
               <option>lightSpeedOut</option>
+              <option>pulse</option>
+              <option>rollIn</option>
+              <option>rollOut</option>
               <option>rotateIn</option>
               <option>rotateInDownLeft</option>
               <option>rotateInDownRight</option>
@@ -69,9 +74,19 @@
               <option>rotateOutDownRight</option>
               <option>rotateOutUpLeft</option>
               <option>rotateOutUpRight</option>
-              <option>hinge</option>
-              <option>rollIn</option>
-              <option>rollOut</option>
+              <option>rubberBand</option>
+              <option>shake</option>
+              <option>slideInDown</option>
+              <option>slideInLeft</option>
+              <option>slideInRight</option>
+              <option>slideInUp</option>
+              <option>slideOutDown</option>
+              <option>slideOutLeft</option>
+              <option>slideOutRight</option>
+              <option>slideOutUp</option>
+              <option>swing</option>
+              <option>tada</option>
+              <option>wobble</option>
               <option>zoomIn</option>
               <option>zoomInDown</option>
               <option>zoomInLeft</option>
@@ -82,14 +97,6 @@
               <option>zoomOutLeft</option>
               <option>zoomOutRight</option>
               <option>zoomOutUp</option>
-              <option>slideInDown</option>
-              <option>slideInLeft</option>
-              <option>slideInRight</option>
-              <option>slideInUp</option>
-              <option>slideOutDown</option>
-              <option>slideOutLeft</option>
-              <option>slideOutRight</option>
-              <option>slideOutUp</option>
             </select>
             <span class="input-group-btn">
                     <button class="btn btn-default" id="animateButton">Animate</button>
@@ -101,23 +108,22 @@
 
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-  <script src="../../dist/browser/just-animate-core.js"></script>
-  <script src="../../dist/browser/just-animate-animations.js"></script>
+  <script src="../dist/browser/just-animate-core.js"></script>
+  <script src="../dist/browser/just-animate-animations.js"></script>
   <script>
-    $(document).ready(function() {
-      var $button = $('#animateButton');
-      var $label = $('#animateLabel');
-      var $select = $('#animateSelect');
-      
-      function animateTheLabel() {
-          var animationType = $select.val();
-          Just.animate(animationType, $label);
-      }
-      
-      $button.on('click', animateTheLabel);
-      $select.on('change', animateTheLabel);
-    });
+    (function () {
+    var button = document.getElementById('animateButton');
+    var select = document.getElementById('animateSelect');
+    
+    function animateTheLabel() {
+        var animationType = select.options[select.selectedIndex].value;
+        just.animate(animationType, '#animateLabel');
+    }
+    
+    button.addEventListener('click',  animateTheLabel);
+    select.addEventListener('change',  animateTheLabel);
+
+})();
   </script>
 </body>
 

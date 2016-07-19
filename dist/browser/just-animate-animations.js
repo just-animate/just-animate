@@ -2,50 +2,50 @@
     'use strict';
 
     var bounce = {
+        name: 'bounce',
         keyframes: [
             {
                 offset: 0,
-                translate3d: '0'
+                y: 0
             },
             {
                 offset: 0.2,
-                translate3d: ['0', '0', '0']
+                y: 0
             },
             {
                 offset: 0.4,
-                translate3d: ['0', '-30px', '0']
+                y: '30px'
             },
             {
                 offset: 0.43,
-                translate3d: ['0', '-30px', '0']
+                y: '-30px'
             },
             {
                 offset: 0.53,
-                translate3d: ['0', '0', '0']
+                y: 0
             },
             {
                 offset: 0.7,
-                translate3d: ['0', '-15px', '0']
+                y: '-15px'
             },
             {
                 offset: 0.8,
-                translate3d: ['0', '0', '0']
+                y: 0
             },
             {
                 offset: 0.9,
-                translate3d: ['0', '-4px', '0']
+                y: '-4px'
             },
             {
                 offset: 1,
-                translate3d: ['0', '0', '0']
+                y: 0
             }
         ],
         timings: {
             duration: 900,
-            fill: 'both',
-            easing: 'easeOutCubic'
-        },
-        name: 'bounce'
+            easing: 'easeOutCubic',
+            fill: 'both'
+        }
     };
 
     var bounceIn = {
@@ -53,24 +53,24 @@
         keyframes: [
             {
                 opacity: 0,
-                scale3d: .3
+                scale: .3
             },
             {
-                scale3d: 1.1
+                scale: 1.1
             },
             {
-                scale3d: .9
-            },
-            {
-                opacity: 1,
-                scale3d: 1.03
-            },
-            {
-                scale3d: .97
+                scale: .9
             },
             {
                 opacity: 1,
-                scale3d: 1
+                scale: 1.03
+            },
+            {
+                scale: .97
+            },
+            {
+                opacity: 1,
+                scale: 1
             }
         ],
         timings: {
@@ -85,22 +85,22 @@
             {
                 offset: 0,
                 opacity: 0,
-                translate3d: ['0', '-3000px', '0']
+                y: '-3000px'
             },
             {
                 offset: 0.6,
                 opacity: 1,
-                translate3d: ['0', '25px', '0']
+                y: '25px'
             },
             {
                 offset: 0.75,
                 opacity: 1,
-                translate3d: ['0', '-10px', '0']
+                y: '-10px'
             },
             {
                 offset: 0.9,
                 opacity: 1,
-                translate3d: ['0', '5px', '0']
+                y: '5px'
             },
             {
                 offset: 1,
@@ -396,7 +396,7 @@
         keyframes: [
             {
                 opacity: 0,
-                translate3d: ['0', '-100%', '0']
+                y: '-100%'
             },
             {
                 opacity: 1,
@@ -914,7 +914,7 @@
         keyframes: [
             {
                 transform: 'none',
-                'transform-origin': 'top left',
+                transformOrigin: 'top left',
                 opacity: 1
             },
             {
@@ -935,7 +935,7 @@
             },
             {
                 transform: 'translate3d(0, 700px, 0)',
-                'transform-origin': 'top left',
+                transformOrigin: 'top left',
                 opacity: 0
             }
         ],
@@ -1101,12 +1101,12 @@
     var rotateIn = {
         keyframes: [
             {
-                'transform-origin': 'center',
+                transformOrigin: 'center',
                 transform: 'rotate3d(0, 0, 1, -200deg)',
                 opacity: 0
             },
             {
-                'transform-origin': 'center',
+                transformOrigin: 'center',
                 transform: 'none',
                 opacity: 1
             }
@@ -1120,12 +1120,12 @@
     var rotateInDownLeft = {
         keyframes: [
             {
-                'transform-origin': 'left bottom',
+                transformOrigin: 'left bottom',
                 transform: 'rotate3d(0, 0, 1, -45deg)',
                 opacity: 0
             },
             {
-                'transform-origin': 'left bottom',
+                transformOrigin: 'left bottom',
                 transform: 'none',
                 opacity: 1
             }
@@ -1139,12 +1139,12 @@
     var rotateInDownRight = {
         keyframes: [
             {
-                'transform-origin': 'right bottom',
+                transformOrigin: 'right bottom',
                 transform: 'rotate3d(0, 0, 1, 45deg)',
                 opacity: 0
             },
             {
-                'transform-origin': 'right bottom',
+                transformOrigin: 'right bottom',
                 transform: 'none',
                 opacity: 1
             }
@@ -1158,12 +1158,12 @@
     var rotateInUpLeft = {
         keyframes: [
             {
-                'transform-origin': 'left bottom',
+                transformOrigin: 'left bottom',
                 transform: 'rotate3d(0, 0, 1, 45deg)',
                 opacity: 0
             },
             {
-                'transform-origin': 'left bottom',
+                transformOrigin: 'left bottom',
                 transform: 'none',
                 opacity: 1
             }
@@ -1177,12 +1177,12 @@
     var rotateInUpRight = {
         keyframes: [
             {
-                'transform-origin': 'right bottom',
+                transformOrigin: 'right bottom',
                 transform: 'rotate3d(0, 0, 1, -90deg)',
                 opacity: 0
             },
             {
-                'transform-origin': 'right bottom',
+                transformOrigin: 'right bottom',
                 transform: 'none',
                 opacity: 1
             }
@@ -1196,12 +1196,12 @@
     var rotateOut = {
         keyframes: [
             {
-                'transform-origin': 'center',
+                transformOrigin: 'center',
                 transform: 'none',
                 opacity: 1
             },
             {
-                'transform-origin': 'center',
+                transformOrigin: 'center',
                 transform: 'rotate3d(0, 0, 1, 200deg)',
                 opacity: 0
             }
@@ -1215,12 +1215,12 @@
     var rotateOutDownLeft = {
         keyframes: [
             {
-                'transform-origin': 'left bottom',
+                transformOrigin: 'left bottom',
                 transform: 'none',
                 opacity: 1
             },
             {
-                'transform-origin': 'left bottom',
+                transformOrigin: 'left bottom',
                 transform: 'rotate3d(0, 0, 1, 45deg)',
                 opacity: 0
             }
@@ -1234,12 +1234,12 @@
     var rotateOutDownRight = {
         keyframes: [
             {
-                'transform-origin': 'right bottom',
+                transformOrigin: 'right bottom',
                 transform: 'none',
                 opacity: 1
             },
             {
-                'transform-origin': 'right bottom',
+                transformOrigin: 'right bottom',
                 transform: 'rotate3d(0, 0, 1, -45deg)',
                 opacity: 0
             }
@@ -1253,12 +1253,12 @@
     var rotateOutUpLeft = {
         keyframes: [
             {
-                'transform-origin': 'left bottom',
+                transformOrigin: 'left bottom',
                 transform: 'none',
                 opacity: 1
             },
             {
-                'transform-origin': 'left bottom',
+                transformOrigin: 'left bottom',
                 transform: 'rotate3d(0, 0, 1, -45deg)',
                 opacity: 0
             }
@@ -1272,12 +1272,12 @@
     var rotateOutUpRight = {
         keyframes: [
             {
-                'transform-origin': 'right bottom',
+                transformOrigin: 'right bottom',
                 transform: 'none',
                 opacity: 1
             },
             {
-                'transform-origin': 'right bottom',
+                transformOrigin: 'right bottom',
                 transform: 'rotate3d(0, 0, 1, 90deg)',
                 opacity: 0
             }
@@ -1735,7 +1735,7 @@
             {
                 opacity: 1,
                 transform: 'none',
-                'transform-origin': 'center middle'
+                transformOrigin: 'center middle'
             },
             {
                 opacity: 0,
@@ -1744,7 +1744,7 @@
             {
                 opacity: 0,
                 transform: 'none',
-                'transform-origin': 'center middle'
+                transformOrigin: 'center middle'
             }
         ],
         timings: {
@@ -1760,19 +1760,19 @@
                 offset: 0,
                 opacity: 1,
                 transform: 'none',
-                'transform-origin': 'center bottom'
+                transformOrigin: 'center bottom'
             },
             {
                 offset: 0.4,
                 opacity: 1,
                 transform: 'scale3d(.475, .475, .475) translate3d(0, -60px, 0)',
-                'transform-origin': 'center bottom'
+                transformOrigin: 'center bottom'
             },
             {
                 offset: 1,
                 opacity: 0,
                 transform: 'scale3d(.1, .1, .1) translate3d(0, 2000px, 0)',
-                'transform-origin': 'center bottom'
+                transformOrigin: 'center bottom'
             }
         ],
         timings: {
@@ -1788,7 +1788,7 @@
                 offset: 0,
                 opacity: 1,
                 transform: 'none',
-                'transform-origin': 'left center'
+                transformOrigin: 'left center'
             },
             {
                 offset: 0.4,
@@ -1799,7 +1799,7 @@
                 offset: 1,
                 opacity: 0,
                 transform: 'scale(.1) translate3d(-2000px, 0, 0)',
-                'transform-origin': 'left center'
+                transformOrigin: 'left center'
             }
         ],
         timings: {
@@ -1815,7 +1815,7 @@
                 offset: 0,
                 opacity: 1,
                 transform: 'none',
-                'transform-origin': 'right center'
+                transformOrigin: 'right center'
             },
             {
                 offset: 0.4,
@@ -1826,7 +1826,7 @@
                 offset: 1,
                 opacity: 0,
                 transform: 'scale(.1) translate3d(2000px, 0, 0)',
-                'transform-origin': 'right center'
+                transformOrigin: 'right center'
             }
         ],
         timings: {
@@ -1842,7 +1842,7 @@
                 offset: 0,
                 opacity: 1,
                 transform: 'none',
-                'transform-origin': 'center bottom'
+                transformOrigin: 'center bottom'
             },
             {
                 offset: 0.4,
@@ -1853,7 +1853,7 @@
                 offset: 1,
                 opacity: 0,
                 transform: 'scale3d(.1, .1, .1) translate3d(0, -2000px, 0)',
-                'transform-origin': 'center bottom'
+                transformOrigin: 'center bottom'
             }
         ],
         timings: {
@@ -1942,6 +1942,6 @@
         zoomOutUp
     ];
 
-    Just.inject(ANIMATE_CSS);
+    just.inject(ANIMATE_CSS);
 
 }());

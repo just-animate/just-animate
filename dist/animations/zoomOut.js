@@ -4,7 +4,7 @@ exports.zoomOut = {
         {
             opacity: 1,
             transform: 'none',
-            'transform-origin': 'center middle'
+            transformOrigin: 'center middle'
         },
         {
             opacity: 0,
@@ -13,7 +13,7 @@ exports.zoomOut = {
         {
             opacity: 0,
             transform: 'none',
-            'transform-origin': 'center middle'
+            transformOrigin: 'center middle'
         }
     ],
     timings: {

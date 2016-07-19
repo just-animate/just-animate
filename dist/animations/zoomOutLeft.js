@@ -5,7 +5,7 @@ exports.zoomOutLeft = {
             offset: 0,
             opacity: 1,
             transform: 'none',
-            'transform-origin': 'left center'
+            transformOrigin: 'left center'
         },
         {
             offset: 0.4,
@@ -16,7 +16,7 @@ exports.zoomOutLeft = {
             offset: 1,
             opacity: 0,
             transform: 'scale(.1) translate3d(-2000px, 0, 0)',
-            'transform-origin': 'left center'
+            transformOrigin: 'left center'
         }
     ],
     timings: {

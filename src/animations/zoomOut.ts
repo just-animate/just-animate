@@ -3,7 +3,7 @@ export const zoomOut: ja.IAnimationOptions = {
     {
       opacity: 1,
       transform: 'none',
-      'transform-origin': 'center middle'
+      transformOrigin: 'center middle'
     },
     {
       opacity: 0,
@@ -12,7 +12,7 @@ export const zoomOut: ja.IAnimationOptions = {
     {
       opacity: 0,
       transform: 'none',
-      'transform-origin': 'center middle'
+      transformOrigin: 'center middle'
     }
   ],
   timings: {

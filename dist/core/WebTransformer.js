@@ -22,6 +22,7 @@ exports.animationTransformer = animationTransformer;
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
 function normalizeKeyframes(keyframes) {
+    var startTime2 = performance.now();
     var len = keyframes.length;
     // don't attempt to fill animation if less than 2 keyframes
     if (len < 2) {
@@ -86,6 +87,8 @@ function normalizeKeyframes(keyframes) {
             last[prop] = keyframe[prop];
         }
     }
+    var timeElapsed = performance.now() - startTime2;
+    console.log(timeElapsed);
     return keyframes;
 }
 exports.normalizeKeyframes = normalizeKeyframes;
@@ -248,18 +251,21 @@ function keyframeTransformer(keyframe) {
                     continue;
                 }
                 throw Error('translate requires a number, string, string[], or number[]');
+            case 'x':
             case 'translateX':
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translate[x] = value;
                     continue;
                 }
                 throw Error('translateX requires a number or string');
+            case 'y':
             case 'translateY':
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translate[y] = value;
                     continue;
                 }
                 throw Error('translateY requires a number or string');
+            case 'z':
             case 'translateZ':
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translate[z] = value;
@@ -307,7 +313,7 @@ function keyframeTransformer(keyframe) {
         transform += " skewX(" + skew[x] + ")";
     }
     else if (isskewY) {
-        transform += " skewX(" + skew[y] + ")";
+        transform += " skewY(" + skew[y] + ")";
     }
     else {
     }
@@ -326,10 +332,10 @@ function keyframeTransformer(keyframe) {
         transform += " translateX(" + translate[x] + ")";
     }
     else if (istranslateY) {
-        transform += " translateX(" + translate[y] + ")";
+        transform += " translateY(" + translate[y] + ")";
     }
     else if (istranslateZ) {
-        transform += " translateX(" + translate[z] + ")";
+        transform += " translateZ(" + translate[z] + ")";
     }
     else {
     }

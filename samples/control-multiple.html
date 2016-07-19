@@ -43,18 +43,16 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-    <script src="../../dist/browser/just-animate-core.js"></script>
-    <script src="../../dist/browser/just-animate-animations.js"></script>
+    <script src="../dist/browser/just-animate-core.js"></script>
+    <script src="../dist/browser/just-animate-animations.js"></script>
     <script>
         (function() {
             var button = document.getElementById('animate-button');
 
             button.addEventListener('click', function() {
-                var player = Just.animate('bounceIn', '.badger');  
+                var player = just.animate('bounceIn', '.badger');  
                 
-                setTimeout(function(){ 
-                    player.reverse(); 
-                }, 1500); 
+                setTimeout(function() { player.reverse(); }, 1500); 
             });
         })();
     </script>

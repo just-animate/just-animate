@@ -4,7 +4,6 @@ var WebTransformer_1 = require('./core/WebTransformer');
 var ElementAnimator_1 = require('./core/ElementAnimator');
 var SequenceAnimator_1 = require('./core/SequenceAnimator');
 var TimelineAnimator_1 = require('./core/TimelineAnimator');
-var DEFAULT_ANIMATIONS = [];
 /**
  * (description)
  *
@@ -13,13 +12,8 @@ var DEFAULT_ANIMATIONS = [];
  * @implements {ja.IAnimationManager}
  */
 var JustAnimate = (function () {
-    /**
-     * Creates an instance of JustAnimate.
-     */
     function JustAnimate() {
-        var _this = this;
         this._registry = {};
-        lists_1.each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
     }
     /**
      * (description)
@@ -28,12 +22,12 @@ var JustAnimate = (function () {
      * @param {ja.IAnimationOptions[]} animations (description)
      */
     JustAnimate.inject = function (animations) {
-        Array.prototype.push.apply(DEFAULT_ANIMATIONS, lists_1.map(animations, WebTransformer_1.animationTransformer));
+        lists_1.each(animations, function (a) { return JustAnimate._globalAnimations[a.name] = a; });
     };
     /**
      * (description)
      *
-     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
+     * @param {(string | ja.IKeyframeOptions[])} keyframesOrName (description)
      * @param {ja.ElementSource} el (description)
      * @param {ja.IAnimationEffectTiming} [timings] (description)
      * @returns {ja.IAnimator} (description)
@@ -63,10 +57,10 @@ var JustAnimate = (function () {
      * (description)
      *
      * @param {string} name (description)
-     * @returns {ja.IKeyframeOptions} (description)
+     * @returns {ja.IEffectOptions} (description)
      */
     JustAnimate.prototype.findAnimation = function (name) {
-        return this._registry[name] || undefined;
+        return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;
     };
     /**
      * (description)
@@ -76,8 +70,17 @@ var JustAnimate = (function () {
      */
     JustAnimate.prototype.register = function (animationOptions) {
         this._registry[animationOptions.name] = WebTransformer_1.animationTransformer(animationOptions);
-        return this;
     };
+    /**
+     * Calls global inject function
+     *
+     * @static
+     * @param {ja.IAnimationOptions[]} animations (description)
+     */
+    JustAnimate.prototype.inject = function (animations) {
+        JustAnimate.inject(animations);
+    };
+    JustAnimate._globalAnimations = {};
     return JustAnimate;
 }());
 exports.JustAnimate = JustAnimate;

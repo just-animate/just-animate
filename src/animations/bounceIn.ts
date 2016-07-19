@@ -3,24 +3,24 @@ export const bounceIn: ja.IAnimationOptions = {
   keyframes: [
     {
       opacity: 0,
-      scale3d: .3
+      scale: .3
     },
     {
-      scale3d: 1.1
+      scale: 1.1
     },
     {
-      scale3d: .9
-    },
-    {
-      opacity: 1,
-      scale3d: 1.03
-    },
-    {
-      scale3d: .97
+      scale: .9
     },
     {
       opacity: 1,
-      scale3d: 1
+      scale: 1.03
+    },
+    {
+      scale: .97
+    },
+    {
+      opacity: 1,
+      scale: 1
     }
   ],
   timings: {

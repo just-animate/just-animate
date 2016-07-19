@@ -18,7 +18,7 @@ var ElementAnimator = (function () {
      * Creates an instance of ElementAnimator.
      *
      * @param {ja.IAnimationManager} manager JustAnimate instance
-     * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName keyframe definition or name of registered animation
+     * @param {(string | ja.IKeyframeOptions[])} keyframesOrName keyframe definition or name of registered animation
      * @param {ja.ElementSource} el element or element source to animate
      * @param {ja.IAnimationEffectTiming} [timings] optional timing overrides.  required when passing in keyframes
      */
@@ -31,7 +31,7 @@ var ElementAnimator = (function () {
         if (type_1.isString(keyframesOrName)) {
             // if keyframes is a string, lookup keyframes from registry
             var definition = manager.findAnimation(keyframesOrName);
-            keyframes = definition.keyframes;
+            keyframes = WebTransformer_1.normalizeKeyframes(lists_1.map(definition.keyframes, WebTransformer_1.keyframeTransformer));
             // use registered timings as default, then load timings from params           
             timings = objects_1.extend({}, definition.timings, timings);
         }

@@ -123,9 +123,9 @@ declare module ja {
          * (description)
          * 
          * @param {string} name (description)
-         * @returns {IKeyframeOptions} (description)
+         * @returns {IEffectOptions} (description)
          */
-        findAnimation(name: string): IKeyframeOptions;
+        findAnimation(name: string): IEffectOptions;
         /**
          * (description)
          * 
@@ -140,9 +140,9 @@ declare module ja {
      * 
      * @export
      * @interface IAnimationOptions
-     * @extends {IKeyframeOptions}
+     * @extends {IEffectOptions}
      */
-    export interface IAnimationOptions extends IKeyframeOptions {
+    export interface IAnimationOptions extends IEffectOptions {
         /**
          * (description)
          * 
@@ -1071,9 +1071,9 @@ declare module ja {
      * (description)
      * 
      * @export
-     * @interface IKeyframeOptions
+     * @interface IEffectOptions
      */
-    export interface IKeyframeOptions {
+    export interface IEffectOptions {
         /**
          * (description)
          * 

@@ -3,6 +3,11 @@
 <head>
     <title>Just Animate Demo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <style>
+        #target { 
+            position: relative;
+         }
+    </style>
 </head>
 
 <body>
@@ -14,8 +19,8 @@
 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-    <script src="../../dist/browser/just-animate-core.js"></script>
-    <script src="../../dist/browser/just-animate-animations.js"></script>
+    <script src="../dist/browser/just-animate-core.js"></script>
+    <script src="../dist/browser/just-animate-animations.js"></script>
     <script>
         var animations = [
             "bounce",
@@ -98,7 +103,7 @@
         
         var container = document.getElementById('target');
             
-        var player = Just.animateSequence({
+        var player = just.animateSequence({
             autoplay: true,
             steps: animations
                 .map(function(name) {

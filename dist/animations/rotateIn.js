@@ -2,12 +2,12 @@
 exports.rotateIn = {
     keyframes: [
         {
-            'transform-origin': 'center',
+            transformOrigin: 'center',
             transform: 'rotate3d(0, 0, 1, -200deg)',
             opacity: 0
         },
         {
-            'transform-origin': 'center',
+            transformOrigin: 'center',
             transform: 'none',
             opacity: 1
         }

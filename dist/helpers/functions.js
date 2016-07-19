@@ -4,9 +4,9 @@ var type_1 = require('./type');
  * Calls the named function for each object in the list
  *
  * @export
- * @param {ja.IIndexed<any>} targets list of objects on which to call a function
+ * @param {any[]} targets list of objects on which to call a function
  * @param {string} fnName function name to call on each object
- * @param {ja.IIndexed<any>} args list of arguments to pass to the function
+ * @param {any[]} args list of arguments to pass to the function
  * @param {ja.ICallbackHandler} [cb] optional error handlers
  * @returns {any[]} all results as an array
  */

@@ -6,50 +6,50 @@ System.register("just-animate/animations/bounce", [], function(exports_1, contex
         setters:[],
         execute: function() {
             exports_1("bounce", bounce = {
+                name: 'bounce',
                 keyframes: [
                     {
                         offset: 0,
-                        translate3d: '0'
+                        y: 0
                     },
                     {
                         offset: 0.2,
-                        translate3d: ['0', '0', '0']
+                        y: 0
                     },
                     {
                         offset: 0.4,
-                        translate3d: ['0', '-30px', '0']
+                        y: '30px'
                     },
                     {
                         offset: 0.43,
-                        translate3d: ['0', '-30px', '0']
+                        y: '-30px'
                     },
                     {
                         offset: 0.53,
-                        translate3d: ['0', '0', '0']
+                        y: 0
                     },
                     {
                         offset: 0.7,
-                        translate3d: ['0', '-15px', '0']
+                        y: '-15px'
                     },
                     {
                         offset: 0.8,
-                        translate3d: ['0', '0', '0']
+                        y: 0
                     },
                     {
                         offset: 0.9,
-                        translate3d: ['0', '-4px', '0']
+                        y: '-4px'
                     },
                     {
                         offset: 1,
-                        translate3d: ['0', '0', '0']
+                        y: 0
                     }
                 ],
                 timings: {
                     duration: 900,
-                    fill: 'both',
-                    easing: 'easeOutCubic'
-                },
-                name: 'bounce'
+                    easing: 'easeOutCubic',
+                    fill: 'both'
+                }
             });
         }
     }
@@ -66,24 +66,24 @@ System.register("just-animate/animations/bounceIn", [], function(exports_2, cont
                 keyframes: [
                     {
                         opacity: 0,
-                        scale3d: .3
+                        scale: .3
                     },
                     {
-                        scale3d: 1.1
+                        scale: 1.1
                     },
                     {
-                        scale3d: .9
-                    },
-                    {
-                        opacity: 1,
-                        scale3d: 1.03
-                    },
-                    {
-                        scale3d: .97
+                        scale: .9
                     },
                     {
                         opacity: 1,
-                        scale3d: 1
+                        scale: 1.03
+                    },
+                    {
+                        scale: .97
+                    },
+                    {
+                        opacity: 1,
+                        scale: 1
                     }
                 ],
                 timings: {
@@ -107,22 +107,22 @@ System.register("just-animate/animations/bounceInDown", [], function(exports_3, 
                     {
                         offset: 0,
                         opacity: 0,
-                        translate3d: ['0', '-3000px', '0']
+                        y: '-3000px'
                     },
                     {
                         offset: 0.6,
                         opacity: 1,
-                        translate3d: ['0', '25px', '0']
+                        y: '25px'
                     },
                     {
                         offset: 0.75,
                         opacity: 1,
-                        translate3d: ['0', '-10px', '0']
+                        y: '-10px'
                     },
                     {
                         offset: 0.9,
                         opacity: 1,
-                        translate3d: ['0', '5px', '0']
+                        y: '5px'
                     },
                     {
                         offset: 1,
@@ -508,7 +508,7 @@ System.register("just-animate/animations/fadeInDown", [], function(exports_13, c
                 keyframes: [
                     {
                         opacity: 0,
-                        translate3d: ['0', '-100%', '0']
+                        y: '-100%'
                     },
                     {
                         opacity: 1,
@@ -1242,7 +1242,7 @@ System.register("just-animate/animations/hinge", [], function(exports_37, contex
                 keyframes: [
                     {
                         transform: 'none',
-                        'transform-origin': 'top left',
+                        transformOrigin: 'top left',
                         opacity: 1
                     },
                     {
@@ -1263,7 +1263,7 @@ System.register("just-animate/animations/hinge", [], function(exports_37, contex
                     },
                     {
                         transform: 'translate3d(0, 700px, 0)',
-                        'transform-origin': 'top left',
+                        transformOrigin: 'top left',
                         opacity: 0
                     }
                 ],
@@ -1492,12 +1492,12 @@ System.register("just-animate/animations/rotateIn", [], function(exports_44, con
             exports_44("rotateIn", rotateIn = {
                 keyframes: [
                     {
-                        'transform-origin': 'center',
+                        transformOrigin: 'center',
                         transform: 'rotate3d(0, 0, 1, -200deg)',
                         opacity: 0
                     },
                     {
-                        'transform-origin': 'center',
+                        transformOrigin: 'center',
                         transform: 'none',
                         opacity: 1
                     }
@@ -1520,12 +1520,12 @@ System.register("just-animate/animations/rotateInDownLeft", [], function(exports
             exports_45("rotateInDownLeft", rotateInDownLeft = {
                 keyframes: [
                     {
-                        'transform-origin': 'left bottom',
+                        transformOrigin: 'left bottom',
                         transform: 'rotate3d(0, 0, 1, -45deg)',
                         opacity: 0
                     },
                     {
-                        'transform-origin': 'left bottom',
+                        transformOrigin: 'left bottom',
                         transform: 'none',
                         opacity: 1
                     }
@@ -1548,12 +1548,12 @@ System.register("just-animate/animations/rotateInDownRight", [], function(export
             exports_46("rotateInDownRight", rotateInDownRight = {
                 keyframes: [
                     {
-                        'transform-origin': 'right bottom',
+                        transformOrigin: 'right bottom',
                         transform: 'rotate3d(0, 0, 1, 45deg)',
                         opacity: 0
                     },
                     {
-                        'transform-origin': 'right bottom',
+                        transformOrigin: 'right bottom',
                         transform: 'none',
                         opacity: 1
                     }
@@ -1576,12 +1576,12 @@ System.register("just-animate/animations/rotateInUpLeft", [], function(exports_4
             exports_47("rotateInUpLeft", rotateInUpLeft = {
                 keyframes: [
                     {
-                        'transform-origin': 'left bottom',
+                        transformOrigin: 'left bottom',
                         transform: 'rotate3d(0, 0, 1, 45deg)',
                         opacity: 0
                     },
                     {
-                        'transform-origin': 'left bottom',
+                        transformOrigin: 'left bottom',
                         transform: 'none',
                         opacity: 1
                     }
@@ -1604,12 +1604,12 @@ System.register("just-animate/animations/rotateInUpRight", [], function(exports_
             exports_48("rotateInUpRight", rotateInUpRight = {
                 keyframes: [
                     {
-                        'transform-origin': 'right bottom',
+                        transformOrigin: 'right bottom',
                         transform: 'rotate3d(0, 0, 1, -90deg)',
                         opacity: 0
                     },
                     {
-                        'transform-origin': 'right bottom',
+                        transformOrigin: 'right bottom',
                         transform: 'none',
                         opacity: 1
                     }
@@ -1632,12 +1632,12 @@ System.register("just-animate/animations/rotateOut", [], function(exports_49, co
             exports_49("rotateOut", rotateOut = {
                 keyframes: [
                     {
-                        'transform-origin': 'center',
+                        transformOrigin: 'center',
                         transform: 'none',
                         opacity: 1
                     },
                     {
-                        'transform-origin': 'center',
+                        transformOrigin: 'center',
                         transform: 'rotate3d(0, 0, 1, 200deg)',
                         opacity: 0
                     }
@@ -1660,12 +1660,12 @@ System.register("just-animate/animations/rotateOutDownLeft", [], function(export
             exports_50("rotateOutDownLeft", rotateOutDownLeft = {
                 keyframes: [
                     {
-                        'transform-origin': 'left bottom',
+                        transformOrigin: 'left bottom',
                         transform: 'none',
                         opacity: 1
                     },
                     {
-                        'transform-origin': 'left bottom',
+                        transformOrigin: 'left bottom',
                         transform: 'rotate3d(0, 0, 1, 45deg)',
                         opacity: 0
                     }
@@ -1688,12 +1688,12 @@ System.register("just-animate/animations/rotateOutDownRight", [], function(expor
             exports_51("rotateOutDownRight", rotateOutDownRight = {
                 keyframes: [
                     {
-                        'transform-origin': 'right bottom',
+                        transformOrigin: 'right bottom',
                         transform: 'none',
                         opacity: 1
                     },
                     {
-                        'transform-origin': 'right bottom',
+                        transformOrigin: 'right bottom',
                         transform: 'rotate3d(0, 0, 1, -45deg)',
                         opacity: 0
                     }
@@ -1716,12 +1716,12 @@ System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_
             exports_52("rotateOutUpLeft", rotateOutUpLeft = {
                 keyframes: [
                     {
-                        'transform-origin': 'left bottom',
+                        transformOrigin: 'left bottom',
                         transform: 'none',
                         opacity: 1
                     },
                     {
-                        'transform-origin': 'left bottom',
+                        transformOrigin: 'left bottom',
                         transform: 'rotate3d(0, 0, 1, -45deg)',
                         opacity: 0
                     }
@@ -1744,12 +1744,12 @@ System.register("just-animate/animations/rotateOutUpRight", [], function(exports
             exports_53("rotateOutUpRight", rotateOutUpRight = {
                 keyframes: [
                     {
-                        'transform-origin': 'right bottom',
+                        transformOrigin: 'right bottom',
                         transform: 'none',
                         opacity: 1
                     },
                     {
-                        'transform-origin': 'right bottom',
+                        transformOrigin: 'right bottom',
                         transform: 'rotate3d(0, 0, 1, 90deg)',
                         opacity: 0
                     }
@@ -2378,7 +2378,7 @@ System.register("just-animate/animations/zoomOut", [], function(exports_72, cont
                     {
                         opacity: 1,
                         transform: 'none',
-                        'transform-origin': 'center middle'
+                        transformOrigin: 'center middle'
                     },
                     {
                         opacity: 0,
@@ -2387,7 +2387,7 @@ System.register("just-animate/animations/zoomOut", [], function(exports_72, cont
                     {
                         opacity: 0,
                         transform: 'none',
-                        'transform-origin': 'center middle'
+                        transformOrigin: 'center middle'
                     }
                 ],
                 timings: {
@@ -2412,19 +2412,19 @@ System.register("just-animate/animations/zoomOutDown", [], function(exports_73, 
                         offset: 0,
                         opacity: 1,
                         transform: 'none',
-                        'transform-origin': 'center bottom'
+                        transformOrigin: 'center bottom'
                     },
                     {
                         offset: 0.4,
                         opacity: 1,
                         transform: 'scale3d(.475, .475, .475) translate3d(0, -60px, 0)',
-                        'transform-origin': 'center bottom'
+                        transformOrigin: 'center bottom'
                     },
                     {
                         offset: 1,
                         opacity: 0,
                         transform: 'scale3d(.1, .1, .1) translate3d(0, 2000px, 0)',
-                        'transform-origin': 'center bottom'
+                        transformOrigin: 'center bottom'
                     }
                 ],
                 timings: {
@@ -2449,7 +2449,7 @@ System.register("just-animate/animations/zoomOutLeft", [], function(exports_74, 
                         offset: 0,
                         opacity: 1,
                         transform: 'none',
-                        'transform-origin': 'left center'
+                        transformOrigin: 'left center'
                     },
                     {
                         offset: 0.4,
@@ -2460,7 +2460,7 @@ System.register("just-animate/animations/zoomOutLeft", [], function(exports_74, 
                         offset: 1,
                         opacity: 0,
                         transform: 'scale(.1) translate3d(-2000px, 0, 0)',
-                        'transform-origin': 'left center'
+                        transformOrigin: 'left center'
                     }
                 ],
                 timings: {
@@ -2485,7 +2485,7 @@ System.register("just-animate/animations/zoomOutRight", [], function(exports_75,
                         offset: 0,
                         opacity: 1,
                         transform: 'none',
-                        'transform-origin': 'right center'
+                        transformOrigin: 'right center'
                     },
                     {
                         offset: 0.4,
@@ -2496,7 +2496,7 @@ System.register("just-animate/animations/zoomOutRight", [], function(exports_75,
                         offset: 1,
                         opacity: 0,
                         transform: 'scale(.1) translate3d(2000px, 0, 0)',
-                        'transform-origin': 'right center'
+                        transformOrigin: 'right center'
                     }
                 ],
                 timings: {
@@ -2521,7 +2521,7 @@ System.register("just-animate/animations/zoomOutUp", [], function(exports_76, co
                         offset: 0,
                         opacity: 1,
                         transform: 'none',
-                        'transform-origin': 'center bottom'
+                        transformOrigin: 'center bottom'
                     },
                     {
                         offset: 0.4,
@@ -2532,7 +2532,7 @@ System.register("just-animate/animations/zoomOutUp", [], function(exports_76, co
                         offset: 1,
                         opacity: 0,
                         transform: 'scale3d(.1, .1, .1) translate3d(0, -2000px, 0)',
-                        'transform-origin': 'center bottom'
+                        transformOrigin: 'center bottom'
                     }
                 ],
                 timings: {
@@ -2974,112 +2974,53 @@ System.register("just-animate/easings", [], function(exports_78, context_78) {
         }
     }
 });
-System.register("just-animate/helpers/type", [], function(exports_79, context_79) {
+System.register("just-animate/helpers/lists", [], function(exports_79, context_79) {
     "use strict";
     var __moduleName = context_79 && context_79.id;
-    var ostring;
-    /**
-     * Tests if object is a list
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if is not a string and length property is a number
-     */
-    function isArray(a) {
-        return !isString(a) && isNumber(a.length);
-    }
-    exports_79("isArray", isArray);
-    function isDefined(a) {
-        return a !== undefined && a !== null && a !== '';
-    }
-    exports_79("isDefined", isDefined);
-    /**
-     * Tests if object is a function
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if object.toString reports it as a Function
-     */
-    function isFunction(a) {
-        return ostring.call(a) === '[object Function]';
-    }
-    exports_79("isFunction", isFunction);
-    /**
-     * Tests if object is a number
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if the object is typeof number
-     */
-    function isNumber(a) {
-        return typeof a === 'number';
-    }
-    exports_79("isNumber", isNumber);
-    /**
-     * Tests if object is a string
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if object is typeof string
-     */
-    function isString(a) {
-        return typeof a === 'string';
-    }
-    exports_79("isString", isString);
-    return {
-        setters:[],
-        execute: function() {
-            ostring = Object.prototype.toString;
-        }
-    }
-});
-System.register("just-animate/helpers/lists", [], function(exports_80, context_80) {
-    "use strict";
-    var __moduleName = context_80 && context_80.id;
-    var slice;
+    var slice, push;
     /**
      * Returns the first object in the list or undefined
      *
      * @export
      * @template T
-     * @param {ja.IIndexed<T>} indexed list of objects
+     * @param {T[]} indexed list of objects
      * @returns {T} first object in the list or undefined
      */
     function head(indexed) {
         return (!indexed || indexed.length < 1) ? undefined : indexed[0];
     }
-    exports_80("head", head);
+    exports_79("head", head);
     /**
      * Returns the last object in the list or undefined
      *
      * @export
      * @template T
-     * @param {ja.IIndexed<T>} indexed list of objects
+     * @param {T[]} indexed list of objects
      * @returns {T} last object in the list or undefined
      */
     function tail(indexed) {
         return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
     }
-    exports_80("tail", tail);
+    exports_79("tail", tail);
     /**
      * Converts list to an Array.
      * Useful for converting NodeList and arguments to []
      *
      * @export
      * @template T
-     * @param {ja.IIndexed<T>} list to convert
+     * @param {T[]} list to convert
      * @returns {T[]} array clone of list
      */
     function toArray(indexed) {
         return slice.call(indexed, 0);
     }
-    exports_80("toArray", toArray);
+    exports_79("toArray", toArray);
     /**
      * Performs the function against all objects in the list
      *
      * @export
      * @template T1
-     * @param {ja.IIndexed<T1>} items list of objects
+     * @param {T[]} items list of objects
      * @param {ja.IConsumer<T1>} fn function to execute for each object
      */
     function each(items, fn) {
@@ -3087,13 +3028,13 @@ System.register("just-animate/helpers/lists", [], function(exports_80, context_8
             fn(items[i]);
         }
     }
-    exports_80("each", each);
+    exports_79("each", each);
     /**
      * Returns the max value of a given property in a list
      *
      * @export
      * @template T1
-     * @param {ja.IIndexed<T1>} items list of objects
+     * @param {T1[]} items list of objects
      * @param {string} propertyName property to evaluate
      * @returns {*} max value of the property provided
      */
@@ -3108,7 +3049,7 @@ System.register("just-animate/helpers/lists", [], function(exports_80, context_8
         }
         return max;
     }
-    exports_80("max", max);
+    exports_79("max", max);
     /**
      * Maps one list of objects to another.
      * Returning undefined skips the item (effectively filtering it)
@@ -3116,7 +3057,7 @@ System.register("just-animate/helpers/lists", [], function(exports_80, context_8
      * @export
      * @template T1
      * @template T2
-     * @param {ja.IIndexed<T1>} items list of objects to map
+     * @param {T1[]} items list of objects to map
      * @param {ja.IMapper<T1, T2>} fn function that maps each object
      * @returns {T2[]} new list of objects
      */
@@ -3130,11 +3071,76 @@ System.register("just-animate/helpers/lists", [], function(exports_80, context_8
         }
         return results;
     }
-    exports_80("map", map);
+    exports_79("map", map);
+    function pushAll(source, target) {
+        push.apply(source, target);
+    }
+    exports_79("pushAll", pushAll);
     return {
         setters:[],
         execute: function() {
             slice = Array.prototype.slice;
+            push = Array.prototype.push;
+            ;
+        }
+    }
+});
+System.register("just-animate/helpers/type", [], function(exports_80, context_80) {
+    "use strict";
+    var __moduleName = context_80 && context_80.id;
+    var ostring;
+    /**
+     * Tests if object is a list
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if is not a string and length property is a number
+     */
+    function isArray(a) {
+        return !isString(a) && isNumber(a.length);
+    }
+    exports_80("isArray", isArray);
+    function isDefined(a) {
+        return a !== undefined && a !== null && a !== '';
+    }
+    exports_80("isDefined", isDefined);
+    /**
+     * Tests if object is a function
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object.toString reports it as a Function
+     */
+    function isFunction(a) {
+        return ostring.call(a) === '[object Function]';
+    }
+    exports_80("isFunction", isFunction);
+    /**
+     * Tests if object is a number
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if the object is typeof number
+     */
+    function isNumber(a) {
+        return typeof a === 'number';
+    }
+    exports_80("isNumber", isNumber);
+    /**
+     * Tests if object is a string
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object is typeof string
+     */
+    function isString(a) {
+        return typeof a === 'string';
+    }
+    exports_80("isString", isString);
+    return {
+        setters:[],
+        execute: function() {
+            ostring = Object.prototype.toString;
         }
     }
 });
@@ -3201,9 +3207,9 @@ System.register("just-animate/helpers/functions", ["just-animate/helpers/type"],
      * Calls the named function for each object in the list
      *
      * @export
-     * @param {ja.IIndexed<any>} targets list of objects on which to call a function
+     * @param {any[]} targets list of objects on which to call a function
      * @param {string} fnName function name to call on each object
-     * @param {ja.IIndexed<any>} args list of arguments to pass to the function
+     * @param {any[]} args list of arguments to pass to the function
      * @param {ja.ICallbackHandler} [cb] optional error handlers
      * @returns {any[]} all results as an array
      */
@@ -3326,6 +3332,7 @@ System.register("just-animate/core/WebTransformer", ["just-animate/helpers/lists
      * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
      */
     function normalizeKeyframes(keyframes) {
+        var startTime2 = performance.now();
         var len = keyframes.length;
         // don't attempt to fill animation if less than 2 keyframes
         if (len < 2) {
@@ -3390,6 +3397,8 @@ System.register("just-animate/core/WebTransformer", ["just-animate/helpers/lists
                 last[prop] = keyframe[prop];
             }
         }
+        var timeElapsed = performance.now() - startTime2;
+        console.log(timeElapsed);
         return keyframes;
     }
     exports_85("normalizeKeyframes", normalizeKeyframes);
@@ -3552,18 +3561,21 @@ System.register("just-animate/core/WebTransformer", ["just-animate/helpers/lists
                         continue;
                     }
                     throw Error('translate requires a number, string, string[], or number[]');
+                case 'x':
                 case 'translateX':
                     if (type_4.isString(value) || type_4.isNumber(value)) {
                         translate[x] = value;
                         continue;
                     }
                     throw Error('translateX requires a number or string');
+                case 'y':
                 case 'translateY':
                     if (type_4.isString(value) || type_4.isNumber(value)) {
                         translate[y] = value;
                         continue;
                     }
                     throw Error('translateY requires a number or string');
+                case 'z':
                 case 'translateZ':
                     if (type_4.isString(value) || type_4.isNumber(value)) {
                         translate[z] = value;
@@ -3611,7 +3623,7 @@ System.register("just-animate/core/WebTransformer", ["just-animate/helpers/lists
             transform += " skewX(" + skew[x] + ")";
         }
         else if (isskewY) {
-            transform += " skewX(" + skew[y] + ")";
+            transform += " skewY(" + skew[y] + ")";
         }
         else {
         }
@@ -3630,10 +3642,10 @@ System.register("just-animate/core/WebTransformer", ["just-animate/helpers/lists
             transform += " translateX(" + translate[x] + ")";
         }
         else if (istranslateY) {
-            transform += " translateX(" + translate[y] + ")";
+            transform += " translateY(" + translate[y] + ")";
         }
         else if (istranslateZ) {
-            transform += " translateX(" + translate[z] + ")";
+            transform += " translateZ(" + translate[z] + ")";
         }
         else {
         }
@@ -3705,7 +3717,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                  * Creates an instance of ElementAnimator.
                  *
                  * @param {ja.IAnimationManager} manager JustAnimate instance
-                 * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName keyframe definition or name of registered animation
+                 * @param {(string | ja.IKeyframeOptions[])} keyframesOrName keyframe definition or name of registered animation
                  * @param {ja.ElementSource} el element or element source to animate
                  * @param {ja.IAnimationEffectTiming} [timings] optional timing overrides.  required when passing in keyframes
                  */
@@ -3718,7 +3730,7 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
                     if (type_5.isString(keyframesOrName)) {
                         // if keyframes is a string, lookup keyframes from registry
                         var definition = manager.findAnimation(keyframesOrName);
-                        keyframes = definition.keyframes;
+                        keyframes = WebTransformer_1.normalizeKeyframes(lists_3.map(definition.keyframes, WebTransformer_1.keyframeTransformer));
                         // use registered timings as default, then load timings from params           
                         timings = objects_2.extend({}, definition.timings, timings);
                     }
@@ -3854,9 +3866,25 @@ System.register("just-animate/core/ElementAnimator", ["just-animate/easings", "j
         }
     }
 });
-System.register("just-animate/core/SequenceAnimator", ["just-animate/helpers/objects", "just-animate/helpers/functions", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_87, context_87) {
+System.register("just-animate/core/JSKeyframeEffect", [], function(exports_87, context_87) {
     "use strict";
     var __moduleName = context_87 && context_87.id;
+    var JSKeyframeEffect;
+    return {
+        setters:[],
+        execute: function() {
+            JSKeyframeEffect = (function () {
+                function JSKeyframeEffect() {
+                }
+                return JSKeyframeEffect;
+            }());
+            exports_87("JSKeyframeEffect", JSKeyframeEffect);
+        }
+    }
+});
+System.register("just-animate/core/SequenceAnimator", ["just-animate/helpers/objects", "just-animate/helpers/functions", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_88, context_88) {
+    "use strict";
+    var __moduleName = context_88 && context_88.id;
     var objects_3, functions_2, lists_4, type_6;
     var SequenceAnimator;
     return {
@@ -4049,13 +4077,13 @@ System.register("just-animate/core/SequenceAnimator", ["just-animate/helpers/obj
                 };
                 return SequenceAnimator;
             }());
-            exports_87("SequenceAnimator", SequenceAnimator);
+            exports_88("SequenceAnimator", SequenceAnimator);
         }
     }
 });
-System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_88, context_88) {
+System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/objects", "just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_89, context_89) {
     "use strict";
-    var __moduleName = context_88 && context_88.id;
+    var __moduleName = context_89 && context_89.id;
     var objects_4, lists_5, type_7;
     var animationPadding, TimelineAnimator, TimelineEvent;
     return {
@@ -4223,7 +4251,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/obj
                 };
                 return TimelineAnimator;
             }());
-            exports_88("TimelineAnimator", TimelineAnimator);
+            exports_89("TimelineAnimator", TimelineAnimator);
             TimelineEvent = (function () {
                 function TimelineEvent(manager, timelineDuration, evt) {
                     var keyframes;
@@ -4278,9 +4306,9 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/obj
         }
     }
 });
-System.register("just-animate/helpers/math", [], function(exports_89, context_89) {
+System.register("just-animate/helpers/math", [], function(exports_90, context_90) {
     "use strict";
-    var __moduleName = context_89 && context_89.id;
+    var __moduleName = context_90 && context_90.id;
     var linearCubicBezier, SUBDIVISION_EPSILON;
     /**
      * Clamps a number between the min and max
@@ -4294,7 +4322,7 @@ System.register("just-animate/helpers/math", [], function(exports_89, context_89
     function clamp(val, min, max) {
         return val === undefined ? undefined : val < min ? min : val > max ? max : val;
     }
-    exports_89("clamp", clamp);
+    exports_90("clamp", clamp);
     function bezier(n1, n2, t) {
         return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
     }
@@ -4326,7 +4354,7 @@ System.register("just-animate/helpers/math", [], function(exports_89, context_89
             return x;
         };
     }
-    exports_89("cubicBezier", cubicBezier);
+    exports_90("cubicBezier", cubicBezier);
     return {
         setters:[],
         execute: function() {
@@ -4335,11 +4363,11 @@ System.register("just-animate/helpers/math", [], function(exports_89, context_89
         }
     }
 });
-System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just-animate/core/WebTransformer", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_90, context_90) {
+System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just-animate/core/WebTransformer", "just-animate/core/ElementAnimator", "just-animate/core/SequenceAnimator", "just-animate/core/TimelineAnimator"], function(exports_91, context_91) {
     "use strict";
-    var __moduleName = context_90 && context_90.id;
+    var __moduleName = context_91 && context_91.id;
     var lists_6, WebTransformer_2, ElementAnimator_1, SequenceAnimator_1, TimelineAnimator_1;
-    var DEFAULT_ANIMATIONS, JustAnimate;
+    var JustAnimate;
     return {
         setters:[
             function (lists_6_1) {
@@ -4358,7 +4386,6 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                 TimelineAnimator_1 = TimelineAnimator_1_1;
             }],
         execute: function() {
-            DEFAULT_ANIMATIONS = [];
             /**
              * (description)
              *
@@ -4367,13 +4394,8 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
              * @implements {ja.IAnimationManager}
              */
             JustAnimate = (function () {
-                /**
-                 * Creates an instance of JustAnimate.
-                 */
                 function JustAnimate() {
-                    var _this = this;
                     this._registry = {};
-                    lists_6.each(DEFAULT_ANIMATIONS, function (a) { return _this._registry[a.name] = a; });
                 }
                 /**
                  * (description)
@@ -4382,12 +4404,12 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                  * @param {ja.IAnimationOptions[]} animations (description)
                  */
                 JustAnimate.inject = function (animations) {
-                    Array.prototype.push.apply(DEFAULT_ANIMATIONS, lists_6.map(animations, WebTransformer_2.animationTransformer));
+                    lists_6.each(animations, function (a) { return JustAnimate._globalAnimations[a.name] = a; });
                 };
                 /**
                  * (description)
                  *
-                 * @param {(string | ja.IIndexed<ja.IKeyframe>)} keyframesOrName (description)
+                 * @param {(string | ja.IKeyframeOptions[])} keyframesOrName (description)
                  * @param {ja.ElementSource} el (description)
                  * @param {ja.IAnimationEffectTiming} [timings] (description)
                  * @returns {ja.IAnimator} (description)
@@ -4417,10 +4439,10 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                  * (description)
                  *
                  * @param {string} name (description)
-                 * @returns {ja.IKeyframeOptions} (description)
+                 * @returns {ja.IEffectOptions} (description)
                  */
                 JustAnimate.prototype.findAnimation = function (name) {
-                    return this._registry[name] || undefined;
+                    return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;
                 };
                 /**
                  * (description)
@@ -4430,17 +4452,26 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                  */
                 JustAnimate.prototype.register = function (animationOptions) {
                     this._registry[animationOptions.name] = WebTransformer_2.animationTransformer(animationOptions);
-                    return this;
                 };
+                /**
+                 * Calls global inject function
+                 *
+                 * @static
+                 * @param {ja.IAnimationOptions[]} animations (description)
+                 */
+                JustAnimate.prototype.inject = function (animations) {
+                    JustAnimate.inject(animations);
+                };
+                JustAnimate._globalAnimations = {};
                 return JustAnimate;
             }());
-            exports_90("JustAnimate", JustAnimate);
+            exports_91("JustAnimate", JustAnimate);
         }
     }
 });
-System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_91, context_91) {
+System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_92, context_92) {
     "use strict";
-    var __moduleName = context_91 && context_91.id;
+    var __moduleName = context_92 && context_92.id;
     var animations;
     return {
         setters:[
@@ -4448,18 +4479,18 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
                 animations = animations_1;
             },
             function (JustAnimate_1_1) {
-                exports_91({
+                exports_92({
                     "JustAnimate": JustAnimate_1_1["JustAnimate"]
                 });
             }],
         execute: function() {
-            exports_91("animations", animations);
+            exports_92("animations", animations);
         }
     }
 });
-System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], function(exports_92, context_92) {
+System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], function(exports_93, context_93) {
     "use strict";
-    var __moduleName = context_92 && context_92.id;
+    var __moduleName = context_93 && context_93.id;
     var type_8;
     var timeExpression, Time;
     return {
@@ -4511,7 +4542,7 @@ System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], f
                 Time.STAGGER_DECREASE = -1;
                 return Time;
             }());
-            exports_92("Time", Time);
+            exports_93("Time", Time);
         }
     }
 });

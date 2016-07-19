@@ -187,7 +187,7 @@ class TimelineEvent implements ja.ITimelineEvent {
     public offset: number;
     public el: ja.ElementSource;
     public timings: ja.IAnimationEffectTiming;
-    public keyframes: ja.IIndexed<ja.IKeyframe>;
+    public keyframes: ja.IKeyframeOptions[];
     public endTimeMs: number;
     public isClipped: boolean;
     public startTimeMs: number;
@@ -204,7 +204,7 @@ class TimelineEvent implements ja.ITimelineEvent {
     }
 
     constructor(manager: ja.IAnimationManager, timelineDuration: number, evt: ja.ITimelineEvent) {
-        let keyframes: ja.IIndexed<ja.IKeyframe>;
+        let keyframes: ja.IKeyframeOptions[];
         let timings: ja.IAnimationEffectTiming;
         let el: ja.ElementSource;
 

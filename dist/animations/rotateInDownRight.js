@@ -2,12 +2,12 @@
 exports.rotateInDownRight = {
     keyframes: [
         {
-            'transform-origin': 'right bottom',
+            transformOrigin: 'right bottom',
             transform: 'rotate3d(0, 0, 1, 45deg)',
             opacity: 0
         },
         {
-            'transform-origin': 'right bottom',
+            transformOrigin: 'right bottom',
             transform: 'none',
             opacity: 1
         }

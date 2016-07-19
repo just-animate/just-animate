@@ -3,7 +3,7 @@ exports.hinge = {
     keyframes: [
         {
             transform: 'none',
-            'transform-origin': 'top left',
+            transformOrigin: 'top left',
             opacity: 1
         },
         {
@@ -24,7 +24,7 @@ exports.hinge = {
         },
         {
             transform: 'translate3d(0, 700px, 0)',
-            'transform-origin': 'top left',
+            transformOrigin: 'top left',
             opacity: 0
         }
     ],

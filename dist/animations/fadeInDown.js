@@ -3,7 +3,7 @@ exports.fadeInDown = {
     keyframes: [
         {
             opacity: 0,
-            translate3d: ['0', '-100%', '0']
+            y: '-100%'
         },
         {
             opacity: 1,
