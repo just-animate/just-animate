@@ -30,7 +30,7 @@ describe('lists', function () {
     it('returns an array from an array like structure', function () {
       expect(lists.toArray({ length: 0 })).to.deep.equal([]);
     });
-  });  
+  });
 
   describe('each()', function () {
     it('iterates over each item', function () {
@@ -39,7 +39,7 @@ describe('lists', function () {
       lists.each(initial, (i) => result.push(i));
       expect(result).to.deep.equal(initial);
     });
-  });  
+  });
 
   describe('max()', function () {
     it('returns the max value for a property in an array of items', function () {
@@ -50,7 +50,7 @@ describe('lists', function () {
       ];
       assert(6078, lists.max(source, 'value'));
     });
-  });  
+  });
 
   describe('map()', function () {
     it('maps an array of items', function () {
@@ -63,5 +63,16 @@ describe('lists', function () {
       ];
       assert.equal('test', lists.map(source, i => i.letter).join(''));
     });
-  });  
+  });
+
+  describe('pushALl()', function () {
+    it('pushes a array of items into an existing array', function () {
+      var target = [];
+      var source = [1, 2, 3, 4];
+
+      lists.pushAll(target, source);
+
+      assert.equal(source.length, target.length, true);
+    });
+  });
 });

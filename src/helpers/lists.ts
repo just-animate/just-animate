@@ -100,6 +100,14 @@ export function map<T1, T2>(items: IList<T1>, fn: ja.IMapper<T1, T2>): T2[] {
     return results;
 }
 
+/**
+ * Pushes each item in target into source and returns source
+ * 
+ * @export
+ * @template T
+ * @param {T[]} source
+ * @param {T[]} target
+ */
 export function pushAll<T>(source: T[], target: T[]): void {
     push.apply(source, target);  
 }

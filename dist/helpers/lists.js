@@ -96,6 +96,14 @@ function map(items, fn) {
     return results;
 }
 exports.map = map;
+/**
+ * Pushes each item in target into source and returns source
+ *
+ * @export
+ * @template T
+ * @param {T[]} source
+ * @param {T[]} target
+ */
 function pushAll(source, target) {
     push.apply(source, target);
 }

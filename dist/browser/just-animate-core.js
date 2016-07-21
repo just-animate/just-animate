@@ -86,7 +86,6 @@
         };
     }
     function normalizeKeyframes(keyframes) {
-        var startTime2 = performance.now();
         var len = keyframes.length;
         if (len < 2) {
             return keyframes;
@@ -138,8 +137,6 @@
                 last[prop] = keyframe[prop];
             }
         }
-        var timeElapsed = performance.now() - startTime2;
-        console.log(timeElapsed);
         return keyframes;
     }
     function keyframeTransformer(keyframe) {

@@ -1,5 +1,5 @@
 import {isNumber} from '../helpers/type';
-const timeExpression = /([+-][=]){0,1}([0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
+const timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
 
 export class Time {
     public static STAGGER_NONE: number = 0;
@@ -46,5 +46,9 @@ export class Time {
     constructor(value: number, stagger: number) {
         this.value = value;
         this.stagger = stagger;
+    }
+
+    public toString(): string {
+        return String(this.value) + 'ms';
     }
 }

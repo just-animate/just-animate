@@ -22,7 +22,6 @@ exports.animationTransformer = animationTransformer;
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
 function normalizeKeyframes(keyframes) {
-    var startTime2 = performance.now();
     var len = keyframes.length;
     // don't attempt to fill animation if less than 2 keyframes
     if (len < 2) {
@@ -87,8 +86,6 @@ function normalizeKeyframes(keyframes) {
             last[prop] = keyframe[prop];
         }
     }
-    var timeElapsed = performance.now() - startTime2;
-    console.log(timeElapsed);
     return keyframes;
 }
 exports.normalizeKeyframes = normalizeKeyframes;

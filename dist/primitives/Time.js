@@ -1,6 +1,6 @@
 "use strict";
 var type_1 = require('../helpers/type');
-var timeExpression = /([+-][=]){0,1}([0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
+var timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
 var Time = (function () {
     function Time(value, stagger) {
         this.value = value;
@@ -37,6 +37,9 @@ var Time = (function () {
                 break;
         }
         return new Time(valueMs, operatorEnum);
+    };
+    Time.prototype.toString = function () {
+        return String(this.value) + 'ms';
     };
     Time.STAGGER_NONE = 0;
     Time.STAGGER_INCREASE = 1;

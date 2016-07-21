@@ -3072,6 +3072,14 @@ System.register("just-animate/helpers/lists", [], function(exports_79, context_7
         return results;
     }
     exports_79("map", map);
+    /**
+     * Pushes each item in target into source and returns source
+     *
+     * @export
+     * @template T
+     * @param {T[]} source
+     * @param {T[]} target
+     */
     function pushAll(source, target) {
         push.apply(source, target);
     }
@@ -3332,7 +3340,6 @@ System.register("just-animate/core/WebTransformer", ["just-animate/helpers/lists
      * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
      */
     function normalizeKeyframes(keyframes) {
-        var startTime2 = performance.now();
         var len = keyframes.length;
         // don't attempt to fill animation if less than 2 keyframes
         if (len < 2) {
@@ -3397,8 +3404,6 @@ System.register("just-animate/core/WebTransformer", ["just-animate/helpers/lists
                 last[prop] = keyframe[prop];
             }
         }
-        var timeElapsed = performance.now() - startTime2;
-        console.log(timeElapsed);
         return keyframes;
     }
     exports_85("normalizeKeyframes", normalizeKeyframes);
@@ -4488,25 +4493,115 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
         }
     }
 });
-System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], function(exports_93, context_93) {
+System.register("just-animate/primitives/Distance", ["just-animate/helpers/type"], function(exports_93, context_93) {
     "use strict";
     var __moduleName = context_93 && context_93.id;
     var type_8;
-    var timeExpression, Time;
+    var distanceExpression, Distance;
     return {
         setters:[
             function (type_8_1) {
                 type_8 = type_8_1;
             }],
         execute: function() {
-            timeExpression = /([+-][=]){0,1}([0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
+            distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/;
+            Distance = (function () {
+                function Distance(value, unit) {
+                    this.value = value;
+                    this.unit = unit;
+                }
+                Distance.from = function (val) {
+                    if (!type_8.isDefined(val)) {
+                        return undefined;
+                    }
+                    if (type_8.isNumber(val)) {
+                        return new Distance(val, Distance.px);
+                    }
+                    var match = distanceExpression.exec(val);
+                    var unit = match[2];
+                    var value = parseFloat(match[1]);
+                    return new Distance(value, unit);
+                };
+                Distance.prototype.toString = function () {
+                    return "" + this.value + this.unit;
+                };
+                Distance.em = 'em';
+                Distance.ex = 'ex';
+                Distance.ch = 'ch';
+                Distance.rem = 'rem';
+                Distance.vh = 'vh';
+                Distance.vw = 'vw';
+                Distance.vmin = 'vmin';
+                Distance.vmax = 'vmax';
+                Distance.px = 'px';
+                Distance.mm = 'mm';
+                Distance.q = 'q';
+                Distance.cm = 'cm';
+                Distance.inch = 'in';
+                Distance.point = 'pt';
+                Distance.pica = 'pc';
+                Distance.percent = '%';
+                return Distance;
+            }());
+            exports_93("Distance", Distance);
+        }
+    }
+});
+System.register("just-animate/primitives/Percentage", ["just-animate/helpers/type"], function(exports_94, context_94) {
+    "use strict";
+    var __moduleName = context_94 && context_94.id;
+    var type_9;
+    var distanceExpression, Percentage;
+    return {
+        setters:[
+            function (type_9_1) {
+                type_9 = type_9_1;
+            }],
+        execute: function() {
+            distanceExpression = /(-{0,1}[0-9.]+)%{0,1}/;
+            Percentage = (function () {
+                function Percentage(value) {
+                    this.value = value;
+                }
+                Percentage.from = function (val) {
+                    if (!type_9.isDefined(val)) {
+                        return undefined;
+                    }
+                    if (type_9.isNumber(val)) {
+                        return new Percentage(val);
+                    }
+                    var match = distanceExpression.exec(val);
+                    var value = parseFloat(match[1]);
+                    return new Percentage(value);
+                };
+                Percentage.prototype.toString = function () {
+                    return this.value + "%";
+                };
+                return Percentage;
+            }());
+            exports_94("Percentage", Percentage);
+        }
+    }
+});
+System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], function(exports_95, context_95) {
+    "use strict";
+    var __moduleName = context_95 && context_95.id;
+    var type_10;
+    var timeExpression, Time;
+    return {
+        setters:[
+            function (type_10_1) {
+                type_10 = type_10_1;
+            }],
+        execute: function() {
+            timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
             Time = (function () {
                 function Time(value, stagger) {
                     this.value = value;
                     this.stagger = stagger;
                 }
                 Time.from = function (val) {
-                    if (type_8.isNumber(val)) {
+                    if (type_10.isNumber(val)) {
                         return new Time(val, Time.STAGGER_NONE);
                     }
                     var match = timeExpression.exec(val);
@@ -4537,12 +4632,15 @@ System.register("just-animate/primitives/Time", ["just-animate/helpers/type"], f
                     }
                     return new Time(valueMs, operatorEnum);
                 };
+                Time.prototype.toString = function () {
+                    return String(this.value) + 'ms';
+                };
                 Time.STAGGER_NONE = 0;
                 Time.STAGGER_INCREASE = 1;
                 Time.STAGGER_DECREASE = -1;
                 return Time;
             }());
-            exports_93("Time", Time);
+            exports_95("Time", Time);
         }
     }
 });

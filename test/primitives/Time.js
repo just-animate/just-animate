@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var Time = require('../../dist/primitives/Time').Time;
 
 describe('Time', function () {
-    describe('toTime()', function () {
+    describe('from()', function () {
         it('returns =0 when passed 0', function () {
             var result = Time.from(0);
             assert.equal(0, result.value);
