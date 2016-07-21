@@ -1,6 +1,5 @@
 "use strict";
 var lists_1 = require('./helpers/lists');
-var WebTransformer_1 = require('./core/WebTransformer');
 var ElementAnimator_1 = require('./core/ElementAnimator');
 var SequenceAnimator_1 = require('./core/SequenceAnimator');
 var TimelineAnimator_1 = require('./core/TimelineAnimator');
@@ -69,7 +68,7 @@ var JustAnimate = (function () {
      * @returns {ja.IAnimationManager} (description)
      */
     JustAnimate.prototype.register = function (animationOptions) {
-        this._registry[animationOptions.name] = WebTransformer_1.animationTransformer(animationOptions);
+        this._registry[animationOptions.name] = animationOptions;
     };
     /**
      * Calls global inject function

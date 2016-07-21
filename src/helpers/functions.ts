@@ -35,6 +35,16 @@ export function multiapply(targets: any[], fnName: string, args: any[], cb?: ja.
     return results;
 }
 
+export function pipe(initial: any|Function, ...args: Function[]): any {
+    let value: any = isFunction(initial) ? initial() : initial;
+
+    const len = arguments.length;
+    for (let x = 1; x < len; x++) {
+        value = arguments[x](value);
+    }
+
+    return value;
+}
 
 /**
  * No operation function: a placeholder

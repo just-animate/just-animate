@@ -1,10 +1,10 @@
 import {easings} from '../easings';
 import {queryElements} from '../helpers/elements';
-import {multiapply} from '../helpers/functions';
+import {multiapply, pipe} from '../helpers/functions';
 import {extend} from '../helpers/objects';
 import {head, map, each, max} from '../helpers/lists';
 import {isFunction, isString} from '../helpers/type';
-import {keyframeTransformer, normalizeKeyframes} from './WebTransformer';
+import {normalizeProperties, normalizeKeyframes, spaceKeyframes} from '../helpers/keyframes';
 
 
 /**
@@ -70,16 +70,17 @@ export class ElementAnimator implements ja.IAnimator {
         }
 
         let keyframes: ja.IKeyframeOptions[];
+        
         if (isString(keyframesOrName)) {
             // if keyframes is a string, lookup keyframes from registry
             const definition = manager.findAnimation(keyframesOrName as string);
-            keyframes = normalizeKeyframes(map(definition.keyframes, keyframeTransformer));
+            keyframes = pipe(map(definition.keyframes, normalizeProperties), spaceKeyframes, normalizeKeyframes);
 
             // use registered timings as default, then load timings from params           
             timings = extend({}, definition.timings, timings);
         } else {
             // otherwise, translate keyframe properties
-            keyframes = normalizeKeyframes(map(keyframesOrName as ja.IKeyframeOptions[], keyframeTransformer));
+            keyframes = pipe(map(keyframesOrName as ja.IKeyframeOptions[], normalizeProperties), spaceKeyframes, normalizeKeyframes);
         }
 
         if (timings && timings.easing) {

@@ -35,19 +35,33 @@
         return results;
     }
 
-    function extend(target) {
-        var sources = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            sources[_i - 1] = arguments[_i];
-        }
-        for (var i = 1, len = arguments.length; i < len; i++) {
-            var source = arguments[i];
-            for (var propName in source) {
-                target[propName] = source[propName];
-            }
-        }
-        return target;
-    }
+    var easings = {
+        easeInBack: 'cubic-bezier(0.600, -0.280, 0.735, 0.045)',
+        easeInCirc: 'cubic-bezier(0.600, 0.040, 0.980, 0.335)',
+        easeInCubic: 'cubic-bezier(0.550, 0.055, 0.675, 0.190)',
+        easeInExpo: 'cubic-bezier(0.950, 0.050, 0.795, 0.035)',
+        easeInOutBack: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)',
+        easeInOutCirc: 'cubic-bezier(0.785, 0.135, 0.150, 0.860)',
+        easeInOutCubic: 'cubic-bezier(0.645, 0.045, 0.355, 1.000)',
+        easeInOutExpo: 'cubic-bezier(1.000, 0.000, 0.000, 1.000)',
+        easeInOutQuad: 'cubic-bezier(0.455, 0.030, 0.515, 0.955)',
+        easeInOutQuart: 'cubic-bezier(0.770, 0.000, 0.175, 1.000)',
+        easeInOutQuint: 'cubic-bezier(0.860, 0.000, 0.070, 1.000)',
+        easeInOutSine: 'cubic-bezier(0.445, 0.050, 0.550, 0.950)',
+        easeInQuad: 'cubic-bezier(0.550, 0.085, 0.680, 0.530)',
+        easeInQuart: 'cubic-bezier(0.895, 0.030, 0.685, 0.220)',
+        easeInQuint: 'cubic-bezier(0.755, 0.050, 0.855, 0.060)',
+        easeInSine: 'cubic-bezier(0.470, 0.000, 0.745, 0.715)',
+        easeOutBack: 'cubic-bezier(0.175,  0.885, 0.320, 1.275)',
+        easeOutCirc: 'cubic-bezier(0.075, 0.820, 0.165, 1.000)',
+        easeOutCubic: 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
+        easeOutExpo: 'cubic-bezier(0.190, 1.000, 0.220, 1.000)',
+        easeOutQuad: 'cubic-bezier(0.250, 0.460, 0.450, 0.940)',
+        easeOutQuart: 'cubic-bezier(0.165, 0.840, 0.440, 1.000)',
+        easeOutQuint: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
+        easeOutSine: 'cubic-bezier(0.390, 0.575, 0.565, 1.000)',
+        elegantSlowStartEnd: 'cubic-bezier(0.175, 0.885, 0.320, 1.275)'
+    };
 
     var ostring = Object.prototype.toString;
     function isArray(a) {
@@ -66,6 +80,88 @@
         return typeof a === 'string';
     }
 
+    function queryElements(source) {
+        if (!source) {
+            throw Error('no elements');
+        }
+        if (isString(source)) {
+            var nodeResults = document.querySelectorAll(source);
+            return toArray(nodeResults);
+        }
+        if (typeof source['tagName'] === 'string') {
+            return [source];
+        }
+        if (isFunction(source)) {
+            var provider = source;
+            var result = provider();
+            return queryElements(result);
+        }
+        if (isArray(source)) {
+            var elements_1 = [];
+            each(source, function (i) {
+                var innerElements = queryElements(i);
+                elements_1.push.apply(elements_1, innerElements);
+            });
+            return elements_1;
+        }
+        return [];
+    }
+
+    function multiapply(targets, fnName, args, cb) {
+        var errors = [];
+        var results = [];
+        for (var i = 0, len = targets.length; i < len; i++) {
+            try {
+                var target = targets[i];
+                var result = void 0;
+                if (fnName) {
+                    result = target[fnName].apply(target, args);
+                }
+                else {
+                    result = target.apply(undefined, args);
+                }
+                if (result !== undefined) {
+                    results.push(result);
+                }
+            }
+            catch (err) {
+                errors.push(err);
+            }
+        }
+        if (isFunction(cb)) {
+            cb(errors);
+        }
+        return results;
+    }
+    function pipe(initial) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var value = isFunction(initial) ? initial() : initial;
+        var len = arguments.length;
+        for (var x = 1; x < len; x++) {
+            value = arguments[x](value);
+        }
+        return value;
+    }
+    function noop() {
+    }
+
+    function extend(target) {
+        var sources = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            sources[_i - 1] = arguments[_i];
+        }
+        for (var i = 1, len = arguments.length; i < len; i++) {
+            var source = arguments[i];
+            for (var propName in source) {
+                target[propName] = source[propName];
+            }
+        }
+        return target;
+    }
+
     var camelCaseRegex = /([a-z])[- ]([a-z])/ig;
     function camelCaseReplacer(match, p1, p2) {
         return p1 + p2.toUpperCase();
@@ -74,30 +170,20 @@
         return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : undefined;
     }
 
-    var x = 0;
-    var y = 1;
-    var z = 2;
-    function animationTransformer(a) {
-        var keyframes = map(a.keyframes, keyframeTransformer);
-        return {
-            keyframes: normalizeKeyframes(keyframes),
-            name: a.name,
-            timings: extend({}, a.timings)
-        };
-    }
-    function normalizeKeyframes(keyframes) {
-        var len = keyframes.length;
-        if (len < 2) {
+    var offset = 'offset';
+    function spaceKeyframes(keyframes) {
+        if (keyframes.length < 2) {
             return keyframes;
         }
         var first = keyframes[0];
         if (first.offset !== 0) {
             first.offset = 0;
         }
-        var last = keyframes[len - 1];
+        var last = keyframes[keyframes.length - 1];
         if (last.offset !== 1) {
             last.offset = 1;
         }
+        var len = keyframes.length;
         var lasti = len - 1;
         for (var i = 1; i < lasti; i++) {
             var target = keyframes[i];
@@ -119,10 +205,22 @@
                 break;
             }
         }
+        return keyframes;
+    }
+    function normalizeKeyframes(keyframes) {
+        if (keyframes.length < 2) {
+            return keyframes;
+        }
+        var first = keyframes[0];
+        if (first.offset !== 0) {
+            first.offset = 0;
+        }
+        var last = keyframes[keyframes.length - 1];
+        var len = keyframes.length;
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === 'offset' || isDefined(first[prop])) {
+                if (prop === offset || isDefined(first[prop])) {
                     continue;
                 }
                 first[prop] = keyframe[prop];
@@ -131,7 +229,7 @@
         for (var i = len - 2; i > -1; i--) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === 'offset' || isDefined(last[prop])) {
+                if (prop === offset || isDefined(last[prop])) {
                     continue;
                 }
                 last[prop] = keyframe[prop];
@@ -139,7 +237,10 @@
         }
         return keyframes;
     }
-    function keyframeTransformer(keyframe) {
+    function normalizeProperties(keyframe) {
+        var x = 0;
+        var y = 1;
+        var z = 2;
         var scale = new Array(3);
         var skew = new Array(2);
         var translate = new Array(3);
@@ -385,90 +486,6 @@
         return output;
     }
 
-    var easings = {
-        easeInBack: 'cubic-bezier(0.600, -0.280, 0.735, 0.045)',
-        easeInCirc: 'cubic-bezier(0.600, 0.040, 0.980, 0.335)',
-        easeInCubic: 'cubic-bezier(0.550, 0.055, 0.675, 0.190)',
-        easeInExpo: 'cubic-bezier(0.950, 0.050, 0.795, 0.035)',
-        easeInOutBack: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)',
-        easeInOutCirc: 'cubic-bezier(0.785, 0.135, 0.150, 0.860)',
-        easeInOutCubic: 'cubic-bezier(0.645, 0.045, 0.355, 1.000)',
-        easeInOutExpo: 'cubic-bezier(1.000, 0.000, 0.000, 1.000)',
-        easeInOutQuad: 'cubic-bezier(0.455, 0.030, 0.515, 0.955)',
-        easeInOutQuart: 'cubic-bezier(0.770, 0.000, 0.175, 1.000)',
-        easeInOutQuint: 'cubic-bezier(0.860, 0.000, 0.070, 1.000)',
-        easeInOutSine: 'cubic-bezier(0.445, 0.050, 0.550, 0.950)',
-        easeInQuad: 'cubic-bezier(0.550, 0.085, 0.680, 0.530)',
-        easeInQuart: 'cubic-bezier(0.895, 0.030, 0.685, 0.220)',
-        easeInQuint: 'cubic-bezier(0.755, 0.050, 0.855, 0.060)',
-        easeInSine: 'cubic-bezier(0.470, 0.000, 0.745, 0.715)',
-        easeOutBack: 'cubic-bezier(0.175,  0.885, 0.320, 1.275)',
-        easeOutCirc: 'cubic-bezier(0.075, 0.820, 0.165, 1.000)',
-        easeOutCubic: 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
-        easeOutExpo: 'cubic-bezier(0.190, 1.000, 0.220, 1.000)',
-        easeOutQuad: 'cubic-bezier(0.250, 0.460, 0.450, 0.940)',
-        easeOutQuart: 'cubic-bezier(0.165, 0.840, 0.440, 1.000)',
-        easeOutQuint: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
-        easeOutSine: 'cubic-bezier(0.390, 0.575, 0.565, 1.000)',
-        elegantSlowStartEnd: 'cubic-bezier(0.175, 0.885, 0.320, 1.275)'
-    };
-
-    function queryElements(source) {
-        if (!source) {
-            throw Error('no elements');
-        }
-        if (isString(source)) {
-            var nodeResults = document.querySelectorAll(source);
-            return toArray(nodeResults);
-        }
-        if (typeof source['tagName'] === 'string') {
-            return [source];
-        }
-        if (isFunction(source)) {
-            var provider = source;
-            var result = provider();
-            return queryElements(result);
-        }
-        if (isArray(source)) {
-            var elements_1 = [];
-            each(source, function (i) {
-                var innerElements = queryElements(i);
-                elements_1.push.apply(elements_1, innerElements);
-            });
-            return elements_1;
-        }
-        return [];
-    }
-
-    function multiapply(targets, fnName, args, cb) {
-        var errors = [];
-        var results = [];
-        for (var i = 0, len = targets.length; i < len; i++) {
-            try {
-                var target = targets[i];
-                var result = void 0;
-                if (fnName) {
-                    result = target[fnName].apply(target, args);
-                }
-                else {
-                    result = target.apply(undefined, args);
-                }
-                if (result !== undefined) {
-                    results.push(result);
-                }
-            }
-            catch (err) {
-                errors.push(err);
-            }
-        }
-        if (isFunction(cb)) {
-            cb(errors);
-        }
-        return results;
-    }
-    function noop() {
-    }
-
     var ElementAnimator = (function () {
         function ElementAnimator(manager, keyframesOrName, el, timings) {
             var _this = this;
@@ -478,11 +495,11 @@
             var keyframes;
             if (isString(keyframesOrName)) {
                 var definition = manager.findAnimation(keyframesOrName);
-                keyframes = normalizeKeyframes(map(definition.keyframes, keyframeTransformer));
+                keyframes = pipe(map(definition.keyframes, normalizeProperties), spaceKeyframes, normalizeKeyframes);
                 timings = extend({}, definition.timings, timings);
             }
             else {
-                keyframes = normalizeKeyframes(map(keyframesOrName, keyframeTransformer));
+                keyframes = pipe(map(keyframesOrName, normalizeProperties), spaceKeyframes, normalizeKeyframes);
             }
             if (timings && timings.easing) {
                 var easing = easings[timings.easing];
@@ -922,7 +939,7 @@
             return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;
         };
         JustAnimate.prototype.register = function (animationOptions) {
-            this._registry[animationOptions.name] = animationTransformer(animationOptions);
+            this._registry[animationOptions.name] = animationOptions;
         };
         JustAnimate.prototype.inject = function (animations) {
             JustAnimate.inject(animations);

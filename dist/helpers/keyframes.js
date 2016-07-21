@@ -1,30 +1,10 @@
 "use strict";
-var lists_1 = require('../helpers/lists');
-var objects_1 = require('../helpers/objects');
-var strings_1 = require('../helpers/strings');
 var type_1 = require('../helpers/type');
-var x = 0;
-var y = 1;
-var z = 2;
-/**
- * Handles converting animations options to a usable format
- */
-function animationTransformer(a) {
-    var keyframes = lists_1.map(a.keyframes, keyframeTransformer);
-    return {
-        keyframes: normalizeKeyframes(keyframes),
-        name: a.name,
-        timings: objects_1.extend({}, a.timings)
-    };
-}
-exports.animationTransformer = animationTransformer;
-/**
- * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
- */
-function normalizeKeyframes(keyframes) {
-    var len = keyframes.length;
+var strings_1 = require('../helpers/strings');
+var offset = 'offset';
+function spaceKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes
-    if (len < 2) {
+    if (keyframes.length < 2) {
         return keyframes;
     }
     var first = keyframes[0];
@@ -32,12 +12,13 @@ function normalizeKeyframes(keyframes) {
     if (first.offset !== 0) {
         first.offset = 0;
     }
-    var last = keyframes[len - 1];
+    var last = keyframes[keyframes.length - 1];
     // ensure last offset
     if (last.offset !== 1) {
         last.offset = 1;
     }
     // explicitly set implicit offsets
+    var len = keyframes.length;
     var lasti = len - 1;
     for (var i = 1; i < lasti; i++) {
         var target = keyframes[i];
@@ -66,11 +47,29 @@ function normalizeKeyframes(keyframes) {
             break;
         }
     }
+    return keyframes;
+}
+exports.spaceKeyframes = spaceKeyframes;
+/**
+ * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
+ */
+function normalizeKeyframes(keyframes) {
+    // don't attempt to fill animation if less than 2 keyframes
+    if (keyframes.length < 2) {
+        return keyframes;
+    }
+    var first = keyframes[0];
+    // ensure first offset    
+    if (first.offset !== 0) {
+        first.offset = 0;
+    }
+    var last = keyframes[keyframes.length - 1];
     // fill initial keyframe with missing props
+    var len = keyframes.length;
     for (var i = 1; i < len; i++) {
         var keyframe = keyframes[i];
         for (var prop in keyframe) {
-            if (prop === 'offset' || type_1.isDefined(first[prop])) {
+            if (prop === offset || type_1.isDefined(first[prop])) {
                 continue;
             }
             first[prop] = keyframe[prop];
@@ -80,7 +79,7 @@ function normalizeKeyframes(keyframes) {
     for (var i = len - 2; i > -1; i--) {
         var keyframe = keyframes[i];
         for (var prop in keyframe) {
-            if (prop === 'offset' || type_1.isDefined(last[prop])) {
+            if (prop === offset || type_1.isDefined(last[prop])) {
                 continue;
             }
             last[prop] = keyframe[prop];
@@ -92,7 +91,10 @@ exports.normalizeKeyframes = normalizeKeyframes;
 /**
  * Handles transforming short hand key properties into their native form
  */
-function keyframeTransformer(keyframe) {
+function normalizeProperties(keyframe) {
+    var x = 0;
+    var y = 1;
+    var z = 2;
     // transform properties
     var scale = new Array(3);
     var skew = new Array(2);
@@ -248,18 +250,21 @@ function keyframeTransformer(keyframe) {
                     continue;
                 }
                 throw Error('translate requires a number, string, string[], or number[]');
+            case 'x':
             case 'translateX':
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translate[x] = value;
                     continue;
                 }
                 throw Error('translateX requires a number or string');
+            case 'y':
             case 'translateY':
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translate[y] = value;
                     continue;
                 }
                 throw Error('translateY requires a number or string');
+            case 'z':
             case 'translateZ':
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translate[z] = value;
@@ -307,7 +312,7 @@ function keyframeTransformer(keyframe) {
         transform += " skewX(" + skew[x] + ")";
     }
     else if (isskewY) {
-        transform += " skewX(" + skew[y] + ")";
+        transform += " skewY(" + skew[y] + ")";
     }
     else {
     }
@@ -326,10 +331,10 @@ function keyframeTransformer(keyframe) {
         transform += " translateX(" + translate[x] + ")";
     }
     else if (istranslateY) {
-        transform += " translateX(" + translate[y] + ")";
+        transform += " translateY(" + translate[y] + ")";
     }
     else if (istranslateZ) {
-        transform += " translateX(" + translate[z] + ")";
+        transform += " translateZ(" + translate[z] + ")";
     }
     else {
     }
@@ -338,4 +343,4 @@ function keyframeTransformer(keyframe) {
     }
     return output;
 }
-exports.keyframeTransformer = keyframeTransformer;
+exports.normalizeProperties = normalizeProperties;

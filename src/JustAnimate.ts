@@ -1,5 +1,4 @@
 import {each} from './helpers/lists';
-import {animationTransformer} from './core/WebTransformer';
 import {ElementAnimator} from './core/ElementAnimator';
 import {SequenceAnimator} from './core/SequenceAnimator';
 import {TimelineAnimator} from './core/TimelineAnimator';
@@ -72,7 +71,7 @@ export class JustAnimate implements ja.IAnimationManager {
      * @returns {ja.IAnimationManager} (description)
      */
     public register(animationOptions: ja.IAnimationOptions): void {        
-        this._registry[animationOptions.name] = animationTransformer(animationOptions);
+        this._registry[animationOptions.name] = animationOptions;
     }
 
     /**

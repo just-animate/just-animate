@@ -5,7 +5,7 @@ var functions_1 = require('../helpers/functions');
 var objects_1 = require('../helpers/objects');
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
-var WebTransformer_1 = require('./WebTransformer');
+var keyframes_1 = require('../helpers/keyframes');
 /**
  * Animates one or more elements
  *
@@ -31,13 +31,13 @@ var ElementAnimator = (function () {
         if (type_1.isString(keyframesOrName)) {
             // if keyframes is a string, lookup keyframes from registry
             var definition = manager.findAnimation(keyframesOrName);
-            keyframes = WebTransformer_1.normalizeKeyframes(lists_1.map(definition.keyframes, WebTransformer_1.keyframeTransformer));
+            keyframes = functions_1.pipe(lists_1.map(definition.keyframes, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
             // use registered timings as default, then load timings from params           
             timings = objects_1.extend({}, definition.timings, timings);
         }
         else {
             // otherwise, translate keyframe properties
-            keyframes = WebTransformer_1.normalizeKeyframes(lists_1.map(keyframesOrName, WebTransformer_1.keyframeTransformer));
+            keyframes = functions_1.pipe(lists_1.map(keyframesOrName, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
         }
         if (timings && timings.easing) {
             // if timings contains an easing property, 
