@@ -1,6 +1,5 @@
 {
   "author": "christopher.j.wallis@gmail.com",
-  "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",
     "del-cli": "^0.2.0",

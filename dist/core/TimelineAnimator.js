@@ -2,6 +2,7 @@
 var objects_1 = require('../helpers/objects');
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
+var Dispatcher_1 = require('./Dispatcher');
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
@@ -14,6 +15,7 @@ var TimelineAnimator = (function () {
      * @param {ja.ITimelineOptions} options (description)
      */
     function TimelineAnimator(manager, options) {
+        this._dispatcher = new Dispatcher_1.Dispatcher();
         var duration = options.duration;
         if (duration === undefined) {
             throw Error('Duration is required');
@@ -30,15 +32,20 @@ var TimelineAnimator = (function () {
             this.play();
         }
     }
-    TimelineAnimator.prototype.finish = function (fn) {
-        this._isFinished = true;
-        return this;
+    TimelineAnimator.prototype.addEventListener = function (eventName, listener) {
+        this._dispatcher.on(eventName, listener);
     };
-    TimelineAnimator.prototype.play = function (fn) {
+    TimelineAnimator.prototype.removeEventListener = function (eventName, listener) {
+        this._dispatcher.off(eventName, listener);
+    };
+    TimelineAnimator.prototype.finish = function () {
+        this._isFinished = true;
+    };
+    TimelineAnimator.prototype.play = function () {
         this.playbackRate = 1;
         this._isPaused = false;
         if (this._isInEffect) {
-            return this;
+            return;
         }
         if (this.playbackRate < 0) {
             this.currentTime = this.duration;
@@ -47,30 +54,27 @@ var TimelineAnimator = (function () {
             this.currentTime = 0;
         }
         window.requestAnimationFrame(this._tick);
-        return this;
     };
-    TimelineAnimator.prototype.pause = function (fn) {
+    TimelineAnimator.prototype.pause = function () {
         if (this._isInEffect) {
             this._isPaused = true;
         }
-        return this;
     };
-    TimelineAnimator.prototype.reverse = function (fn) {
+    TimelineAnimator.prototype.reverse = function () {
         this.playbackRate = -1;
         this._isPaused = false;
         if (this._isInEffect) {
-            return this;
+            return;
         }
         if (this.currentTime <= 0) {
             this.currentTime = this.duration;
         }
         window.requestAnimationFrame(this._tick);
-        return this;
     };
-    TimelineAnimator.prototype.cancel = function (fn) {
+    TimelineAnimator.prototype.cancel = function () {
         this.playbackRate = 0;
         this._isCanceled = true;
-        return this;
+        return;
     };
     TimelineAnimator.prototype._tick = function () {
         var _this = this;

@@ -114,10 +114,10 @@
     (function () {
     var button = document.getElementById('animateButton');
     var select = document.getElementById('animateSelect');
-    
+
     function animateTheLabel() {
         var animationType = select.options[select.selectedIndex].value;
-        just.animate(animationType, '#animateLabel');
+        var animator = just.animate(animationType, '#animateLabel', { fill: 'none' });
     }
     
     button.addEventListener('click',  animateTheLabel);

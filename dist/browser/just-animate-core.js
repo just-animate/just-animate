@@ -145,8 +145,6 @@
         }
         return value;
     }
-    function noop() {
-    }
 
     function extend(target) {
         var sources = [];
@@ -486,9 +484,50 @@
         return output;
     }
 
+    var Dispatcher = (function () {
+        function Dispatcher() {
+            this._listeners = {};
+        }
+        Dispatcher.prototype.trigger = function (eventName, args) {
+            var listeners = this._listeners[eventName];
+            if (!listeners) {
+                return;
+            }
+            each(listeners, function (l) { return l.apply(undefined, args); });
+        };
+        Dispatcher.prototype.on = function (eventName, listener) {
+            if (!isFunction(listener)) {
+                throw Error('invalid listener');
+            }
+            var listeners = this._listeners[eventName];
+            if (!listeners) {
+                this._listeners[eventName] = [listener];
+                return;
+            }
+            if (listeners.indexOf(listener) !== -1) {
+                return;
+            }
+            listeners.push(listener);
+        };
+        Dispatcher.prototype.off = function (eventName, listener) {
+            var listeners = this._listeners[eventName];
+            if (!listeners) {
+                return false;
+            }
+            var indexOfListener = listeners.indexOf(listener);
+            if (indexOfListener === -1) {
+                return false;
+            }
+            listeners.splice(indexOfListener, 1);
+            return true;
+        };
+        return Dispatcher;
+    }());
+
     var ElementAnimator = (function () {
         function ElementAnimator(manager, keyframesOrName, el, timings) {
             var _this = this;
+            this._dispatcher = new Dispatcher();
             if (!keyframesOrName) {
                 return;
             }
@@ -511,9 +550,7 @@
             var elements = queryElements(el);
             this._animators = multiapply(elements, 'animate', [keyframes, timings]);
             if (this._animators.length > 0) {
-                this._animators[0].onfinish = function () {
-                    _this.finish();
-                };
+                this._animators[0].addEventListener('finish', function () { return _this.finish(); });
             }
         }
         Object.defineProperty(ElementAnimator.prototype, "playbackRate", {
@@ -527,6 +564,12 @@
             enumerable: true,
             configurable: true
         });
+        ElementAnimator.prototype.addEventListener = function (eventName, listener) {
+            this._dispatcher.on(eventName, listener);
+        };
+        ElementAnimator.prototype.removeEventListener = function (eventName, listener) {
+            this._dispatcher.off(eventName, listener);
+        };
         Object.defineProperty(ElementAnimator.prototype, "currentTime", {
             get: function () {
                 return max(this._animators, 'currentTime') || 0;
@@ -539,43 +582,35 @@
         });
         ElementAnimator.prototype.finish = function (fn) {
             var _this = this;
-            multiapply(this._animators, 'finish', [], fn);
+            multiapply(this._animators, 'finish', []);
             if (this.playbackRate < 0) {
                 each(this._animators, function (a) { return a.currentTime = 0; });
             }
             else {
                 each(this._animators, function (a) { return a.currentTime = _this.duration; });
             }
-            if (isFunction(this.onfinish)) {
-                this.onfinish(this);
-            }
-            return this;
+            this._dispatcher.trigger('finish');
         };
-        ElementAnimator.prototype.play = function (fn) {
-            multiapply(this._animators, 'play', [], fn);
-            return this;
+        ElementAnimator.prototype.play = function () {
+            multiapply(this._animators, 'play', []);
         };
-        ElementAnimator.prototype.pause = function (fn) {
-            multiapply(this._animators, 'pause', [], fn);
-            return this;
+        ElementAnimator.prototype.pause = function () {
+            multiapply(this._animators, 'pause', []);
         };
-        ElementAnimator.prototype.reverse = function (fn) {
-            multiapply(this._animators, 'reverse', [], fn);
-            return this;
+        ElementAnimator.prototype.reverse = function () {
+            multiapply(this._animators, 'reverse', []);
         };
-        ElementAnimator.prototype.cancel = function (fn) {
-            multiapply(this._animators, 'cancel', [], fn);
+        ElementAnimator.prototype.cancel = function () {
+            multiapply(this._animators, 'cancel', []);
             each(this._animators, function (a) { return a.currentTime = 0; });
-            if (isFunction(this.oncancel)) {
-                this.oncancel(this);
-            }
-            return this;
+            this._dispatcher.trigger('cancel');
         };
         return ElementAnimator;
     }());
 
     var SequenceAnimator = (function () {
         function SequenceAnimator(manager, options) {
+            this._dispatcher = new Dispatcher();
             var steps = map(options.steps, function (step) {
                 if (step.command || !step.name) {
                     return step;
@@ -591,10 +626,10 @@
                     timings: definition.timings
                 };
             });
-            this.onfinish = noop;
             this._currentIndex = -1;
             this._manager = manager;
             this._steps = steps;
+            this._duration = this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
             if (options.autoplay === true) {
                 this.play();
             }
@@ -633,60 +668,50 @@
         });
         Object.defineProperty(SequenceAnimator.prototype, "duration", {
             get: function () {
-                return this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
+                return this._duration;
             },
             enumerable: true,
             configurable: true
         });
-        SequenceAnimator.prototype.finish = function (fn) {
-            this._errorCallback = fn;
+        SequenceAnimator.prototype.addEventListener = function (eventName, listener) {
+            this._dispatcher.on(eventName, listener);
+        };
+        SequenceAnimator.prototype.removeEventListener = function (eventName, listener) {
+            this._dispatcher.off(eventName, listener);
+        };
+        SequenceAnimator.prototype.finish = function () {
             this._currentIndex = -1;
             for (var x = 0; x < this._steps.length; x++) {
                 var step = this._steps[x];
                 if (isDefined(step.animator)) {
-                    step.animator.cancel(fn);
+                    step.animator.cancel();
                 }
             }
-            if (isFunction(this.onfinish)) {
-                this.onfinish(this);
-            }
-            return this;
         };
-        SequenceAnimator.prototype.play = function (fn) {
-            this._errorCallback = fn;
+        SequenceAnimator.prototype.play = function () {
             this.playbackRate = 1;
             this._playThisStep();
-            return this;
         };
-        SequenceAnimator.prototype.pause = function (fn) {
-            this._errorCallback = fn;
+        SequenceAnimator.prototype.pause = function () {
             if (!this._isInEffect()) {
-                return this;
+                return;
             }
             var animator = this._getAnimator();
-            animator.pause(fn);
-            return this;
+            animator.pause();
         };
-        SequenceAnimator.prototype.reverse = function (fn) {
-            this._errorCallback = fn;
+        SequenceAnimator.prototype.reverse = function () {
             this.playbackRate = -1;
             this._playThisStep();
-            return this;
         };
-        SequenceAnimator.prototype.cancel = function (fn) {
-            this._errorCallback = fn;
+        SequenceAnimator.prototype.cancel = function () {
             this.playbackRate = undefined;
             this._currentIndex = -1;
             for (var x = 0; x < this._steps.length; x++) {
                 var step = this._steps[x];
                 if (isDefined(step.animator)) {
-                    step.animator.cancel(fn);
+                    step.animator.cancel();
                 }
             }
-            if (isFunction(this.oncancel)) {
-                this.oncancel(this);
-            }
-            return this;
         };
         SequenceAnimator.prototype._isInEffect = function () {
             return this._currentIndex > -1 && this._currentIndex < this._steps.length;
@@ -699,7 +724,7 @@
             it.animator = this._manager.animate(it.keyframes, it.el, it.timings);
             return it.animator;
         };
-        SequenceAnimator.prototype._playNextStep = function (evt) {
+        SequenceAnimator.prototype._playNextStep = function () {
             if (this.playbackRate === -1) {
                 this._currentIndex--;
             }
@@ -710,7 +735,7 @@
                 this._playThisStep();
             }
             else {
-                this.onfinish(evt);
+                this._dispatcher.trigger('finish');
             }
         };
         SequenceAnimator.prototype._playThisStep = function () {
@@ -724,8 +749,8 @@
                 }
             }
             var animator = this._getAnimator();
-            animator.onfinish = function (evt) { _this._playNextStep(evt); };
-            animator.play(this._errorCallback);
+            animator.addEventListener('finish', function () { return _this._playNextStep(); });
+            animator.play();
         };
         return SequenceAnimator;
     }());
@@ -733,6 +758,7 @@
     var animationPadding = 1.0 / 30;
     var TimelineAnimator = (function () {
         function TimelineAnimator(manager, options) {
+            this._dispatcher = new Dispatcher();
             var duration = options.duration;
             if (duration === undefined) {
                 throw Error('Duration is required');
@@ -748,15 +774,20 @@
                 this.play();
             }
         }
-        TimelineAnimator.prototype.finish = function (fn) {
-            this._isFinished = true;
-            return this;
+        TimelineAnimator.prototype.addEventListener = function (eventName, listener) {
+            this._dispatcher.on(eventName, listener);
         };
-        TimelineAnimator.prototype.play = function (fn) {
+        TimelineAnimator.prototype.removeEventListener = function (eventName, listener) {
+            this._dispatcher.off(eventName, listener);
+        };
+        TimelineAnimator.prototype.finish = function () {
+            this._isFinished = true;
+        };
+        TimelineAnimator.prototype.play = function () {
             this.playbackRate = 1;
             this._isPaused = false;
             if (this._isInEffect) {
-                return this;
+                return;
             }
             if (this.playbackRate < 0) {
                 this.currentTime = this.duration;
@@ -765,30 +796,27 @@
                 this.currentTime = 0;
             }
             window.requestAnimationFrame(this._tick);
-            return this;
         };
-        TimelineAnimator.prototype.pause = function (fn) {
+        TimelineAnimator.prototype.pause = function () {
             if (this._isInEffect) {
                 this._isPaused = true;
             }
-            return this;
         };
-        TimelineAnimator.prototype.reverse = function (fn) {
+        TimelineAnimator.prototype.reverse = function () {
             this.playbackRate = -1;
             this._isPaused = false;
             if (this._isInEffect) {
-                return this;
+                return;
             }
             if (this.currentTime <= 0) {
                 this.currentTime = this.duration;
             }
             window.requestAnimationFrame(this._tick);
-            return this;
         };
-        TimelineAnimator.prototype.cancel = function (fn) {
+        TimelineAnimator.prototype.cancel = function () {
             this.playbackRate = 0;
             this._isCanceled = true;
-            return this;
+            return;
         };
         TimelineAnimator.prototype._tick = function () {
             var _this = this;

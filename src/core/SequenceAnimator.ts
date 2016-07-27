@@ -1,7 +1,7 @@
 import {extend} from '../helpers/objects';
-import {noop } from '../helpers/functions';
 import {map} from '../helpers/lists';
-import {isDefined, isFunction} from '../helpers/type';
+import {isDefined} from '../helpers/type';
+import {Dispatcher} from './Dispatcher';
 
 /**
  * (description)
@@ -12,13 +12,12 @@ import {isDefined, isFunction} from '../helpers/type';
  */
 export class SequenceAnimator implements ja.IAnimator {
     public playbackRate: number;
-    public onfinish: ja.IConsumer<ja.IAnimator>;
-    public oncancel: ja.IConsumer<ja.IAnimator>;
 
     private _currentIndex: number;
-    private _errorCallback: ja.ICallbackHandler;
+    private _duration: number;    
     private _manager: ja.IAnimationManager;
     private _steps: IInnerSequenceEvent[];
+    private _dispatcher: Dispatcher = new Dispatcher();
 
     get currentTime(): number {
         const currentIndex = this._currentIndex;
@@ -53,7 +52,7 @@ export class SequenceAnimator implements ja.IAnimator {
         return currentTime + (isReversed ? afterTime : beforeTime);
     }
     get duration(): number {
-        return this._steps.reduce((c: number, n: IInnerSequenceEvent) => c + (n.timings.duration || 0), 0);
+        return this._duration;
     }
 
     /**
@@ -86,66 +85,59 @@ export class SequenceAnimator implements ja.IAnimator {
             } as IInnerSequenceEvent;
         });
 
-        this.onfinish = noop;
         this._currentIndex = -1;
         this._manager = manager;
         this._steps = steps;
+        this._duration = this._steps.reduce((c: number, n: IInnerSequenceEvent) => c + (n.timings.duration || 0), 0);
 
         if (options.autoplay === true) {
             this.play();
         }
     }
-    public finish(fn?: ja.ICallbackHandler): ja.IAnimator {
-        this._errorCallback = fn;
+
+    public addEventListener(eventName: string, listener: Function): void {
+        this._dispatcher.on(eventName, listener);
+    }
+
+    public removeEventListener(eventName: string, listener: Function): void {
+       this._dispatcher.off(eventName, listener);
+    }
+
+    public finish(): void {
         this._currentIndex = -1;
 
         for (let x = 0; x < this._steps.length; x++) {
             const step = this._steps[x];
             if (isDefined(step.animator)) {
-                step.animator.cancel(fn);
+                step.animator.cancel();
             }
         }
-        if (isFunction(this.onfinish)) {
-            this.onfinish(this);
-        }
-        return this;
     }
-    public play(fn?: ja.ICallbackHandler): ja.IAnimator {
-        this._errorCallback = fn;
+    public play(): void {
         this.playbackRate = 1;
         this._playThisStep();
-        return this;
     }
-    public pause(fn?: ja.ICallbackHandler): ja.IAnimator {
-        this._errorCallback = fn;
+    public pause(): void {
         // ignore pause if not relevant
         if (!this._isInEffect()) {
-            return this;
+            return;
         }
         const animator = this._getAnimator();
-        animator.pause(fn);
-        return this;
+        animator.pause();
     }
-    public reverse(fn?: ja.ICallbackHandler): ja.IAnimator {
-        this._errorCallback = fn;
+    public reverse(): void {
         this.playbackRate = -1;
         this._playThisStep();
-        return this;
     }
-    public cancel(fn?: ja.ICallbackHandler): ja.IAnimator {
-        this._errorCallback = fn;
+    public cancel(): void {
         this.playbackRate = undefined;
         this._currentIndex = -1;
         for (let x = 0; x < this._steps.length; x++) {
             const step = this._steps[x];
             if (isDefined(step.animator)) {
-                step.animator.cancel(fn);
+                step.animator.cancel();
             }
         }
-        if (isFunction(this.oncancel)) {
-            this.oncancel(this);
-        }
-        return this;
     }
 
     private _isInEffect(): boolean {
@@ -159,7 +151,7 @@ export class SequenceAnimator implements ja.IAnimator {
         it.animator = this._manager.animate(it.keyframes, it.el, it.timings);
         return it.animator;
     }
-    private _playNextStep(evt: ja.IAnimator): void {
+    private _playNextStep(): void {
         if (this.playbackRate === -1) {
             this._currentIndex--;
         } else {
@@ -168,7 +160,7 @@ export class SequenceAnimator implements ja.IAnimator {
         if (this._isInEffect()) {
             this._playThisStep();
         } else {
-            this.onfinish(evt);
+            this._dispatcher.trigger('finish');
         }
     }
     private _playThisStep(): void {
@@ -180,8 +172,8 @@ export class SequenceAnimator implements ja.IAnimator {
             }
         }
         const animator = this._getAnimator();
-        animator.onfinish = (evt: ja.IAnimator) => { this._playNextStep(evt); };
-        animator.play(this._errorCallback);
+        animator.addEventListener('finish', () => this._playNextStep());
+        animator.play();
     }
 }
 

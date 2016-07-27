@@ -3,9 +3,9 @@ import {queryElements} from '../helpers/elements';
 import {multiapply, pipe} from '../helpers/functions';
 import {extend} from '../helpers/objects';
 import {head, map, each, max} from '../helpers/lists';
-import {isFunction, isString} from '../helpers/type';
+import {isString} from '../helpers/type';
 import {normalizeProperties, normalizeKeyframes, spaceKeyframes} from '../helpers/keyframes';
-
+import {Dispatcher} from './Dispatcher';
 
 /**
  * Animates one or more elements
@@ -21,20 +21,9 @@ export class ElementAnimator implements ja.IAnimator {
      * @type {number}
      */
     public duration: number;
-    /**
-     * Called when the animation is finished
-     * 
-     * @type {ja.IConsumer<ja.IAnimator>}
-     */
-    public onfinish: ja.IConsumer<ja.IAnimator>;
-    /**
-     * Called when the animation is canceled
-     * 
-     * @type {ja.IConsumer<ja.IAnimator>}
-     */
-    public oncancel: ja.IConsumer<ja.IAnimator>;
 
     private _animators: ja.IAnimator[];
+    private _dispatcher: Dispatcher = new Dispatcher();
 
     /**
      * Returns 0 when not playing, 1 when playing forward, and -1 when playing backward
@@ -103,10 +92,16 @@ export class ElementAnimator implements ja.IAnimator {
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
             // todo: try to find a better way than just listening to one of them
-            this._animators[0].onfinish = () => {
-                this.finish();
-            };
+            this._animators[0].addEventListener('finish', () => this.finish());
         }
+    }
+
+    public addEventListener(eventName: string, listener: Function): void {
+        this._dispatcher.on(eventName, listener);
+    }
+
+    public removeEventListener(eventName: string, listener: Function): void {
+       this._dispatcher.off(eventName, listener);
     }
 
     /**
@@ -130,17 +125,14 @@ export class ElementAnimator implements ja.IAnimator {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator} this instance of the Element Animator
      */
-    public finish(fn?: ja.ICallbackHandler): ja.IAnimator {
-        multiapply(this._animators, 'finish', [], fn);
+    public finish(fn?: ja.ICallbackHandler): void {
+        multiapply(this._animators, 'finish', []);
         if (this.playbackRate < 0) {
             each(this._animators, (a: ja.IAnimator) => a.currentTime = 0);
         } else {
             each(this._animators, (a: ja.IAnimator) => a.currentTime = this.duration);
         }
-        if (isFunction(this.onfinish)) {
-            this.onfinish(this);
-        }
-        return this;
+        this._dispatcher.trigger('finish');
     }
     /**
      * Plays the animation
@@ -148,9 +140,8 @@ export class ElementAnimator implements ja.IAnimator {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator} this instance of Element Animator
      */
-    public play(fn?: ja.ICallbackHandler): ja.IAnimator {
-        multiapply(this._animators, 'play', [], fn);
-        return this;
+    public play(): void {
+        multiapply(this._animators, 'play', []);
     }
     /**
      * Pauses the animation
@@ -158,9 +149,8 @@ export class ElementAnimator implements ja.IAnimator {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator}  this instance of Element Animator
      */
-    public pause(fn?: ja.ICallbackHandler): ja.IAnimator {
-        multiapply(this._animators, 'pause', [], fn);
-        return this;
+    public pause(): void {
+        multiapply(this._animators, 'pause', []);
     }
     /**
      * Reverses the direction of the animation
@@ -168,9 +158,8 @@ export class ElementAnimator implements ja.IAnimator {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator} this instance of Element Animator
      */
-    public reverse(fn?: ja.ICallbackHandler): ja.IAnimator {
-        multiapply(this._animators, 'reverse', [], fn);
-        return this;
+    public reverse(): void {
+        multiapply(this._animators, 'reverse', []);
     }
     /**
      * Cancels the animation
@@ -178,13 +167,10 @@ export class ElementAnimator implements ja.IAnimator {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator} this instance of Element Animator
      */
-    public cancel(fn?: ja.ICallbackHandler): ja.IAnimator {
-        multiapply(this._animators, 'cancel', [], fn);
+    public cancel(): void {
+        multiapply(this._animators, 'cancel', []);
         each(this._animators, (a: ja.IAnimator) => a.currentTime = 0);
-        if (isFunction(this.oncancel)) {
-            this.oncancel(this);
-        }
-        return this;
+        this._dispatcher.trigger('cancel');
     }
 }
 

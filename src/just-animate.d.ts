@@ -158,82 +158,24 @@ declare module ja {
     }
 
     /**
-     * (description)
+     * 
      * 
      * @export
      * @interface IAnimator
      */
     export interface IAnimator {
-        // effect?: any;
-        // timeline?: any;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
         currentTime: number;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
         duration: number;
-        // startTime: number;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
         playbackRate: number;
 
-        /**
-         * (description)
-         * 
-         * @type {IConsumer<IAnimator>}
-         */
-        onfinish?: IConsumer<IAnimator>;
-        /**
-         * (description)
-         * 
-         * @type {IConsumer<IAnimator>}
-         */
-        oncancel?: IConsumer<IAnimator>;
+        finish(): void;
+        play(): void;
+        pause(): void;
+        reverse(): void;
+        cancel(): void;
 
-        /**
-         * (description)
-         * 
-         * @param {ICallbackHandler} [fn] (description)
-         * @returns {IAnimator} (description)
-         */
-        finish(fn?: ICallbackHandler): IAnimator;
-        /**
-         * (description)
-         * 
-         * @param {ICallbackHandler} [fn] (description)
-         * @returns {IAnimator} (description)
-         */
-        play(fn?: ICallbackHandler): IAnimator;
-        /**
-         * (description)
-         * 
-         * @param {ICallbackHandler} [fn] (description)
-         * @returns {IAnimator} (description)
-         */
-        pause(fn?: ICallbackHandler): IAnimator;
-        /**
-         * (description)
-         * 
-         * @param {ICallbackHandler} [fn] (description)
-         * @returns {IAnimator} (description)
-         */
-        reverse(fn?: ICallbackHandler): IAnimator;
-        /**
-         * (description)
-         * 
-         * @param {ICallbackHandler} [fn] (description)
-         * @returns {IAnimator} (description)
-         */
-        cancel(fn?: ICallbackHandler): IAnimator;
+        addEventListener(eventName: string, listener: Function): void;
+        removeEventListener(eventName: string, listener: Function): void;
     }
 
 

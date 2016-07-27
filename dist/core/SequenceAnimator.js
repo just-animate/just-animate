@@ -1,8 +1,8 @@
 "use strict";
 var objects_1 = require('../helpers/objects');
-var functions_1 = require('../helpers/functions');
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
+var Dispatcher_1 = require('./Dispatcher');
 /**
  * (description)
  *
@@ -18,6 +18,7 @@ var SequenceAnimator = (function () {
      * @param {ja.ISequenceOptions} options (description)
      */
     function SequenceAnimator(manager, options) {
+        this._dispatcher = new Dispatcher_1.Dispatcher();
         /**
          * (description)
          *
@@ -39,10 +40,10 @@ var SequenceAnimator = (function () {
                 timings: definition.timings
             };
         });
-        this.onfinish = functions_1.noop;
         this._currentIndex = -1;
         this._manager = manager;
         this._steps = steps;
+        this._duration = this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
         if (options.autoplay === true) {
             this.play();
         }
@@ -81,61 +82,51 @@ var SequenceAnimator = (function () {
     });
     Object.defineProperty(SequenceAnimator.prototype, "duration", {
         get: function () {
-            return this._steps.reduce(function (c, n) { return c + (n.timings.duration || 0); }, 0);
+            return this._duration;
         },
         enumerable: true,
         configurable: true
     });
-    SequenceAnimator.prototype.finish = function (fn) {
-        this._errorCallback = fn;
+    SequenceAnimator.prototype.addEventListener = function (eventName, listener) {
+        this._dispatcher.on(eventName, listener);
+    };
+    SequenceAnimator.prototype.removeEventListener = function (eventName, listener) {
+        this._dispatcher.off(eventName, listener);
+    };
+    SequenceAnimator.prototype.finish = function () {
         this._currentIndex = -1;
         for (var x = 0; x < this._steps.length; x++) {
             var step = this._steps[x];
             if (type_1.isDefined(step.animator)) {
-                step.animator.cancel(fn);
+                step.animator.cancel();
             }
         }
-        if (type_1.isFunction(this.onfinish)) {
-            this.onfinish(this);
-        }
-        return this;
     };
-    SequenceAnimator.prototype.play = function (fn) {
-        this._errorCallback = fn;
+    SequenceAnimator.prototype.play = function () {
         this.playbackRate = 1;
         this._playThisStep();
-        return this;
     };
-    SequenceAnimator.prototype.pause = function (fn) {
-        this._errorCallback = fn;
+    SequenceAnimator.prototype.pause = function () {
         // ignore pause if not relevant
         if (!this._isInEffect()) {
-            return this;
+            return;
         }
         var animator = this._getAnimator();
-        animator.pause(fn);
-        return this;
+        animator.pause();
     };
-    SequenceAnimator.prototype.reverse = function (fn) {
-        this._errorCallback = fn;
+    SequenceAnimator.prototype.reverse = function () {
         this.playbackRate = -1;
         this._playThisStep();
-        return this;
     };
-    SequenceAnimator.prototype.cancel = function (fn) {
-        this._errorCallback = fn;
+    SequenceAnimator.prototype.cancel = function () {
         this.playbackRate = undefined;
         this._currentIndex = -1;
         for (var x = 0; x < this._steps.length; x++) {
             var step = this._steps[x];
             if (type_1.isDefined(step.animator)) {
-                step.animator.cancel(fn);
+                step.animator.cancel();
             }
         }
-        if (type_1.isFunction(this.oncancel)) {
-            this.oncancel(this);
-        }
-        return this;
     };
     SequenceAnimator.prototype._isInEffect = function () {
         return this._currentIndex > -1 && this._currentIndex < this._steps.length;
@@ -148,7 +139,7 @@ var SequenceAnimator = (function () {
         it.animator = this._manager.animate(it.keyframes, it.el, it.timings);
         return it.animator;
     };
-    SequenceAnimator.prototype._playNextStep = function (evt) {
+    SequenceAnimator.prototype._playNextStep = function () {
         if (this.playbackRate === -1) {
             this._currentIndex--;
         }
@@ -159,7 +150,7 @@ var SequenceAnimator = (function () {
             this._playThisStep();
         }
         else {
-            this.onfinish(evt);
+            this._dispatcher.trigger('finish');
         }
     };
     SequenceAnimator.prototype._playThisStep = function () {
@@ -173,8 +164,8 @@ var SequenceAnimator = (function () {
             }
         }
         var animator = this._getAnimator();
-        animator.onfinish = function (evt) { _this._playNextStep(evt); };
-        animator.play(this._errorCallback);
+        animator.addEventListener('finish', function () { return _this._playNextStep(); });
+        animator.play();
     };
     return SequenceAnimator;
 }());

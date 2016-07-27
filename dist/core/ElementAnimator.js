@@ -6,6 +6,7 @@ var objects_1 = require('../helpers/objects');
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
 var keyframes_1 = require('../helpers/keyframes');
+var Dispatcher_1 = require('./Dispatcher');
 /**
  * Animates one or more elements
  *
@@ -24,6 +25,7 @@ var ElementAnimator = (function () {
      */
     function ElementAnimator(manager, keyframesOrName, el, timings) {
         var _this = this;
+        this._dispatcher = new Dispatcher_1.Dispatcher();
         if (!keyframesOrName) {
             return;
         }
@@ -55,9 +57,7 @@ var ElementAnimator = (function () {
         // hookup finish event for when it happens naturally    
         if (this._animators.length > 0) {
             // todo: try to find a better way than just listening to one of them
-            this._animators[0].onfinish = function () {
-                _this.finish();
-            };
+            this._animators[0].addEventListener('finish', function () { return _this.finish(); });
         }
     }
     Object.defineProperty(ElementAnimator.prototype, "playbackRate", {
@@ -79,6 +79,12 @@ var ElementAnimator = (function () {
         enumerable: true,
         configurable: true
     });
+    ElementAnimator.prototype.addEventListener = function (eventName, listener) {
+        this._dispatcher.on(eventName, listener);
+    };
+    ElementAnimator.prototype.removeEventListener = function (eventName, listener) {
+        this._dispatcher.off(eventName, listener);
+    };
     Object.defineProperty(ElementAnimator.prototype, "currentTime", {
         /**
          * Returns current time of the animation
@@ -105,17 +111,14 @@ var ElementAnimator = (function () {
      */
     ElementAnimator.prototype.finish = function (fn) {
         var _this = this;
-        functions_1.multiapply(this._animators, 'finish', [], fn);
+        functions_1.multiapply(this._animators, 'finish', []);
         if (this.playbackRate < 0) {
             lists_1.each(this._animators, function (a) { return a.currentTime = 0; });
         }
         else {
             lists_1.each(this._animators, function (a) { return a.currentTime = _this.duration; });
         }
-        if (type_1.isFunction(this.onfinish)) {
-            this.onfinish(this);
-        }
-        return this;
+        this._dispatcher.trigger('finish');
     };
     /**
      * Plays the animation
@@ -123,9 +126,8 @@ var ElementAnimator = (function () {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator} this instance of Element Animator
      */
-    ElementAnimator.prototype.play = function (fn) {
-        functions_1.multiapply(this._animators, 'play', [], fn);
-        return this;
+    ElementAnimator.prototype.play = function () {
+        functions_1.multiapply(this._animators, 'play', []);
     };
     /**
      * Pauses the animation
@@ -133,9 +135,8 @@ var ElementAnimator = (function () {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator}  this instance of Element Animator
      */
-    ElementAnimator.prototype.pause = function (fn) {
-        functions_1.multiapply(this._animators, 'pause', [], fn);
-        return this;
+    ElementAnimator.prototype.pause = function () {
+        functions_1.multiapply(this._animators, 'pause', []);
     };
     /**
      * Reverses the direction of the animation
@@ -143,9 +144,8 @@ var ElementAnimator = (function () {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator} this instance of Element Animator
      */
-    ElementAnimator.prototype.reverse = function (fn) {
-        functions_1.multiapply(this._animators, 'reverse', [], fn);
-        return this;
+    ElementAnimator.prototype.reverse = function () {
+        functions_1.multiapply(this._animators, 'reverse', []);
     };
     /**
      * Cancels the animation
@@ -153,13 +153,10 @@ var ElementAnimator = (function () {
      * @param {ja.ICallbackHandler} [fn] optional error handler
      * @returns {ja.IAnimator} this instance of Element Animator
      */
-    ElementAnimator.prototype.cancel = function (fn) {
-        functions_1.multiapply(this._animators, 'cancel', [], fn);
+    ElementAnimator.prototype.cancel = function () {
+        functions_1.multiapply(this._animators, 'cancel', []);
         lists_1.each(this._animators, function (a) { return a.currentTime = 0; });
-        if (type_1.isFunction(this.oncancel)) {
-            this.oncancel(this);
-        }
-        return this;
+        this._dispatcher.trigger('cancel');
     };
     return ElementAnimator;
 }());

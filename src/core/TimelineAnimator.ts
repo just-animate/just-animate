@@ -1,6 +1,8 @@
 import { extend } from '../helpers/objects';
 import { each, map } from '../helpers/lists';
 import { isFunction } from '../helpers/type';
+import {Dispatcher} from './Dispatcher';
+
 
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
@@ -22,6 +24,9 @@ export class TimelineAnimator implements ja.IAnimator {
     private _isPaused: boolean;
     private _lastTick: number;
     private _manager: ja.IAnimationManager;
+
+    private _dispatcher: Dispatcher = new Dispatcher();
+
 
     /**
      * Creates an instance of TimelineAnimator.
@@ -49,16 +54,23 @@ export class TimelineAnimator implements ja.IAnimator {
         }
     }
 
-    public finish(fn?: ja.ICallbackHandler): ja.IAnimator {
-        this._isFinished = true;
-        return this;
+    public addEventListener(eventName: string, listener: Function): void {
+        this._dispatcher.on(eventName, listener);
     }
-    public play(fn?: ja.ICallbackHandler): ja.IAnimator {
+
+    public removeEventListener(eventName: string, listener: Function): void {
+        this._dispatcher.off(eventName, listener);
+    }
+
+    public finish(): void {
+        this._isFinished = true;
+    }
+    public play(): void {
         this.playbackRate = 1;
         this._isPaused = false;
 
         if (this._isInEffect) {
-            return this;
+            return;
         }
         if (this.playbackRate < 0) {
             this.currentTime = this.duration;
@@ -66,32 +78,29 @@ export class TimelineAnimator implements ja.IAnimator {
             this.currentTime = 0;
         }
         window.requestAnimationFrame(this._tick);
-        return this;
     }
-    public pause(fn?: ja.ICallbackHandler): ja.IAnimator {
+    public pause(): void {
         if (this._isInEffect) {
             this._isPaused = true;
         }
-        return this;
     }
-    public reverse(fn?: ja.ICallbackHandler): ja.IAnimator {
+    public reverse(): void {
         this.playbackRate = -1;
         this._isPaused = false;
 
         if (this._isInEffect) {
-            return this;
+            return;
         }
 
         if (this.currentTime <= 0) {
             this.currentTime = this.duration;
         }
         window.requestAnimationFrame(this._tick);
-        return this;
     }
-    public cancel(fn?: ja.ICallbackHandler): ja.IAnimator {
+    public cancel(): void {
         this.playbackRate = 0;
         this._isCanceled = true;
-        return this;
+        return;
     }
 
     private _tick(): void {
