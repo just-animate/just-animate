@@ -739,7 +739,6 @@
             }
         };
         SequenceAnimator.prototype._playThisStep = function () {
-            var _this = this;
             if (!this._isInEffect()) {
                 if (this.playbackRate === -1) {
                     this._currentIndex = this._steps.length - 1;
@@ -749,7 +748,12 @@
                 }
             }
             var animator = this._getAnimator();
-            animator.addEventListener('finish', function () { return _this._playNextStep(); });
+            var self = this;
+            function onFinish() {
+                self._playNextStep();
+                animator.removeEventListener('finish', onFinish);
+            }
+            animator.addEventListener('finish', onFinish);
             animator.play();
         };
         return SequenceAnimator;

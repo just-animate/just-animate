@@ -120,12 +120,12 @@
                 })
         });
         
-        player.onfinish = function() {
+        player.addEventListener('finish', function() {
             var newEl = document.createElement('h2');
             newEl.innerHTML = 'All Done!';
             container.innerHTML = '';
             container.appendChild(newEl);
-        }
+        });
     </script>
 </body>
 

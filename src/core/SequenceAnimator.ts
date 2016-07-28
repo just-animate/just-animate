@@ -132,6 +132,7 @@ export class SequenceAnimator implements ja.IAnimator {
     public cancel(): void {
         this.playbackRate = undefined;
         this._currentIndex = -1;
+        
         for (let x = 0; x < this._steps.length; x++) {
             const step = this._steps[x];
             if (isDefined(step.animator)) {
@@ -172,7 +173,14 @@ export class SequenceAnimator implements ja.IAnimator {
             }
         }
         const animator = this._getAnimator();
-        animator.addEventListener('finish', () => this._playNextStep());
+        const self = this;
+
+        function onFinish(): void {
+            self._playNextStep();
+            animator.removeEventListener('finish', onFinish);
+        }
+
+        animator.addEventListener('finish', onFinish);
         animator.play();
     }
 }
