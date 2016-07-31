@@ -10,12 +10,15 @@ export class Dispatcher {
         if (!listeners) {
             return;
         }
-        each(listeners, (l: Function) => l.apply(undefined, args));
+        const len = listeners.length;
+        for (let i = 0; i < len; i++) {
+            listeners[i].apply(undefined, args);
+        }
     }
 
     public on(eventName: string, listener: Function): void {
         if (!isFunction(listener)) {
-            throw Error('invalid listener');
+            throw 'invalid listener';
         }
         const listeners = this._listeners[eventName];
         if (!listeners) {

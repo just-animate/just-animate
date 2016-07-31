@@ -9,7 +9,7 @@ var type_1 = require('../helpers/type');
  */
 function queryElements(source) {
     if (!source) {
-        throw Error('no elements');
+        throw 'no elements';
     }
     if (type_1.isString(source)) {
         // if query selector, search for elements 

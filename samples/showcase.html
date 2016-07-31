@@ -101,31 +101,30 @@
             "zoomOutUp"
         ];
         
+        var index = -1;
         var container = document.getElementById('target');
-            
-        var player = just.animateSequence({
-            autoplay: true,
-            steps: animations
-                .map(function(name) {
-                    return {
-                        name: name,
-                        el: function() {
-                            var newEl = document.createElement('h2');
-                            newEl.innerHTML = name;
-                            container.innerHTML = '';
-                            container.appendChild(newEl);
-                            return newEl;
-                        }
-                    }
-                })
-        });
-        
-        player.addEventListener('finish', function() {
-            var newEl = document.createElement('h2');
-            newEl.innerHTML = 'All Done!';
+
+        (function callAnimation() {
+            ++index;
+
             container.innerHTML = '';
-            container.appendChild(newEl);
-        });
+            var el = document.createElement('h2');
+            container.appendChild(el);
+
+            if (index >= animations.length) {
+                el.innerHTML = 'All Done!';
+                return;
+            } 
+
+            var name = animations[index];
+            el.innerHTML = name;
+
+            var animator = just.animate(name, el, { fill: 'both' });
+            animator.addEventListener('finish', callAnimation);
+            animator.addEventListener('update', function() {
+                console.log(name + ': ' + performance.now());
+            })
+        }());
     </script>
 </body>
 

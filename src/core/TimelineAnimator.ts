@@ -14,8 +14,6 @@ export class TimelineAnimator implements ja.IAnimator {
     public currentTime: number;
     public duration: number;
     public playbackRate: number;
-    public onfinish: ja.IConsumer<ja.IAnimator>;
-    public oncancel: ja.IConsumer<ja.IAnimator>;
 
     private _events: TimelineEvent[];
     private _isInEffect: boolean;
@@ -24,9 +22,9 @@ export class TimelineAnimator implements ja.IAnimator {
     private _isPaused: boolean;
     private _lastTick: number;
     private _manager: ja.IAnimationManager;
+    private _playState: ja.AnimationPlaybackState;
 
     private _dispatcher: Dispatcher = new Dispatcher();
-
 
     /**
      * Creates an instance of TimelineAnimator.
@@ -37,8 +35,9 @@ export class TimelineAnimator implements ja.IAnimator {
     constructor(manager: ja.IAnimationManager, options: ja.ITimelineOptions) {
         const duration = options.duration;
         if (duration === undefined) {
-            throw Error('Duration is required');
+            throw 'Duration is required';
         }
+
         this.playbackRate = 0;
         this.duration = options.duration;
         this.currentTime = 0;
@@ -157,16 +156,12 @@ export class TimelineAnimator implements ja.IAnimator {
     private _triggerFinish(): void {
         this._reset();
         each(this._events, (evt: TimelineEvent) => evt.animator.finish());
-        if (isFunction(this.onfinish)) {
-            this.onfinish(this);
-        }
+        this._dispatcher.trigger('finish');        
     }
     private _triggerCancel(): void {
         this._reset();
         each(this._events, (evt: TimelineEvent) => evt.animator.cancel());
-        if (isFunction(this.oncancel)) {
-            this.oncancel(this);
-        }
+        this._dispatcher.trigger('cancel');
     }
     private _triggerPause(): void {
         this._isPaused = true;
@@ -188,6 +183,53 @@ export class TimelineAnimator implements ja.IAnimator {
         each(this._events, (evt: TimelineEvent) => {
             evt.isInEffect = false;
         });
+    }
+
+	private _iterationStart: number;
+	public get iterationStart(): number {
+        return this._iterationStart;
+	};
+   	public set iterationStart(value: number) {
+        this._iterationStart = value;
+    };
+
+	private _iterations: number;
+	public get iterations(): number {
+        return this._iterations;
+	};
+   	public set iterations(value: number) {
+        this._iterations = value;
+    };
+
+	private _totalDuration: number;
+	public get totalDuration(): number {
+        return this._totalDuration;
+	};
+   	public set totalDuration(value: number) {
+        this._totalDuration = value;
+    };
+
+	private _endTime: number;
+	public get endTime(): number {
+        return this._endTime;
+	};
+   	public set endTime(value: number) {
+        this._endTime = value;
+    };
+
+	private _startTime: number;
+	public get startTime(): number {
+        return this._startTime;
+	};
+   	public set startTime(value: number) {
+        this._startTime = value;
+    };
+    public get playState(): ja.AnimationPlaybackState {
+        return this._playState;
+    }
+    public set playState(value: ja.AnimationPlaybackState) {
+        this._playState = value;
+        this._dispatcher.trigger('set', ['playbackState', value]);     
     }
 }
 

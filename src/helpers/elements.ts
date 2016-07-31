@@ -9,7 +9,7 @@ import {isArray, isFunction, isString} from '../helpers/type';
  */
 export function queryElements(source: ja.ElementSource): Element[] {
     if (!source) {
-        throw Error('no elements');
+        throw 'no elements';
     }
     if (isString(source)) {
         // if query selector, search for elements 

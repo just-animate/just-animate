@@ -75,6 +75,27 @@ function max(items, propertyName) {
 }
 exports.max = max;
 /**
+ * Returns the max value of a given property in a list
+ *
+ * @export
+ * @template T1
+ * @param {T1[]} items list of objects
+ * @param {string} propertyName property to evaluate
+ * @returns {*} max value of the property provided
+ */
+function maxBy(items, predicate) {
+    var max = '';
+    for (var i = 0, len = items.length; i < len; i++) {
+        var item = items[i];
+        var prop = predicate(item);
+        if (max < prop) {
+            max = prop;
+        }
+    }
+    return max;
+}
+exports.maxBy = maxBy;
+/**
  * Maps one list of objects to another.
  * Returning undefined skips the item (effectively filtering it)
  *

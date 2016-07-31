@@ -2,11 +2,13 @@ declare const just: ja.IAnimationManager;
 
 declare module ja {
     export type FillMode = "none" | "forwards" | "backwards" | "both" | "auto";
-   // export type PlaybackDiraction = "normal" | "reverse" | "alternate" | "alternate-reverse";
+    // export type PlaybackDiraction = "normal" | "reverse" | "alternate" | "alternate-reverse";
 
-   export type Angle = string|number;
-   export type Color = string;
-   export type Distance = string|number;
+    export type AnimationPlaybackState = "idle" | "pending" | "running" | "paused" | "finished";
+
+    export type Angle = string | number;
+    export type Color = string;
+    export type Distance = string | number;
 
     export type Easing = string
         | "ease"
@@ -48,33 +50,13 @@ declare module ja {
      * @interface IAnimationEffectTiming
      */
     export interface IAnimationEffectTiming {
-        // delay?: number;
-        // direction?: PlaybackDiraction;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
+        direction?: string;
+        delay?: number;
         duration?: number;
-        /**
-         * (description)
-         * 
-         * @type {Easing}
-         */
         easing?: Easing;
-        // endDelay?: number;
-        /**
-         * (description)
-         * 
-         * @type {FillMode}
-         */
-        fill?:  FillMode;
-        // iterationStart?: number;
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
+        endDelay?: number;
+        fill?: FillMode;
+        iterationStart?: number;
         iterations?: number;
     }
 
@@ -164,9 +146,15 @@ declare module ja {
      * @interface IAnimator
      */
     export interface IAnimator {
+        startTime: number;
+        endTime: number;
         currentTime: number;
         duration: number;
+        totalDuration: number;
+        iterations: number;
+        iterationStart: number;
         playbackRate: number;
+        playState: AnimationPlaybackState;
 
         finish(): void;
         play(): void;
@@ -186,7 +174,7 @@ declare module ja {
      * @interface ICallbackHandler
      */
     export interface ICallbackHandler {
-        (err: (string|Error)[]): void;
+        (err: (string | Error)[]): void;
     }
 
     /**
@@ -224,717 +212,717 @@ declare module ja {
          * 
          * @type {string|(string)[]}
          */
-        backdropFilter?: string|(string)[];
+        backdropFilter?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        background?: string|(string)[];
+        background?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        backgroundColor?: Color|(Color)[];
+        backgroundColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        backgroundPosition?: string|(string)[];
+        backgroundPosition?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        backgroundSize?: string|(string)[];
+        backgroundSize?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        border?: string|(string)[];
+        border?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|Distance|(string|Distance)[]}
          */
-        borderBottom?: string|Distance|(string|Distance)[];
+        borderBottom?: string | Distance | (string | Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        borderBottomColor?: Color|(Color)[];
+        borderBottomColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderBottomLeftRadius?: Distance|(Distance)[];
+        borderBottomLeftRadius?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderBottomRightRadius?: Distance|(Distance)[];
+        borderBottomRightRadius?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderBottomWidth?: Distance|(Distance)[];
+        borderBottomWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        borderColor?: Color|(Color)[];
+        borderColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {string|Distance|(string|Distance)[]}
          */
-        borderLeft?: string|Distance|(string|Distance)[];
+        borderLeft?: string | Distance | (string | Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        borderLeftColor?: Color|(Color)[];
+        borderLeftColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderLeftWidth?: Distance|(Distance)[];
+        borderLeftWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderRadius?: Distance|(Distance)[];
+        borderRadius?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|Distance|(string|Distance)[]}
          */
-        borderRight?: string|Distance|(string|Distance)[];
+        borderRight?: string | Distance | (string | Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        borderRightColor?: Color|(Color)[];
+        borderRightColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderRightWidth?: Distance|(Distance)[];
+        borderRightWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        borderTop?: string|(string)[];
+        borderTop?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        borderTopColor?: Color|(Color)[];
+        borderTopColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderTopLeftRadius?: Distance|(Distance)[];
+        borderTopLeftRadius?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderTopRightRadius?: Distance|(Distance)[];
+        borderTopRightRadius?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderTopWidth?: Distance|(Distance)[];
+        borderTopWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        borderWidth?: Distance|(Distance)[];
+        borderWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|Distance|(string|Distance)[]}
          */
-        bottom?: string|Distance|(string|Distance)[];
+        bottom?: string | Distance | (string | Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        boxShadow?: string|(string)[];
+        boxShadow?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        clip?: string|(string)[];
+        clip?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        clipPath?: string|(string)[];
+        clipPath?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        color?: Color|(Color)[];
+        color?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        columnCount?: string|(string)[];
+        columnCount?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        columnGap?: string|(string)[];
+        columnGap?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        columnRule?: string|(string)[];
+        columnRule?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        columnRuleColor?: Color|(Color)[];
+        columnRuleColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        columnRuleWidth?: Distance|(Distance)[];
+        columnRuleWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        columnWidth?: Distance|(Distance)[];
+        columnWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        columns?: string|(string)[];
-        fill?: Color|(Color)[];
-        fillOpacity?: string|(string)[];
-        fillRule?: string|(string)[];
+        columns?: string | (string)[];
+        fill?: Color | (Color)[];
+        fillOpacity?: string | (string)[];
+        fillRule?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        filter?: string|(string)[];
+        filter?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        flex?: string|(string)[];
+        flex?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        flexBasis?: string|(string)[];
+        flexBasis?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        flexGrow?: string|(string)[];
+        flexGrow?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        flexShrink?: string|(string)[];
+        flexShrink?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        font?: string|(string)[];
+        font?: string | (string)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        fontSize?: Distance|(Distance)[];
+        fontSize?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        fontSizeAdjust?: string|(string)[];
+        fontSizeAdjust?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        fontStretch?: string|(string)[];
+        fontStretch?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        fontWeight?: string|(string)[];
+        fontWeight?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        gridColumnGap?: string|(string)[];
+        gridColumnGap?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        gridGap?: string|(string)[];
+        gridGap?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        gridRowGap?: string|(string)[];
+        gridRowGap?: string | (string)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        height?: Distance|(Distance)[];
+        height?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        left?: Distance|(Distance)[];
+        left?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        letterSpacing?: Distance|(Distance)[];
+        letterSpacing?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        lineHeight?: Distance|(Distance)[];
+        lineHeight?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        margin?: Distance|(Distance)[];
+        margin?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        marginBottom?: Distance|(Distance)[];
+        marginBottom?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        marginLeft?: Distance|(Distance)[];
+        marginLeft?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        marginRight?: Distance|(Distance)[];
+        marginRight?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        marginTop?: Distance|(Distance)[];
+        marginTop?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        mask?: string|(string)[];
+        mask?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        maskPosition?: string|(string)[];
+        maskPosition?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        maskSize?: string|(string)[];
+        maskSize?: string | (string)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        maxHeight?: Distance|(Distance)[];
+        maxHeight?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        maxWidth?: Distance|(Distance)[];
+        maxWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        minHeight?: Distance|(Distance)[];
+        minHeight?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        minWidth?: Distance|(Distance)[];
+        minWidth?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        motionOffset?: Distance|(Distance)[];
+        motionOffset?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        motionRotation?: Angle|(Angle)[];
+        motionRotation?: Angle | (Angle)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        objectPosition?: Distance|(Distance)[];
+        objectPosition?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {number|(number)[]}
          */
-        opacity?: number|(number)[];
+        opacity?: number | (number)[];
         /**
          * (description)
          * 
          * @type {number|(number)[]}
          */
-        order?: number|(number)[];
+        order?: number | (number)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        outline?: string|(string)[];
+        outline?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        outlineColor?: Color|(Color)[];
+        outlineColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        outlineOffset?: string|(string)[];
+        outlineOffset?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        outlineWidth?: string|(string)[];
+        outlineWidth?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|Distance|(string|Distance)[]}
          */
-        padding?: Distance|(Distance)[];
+        padding?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        paddingBottom?: Distance|(Distance)[];
+        paddingBottom?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        paddingLeft?: Distance|(Distance)[];
+        paddingLeft?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        paddingRight?: Distance|(Distance)[];
+        paddingRight?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        paddingTop?: Distance|(Distance)[];
+        paddingTop?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        perspective?: string|(string)[];
+        perspective?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        perspectiveOrigin?: string|(string)[];
+        perspectiveOrigin?: string | (string)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        right?: Distance|(Distance)[];
+        right?: Distance | (Distance)[];
         /**
          * ShortformFor transform: rotate3d(1, 0, 0, angle).
          * PassA singleStringWithTheAngle
          * 
          * @type {Angle|(Angle)[]}
          */
-        rotateX?: Angle|(Angle)[];
+        rotateX?: Angle | (Angle)[];
         /**
          * ShortformFor transform: rotate3d(0, 1, 0, angle).
          * PassA singleStringWithTheAngle
          * 
          * @type {Angle|(Angle)[]}
          */
-        rotateY?: Angle|(Angle)[];
+        rotateY?: Angle | (Angle)[];
         /**
          * ShortformFor transform: rotate3d(0, 0, 1, angle).
          * PassA singleStringWithTheAngle
          * 
          * @type {Angle|(Angle)[]}
          */
-        rotateZ?: Angle|(Angle)[];
+        rotateZ?: Angle | (Angle)[];
         /**
          * ShortformFor transform: scale3d().
          * PassA singleNumber 
          * 
          * @type {Distance|(Distance)[]}
          */
-        scale?: Distance|(Distance)[];
+        scale?: Distance | (Distance)[];
         /**
          * ShortformFor transform: scaleX().
          * PassA singleNumber 
          * 
          * @type {Distance|(Distance)[]}
          */
-        scaleX?: Distance|(Distance)[];
+        scaleX?: Distance | (Distance)[];
         /**
          * ShortformFor transform: scaleY().
          * PassA singleNumber 
          * 
          * @type {Distance|(Distance)[]}
          */
-        scaleY?: Distance|(Distance)[];
+        scaleY?: Distance | (Distance)[];
         /**
          * ShortformFor transform: scaleZ().
          * PassA singleNumber 
          * 
          * @type {Distance|(Distance)[]}
          */
-        scaleZ?: Distance|(Distance)[];
+        scaleZ?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        scrollSnapCoordinate?: string|(string)[];
+        scrollSnapCoordinate?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        scrollSnapDestination?: string|(string)[];
+        scrollSnapDestination?: string | (string)[];
         /**
          * ShortformFor transform: skewX().
          * PassA singleString 
          * 
          * @type {Distance|(Distance)[]}
          */
-        skewX?: Distance|(Distance)[];
+        skewX?: Distance | (Distance)[];
         /**
          * ShortformFor transform: skewY().
          * PassA singleString 
          * 
          * @type {Distance|(Distance)[]}
          */
-        skewY?: Distance|(Distance)[];
+        skewY?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        shapeImageThreshold?: string|(string)[];
+        shapeImageThreshold?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        shapeMargin?: string|(string)[];
+        shapeMargin?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        shapeOutside?: string|(string)[];
-        stroke?: Color|(Color)[];
-        strokeDasharray?: string|(string)[];
-        strokeDashoffset?: string|(string)[];
-        strokeLinecap?: string|(string)[];
-        strokeLinejoin?: string|(string)[];
-        strokeMiterlimit?: string|(string)[];
-        strokeOpacity?: number|(number)[];
-        strokeWidth?: string|(string)[];
+        shapeOutside?: string | (string)[];
+        stroke?: Color | (Color)[];
+        strokeDasharray?: string | (string)[];
+        strokeDashoffset?: string | (string)[];
+        strokeLinecap?: string | (string)[];
+        strokeLinejoin?: string | (string)[];
+        strokeMiterlimit?: string | (string)[];
+        strokeOpacity?: number | (number)[];
+        strokeWidth?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        textDecoration?: string|(string)[];
+        textDecoration?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        textDecorationColor?: Color|(Color)[];
+        textDecorationColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        textEmphasis?: string|(string)[];
+        textEmphasis?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        textEmphasisColor?: Color|(Color)[];
+        textEmphasisColor?: Color | (Color)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        textIndent?: string|(string)[];
+        textIndent?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        textShadow?: string|(string)[];
+        textShadow?: string | (string)[];
         /**
          * (description)
          * 
          * @type {Distance|(Distance)[]}
          */
-        top?: Distance|(Distance)[];
+        top?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        transform?: string|(string)[];
+        transform?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        transformOrigin?: string|(string)[];
+        transformOrigin?: string | (string)[];
         /**
          * Distance
          * 
          * @type {string|number|(string|number)[]}
          */
-        transformPerspective?: string|number|(string|number)[];
+        transformPerspective?: string | number | (string | number)[];
         /**
          * ShortformFor transform: translateX().
          * PassA singleString 
          * 
          * @type {Distance|(Distance)[]}
          */
-        x?: Distance|(Distance)[];
-        translateX?: Distance|(Distance)[];
+        x?: Distance | (Distance)[];
+        translateX?: Distance | (Distance)[];
         /**
          * ShortformFor transform: translateY().
          * PassA singleString 
          * 
          * @type {Distance|(Distance)[]}
          */
-        y?: Distance|(Distance)[];
-        translateY?: Distance|(Distance)[];
+        y?: Distance | (Distance)[];
+        translateY?: Distance | (Distance)[];
         /**
          * ShortformFor transform: translateZ().
          * PassA singleString 
          * 
          * @type {Distance|(Distance)[]}
          */
-        z?: Distance|(Distance)[];
-        translateZ?: Distance|(Distance)[];
+        z?: Distance | (Distance)[];
+        translateZ?: Distance | (Distance)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        verticalAlign?: string|(string)[];
+        verticalAlign?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        visibility?: string|(string)[];
+        visibility?: string | (string)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        width?: string|number|(string|number)[];
+        width?: string | number | (string | number)[];
         /**
          * (description)
          * 
          * @type {string|(string)[]}
          */
-        wordSpacing?: string|(string)[];
+        wordSpacing?: string | (string)[];
         /**
          * (description)
          * 
          * @type {number|(number)[]}
          */
-        zIndex?: number|(number)[];
+        zIndex?: number | (number)[];
     }
 
     /**
@@ -997,7 +985,7 @@ declare module ja {
          * 
          * @type {string|Distance}
          */
-        borderBottom?: string|Distance;
+        borderBottom?: string | Distance;
         /**
          * (description)
          * 
@@ -1033,7 +1021,7 @@ declare module ja {
          * 
          * @type {string|Distance}
          */
-        borderLeft?: string|Distance;
+        borderLeft?: string | Distance;
         /**
          * (description)
          * 
@@ -1057,7 +1045,7 @@ declare module ja {
          * 
          * @type {string|Distance}
          */
-        borderRight?: string|Distance;
+        borderRight?: string | Distance;
         /**
          * (description)
          * 
@@ -1111,7 +1099,7 @@ declare module ja {
          * 
          * @type {string|Distance}
          */
-        bottom?: string|Distance;
+        bottom?: string | Distance;
         /**
          * (description)
          * 
@@ -1414,7 +1402,7 @@ declare module ja {
          * 
          * @type {string|Distance}
          */
-        padding?: string|Distance;
+        padding?: string | Distance;
         /**
          * (description)
          * 
@@ -1617,7 +1605,7 @@ declare module ja {
          * 
          * @type {string|number}
          */
-        transformPerspective?: string|number;
+        transformPerspective?: string | number;
         /**
          * ShortformFor transform: translateX().
          * PassA singleString 
@@ -1659,7 +1647,7 @@ declare module ja {
          * 
          * @type {string}
          */
-        width?: string|number;
+        width?: string | number;
         /**
          * (description)
          * 

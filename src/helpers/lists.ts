@@ -79,6 +79,27 @@ export function max<T1>(items: T1[], propertyName: string): any {
 }
 
 /**
+ * Returns the max value of a given property in a list
+ * 
+ * @export
+ * @template T1
+ * @param {T1[]} items list of objects
+ * @param {string} propertyName property to evaluate
+ * @returns {*} max value of the property provided
+ */
+export function maxBy<T1, T2>(items: T1[], predicate: ja.IMapper<T1, T2>): T2 {
+    let max: any = '';
+    for (let i = 0, len = items.length; i < len; i++) {
+        const item = items[i] as any;
+        const prop = predicate(item);
+        if (max < prop) {
+            max = prop;
+        }
+    }
+    return max;
+}
+
+/**
  * Maps one list of objects to another.
  * Returning undefined skips the item (effectively filtering it)
  * 

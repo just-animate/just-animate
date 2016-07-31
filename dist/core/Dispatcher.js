@@ -1,5 +1,4 @@
 "use strict";
-var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
 var Dispatcher = (function () {
     function Dispatcher() {
@@ -10,11 +9,14 @@ var Dispatcher = (function () {
         if (!listeners) {
             return;
         }
-        lists_1.each(listeners, function (l) { return l.apply(undefined, args); });
+        var len = listeners.length;
+        for (var i = 0; i < len; i++) {
+            listeners[i].apply(undefined, args);
+        }
     };
     Dispatcher.prototype.on = function (eventName, listener) {
         if (!type_1.isFunction(listener)) {
-            throw Error('invalid listener');
+            throw 'invalid listener';
         }
         var listeners = this._listeners[eventName];
         if (!listeners) {

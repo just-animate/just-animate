@@ -12,6 +12,7 @@
             display: inline-block;
             font-size: 2em;
             padding-left: 2.5rem;
+            opacity: 0;
         }
     </style>
 </head>
@@ -38,7 +39,7 @@
 
         </div>
         <button class="btn btn-primary" id="animate-button">
-            Animate
+            Animate In
         </button>
     </div>
 
@@ -51,8 +52,10 @@
 
             button.addEventListener('click', function() {
                 var player = just.animate('bounceIn', '.badger');  
-                
-                setTimeout(function() { player.reverse(); }, 1500); 
+                player.addEventListener('finish', function onFinish() {
+                    player.reverse();
+                    player.removeEventListener('finish', onFinish);
+                });
             });
         })();
     </script>

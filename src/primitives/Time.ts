@@ -25,7 +25,7 @@ export class Time {
         } else if (unit === 's') {
             valueMs = value * 1000;
         } else {
-            throw Error('bad time format');
+            throw 'bad time format';
         }
 
         let operatorEnum: number;

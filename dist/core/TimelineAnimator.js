@@ -1,7 +1,6 @@
 "use strict";
 var objects_1 = require('../helpers/objects');
 var lists_1 = require('../helpers/lists');
-var type_1 = require('../helpers/type');
 var Dispatcher_1 = require('./Dispatcher');
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
@@ -18,7 +17,7 @@ var TimelineAnimator = (function () {
         this._dispatcher = new Dispatcher_1.Dispatcher();
         var duration = options.duration;
         if (duration === undefined) {
-            throw Error('Duration is required');
+            throw 'Duration is required';
         }
         this.playbackRate = 0;
         this.duration = options.duration;
@@ -125,16 +124,12 @@ var TimelineAnimator = (function () {
     TimelineAnimator.prototype._triggerFinish = function () {
         this._reset();
         lists_1.each(this._events, function (evt) { return evt.animator.finish(); });
-        if (type_1.isFunction(this.onfinish)) {
-            this.onfinish(this);
-        }
+        this._dispatcher.trigger('finish');
     };
     TimelineAnimator.prototype._triggerCancel = function () {
         this._reset();
         lists_1.each(this._events, function (evt) { return evt.animator.cancel(); });
-        if (type_1.isFunction(this.oncancel)) {
-            this.oncancel(this);
-        }
+        this._dispatcher.trigger('cancel');
     };
     TimelineAnimator.prototype._triggerPause = function () {
         this._isPaused = true;
@@ -157,6 +152,77 @@ var TimelineAnimator = (function () {
             evt.isInEffect = false;
         });
     };
+    Object.defineProperty(TimelineAnimator.prototype, "iterationStart", {
+        get: function () {
+            return this._iterationStart;
+        },
+        set: function (value) {
+            this._iterationStart = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "iterations", {
+        get: function () {
+            return this._iterations;
+        },
+        set: function (value) {
+            this._iterations = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "totalDuration", {
+        get: function () {
+            return this._totalDuration;
+        },
+        set: function (value) {
+            this._totalDuration = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "endTime", {
+        get: function () {
+            return this._endTime;
+        },
+        set: function (value) {
+            this._endTime = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "startTime", {
+        get: function () {
+            return this._startTime;
+        },
+        set: function (value) {
+            this._startTime = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "playState", {
+        get: function () {
+            return this._playState;
+        },
+        set: function (value) {
+            this._playState = value;
+            this._dispatcher.trigger('set', ['playbackState', value]);
+        },
+        enumerable: true,
+        configurable: true
+    });
     return TimelineAnimator;
 }());
 exports.TimelineAnimator = TimelineAnimator;
