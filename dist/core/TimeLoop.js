@@ -42,24 +42,17 @@ var TimeLoop = (function () {
             this._lastTime = undefined;
             return;
         }
-        // ensure
+        // ensure running and requestAnimationFrame is called
         this._isRunning = true;
         this._lastTime = thisTime;
-        try {
-            for (var i = 0; i < len; i++) {
-                // update delta and save result
-                var existingElapsed = elapses[i];
-                var updatedElapsed = existingElapsed + delta;
-                elapses[i] = updatedElapsed;
-                // call sub with updated delta
-                callbacks[i](delta, updatedElapsed);
-            }
-        }
-        catch (err) {
-            throw err;
-        }
-        finally {
-            raf(this._update);
+        raf(this._update);
+        for (var i = 0; i < len; i++) {
+            // update delta and save result
+            var existingElapsed = elapses[i];
+            var updatedElapsed = existingElapsed + delta;
+            elapses[i] = updatedElapsed;
+            // call sub with updated delta
+            callbacks[i](delta, updatedElapsed);
         }
     };
     return TimeLoop;

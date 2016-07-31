@@ -58,25 +58,19 @@ export class TimeLoop {
             return;
         }
 
-        // ensure
+        // ensure running and requestAnimationFrame is called
         this._isRunning = true;
         this._lastTime = thisTime;
+        raf(this._update);
 
-        try {
-            for (let i = 0; i < len; i++) {
-            
-                // update delta and save result
-                const existingElapsed = elapses[i];
-                const updatedElapsed = existingElapsed + delta;
-                elapses[i] = updatedElapsed;
+        for (let i = 0; i < len; i++) {
+            // update delta and save result
+            const existingElapsed = elapses[i];
+            const updatedElapsed = existingElapsed + delta;
+            elapses[i] = updatedElapsed;
 
-                // call sub with updated delta
-                callbacks[i](delta, updatedElapsed);
-            }
-        } catch (err) {
-            throw err;
-        } finally {
-            raf(this._update);
+            // call sub with updated delta
+            callbacks[i](delta, updatedElapsed);
         }
     }
 }

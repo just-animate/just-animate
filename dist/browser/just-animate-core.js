@@ -411,19 +411,12 @@
             }
             this._isRunning = true;
             this._lastTime = thisTime;
-            try {
-                for (var i = 0; i < len; i++) {
-                    var existingElapsed = elapses[i];
-                    var updatedElapsed = existingElapsed + delta;
-                    elapses[i] = updatedElapsed;
-                    callbacks[i](delta, updatedElapsed);
-                }
-            }
-            catch (err) {
-                throw err;
-            }
-            finally {
-                raf(this._update);
+            raf(this._update);
+            for (var i = 0; i < len; i++) {
+                var existingElapsed = elapses[i];
+                var updatedElapsed = existingElapsed + delta;
+                elapses[i] = updatedElapsed;
+                callbacks[i](delta, updatedElapsed);
             }
         };
         return TimeLoop;
