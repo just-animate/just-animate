@@ -67,7 +67,7 @@ export class Animator implements ja.IAnimator {
         const firstEffect = head(effects);
 
         if (firstEffect) {
-            firstEffect.addEventListener(finish, () => {
+            firstEffect.on(finish, () => {
                 this._dispatcher.trigger(finish);
                 this._timeLoop.unsubscribe(this._tick);
             });
@@ -85,43 +85,50 @@ export class Animator implements ja.IAnimator {
         this._effects = effects;
     }
 
-    public addEventListener(eventName: string, listener: Function): void {
+    public on(eventName: string, listener: Function): ja.IAnimator {
         this._dispatcher.on(eventName, listener);
+        return this;
     }
 
-    public removeEventListener(eventName: string, listener: Function): void {
+    public off(eventName: string, listener: Function): ja.IAnimator {
         this._dispatcher.off(eventName, listener);
+        return this;        
     }
 
-    public cancel(): void {
+    public cancel(): ja.IAnimator {
         this._dispatcher.trigger(call, [cancel]);
         this.currentTime = 0;
         this._dispatcher.trigger(cancel);
+        return this;        
     }
 
-    public finish(): void {
+    public finish(): ja.IAnimator {
         this._dispatcher.trigger(call, [finish]);
         this.currentTime = this.playbackRate < 0 ? 0 : this.duration;
         this._dispatcher.trigger(finish);
+        return this;        
     }
 
-    public play(): void {
+    public play(): ja.IAnimator {
         this._dispatcher.trigger(call, [play]);
         this._dispatcher.trigger(play);
         this._timeLoop.subscribe(this._tick);
+        return this;        
     }
 
-    public pause(): void {
+    public pause(): ja.IAnimator {
         this._dispatcher.trigger(call, [pause]);
         this._dispatcher.trigger(pause);
+        return this;        
     }
 
-    public reverse(): void {
+    public reverse(): ja.IAnimator {
         this._dispatcher.trigger(call, [reverse]);
         this._dispatcher.trigger(reverse);
+        return this;        
     }
 
-    public _tick(): void {
+    private _tick(): void {
         this._dispatcher.trigger('update', [this.currentTime]);
 
         const firstEffect = head(this._effects);
@@ -130,10 +137,11 @@ export class Animator implements ja.IAnimator {
         this._playbackRate = firstEffect.playbackRate;
         this._playState = firstEffect.playState;
 
-        if (this._playState === running || this._playState === pending) {
-            this._timeLoop.subscribe(this._tick);
-            return;
+        if (this._playState !== running && this._playState !== pending) {
+            this._timeLoop.unsubscribe(this._tick);
         }        
-        this._timeLoop.unsubscribe(this._tick);
     }
 }
+
+
+

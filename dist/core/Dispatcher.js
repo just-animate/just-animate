@@ -2,10 +2,10 @@
 var type_1 = require('../helpers/type');
 var Dispatcher = (function () {
     function Dispatcher() {
-        this._listeners = {};
+        this._fn = {};
     }
     Dispatcher.prototype.trigger = function (eventName, args) {
-        var listeners = this._listeners[eventName];
+        var listeners = this._fn[eventName];
         if (!listeners) {
             return;
         }
@@ -18,9 +18,9 @@ var Dispatcher = (function () {
         if (!type_1.isFunction(listener)) {
             throw 'invalid listener';
         }
-        var listeners = this._listeners[eventName];
+        var listeners = this._fn[eventName];
         if (!listeners) {
-            this._listeners[eventName] = [listener];
+            this._fn[eventName] = [listener];
             return;
         }
         if (listeners.indexOf(listener) !== -1) {
@@ -29,7 +29,7 @@ var Dispatcher = (function () {
         listeners.push(listener);
     };
     Dispatcher.prototype.off = function (eventName, listener) {
-        var listeners = this._listeners[eventName];
+        var listeners = this._fn[eventName];
         if (!listeners) {
             return false;
         }

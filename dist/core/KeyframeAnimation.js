@@ -105,30 +105,37 @@ var KeyframeAnimation = (function () {
         enumerable: true,
         configurable: true
     });
-    KeyframeAnimation.prototype.removeEventListener = function (eventName, listener) {
+    KeyframeAnimation.prototype.off = function (eventName, listener) {
         this._dispatcher.off(eventName, listener);
+        return this;
     };
-    KeyframeAnimation.prototype.addEventListener = function (eventName, listener) {
+    KeyframeAnimation.prototype.on = function (eventName, listener) {
         this._dispatcher.on(eventName, listener);
+        return this;
     };
     KeyframeAnimation.prototype.cancel = function () {
         this._animator.cancel();
         this._dispatcher.trigger('cancel');
+        return this;
     };
     KeyframeAnimation.prototype.reverse = function () {
         this._animator.reverse();
         this._dispatcher.trigger('reverse');
+        return this;
     };
     KeyframeAnimation.prototype.pause = function () {
         this._animator.pause();
         this._dispatcher.trigger('pause');
+        return this;
     };
     KeyframeAnimation.prototype.play = function () {
         this._animator.play();
         this._dispatcher.trigger('play');
+        return this;
     };
     KeyframeAnimation.prototype.finish = function () {
         this._animator.finish();
+        return this;
     };
     return KeyframeAnimation;
 }());

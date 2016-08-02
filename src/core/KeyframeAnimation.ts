@@ -1,7 +1,7 @@
 import {Dispatcher} from './Dispatcher';
 
 export class KeyframeAnimation implements ja.IAnimator {
-    private _animator: ja.IAnimator;
+    private _animator: waapi.IAnimation;
     private _dispatcher: Dispatcher;
     private _iterationStart: number;
     private _iterations: number;
@@ -9,7 +9,7 @@ export class KeyframeAnimation implements ja.IAnimator {
     private _duration: number;
     private _startTime: number;
     private _endTime: number;
-
+    
     public get currentTime(): number {
         return this._animator.currentTime;
     }
@@ -91,35 +91,63 @@ export class KeyframeAnimation implements ja.IAnimator {
         this._animator = animator;
     }
 
-    public removeEventListener(eventName: string, listener: Function): void {
+    public off(eventName: string, listener: Function): ja.IAnimator  {
         this._dispatcher.off(eventName, listener);
+        return this;
     }
 
-    public addEventListener(eventName: string, listener: Function): void {
+    public on(eventName: string, listener: Function): ja.IAnimator  {
         this._dispatcher.on(eventName, listener);
+        return this;
     }
 
-    public cancel(): void {
+    public cancel(): ja.IAnimator  {
         this._animator.cancel();
         this._dispatcher.trigger('cancel');
+        return this;
     }
 
-    public reverse(): void {
+    public reverse(): ja.IAnimator  {
         this._animator.reverse();
         this._dispatcher.trigger('reverse');
+        return this;
     }
 
-    public pause(): void { 
+    public pause(): ja.IAnimator { 
         this._animator.pause();
         this._dispatcher.trigger('pause');
+        return this;
     }
 
-    public play(): void { 
+    public play(): ja.IAnimator  { 
         this._animator.play();
         this._dispatcher.trigger('play');
+        return this;
     }
 
-    public finish(): void { 
+    public finish(): ja.IAnimator  { 
         this._animator.finish();
+        return this;
+    }
+}
+
+declare module waapi {
+    export interface IAnimation {
+        id: string;
+        startTime: number;
+        currentTime: number;
+        playState: 'idle' | 'pending' | 'running' | 'paused' | 'finished';
+        playbackRate: number;
+        onfinish: Function;
+        oncancel: Function;
+
+        cancel(): void;
+        finish(): void;
+        play(): void;
+        pause(): void;
+        reverse(): void;
+
+        addEventListener(eventName: string, listener: Function): void;
+        removeEventListener(eventName: string, listener: Function): void;
     }
 }

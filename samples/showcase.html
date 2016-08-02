@@ -119,11 +119,8 @@
             var name = animations[index];
             el.innerHTML = name;
 
-            var animator = just.animate(name, el, { fill: 'both' });
-            animator.addEventListener('finish', callAnimation);
-            animator.addEventListener('update', function() {
-               
-            })
+            just.animate(name, el, { fill: 'both' })
+                .on('finish', callAnimation);
         }());
     </script>
 </body>

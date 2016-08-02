@@ -156,14 +156,14 @@ declare module ja {
         playbackRate: number;
         playState: AnimationPlaybackState;
 
-        finish(): void;
-        play(): void;
-        pause(): void;
-        reverse(): void;
-        cancel(): void;
+        finish(): IAnimator;
+        play(): IAnimator;
+        pause(): IAnimator;
+        reverse(): IAnimator;
+        cancel(): IAnimator;
 
-        addEventListener(eventName: string, listener: Function): void;
-        removeEventListener(eventName: string, listener: Function): void;
+        on(eventName: string, listener: Function): IAnimator;
+        off(eventName: string, listener: Function): IAnimator;
     }
 
 

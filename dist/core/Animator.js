@@ -17,7 +17,7 @@ var Animator = (function () {
         var dispatcher = new Dispatcher_1.Dispatcher();
         var firstEffect = lists_1.head(effects);
         if (firstEffect) {
-            firstEffect.addEventListener(finish, function () {
+            firstEffect.on(finish, function () {
                 _this._dispatcher.trigger(finish);
                 _this._timeLoop.unsubscribe(_this._tick);
             });
@@ -103,34 +103,41 @@ var Animator = (function () {
         enumerable: true,
         configurable: true
     });
-    Animator.prototype.addEventListener = function (eventName, listener) {
+    Animator.prototype.on = function (eventName, listener) {
         this._dispatcher.on(eventName, listener);
+        return this;
     };
-    Animator.prototype.removeEventListener = function (eventName, listener) {
+    Animator.prototype.off = function (eventName, listener) {
         this._dispatcher.off(eventName, listener);
+        return this;
     };
     Animator.prototype.cancel = function () {
         this._dispatcher.trigger(call, [cancel]);
         this.currentTime = 0;
         this._dispatcher.trigger(cancel);
+        return this;
     };
     Animator.prototype.finish = function () {
         this._dispatcher.trigger(call, [finish]);
         this.currentTime = this.playbackRate < 0 ? 0 : this.duration;
         this._dispatcher.trigger(finish);
+        return this;
     };
     Animator.prototype.play = function () {
         this._dispatcher.trigger(call, [play]);
         this._dispatcher.trigger(play);
         this._timeLoop.subscribe(this._tick);
+        return this;
     };
     Animator.prototype.pause = function () {
         this._dispatcher.trigger(call, [pause]);
         this._dispatcher.trigger(pause);
+        return this;
     };
     Animator.prototype.reverse = function () {
         this._dispatcher.trigger(call, [reverse]);
         this._dispatcher.trigger(reverse);
+        return this;
     };
     Animator.prototype._tick = function () {
         this._dispatcher.trigger('update', [this.currentTime]);
@@ -138,11 +145,9 @@ var Animator = (function () {
         this._currentTime = firstEffect.currentTime;
         this._playbackRate = firstEffect.playbackRate;
         this._playState = firstEffect.playState;
-        if (this._playState === running || this._playState === pending) {
-            this._timeLoop.subscribe(this._tick);
-            return;
+        if (this._playState !== running && this._playState !== pending) {
+            this._timeLoop.unsubscribe(this._tick);
         }
-        this._timeLoop.unsubscribe(this._tick);
     };
     return Animator;
 }());

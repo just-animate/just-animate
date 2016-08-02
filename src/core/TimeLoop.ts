@@ -6,43 +6,55 @@ export interface ITimeLoopCallback {
 }
 
 export class TimeLoop {
-    private _isRunning: boolean;
+    private _isActive: boolean;
     private _lastTime: number;
-    private _callbacks: ITimeLoopCallback[];
+    private _ons: ITimeLoopCallback[];
+    private _offs: ITimeLoopCallback[];
+    private _active: ITimeLoopCallback[];
     private _elapses: number[];
 
     constructor() {
-        this._isRunning = false;
+        this._isActive = false;
         this._lastTime = undefined;
-        this._callbacks = [];
+        this._ons = [];
+        this._offs = [];
+        this._active = [];
         this._elapses = [];
 
         this._update = this._update.bind(this);
     }
-    
+
     public subscribe(fn: ITimeLoopCallback): void {
-        if (this._callbacks.indexOf(fn) !== -1) {
-            return;
+        const offIndex = this._offs.indexOf(fn);
+        if (offIndex !== -1) {
+            this._offs.splice(offIndex, 1);
         }
-
-        this._callbacks.push(fn);
-        this._elapses.push(0);
-
-        if (!this._isRunning) {
-            this._isRunning = true;
+        if (this._ons.indexOf(fn) === -1) {
+            this._ons.push(fn);
+        }
+        if (!this._isActive) {
+            this._isActive = true;
             raf(this._update);
         }
     }
     public unsubscribe(fn: ITimeLoopCallback): void {
-        const indexOfSub = this._callbacks.indexOf(fn);
-        if (indexOfSub === -1) {
-            return;
+        const onIndex = this._ons.indexOf(fn);
+        if (onIndex !== -1) {
+            this._ons.splice(onIndex, 1);
         }
-        this._callbacks.splice(indexOfSub, 1);
-        this._elapses.splice(indexOfSub, 1);
+        if (this._offs.indexOf(fn) === -1) {
+            this._offs.push(fn);
+        }
+        if (!this._isActive) {
+            this._isActive = true;
+            raf(this._update);
+        }
     }
     private _update(): void {
-        const callbacks = this._callbacks;
+        this._updateOffs();
+        this._updateOns();
+
+        const callbacks = this._active;
         const elapses = this._elapses;
         const len = callbacks.length;
 
@@ -53,13 +65,13 @@ export class TimeLoop {
         // if nothing is subscribed, kill the cycle
         if (!len) {
             // end recursion
-            this._isRunning = false;
+            this._isActive = false;
             this._lastTime = undefined;
             return;
         }
 
         // ensure running and requestAnimationFrame is called
-        this._isRunning = true;
+        this._isActive = true;
         this._lastTime = thisTime;
         raf(this._update);
 
@@ -71,6 +83,27 @@ export class TimeLoop {
 
             // call sub with updated delta
             callbacks[i](delta, updatedElapsed);
+        }
+    }
+    private _updateOffs(): void {
+        const len = this._offs.length;
+        for (let i = 0; i < len; i++) {
+            const fn = this._offs[i];
+            const indexOfSub = this._active.indexOf(fn);
+            if (indexOfSub !== -1) {
+                this._active.splice(indexOfSub, 1);
+                this._elapses.splice(indexOfSub, 1);
+            }
+        }
+    }
+    private _updateOns(): void {
+        const len = this._ons.length;
+        for (let i = 0; i < len; i++) {
+            const fn = this._ons[i];
+            if (this._active.indexOf(fn) === -1) {
+                this._active.push(fn);
+                this._elapses.push(0);
+            }
         }
     }
 }

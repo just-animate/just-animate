@@ -51,11 +51,11 @@
             var button = document.getElementById('animate-button');
 
             button.addEventListener('click', function() {
-                var player = just.animate('bounceIn', '.badger');  
-                player.addEventListener('finish', function onFinish() {
-                    player.reverse();
-                    player.removeEventListener('finish', onFinish);
-                });
+                var player = just.animate('bounceIn', '.badger')
+                    .on('finish', function onFinish() {
+                        player.reverse();
+                        player.off('finish', onFinish);
+                    });
             });
         })();
     </script>

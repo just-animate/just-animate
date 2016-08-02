@@ -3149,10 +3149,10 @@ System.register("just-animate/core/Dispatcher", ["just-animate/helpers/type"], f
         execute: function() {
             Dispatcher = (function () {
                 function Dispatcher() {
-                    this._listeners = {};
+                    this._fn = {};
                 }
                 Dispatcher.prototype.trigger = function (eventName, args) {
-                    var listeners = this._listeners[eventName];
+                    var listeners = this._fn[eventName];
                     if (!listeners) {
                         return;
                     }
@@ -3165,9 +3165,9 @@ System.register("just-animate/core/Dispatcher", ["just-animate/helpers/type"], f
                     if (!type_1.isFunction(listener)) {
                         throw 'invalid listener';
                     }
-                    var listeners = this._listeners[eventName];
+                    var listeners = this._fn[eventName];
                     if (!listeners) {
-                        this._listeners[eventName] = [listener];
+                        this._fn[eventName] = [listener];
                         return;
                     }
                     if (listeners.indexOf(listener) !== -1) {
@@ -3176,7 +3176,7 @@ System.register("just-animate/core/Dispatcher", ["just-animate/helpers/type"], f
                     listeners.push(listener);
                 };
                 Dispatcher.prototype.off = function (eventName, listener) {
-                    var listeners = this._listeners[eventName];
+                    var listeners = this._fn[eventName];
                     if (!listeners) {
                         return false;
                     }
@@ -3204,33 +3204,44 @@ System.register("just-animate/core/TimeLoop", [], function(exports_81, context_8
             raf = (window && window.requestAnimationFrame) || (function (fn) { return setTimeout(fn, 16.66); });
             TimeLoop = (function () {
                 function TimeLoop() {
-                    this._isRunning = false;
+                    this._isActive = false;
                     this._lastTime = undefined;
-                    this._callbacks = [];
+                    this._ons = [];
+                    this._offs = [];
+                    this._active = [];
                     this._elapses = [];
                     this._update = this._update.bind(this);
                 }
                 TimeLoop.prototype.subscribe = function (fn) {
-                    if (this._callbacks.indexOf(fn) !== -1) {
-                        return;
+                    var offIndex = this._offs.indexOf(fn);
+                    if (offIndex !== -1) {
+                        this._offs.splice(offIndex, 1);
                     }
-                    this._callbacks.push(fn);
-                    this._elapses.push(0);
-                    if (!this._isRunning) {
-                        this._isRunning = true;
+                    if (this._ons.indexOf(fn) === -1) {
+                        this._ons.push(fn);
+                    }
+                    if (!this._isActive) {
+                        this._isActive = true;
                         raf(this._update);
                     }
                 };
                 TimeLoop.prototype.unsubscribe = function (fn) {
-                    var indexOfSub = this._callbacks.indexOf(fn);
-                    if (indexOfSub === -1) {
-                        return;
+                    var onIndex = this._ons.indexOf(fn);
+                    if (onIndex !== -1) {
+                        this._ons.splice(onIndex, 1);
                     }
-                    this._callbacks.splice(indexOfSub, 1);
-                    this._elapses.splice(indexOfSub, 1);
+                    if (this._offs.indexOf(fn) === -1) {
+                        this._offs.push(fn);
+                    }
+                    if (!this._isActive) {
+                        this._isActive = true;
+                        raf(this._update);
+                    }
                 };
                 TimeLoop.prototype._update = function () {
-                    var callbacks = this._callbacks;
+                    this._updateOffs();
+                    this._updateOns();
+                    var callbacks = this._active;
                     var elapses = this._elapses;
                     var len = callbacks.length;
                     var lastTime = this._lastTime || now();
@@ -3239,12 +3250,12 @@ System.register("just-animate/core/TimeLoop", [], function(exports_81, context_8
                     // if nothing is subscribed, kill the cycle
                     if (!len) {
                         // end recursion
-                        this._isRunning = false;
+                        this._isActive = false;
                         this._lastTime = undefined;
                         return;
                     }
                     // ensure running and requestAnimationFrame is called
-                    this._isRunning = true;
+                    this._isActive = true;
                     this._lastTime = thisTime;
                     raf(this._update);
                     for (var i = 0; i < len; i++) {
@@ -3254,6 +3265,27 @@ System.register("just-animate/core/TimeLoop", [], function(exports_81, context_8
                         elapses[i] = updatedElapsed;
                         // call sub with updated delta
                         callbacks[i](delta, updatedElapsed);
+                    }
+                };
+                TimeLoop.prototype._updateOffs = function () {
+                    var len = this._offs.length;
+                    for (var i = 0; i < len; i++) {
+                        var fn = this._offs[i];
+                        var indexOfSub = this._active.indexOf(fn);
+                        if (indexOfSub !== -1) {
+                            this._active.splice(indexOfSub, 1);
+                            this._elapses.splice(indexOfSub, 1);
+                        }
+                    }
+                };
+                TimeLoop.prototype._updateOns = function () {
+                    var len = this._ons.length;
+                    for (var i = 0; i < len; i++) {
+                        var fn = this._ons[i];
+                        if (this._active.indexOf(fn) === -1) {
+                            this._active.push(fn);
+                            this._elapses.push(0);
+                        }
                     }
                 };
                 return TimeLoop;
@@ -3292,7 +3324,7 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                     var dispatcher = new Dispatcher_1.Dispatcher();
                     var firstEffect = lists_1.head(effects);
                     if (firstEffect) {
-                        firstEffect.addEventListener(finish, function () {
+                        firstEffect.on(finish, function () {
                             _this._dispatcher.trigger(finish);
                             _this._timeLoop.unsubscribe(_this._tick);
                         });
@@ -3378,34 +3410,41 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                     enumerable: true,
                     configurable: true
                 });
-                Animator.prototype.addEventListener = function (eventName, listener) {
+                Animator.prototype.on = function (eventName, listener) {
                     this._dispatcher.on(eventName, listener);
+                    return this;
                 };
-                Animator.prototype.removeEventListener = function (eventName, listener) {
+                Animator.prototype.off = function (eventName, listener) {
                     this._dispatcher.off(eventName, listener);
+                    return this;
                 };
                 Animator.prototype.cancel = function () {
                     this._dispatcher.trigger(call, [cancel]);
                     this.currentTime = 0;
                     this._dispatcher.trigger(cancel);
+                    return this;
                 };
                 Animator.prototype.finish = function () {
                     this._dispatcher.trigger(call, [finish]);
                     this.currentTime = this.playbackRate < 0 ? 0 : this.duration;
                     this._dispatcher.trigger(finish);
+                    return this;
                 };
                 Animator.prototype.play = function () {
                     this._dispatcher.trigger(call, [play]);
                     this._dispatcher.trigger(play);
                     this._timeLoop.subscribe(this._tick);
+                    return this;
                 };
                 Animator.prototype.pause = function () {
                     this._dispatcher.trigger(call, [pause]);
                     this._dispatcher.trigger(pause);
+                    return this;
                 };
                 Animator.prototype.reverse = function () {
                     this._dispatcher.trigger(call, [reverse]);
                     this._dispatcher.trigger(reverse);
+                    return this;
                 };
                 Animator.prototype._tick = function () {
                     this._dispatcher.trigger('update', [this.currentTime]);
@@ -3413,11 +3452,9 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                     this._currentTime = firstEffect.currentTime;
                     this._playbackRate = firstEffect.playbackRate;
                     this._playState = firstEffect.playState;
-                    if (this._playState === running || this._playState === pending) {
-                        this._timeLoop.subscribe(this._tick);
-                        return;
+                    if (this._playState !== running && this._playState !== pending) {
+                        this._timeLoop.unsubscribe(this._tick);
                     }
-                    this._timeLoop.unsubscribe(this._tick);
                 };
                 return Animator;
             }());
@@ -3541,30 +3578,37 @@ System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispa
                     enumerable: true,
                     configurable: true
                 });
-                KeyframeAnimation.prototype.removeEventListener = function (eventName, listener) {
+                KeyframeAnimation.prototype.off = function (eventName, listener) {
                     this._dispatcher.off(eventName, listener);
+                    return this;
                 };
-                KeyframeAnimation.prototype.addEventListener = function (eventName, listener) {
+                KeyframeAnimation.prototype.on = function (eventName, listener) {
                     this._dispatcher.on(eventName, listener);
+                    return this;
                 };
                 KeyframeAnimation.prototype.cancel = function () {
                     this._animator.cancel();
                     this._dispatcher.trigger('cancel');
+                    return this;
                 };
                 KeyframeAnimation.prototype.reverse = function () {
                     this._animator.reverse();
                     this._dispatcher.trigger('reverse');
+                    return this;
                 };
                 KeyframeAnimation.prototype.pause = function () {
                     this._animator.pause();
                     this._dispatcher.trigger('pause');
+                    return this;
                 };
                 KeyframeAnimation.prototype.play = function () {
                     this._animator.play();
                     this._dispatcher.trigger('play');
+                    return this;
                 };
                 KeyframeAnimation.prototype.finish = function () {
                     this._animator.finish();
+                    return this;
                 };
                 return KeyframeAnimation;
             }());
@@ -3632,11 +3676,11 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/obj
                  * @param {ja.ITimelineOptions} options (description)
                  */
                 function TimelineAnimator(manager, options) {
-                    this._dispatcher = new Dispatcher_3.Dispatcher();
                     var duration = options.duration;
                     if (duration === undefined) {
                         throw 'Duration is required';
                     }
+                    this._dispatcher = new Dispatcher_3.Dispatcher();
                     this.playbackRate = 0;
                     this.duration = options.duration;
                     this.currentTime = 0;
@@ -3649,49 +3693,124 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/obj
                         this.play();
                     }
                 }
-                TimelineAnimator.prototype.addEventListener = function (eventName, listener) {
+                Object.defineProperty(TimelineAnimator.prototype, "iterationStart", {
+                    get: function () {
+                        return this._iterationStart;
+                    },
+                    set: function (value) {
+                        this._iterationStart = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ;
+                ;
+                Object.defineProperty(TimelineAnimator.prototype, "iterations", {
+                    get: function () {
+                        return this._iterations;
+                    },
+                    set: function (value) {
+                        this._iterations = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ;
+                ;
+                Object.defineProperty(TimelineAnimator.prototype, "totalDuration", {
+                    get: function () {
+                        return this._totalDuration;
+                    },
+                    set: function (value) {
+                        this._totalDuration = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ;
+                ;
+                Object.defineProperty(TimelineAnimator.prototype, "endTime", {
+                    get: function () {
+                        return this._endTime;
+                    },
+                    set: function (value) {
+                        this._endTime = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ;
+                ;
+                Object.defineProperty(TimelineAnimator.prototype, "startTime", {
+                    get: function () {
+                        return this._startTime;
+                    },
+                    set: function (value) {
+                        this._startTime = value;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                ;
+                ;
+                Object.defineProperty(TimelineAnimator.prototype, "playState", {
+                    get: function () {
+                        return this._playState;
+                    },
+                    set: function (value) {
+                        this._playState = value;
+                        this._dispatcher.trigger('set', ['playbackState', value]);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                TimelineAnimator.prototype.on = function (eventName, listener) {
                     this._dispatcher.on(eventName, listener);
+                    return this;
                 };
-                TimelineAnimator.prototype.removeEventListener = function (eventName, listener) {
+                TimelineAnimator.prototype.off = function (eventName, listener) {
                     this._dispatcher.off(eventName, listener);
+                    return this;
                 };
                 TimelineAnimator.prototype.finish = function () {
                     this._isFinished = true;
+                    return this;
                 };
                 TimelineAnimator.prototype.play = function () {
                     this.playbackRate = 1;
                     this._isPaused = false;
-                    if (this._isInEffect) {
-                        return;
+                    if (!this._isInEffect) {
+                        if (this.playbackRate < 0) {
+                            this.currentTime = this.duration;
+                        }
+                        else {
+                            this.currentTime = 0;
+                        }
+                        window.requestAnimationFrame(this._tick);
                     }
-                    if (this.playbackRate < 0) {
-                        this.currentTime = this.duration;
-                    }
-                    else {
-                        this.currentTime = 0;
-                    }
-                    window.requestAnimationFrame(this._tick);
+                    return this;
                 };
                 TimelineAnimator.prototype.pause = function () {
                     if (this._isInEffect) {
                         this._isPaused = true;
                     }
+                    return this;
                 };
                 TimelineAnimator.prototype.reverse = function () {
                     this.playbackRate = -1;
                     this._isPaused = false;
-                    if (this._isInEffect) {
-                        return;
+                    if (!this._isInEffect) {
+                        if (this.currentTime <= 0) {
+                            this.currentTime = this.duration;
+                        }
+                        window.requestAnimationFrame(this._tick);
                     }
-                    if (this.currentTime <= 0) {
-                        this.currentTime = this.duration;
-                    }
-                    window.requestAnimationFrame(this._tick);
+                    return this;
                 };
                 TimelineAnimator.prototype.cancel = function () {
                     this.playbackRate = 0;
                     this._isCanceled = true;
-                    return;
+                    return this;
                 };
                 TimelineAnimator.prototype._tick = function () {
                     var _this = this;
@@ -3770,77 +3889,6 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/obj
                         evt.isInEffect = false;
                     });
                 };
-                Object.defineProperty(TimelineAnimator.prototype, "iterationStart", {
-                    get: function () {
-                        return this._iterationStart;
-                    },
-                    set: function (value) {
-                        this._iterationStart = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ;
-                ;
-                Object.defineProperty(TimelineAnimator.prototype, "iterations", {
-                    get: function () {
-                        return this._iterations;
-                    },
-                    set: function (value) {
-                        this._iterations = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ;
-                ;
-                Object.defineProperty(TimelineAnimator.prototype, "totalDuration", {
-                    get: function () {
-                        return this._totalDuration;
-                    },
-                    set: function (value) {
-                        this._totalDuration = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ;
-                ;
-                Object.defineProperty(TimelineAnimator.prototype, "endTime", {
-                    get: function () {
-                        return this._endTime;
-                    },
-                    set: function (value) {
-                        this._endTime = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ;
-                ;
-                Object.defineProperty(TimelineAnimator.prototype, "startTime", {
-                    get: function () {
-                        return this._startTime;
-                    },
-                    set: function (value) {
-                        this._startTime = value;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                ;
-                ;
-                Object.defineProperty(TimelineAnimator.prototype, "playState", {
-                    get: function () {
-                        return this._playState;
-                    },
-                    set: function (value) {
-                        this._playState = value;
-                        this._dispatcher.trigger('set', ['playbackState', value]);
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
                 return TimelineAnimator;
             }());
             exports_85("TimelineAnimator", TimelineAnimator);

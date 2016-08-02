@@ -23,8 +23,59 @@ export class TimelineAnimator implements ja.IAnimator {
     private _lastTick: number;
     private _manager: ja.IAnimationManager;
     private _playState: ja.AnimationPlaybackState;
+    private _iterationStart: number;    
+	private _iterations: number;    
+	private _totalDuration: number;    
+	private _endTime: number;    
+	private _startTime: number;
 
-    private _dispatcher: Dispatcher = new Dispatcher();
+    private _dispatcher: Dispatcher;
+
+	
+	public get iterationStart(): number {
+        return this._iterationStart;
+	};
+   	public set iterationStart(value: number) {
+        this._iterationStart = value;
+    };
+
+
+	public get iterations(): number {
+        return this._iterations;
+	};
+   	public set iterations(value: number) {
+        this._iterations = value;
+    };
+
+
+	public get totalDuration(): number {
+        return this._totalDuration;
+	};
+   	public set totalDuration(value: number) {
+        this._totalDuration = value;
+    };
+
+
+	public get endTime(): number {
+        return this._endTime;
+	};
+   	public set endTime(value: number) {
+        this._endTime = value;
+    };
+
+	public get startTime(): number {
+        return this._startTime;
+	};
+   	public set startTime(value: number) {
+        this._startTime = value;
+    };
+    public get playState(): ja.AnimationPlaybackState {
+        return this._playState;
+    }
+    public set playState(value: ja.AnimationPlaybackState) {
+        this._playState = value;
+        this._dispatcher.trigger('set', ['playbackState', value]);     
+    }
 
     /**
      * Creates an instance of TimelineAnimator.
@@ -38,6 +89,7 @@ export class TimelineAnimator implements ja.IAnimator {
             throw 'Duration is required';
         }
 
+        this._dispatcher = new Dispatcher();        
         this.playbackRate = 0;
         this.duration = options.duration;
         this.currentTime = 0;
@@ -53,53 +105,57 @@ export class TimelineAnimator implements ja.IAnimator {
         }
     }
 
-    public addEventListener(eventName: string, listener: Function): void {
+    public on(eventName: string, listener: Function): ja.IAnimator {
         this._dispatcher.on(eventName, listener);
+        return this;
     }
 
-    public removeEventListener(eventName: string, listener: Function): void {
+    public off(eventName: string, listener: Function): ja.IAnimator {
         this._dispatcher.off(eventName, listener);
+        return this;
     }
 
-    public finish(): void {
+    public finish(): ja.IAnimator {
         this._isFinished = true;
+        return this;
     }
-    public play(): void {
+    public play(): ja.IAnimator {
         this.playbackRate = 1;
         this._isPaused = false;
 
-        if (this._isInEffect) {
-            return;
+        if (!this._isInEffect) {
+            if (this.playbackRate < 0) {
+                this.currentTime = this.duration;
+            } else {
+                this.currentTime = 0;
+            }
+            window.requestAnimationFrame(this._tick);
         }
-        if (this.playbackRate < 0) {
-            this.currentTime = this.duration;
-        } else {
-            this.currentTime = 0;
-        }
-        window.requestAnimationFrame(this._tick);
+        
+        return this;
     }
-    public pause(): void {
+    public pause(): ja.IAnimator {
         if (this._isInEffect) {
             this._isPaused = true;
         }
+        return this;
     }
-    public reverse(): void {
+    public reverse(): ja.IAnimator {
         this.playbackRate = -1;
         this._isPaused = false;
 
-        if (this._isInEffect) {
-            return;
+        if (!this._isInEffect) {
+            if (this.currentTime <= 0) {
+                this.currentTime = this.duration;
+            }
+            window.requestAnimationFrame(this._tick);
         }
-
-        if (this.currentTime <= 0) {
-            this.currentTime = this.duration;
-        }
-        window.requestAnimationFrame(this._tick);
+        return this;
     }
-    public cancel(): void {
+    public cancel(): ja.IAnimator {
         this.playbackRate = 0;
         this._isCanceled = true;
-        return;
+        return this;
     }
 
     private _tick(): void {
@@ -183,53 +239,6 @@ export class TimelineAnimator implements ja.IAnimator {
         each(this._events, (evt: TimelineEvent) => {
             evt.isInEffect = false;
         });
-    }
-
-	private _iterationStart: number;
-	public get iterationStart(): number {
-        return this._iterationStart;
-	};
-   	public set iterationStart(value: number) {
-        this._iterationStart = value;
-    };
-
-	private _iterations: number;
-	public get iterations(): number {
-        return this._iterations;
-	};
-   	public set iterations(value: number) {
-        this._iterations = value;
-    };
-
-	private _totalDuration: number;
-	public get totalDuration(): number {
-        return this._totalDuration;
-	};
-   	public set totalDuration(value: number) {
-        this._totalDuration = value;
-    };
-
-	private _endTime: number;
-	public get endTime(): number {
-        return this._endTime;
-	};
-   	public set endTime(value: number) {
-        this._endTime = value;
-    };
-
-	private _startTime: number;
-	public get startTime(): number {
-        return this._startTime;
-	};
-   	public set startTime(value: number) {
-        this._startTime = value;
-    };
-    public get playState(): ja.AnimationPlaybackState {
-        return this._playState;
-    }
-    public set playState(value: ja.AnimationPlaybackState) {
-        this._playState = value;
-        this._dispatcher.trigger('set', ['playbackState', value]);     
     }
 }
 

@@ -14,11 +14,11 @@ var TimelineAnimator = (function () {
      * @param {ja.ITimelineOptions} options (description)
      */
     function TimelineAnimator(manager, options) {
-        this._dispatcher = new Dispatcher_1.Dispatcher();
         var duration = options.duration;
         if (duration === undefined) {
             throw 'Duration is required';
         }
+        this._dispatcher = new Dispatcher_1.Dispatcher();
         this.playbackRate = 0;
         this.duration = options.duration;
         this.currentTime = 0;
@@ -31,49 +31,124 @@ var TimelineAnimator = (function () {
             this.play();
         }
     }
-    TimelineAnimator.prototype.addEventListener = function (eventName, listener) {
+    Object.defineProperty(TimelineAnimator.prototype, "iterationStart", {
+        get: function () {
+            return this._iterationStart;
+        },
+        set: function (value) {
+            this._iterationStart = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "iterations", {
+        get: function () {
+            return this._iterations;
+        },
+        set: function (value) {
+            this._iterations = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "totalDuration", {
+        get: function () {
+            return this._totalDuration;
+        },
+        set: function (value) {
+            this._totalDuration = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "endTime", {
+        get: function () {
+            return this._endTime;
+        },
+        set: function (value) {
+            this._endTime = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "startTime", {
+        get: function () {
+            return this._startTime;
+        },
+        set: function (value) {
+            this._startTime = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    ;
+    Object.defineProperty(TimelineAnimator.prototype, "playState", {
+        get: function () {
+            return this._playState;
+        },
+        set: function (value) {
+            this._playState = value;
+            this._dispatcher.trigger('set', ['playbackState', value]);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TimelineAnimator.prototype.on = function (eventName, listener) {
         this._dispatcher.on(eventName, listener);
+        return this;
     };
-    TimelineAnimator.prototype.removeEventListener = function (eventName, listener) {
+    TimelineAnimator.prototype.off = function (eventName, listener) {
         this._dispatcher.off(eventName, listener);
+        return this;
     };
     TimelineAnimator.prototype.finish = function () {
         this._isFinished = true;
+        return this;
     };
     TimelineAnimator.prototype.play = function () {
         this.playbackRate = 1;
         this._isPaused = false;
-        if (this._isInEffect) {
-            return;
+        if (!this._isInEffect) {
+            if (this.playbackRate < 0) {
+                this.currentTime = this.duration;
+            }
+            else {
+                this.currentTime = 0;
+            }
+            window.requestAnimationFrame(this._tick);
         }
-        if (this.playbackRate < 0) {
-            this.currentTime = this.duration;
-        }
-        else {
-            this.currentTime = 0;
-        }
-        window.requestAnimationFrame(this._tick);
+        return this;
     };
     TimelineAnimator.prototype.pause = function () {
         if (this._isInEffect) {
             this._isPaused = true;
         }
+        return this;
     };
     TimelineAnimator.prototype.reverse = function () {
         this.playbackRate = -1;
         this._isPaused = false;
-        if (this._isInEffect) {
-            return;
+        if (!this._isInEffect) {
+            if (this.currentTime <= 0) {
+                this.currentTime = this.duration;
+            }
+            window.requestAnimationFrame(this._tick);
         }
-        if (this.currentTime <= 0) {
-            this.currentTime = this.duration;
-        }
-        window.requestAnimationFrame(this._tick);
+        return this;
     };
     TimelineAnimator.prototype.cancel = function () {
         this.playbackRate = 0;
         this._isCanceled = true;
-        return;
+        return this;
     };
     TimelineAnimator.prototype._tick = function () {
         var _this = this;
@@ -152,77 +227,6 @@ var TimelineAnimator = (function () {
             evt.isInEffect = false;
         });
     };
-    Object.defineProperty(TimelineAnimator.prototype, "iterationStart", {
-        get: function () {
-            return this._iterationStart;
-        },
-        set: function (value) {
-            this._iterationStart = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    ;
-    Object.defineProperty(TimelineAnimator.prototype, "iterations", {
-        get: function () {
-            return this._iterations;
-        },
-        set: function (value) {
-            this._iterations = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    ;
-    Object.defineProperty(TimelineAnimator.prototype, "totalDuration", {
-        get: function () {
-            return this._totalDuration;
-        },
-        set: function (value) {
-            this._totalDuration = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    ;
-    Object.defineProperty(TimelineAnimator.prototype, "endTime", {
-        get: function () {
-            return this._endTime;
-        },
-        set: function (value) {
-            this._endTime = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    ;
-    Object.defineProperty(TimelineAnimator.prototype, "startTime", {
-        get: function () {
-            return this._startTime;
-        },
-        set: function (value) {
-            this._startTime = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    ;
-    Object.defineProperty(TimelineAnimator.prototype, "playState", {
-        get: function () {
-            return this._playState;
-        },
-        set: function (value) {
-            this._playState = value;
-            this._dispatcher.trigger('set', ['playbackState', value]);
-        },
-        enumerable: true,
-        configurable: true
-    });
     return TimelineAnimator;
 }());
 exports.TimelineAnimator = TimelineAnimator;

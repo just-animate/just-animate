@@ -1,12 +1,11 @@
-import {each} from '../helpers/lists';
 import {isFunction} from '../helpers/type';
 
 export class Dispatcher {
 
-    private _listeners: { [eventName: string]: Function[] } = {};
+    private _fn: ICallbackMap = {};
 
     public trigger(eventName: string, args?: any[]): void {
-        const listeners = this._listeners[eventName];
+        const listeners = this._fn[eventName];
         if (!listeners) {
             return;
         }
@@ -20,9 +19,9 @@ export class Dispatcher {
         if (!isFunction(listener)) {
             throw 'invalid listener';
         }
-        const listeners = this._listeners[eventName];
+        const listeners = this._fn[eventName];
         if (!listeners) {
-            this._listeners[eventName] = [listener];
+            this._fn[eventName] = [listener];
             return;
         }
         if (listeners.indexOf(listener) !== -1) {
@@ -32,7 +31,7 @@ export class Dispatcher {
     }
 
     public off(eventName: string, listener: Function): boolean {
-        const listeners = this._listeners[eventName];
+        const listeners = this._fn[eventName];
         if (!listeners) {
             return false;
         }
@@ -44,3 +43,7 @@ export class Dispatcher {
         return true;
     }
 }
+
+interface ICallbackMap {
+    [eventName: string]: Function[];
+} 
