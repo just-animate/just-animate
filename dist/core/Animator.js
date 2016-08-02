@@ -19,7 +19,7 @@ var Animator = (function () {
         if (firstEffect) {
             firstEffect.on(finish, function () {
                 _this._dispatcher.trigger(finish);
-                _this._timeLoop.unsubscribe(_this._tick);
+                _this._timeLoop.off(_this._tick);
             });
         }
         lists_1.each(effects, function (effect) {
@@ -126,7 +126,7 @@ var Animator = (function () {
     Animator.prototype.play = function () {
         this._dispatcher.trigger(call, [play]);
         this._dispatcher.trigger(play);
-        this._timeLoop.subscribe(this._tick);
+        this._timeLoop.on(this._tick);
         return this;
     };
     Animator.prototype.pause = function () {
@@ -146,7 +146,7 @@ var Animator = (function () {
         this._playbackRate = firstEffect.playbackRate;
         this._playState = firstEffect.playState;
         if (this._playState !== running && this._playState !== pending) {
-            this._timeLoop.unsubscribe(this._tick);
+            this._timeLoop.off(this._tick);
         }
     };
     return Animator;

@@ -1,6 +1,6 @@
 import {each, map} from './helpers/lists';
 import {TimelineAnimator} from './core/TimelineAnimator';
-import {TimeLoop} from './core/TimeLoop';
+import {createLoop, ITimeLoop} from './core/TimeLoop';
 import {Animator} from './core/Animator';
 import {easings} from './easings';
 import {pipe} from './helpers/functions';
@@ -20,7 +20,7 @@ import {KeyframeAnimation} from './core/KeyframeAnimation';
 export class JustAnimate implements ja.IAnimationManager {
     private static _globalAnimations: ja.IMap<ja.IEffectOptions> = {};
     private _registry: { [key: string]: ja.IEffectOptions } = {};
-    private _timeLoop: TimeLoop = new TimeLoop();
+    private _timeLoop: ITimeLoop;
        
     /**
      * (description)
@@ -30,6 +30,10 @@ export class JustAnimate implements ja.IAnimationManager {
      */
     public static inject(animations: ja.IAnimationOptions[]): void {
         each(animations, (a: ja.IAnimationOptions) => JustAnimate._globalAnimations[a.name] = a);
+    }
+
+    constructor() {
+        this._timeLoop = createLoop();
     }
 
     /**

@@ -373,90 +373,98 @@
     }());
 
     var now = (performance && performance.now) ? function () { return performance.now(); } : function () { return Date.now(); };
-    var raf = (window && window.requestAnimationFrame) || (function (fn) { return setTimeout(fn, 16.66); });
-    var TimeLoop = (function () {
-        function TimeLoop() {
-            this._isActive = false;
-            this._lastTime = undefined;
-            this._ons = [];
-            this._offs = [];
-            this._active = [];
-            this._elapses = [];
-            this._update = this._update.bind(this);
+    var raf = (window.requestAnimationFrame !== undefined)
+        ? function (ctx, fn) {
+            window.requestAnimationFrame(function () { fn(ctx); });
         }
-        TimeLoop.prototype.subscribe = function (fn) {
-            var offIndex = this._offs.indexOf(fn);
-            if (offIndex !== -1) {
-                this._offs.splice(offIndex, 1);
-            }
-            if (this._ons.indexOf(fn) === -1) {
-                this._ons.push(fn);
-            }
-            if (!this._isActive) {
-                this._isActive = true;
-                raf(this._update);
-            }
+        : function (ctx, fn) {
+            setTimeout(function () { fn(ctx); }, 16.66);
         };
-        TimeLoop.prototype.unsubscribe = function (fn) {
-            var onIndex = this._ons.indexOf(fn);
-            if (onIndex !== -1) {
-                this._ons.splice(onIndex, 1);
-            }
-            if (this._offs.indexOf(fn) === -1) {
-                this._offs.push(fn);
-            }
-            if (!this._isActive) {
-                this._isActive = true;
-                raf(this._update);
-            }
+    function createLoop() {
+        var ctx = {
+            active: [],
+            elapses: [],
+            isActive: false,
+            lastTime: undefined,
+            offs: [],
+            ons: []
         };
-        TimeLoop.prototype._update = function () {
-            this._updateOffs();
-            this._updateOns();
-            var callbacks = this._active;
-            var elapses = this._elapses;
-            var len = callbacks.length;
-            var lastTime = this._lastTime || now();
-            var thisTime = now();
-            var delta = thisTime - lastTime;
-            if (!len) {
-                this._isActive = false;
-                this._lastTime = undefined;
-                return;
-            }
-            this._isActive = true;
-            this._lastTime = thisTime;
-            raf(this._update);
-            for (var i = 0; i < len; i++) {
-                var existingElapsed = elapses[i];
-                var updatedElapsed = existingElapsed + delta;
-                elapses[i] = updatedElapsed;
-                callbacks[i](delta, updatedElapsed);
-            }
+        return {
+            off: function (fn) { return off(ctx, fn); },
+            on: function (fn) { return on(ctx, fn); }
         };
-        TimeLoop.prototype._updateOffs = function () {
-            var len = this._offs.length;
-            for (var i = 0; i < len; i++) {
-                var fn = this._offs[i];
-                var indexOfSub = this._active.indexOf(fn);
-                if (indexOfSub !== -1) {
-                    this._active.splice(indexOfSub, 1);
-                    this._elapses.splice(indexOfSub, 1);
-                }
+    }
+    function on(self, fn) {
+        var offIndex = self.offs.indexOf(fn);
+        if (offIndex !== -1) {
+            self.offs.splice(offIndex, 1);
+        }
+        if (self.ons.indexOf(fn) === -1) {
+            self.ons.push(fn);
+        }
+        if (!self.isActive) {
+            self.isActive = true;
+            raf(self, update);
+        }
+    }
+    function off(self, fn) {
+        var onIndex = self.ons.indexOf(fn);
+        if (onIndex !== -1) {
+            self.ons.splice(onIndex, 1);
+        }
+        if (self.offs.indexOf(fn) === -1) {
+            self.offs.push(fn);
+        }
+        if (!self.isActive) {
+            self.isActive = true;
+            raf(self, update);
+        }
+    }
+    function update(self) {
+        updateOffs(self);
+        updateOns(self);
+        var callbacks = self.active;
+        var elapses = self.elapses;
+        var len = callbacks.length;
+        var lastTime = self.lastTime || now();
+        var thisTime = now();
+        var delta = thisTime - lastTime;
+        if (!len) {
+            self.isActive = false;
+            self.lastTime = undefined;
+            return;
+        }
+        self.isActive = true;
+        self.lastTime = thisTime;
+        raf(self, update);
+        for (var i = 0; i < len; i++) {
+            var existingElapsed = elapses[i];
+            var updatedElapsed = existingElapsed + delta;
+            elapses[i] = updatedElapsed;
+            callbacks[i](delta, updatedElapsed);
+        }
+    }
+    function updateOffs(self) {
+        var len = self.offs.length;
+        for (var i = 0; i < len; i++) {
+            var fn = self.offs[i];
+            var indexOfSub = self.active.indexOf(fn);
+            if (indexOfSub !== -1) {
+                self.active.splice(indexOfSub, 1);
+                self.elapses.splice(indexOfSub, 1);
             }
-        };
-        TimeLoop.prototype._updateOns = function () {
-            var len = this._ons.length;
-            for (var i = 0; i < len; i++) {
-                var fn = this._ons[i];
-                if (this._active.indexOf(fn) === -1) {
-                    this._active.push(fn);
-                    this._elapses.push(0);
-                }
+        }
+    }
+    function updateOns(self) {
+        var len = self.ons.length;
+        for (var i = 0; i < len; i++) {
+            var fn = self.ons[i];
+            if (self.active.indexOf(fn) === -1) {
+                self.active.push(fn);
+                self.elapses.push(0);
             }
-        };
-        return TimeLoop;
-    }());
+        }
+    }
 
     var call = 'call';
     var set = 'set';
@@ -476,7 +484,7 @@
             if (firstEffect) {
                 firstEffect.on(finish, function () {
                     _this._dispatcher.trigger(finish);
-                    _this._timeLoop.unsubscribe(_this._tick);
+                    _this._timeLoop.off(_this._tick);
                 });
             }
             each(effects, function (effect) {
@@ -583,7 +591,7 @@
         Animator.prototype.play = function () {
             this._dispatcher.trigger(call, [play]);
             this._dispatcher.trigger(play);
-            this._timeLoop.subscribe(this._tick);
+            this._timeLoop.on(this._tick);
             return this;
         };
         Animator.prototype.pause = function () {
@@ -603,7 +611,7 @@
             this._playbackRate = firstEffect.playbackRate;
             this._playState = firstEffect.playState;
             if (this._playState !== running && this._playState !== pending) {
-                this._timeLoop.unsubscribe(this._tick);
+                this._timeLoop.off(this._tick);
             }
         };
         return Animator;
@@ -1144,7 +1152,7 @@
     var JustAnimate = (function () {
         function JustAnimate() {
             this._registry = {};
-            this._timeLoop = new TimeLoop();
+            this._timeLoop = createLoop();
         }
         JustAnimate.inject = function (animations) {
             each(animations, function (a) { return JustAnimate._globalAnimations[a.name] = a; });

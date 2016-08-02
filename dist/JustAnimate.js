@@ -20,7 +20,7 @@ var KeyframeAnimation_1 = require('./core/KeyframeAnimation');
 var JustAnimate = (function () {
     function JustAnimate() {
         this._registry = {};
-        this._timeLoop = new TimeLoop_1.TimeLoop();
+        this._timeLoop = TimeLoop_1.createLoop();
     }
     /**
      * (description)

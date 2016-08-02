@@ -1,6 +1,6 @@
 import {each, head, maxBy} from '../helpers/lists';
 import {Dispatcher} from './Dispatcher';
-import {TimeLoop} from './TimeLoop';
+import {ITimeLoop} from './TimeLoop';
 
 const call = 'call';
 const set = 'set';
@@ -15,7 +15,7 @@ const pending = 'pending';
 export class Animator implements ja.IAnimator {
     private _effects: ja.IAnimator[];
     private _dispatcher: Dispatcher;
-    private _timeLoop: TimeLoop;
+    private _timeLoop: ITimeLoop;
 
     private _currentTime: number;
     private _duration: number;
@@ -60,7 +60,7 @@ export class Animator implements ja.IAnimator {
         return this._duration;
     }
 
-    constructor(effects: ja.IAnimator[], timeLoop: TimeLoop) {
+    constructor(effects: ja.IAnimator[], timeLoop: ITimeLoop) {
         effects = effects || [];
 
         const dispatcher = new Dispatcher();
@@ -69,7 +69,7 @@ export class Animator implements ja.IAnimator {
         if (firstEffect) {
             firstEffect.on(finish, () => {
                 this._dispatcher.trigger(finish);
-                this._timeLoop.unsubscribe(this._tick);
+                this._timeLoop.off(this._tick);
             });
         }
 
@@ -112,7 +112,7 @@ export class Animator implements ja.IAnimator {
     public play(): ja.IAnimator {
         this._dispatcher.trigger(call, [play]);
         this._dispatcher.trigger(play);
-        this._timeLoop.subscribe(this._tick);
+        this._timeLoop.on(this._tick);
         return this;        
     }
 
@@ -138,7 +138,7 @@ export class Animator implements ja.IAnimator {
         this._playState = firstEffect.playState;
 
         if (this._playState !== running && this._playState !== pending) {
-            this._timeLoop.unsubscribe(this._tick);
+            this._timeLoop.off(this._tick);
         }        
     }
 }
