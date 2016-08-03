@@ -3308,7 +3308,29 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
     "use strict";
     var __moduleName = context_82 && context_82.id;
     var lists_1, type_2, Dispatcher_1;
-    var call, finish, cancel, play, pause, reverse, running, pending, Animator;
+    var call, finish, cancel, play, pause, reverse, running, pending, multiAnimatorProtoType;
+    function createMultiAnimator(effects, timeLoop) {
+        var self = Object.create(multiAnimatorProtoType);
+        effects = effects || [];
+        var dispatcher = Dispatcher_1.createDispatcher();
+        var firstEffect = lists_1.head(effects);
+        if (firstEffect) {
+            firstEffect.on(finish, function () {
+                self._dispatcher.trigger(finish);
+                self._timeLoop.off(self._tick);
+            });
+        }
+        lists_1.each(effects, function (effect) {
+            dispatcher.on(call, function (functionName, arg1) { effect[functionName](arg1); });
+        });
+        self._duration = lists_1.maxBy(effects, function (e) { return e.totalDuration(); });
+        self._tick = self._tick.bind(self);
+        self._dispatcher = dispatcher;
+        self._timeLoop = timeLoop;
+        self._effects = effects;
+        return self;
+    }
+    exports_82("createMultiAnimator", createMultiAnimator);
     return {
         setters:[
             function (lists_1_1) {
@@ -3329,28 +3351,8 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
             reverse = 'reverse';
             running = 'running';
             pending = 'pending';
-            Animator = (function () {
-                function Animator(effects, timeLoop) {
-                    var self = this;
-                    effects = effects || [];
-                    var dispatcher = Dispatcher_1.createDispatcher();
-                    var firstEffect = lists_1.head(effects);
-                    if (firstEffect) {
-                        firstEffect.on(finish, function () {
-                            self._dispatcher.trigger(finish);
-                            self._timeLoop.off(self._tick);
-                        });
-                    }
-                    lists_1.each(effects, function (effect) {
-                        dispatcher.on(call, function (functionName, arg1) { effect[functionName](arg1); });
-                    });
-                    self._duration = lists_1.maxBy(effects, function (e) { return e.totalDuration(); });
-                    self._tick = self._tick.bind(self);
-                    self._dispatcher = dispatcher;
-                    self._timeLoop = timeLoop;
-                    self._effects = effects;
-                }
-                Animator.prototype.currentTime = function (value) {
+            multiAnimatorProtoType = {
+                currentTime: function (value) {
                     var self = this;
                     if (!type_2.isDefined(value)) {
                         return self._currentTime;
@@ -3358,8 +3360,8 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                     self._currentTime = value;
                     self._dispatcher.trigger(call, ['currentTime', value]);
                     return self;
-                };
-                Animator.prototype.playbackRate = function (value) {
+                },
+                playbackRate: function (value) {
                     var self = this;
                     if (!type_2.isDefined(value)) {
                         return self._currentTime;
@@ -3367,70 +3369,70 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                     self._playbackRate = value;
                     self._dispatcher.trigger(call, ['playbackRate', value]);
                     return self;
-                };
-                Animator.prototype.playState = function () {
+                },
+                playState: function () {
                     return this._playState;
-                };
-                Animator.prototype.duration = function () {
+                },
+                duration: function () {
                     return this._duration;
-                };
-                Animator.prototype.iterationStart = function () {
+                },
+                iterationStart: function () {
                     return 0;
-                };
-                Animator.prototype.iterations = function () {
+                },
+                iterations: function () {
                     return 1;
-                };
-                Animator.prototype.endTime = function () {
+                },
+                endTime: function () {
                     return this._duration;
-                };
-                Animator.prototype.startTime = function () {
+                },
+                startTime: function () {
                     return 0;
-                };
-                Animator.prototype.totalDuration = function () {
+                },
+                totalDuration: function () {
                     return this._duration;
-                };
-                Animator.prototype.on = function (eventName, listener) {
+                },
+                on: function (eventName, listener) {
                     this._dispatcher.on(eventName, listener);
                     return this;
-                };
-                Animator.prototype.off = function (eventName, listener) {
+                },
+                off: function (eventName, listener) {
                     this._dispatcher.off(eventName, listener);
                     return this;
-                };
-                Animator.prototype.cancel = function () {
+                },
+                cancel: function () {
                     var self = this;
                     self._dispatcher.trigger(call, [cancel]);
                     self.currentTime(0);
                     self._dispatcher.trigger(cancel);
                     return self;
-                };
-                Animator.prototype.finish = function () {
+                },
+                finish: function () {
                     var self = this;
                     self._dispatcher.trigger(call, [finish]);
                     self.currentTime(self._playbackRate < 0 ? 0 : self._duration);
                     self._dispatcher.trigger(finish);
                     return self;
-                };
-                Animator.prototype.play = function () {
+                },
+                play: function () {
                     var self = this;
                     self._dispatcher.trigger(call, [play]);
                     self._dispatcher.trigger(play);
                     self._timeLoop.on(self._tick);
                     return self;
-                };
-                Animator.prototype.pause = function () {
+                },
+                pause: function () {
                     var self = this;
                     self._dispatcher.trigger(call, [pause]);
                     self._dispatcher.trigger(pause);
                     return self;
-                };
-                Animator.prototype.reverse = function () {
+                },
+                reverse: function () {
                     var self = this;
                     self._dispatcher.trigger(call, [reverse]);
                     self._dispatcher.trigger(reverse);
                     return self;
-                };
-                Animator.prototype._tick = function () {
+                },
+                _tick: function () {
                     var self = this;
                     var firstEffect = lists_1.head(self._effects);
                     self._dispatcher.trigger('update', [self.currentTime]);
@@ -3440,10 +3442,8 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                     if (self._playState !== running && self._playState !== pending) {
                         self._timeLoop.off(self._tick);
                     }
-                };
-                return Animator;
-            }());
-            exports_82("Animator", Animator);
+                }
+            };
         }
     }
 });
@@ -3451,7 +3451,24 @@ System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispa
     "use strict";
     var __moduleName = context_83 && context_83.id;
     var Dispatcher_2, type_3;
-    var KeyframeAnimation;
+    var keyframeAnimationPrototype;
+    function createKeyframeAnimation(target, keyframes, timings) {
+        var self = Object.create(keyframeAnimationPrototype);
+        var dispatcher = Dispatcher_2.createDispatcher();
+        var animator = target['animate'](keyframes, timings);
+        animator.pause();
+        animator['onfinish'] = function () { return dispatcher.trigger('finish'); };
+        self._iterationStart = timings.iterationStart || 0;
+        self._iterations = timings.iterations || 1;
+        self._duration = timings.duration;
+        self._startTime = timings.delay || 0;
+        self._endTime = (timings.endDelay || 0) + timings.duration;
+        self._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
+        self._dispatcher = dispatcher;
+        self._animator = animator;
+        return self;
+    }
+    exports_83("createKeyframeAnimation", createKeyframeAnimation);
     return {
         setters:[
             function (Dispatcher_2_1) {
@@ -3461,136 +3478,88 @@ System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispa
                 type_3 = type_3_1;
             }],
         execute: function() {
-            KeyframeAnimation = (function () {
-                function KeyframeAnimation(target, keyframes, timings) {
-                    var self = this;
-                    var dispatcher = Dispatcher_2.createDispatcher();
-                    var animator = target['animate'](keyframes, timings);
-                    animator.pause();
-                    animator['onfinish'] = function () { return dispatcher.trigger('finish'); };
-                    self._iterationStart = timings.iterationStart || 0;
-                    self._iterations = timings.iterations || 1;
-                    self._duration = timings.duration;
-                    self._startTime = timings.delay || 0;
-                    self._endTime = (timings.endDelay || 0) + timings.duration;
-                    self._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
-                    self._dispatcher = dispatcher;
-                    self._animator = animator;
-                }
-                KeyframeAnimation.prototype.currentTime = function (value) {
+            keyframeAnimationPrototype = {
+                currentTime: function (value) {
                     var self = this;
                     if (!type_3.isDefined(value)) {
                         return self._animator.currentTime;
                     }
                     self._animator.currentTime = value;
                     return self;
-                };
-                KeyframeAnimation.prototype.playbackRate = function (value) {
+                },
+                playbackRate: function (value) {
                     var self = this;
                     if (!type_3.isDefined(value)) {
                         return self._animator.playbackRate;
                     }
                     self._animator.playbackRate = value;
                     return self;
-                };
-                KeyframeAnimation.prototype.playState = function () {
+                },
+                playState: function () {
                     return this._animator.playState;
-                };
-                KeyframeAnimation.prototype.iterationStart = function () {
+                },
+                iterationStart: function () {
                     return this._iterationStart;
-                };
-                KeyframeAnimation.prototype.iterations = function () {
+                },
+                iterations: function () {
                     return this._iterations;
-                };
-                KeyframeAnimation.prototype.totalDuration = function () {
+                },
+                totalDuration: function () {
                     return this._totalDuration;
-                };
-                KeyframeAnimation.prototype.duration = function () {
+                },
+                duration: function () {
                     return this._duration;
-                };
-                KeyframeAnimation.prototype.endTime = function () {
+                },
+                endTime: function () {
                     return this._endTime;
-                };
-                KeyframeAnimation.prototype.startTime = function () {
+                },
+                startTime: function () {
                     return this._startTime;
-                };
-                KeyframeAnimation.prototype.off = function (eventName, listener) {
+                },
+                off: function (eventName, listener) {
                     this._dispatcher.off(eventName, listener);
                     return this;
-                };
-                KeyframeAnimation.prototype.on = function (eventName, listener) {
+                },
+                on: function (eventName, listener) {
                     this._dispatcher.on(eventName, listener);
                     return this;
-                };
-                KeyframeAnimation.prototype.cancel = function () {
+                },
+                cancel: function () {
                     var self = this;
                     self._animator.cancel();
                     self._dispatcher.trigger('cancel');
                     return self;
-                };
-                KeyframeAnimation.prototype.reverse = function () {
+                },
+                reverse: function () {
                     var self = this;
                     self._animator.reverse();
                     self._dispatcher.trigger('reverse');
                     return self;
-                };
-                KeyframeAnimation.prototype.pause = function () {
+                },
+                pause: function () {
                     var self = this;
                     self._animator.pause();
                     self._dispatcher.trigger('pause');
                     return self;
-                };
-                KeyframeAnimation.prototype.play = function () {
+                },
+                play: function () {
                     var self = this;
                     self._animator.play();
                     self._dispatcher.trigger('play');
                     return self;
-                };
-                KeyframeAnimation.prototype.finish = function () {
+                },
+                finish: function () {
                     var self = this;
                     self._animator.finish();
                     return self;
-                };
-                return KeyframeAnimation;
-            }());
-            exports_83("KeyframeAnimation", KeyframeAnimation);
+                }
+            };
         }
     }
 });
-System.register("just-animate/helpers/objects", [], function(exports_84, context_84) {
+System.register("just-animate/helpers/elements", ["just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_84, context_84) {
     "use strict";
     var __moduleName = context_84 && context_84.id;
-    /**
-     * Extends the first object with the properties of each subsequent object
-     *
-     * @export
-     * @param {*} target object to extend
-     * @param {...any[]} sources sources from which to inherit properties
-     * @returns {*} first object
-     */
-    function extend(target) {
-        var sources = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            sources[_i - 1] = arguments[_i];
-        }
-        for (var i = 1, len = arguments.length; i < len; i++) {
-            var source = arguments[i];
-            for (var propName in source) {
-                target[propName] = source[propName];
-            }
-        }
-        return target;
-    }
-    exports_84("extend", extend);
-    return {
-        setters:[],
-        execute: function() {
-        }
-    }
-});
-System.register("just-animate/helpers/elements", ["just-animate/helpers/lists", "just-animate/helpers/type"], function(exports_85, context_85) {
-    "use strict";
-    var __moduleName = context_85 && context_85.id;
     var lists_2, type_4;
     /**
      * Recursively resolves the element source from dom, selector, jquery, array, and function sources
@@ -3630,7 +3599,7 @@ System.register("just-animate/helpers/elements", ["just-animate/helpers/lists", 
         // otherwise return empty    
         return [];
     }
-    exports_85("queryElements", queryElements);
+    exports_84("queryElements", queryElements);
     return {
         setters:[
             function (lists_2_1) {
@@ -3643,9 +3612,9 @@ System.register("just-animate/helpers/elements", ["just-animate/helpers/lists", 
         }
     }
 });
-System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/helpers/elements", "just-animate/core/Dispatcher", "just-animate/core/KeyframeAnimation", "just-animate/core/Animator"], function(exports_86, context_86) {
+System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/helpers/elements", "just-animate/core/Dispatcher", "just-animate/core/KeyframeAnimation", "just-animate/core/Animator"], function(exports_85, context_85) {
     "use strict";
-    var __moduleName = context_86 && context_86.id;
+    var __moduleName = context_85 && context_85.id;
     var lists_3, type_5, elements_2, Dispatcher_3, KeyframeAnimation_1, Animator_1;
     var animationPadding, TimelineAnimator, TimelineEvent;
     return {
@@ -3866,7 +3835,7 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/lis
                 };
                 return TimelineAnimator;
             }());
-            exports_86("TimelineAnimator", TimelineAnimator);
+            exports_85("TimelineAnimator", TimelineAnimator);
             TimelineEvent = (function () {
                 function TimelineEvent(timeloop, timelineDuration, evt) {
                     var keyframes = evt.keyframes;
@@ -3894,8 +3863,8 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/lis
                     var _this = this;
                     if (!this._animator) {
                         var elements = elements_2.queryElements(this.el);
-                        var effects = lists_3.map(elements, function (e) { return new KeyframeAnimation_1.KeyframeAnimation(e, _this.keyframes, _this.timings); });
-                        this._animator = new Animator_1.Animator(effects, this._timeLoop);
+                        var effects = lists_3.map(elements, function (e) { return KeyframeAnimation_1.createKeyframeAnimation(e, _this.keyframes, _this.timings); });
+                        this._animator = Animator_1.createMultiAnimator(effects, this._timeLoop);
                         this._animator.pause();
                     }
                     return this._animator;
@@ -3905,14 +3874,14 @@ System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/lis
         }
     }
 });
-System.register("just-animate/easings", [], function(exports_87, context_87) {
+System.register("just-animate/easings", [], function(exports_86, context_86) {
     "use strict";
-    var __moduleName = context_87 && context_87.id;
+    var __moduleName = context_86 && context_86.id;
     var easings;
     return {
         setters:[],
         execute: function() {
-            exports_87("easings", easings = {
+            exports_86("easings", easings = {
                 easeInBack: 'cubic-bezier(0.600, -0.280, 0.735, 0.045)',
                 easeInCirc: 'cubic-bezier(0.600, 0.040, 0.980, 0.335)',
                 easeInCubic: 'cubic-bezier(0.550, 0.055, 0.675, 0.190)',
@@ -3942,9 +3911,9 @@ System.register("just-animate/easings", [], function(exports_87, context_87) {
         }
     }
 });
-System.register("just-animate/helpers/functions", ["just-animate/helpers/type"], function(exports_88, context_88) {
+System.register("just-animate/helpers/functions", ["just-animate/helpers/type"], function(exports_87, context_87) {
     "use strict";
-    var __moduleName = context_88 && context_88.id;
+    var __moduleName = context_87 && context_87.id;
     var type_6;
     function pipe(initial) {
         var args = [];
@@ -3958,7 +3927,7 @@ System.register("just-animate/helpers/functions", ["just-animate/helpers/type"],
         }
         return value;
     }
-    exports_88("pipe", pipe);
+    exports_87("pipe", pipe);
     return {
         setters:[
             function (type_6_1) {
@@ -3968,9 +3937,9 @@ System.register("just-animate/helpers/functions", ["just-animate/helpers/type"],
         }
     }
 });
-System.register("just-animate/helpers/strings", ["just-animate/helpers/type"], function(exports_89, context_89) {
+System.register("just-animate/helpers/strings", ["just-animate/helpers/type"], function(exports_88, context_88) {
     "use strict";
-    var __moduleName = context_89 && context_89.id;
+    var __moduleName = context_88 && context_88.id;
     var type_7;
     var camelCaseRegex;
     function camelCaseReplacer(match, p1, p2) {
@@ -3979,7 +3948,7 @@ System.register("just-animate/helpers/strings", ["just-animate/helpers/type"], f
     function toCamelCase(value) {
         return type_7.isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : undefined;
     }
-    exports_89("toCamelCase", toCamelCase);
+    exports_88("toCamelCase", toCamelCase);
     return {
         setters:[
             function (type_7_1) {
@@ -3990,9 +3959,9 @@ System.register("just-animate/helpers/strings", ["just-animate/helpers/type"], f
         }
     }
 });
-System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", "just-animate/helpers/strings"], function(exports_90, context_90) {
+System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", "just-animate/helpers/strings"], function(exports_89, context_89) {
     "use strict";
-    var __moduleName = context_90 && context_90.id;
+    var __moduleName = context_89 && context_89.id;
     var type_8, strings_1;
     var offset;
     function spaceKeyframes(keyframes) {
@@ -4042,7 +4011,7 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         }
         return keyframes;
     }
-    exports_90("spaceKeyframes", spaceKeyframes);
+    exports_89("spaceKeyframes", spaceKeyframes);
     /**
      * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
      */
@@ -4080,7 +4049,7 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         }
         return keyframes;
     }
-    exports_90("normalizeKeyframes", normalizeKeyframes);
+    exports_89("normalizeKeyframes", normalizeKeyframes);
     /**
      * Handles transforming short hand key properties into their native form
      */
@@ -4336,7 +4305,7 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         }
         return output;
     }
-    exports_90("normalizeProperties", normalizeProperties);
+    exports_89("normalizeProperties", normalizeProperties);
     return {
         setters:[
             function (type_8_1) {
@@ -4350,9 +4319,9 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         }
     }
 });
-System.register("just-animate/helpers/math", [], function(exports_91, context_91) {
+System.register("just-animate/helpers/math", [], function(exports_90, context_90) {
     "use strict";
-    var __moduleName = context_91 && context_91.id;
+    var __moduleName = context_90 && context_90.id;
     var linearCubicBezier, SUBDIVISION_EPSILON;
     /**
      * Clamps a number between the min and max
@@ -4366,7 +4335,7 @@ System.register("just-animate/helpers/math", [], function(exports_91, context_91
     function clamp(val, min, max) {
         return val === undefined ? undefined : val < min ? min : val > max ? max : val;
     }
-    exports_91("clamp", clamp);
+    exports_90("clamp", clamp);
     function bezier(n1, n2, t) {
         return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
     }
@@ -4398,12 +4367,43 @@ System.register("just-animate/helpers/math", [], function(exports_91, context_91
             return x;
         };
     }
-    exports_91("cubicBezier", cubicBezier);
+    exports_90("cubicBezier", cubicBezier);
     return {
         setters:[],
         execute: function() {
             linearCubicBezier = function (x) { return x; };
             SUBDIVISION_EPSILON = 0.0001;
+        }
+    }
+});
+System.register("just-animate/helpers/objects", [], function(exports_91, context_91) {
+    "use strict";
+    var __moduleName = context_91 && context_91.id;
+    /**
+     * Extends the first object with the properties of each subsequent object
+     *
+     * @export
+     * @param {*} target object to extend
+     * @param {...any[]} sources sources from which to inherit properties
+     * @returns {*} first object
+     */
+    function extend(target) {
+        var sources = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            sources[_i - 1] = arguments[_i];
+        }
+        for (var i = 1, len = arguments.length; i < len; i++) {
+            var source = arguments[i];
+            for (var propName in source) {
+                target[propName] = source[propName];
+            }
+        }
+        return target;
+    }
+    exports_91("extend", extend);
+    return {
+        setters:[],
+        execute: function() {
         }
     }
 });
@@ -4480,8 +4480,8 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                 JustAnimate.prototype.animate = function (keyframesOrName, targets, timings) {
                     var a = this._resolveArguments(keyframesOrName, timings);
                     var elements = elements_3.queryElements(targets);
-                    var effects = lists_4.map(elements, function (e) { return new KeyframeAnimation_2.KeyframeAnimation(e, a.keyframes, a.timings); });
-                    var animator = new Animator_2.Animator(effects, this._timeLoop);
+                    var effects = lists_4.map(elements, function (e) { return KeyframeAnimation_2.createKeyframeAnimation(e, a.keyframes, a.timings); });
+                    var animator = Animator_2.createMultiAnimator(effects, this._timeLoop);
                     animator.play();
                     return animator;
                 };
@@ -4510,15 +4510,15 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                     var effects = [];
                     lists_4.each(effectOptions, function (a) {
                         var elements = elements_3.queryElements(a.targets);
-                        var animations = lists_4.map(elements, function (e) { return new KeyframeAnimation_2.KeyframeAnimation(e, a.keyframes, a.timings); });
+                        var animations = lists_4.map(elements, function (e) { return KeyframeAnimation_2.createKeyframeAnimation(e, a.keyframes, a.timings); });
                         if (animations.length === 1) {
                             effects.push(animations[0]);
                         }
                         else if (animations.length > 1) {
-                            effects.push(new Animator_2.Animator(animations, _this._timeLoop));
+                            effects.push(Animator_2.createMultiAnimator(animations, _this._timeLoop));
                         }
                     });
-                    var animator = new Animator_2.Animator(effects, this._timeLoop);
+                    var animator = Animator_2.createMultiAnimator(effects, this._timeLoop);
                     if (options.autoplay) {
                         animator.play();
                     }

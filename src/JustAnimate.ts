@@ -1,14 +1,14 @@
 import {each, map} from './helpers/lists';
 import {TimelineAnimator} from './core/TimelineAnimator';
 import {createLoop, ITimeLoop} from './core/TimeLoop';
-import {Animator} from './core/Animator';
+import {createMultiAnimator} from './core/Animator';
 import {easings} from './easings';
 import {pipe} from './helpers/functions';
 import {extend} from './helpers/objects';
 import {isString} from './helpers/type';
 import {normalizeProperties, normalizeKeyframes, spaceKeyframes} from './helpers/keyframes';
 import {queryElements} from './helpers/elements';
-import {KeyframeAnimation} from './core/KeyframeAnimation';
+import {createKeyframeAnimation} from './core/KeyframeAnimation';
 
 /**
  * (description)
@@ -47,9 +47,8 @@ export class JustAnimate implements ja.IAnimationManager {
     public animate(keyframesOrName: string | ja.IKeyframeOptions[], targets: ja.ElementSource, timings?: ja.IAnimationEffectTiming): ja.IAnimator {
         const a = this._resolveArguments(keyframesOrName, timings);
         const elements = queryElements(targets);
-        const effects =  map(elements, (e: any) => new KeyframeAnimation(e, a.keyframes, a.timings));
-
-        const animator = new Animator(effects, this._timeLoop);
+        const effects =  map(elements, (e: any) => createKeyframeAnimation(e, a.keyframes, a.timings));
+        const animator = createMultiAnimator(effects, this._timeLoop);
         animator.play();
 
         return animator;
@@ -81,16 +80,16 @@ export class JustAnimate implements ja.IAnimationManager {
         const effects: ja.IAnimator[] = [];
         each(effectOptions, (a: ja.IEffectOptions & { targets: ja.ElementSource }) => {
              const elements = queryElements(a.targets);
-             const animations =  map(elements, (e: Element) => new KeyframeAnimation(e, a.keyframes, a.timings));
+             const animations =  map(elements, (e: Element) => createKeyframeAnimation(e, a.keyframes, a.timings));
              
              if (animations.length === 1) {
                  effects.push(animations[0]);
              } else if (animations.length > 1) {
-                 effects.push(new Animator(animations, this._timeLoop));
+                 effects.push(createMultiAnimator(animations, this._timeLoop));
              }
         });
 
-        const animator = new Animator(effects, this._timeLoop);
+        const animator = createMultiAnimator(effects, this._timeLoop);
         if (options.autoplay) {
             animator.play();
         }

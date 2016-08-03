@@ -1,10 +1,9 @@
-import { extend } from '../helpers/objects';
-import { each, map } from '../helpers/lists';
-import { isDefined } from '../helpers/type';
+import {each, map} from '../helpers/lists';
+import {isDefined} from '../helpers/type';
 import {queryElements} from '../helpers/elements';
 import {createDispatcher, IDispatcher} from './Dispatcher';
-import {KeyframeAnimation} from './KeyframeAnimation';
-import {Animator}from './Animator';
+import {createKeyframeAnimation} from './KeyframeAnimation';
+import {createMultiAnimator}from './Animator';
 import {ITimeLoop} from './TimeLoop';
 
 
@@ -24,7 +23,6 @@ export class TimelineAnimator implements ja.IAnimator {
     private _isCanceled: boolean;
     private _isPaused: boolean;
     private _lastTick: number;
-    private _manager: ja.IAnimationManager;
     private _playState: ja.AnimationPlaybackState;
     private _iterationStart: number;    
     private _iterations: number;    
@@ -266,8 +264,8 @@ class TimelineEvent {
     public animator(): ja.IAnimator {
         if (!this._animator) {
             const elements = queryElements(this.el);
-            const effects =  map(elements, (e: any) => new KeyframeAnimation(e, this.keyframes, this.timings));
-            this._animator = new Animator(effects, this._timeLoop);
+            const effects =  map(elements, (e: any) => createKeyframeAnimation(e, this.keyframes, this.timings));
+            this._animator = createMultiAnimator(effects, this._timeLoop);
             this._animator.pause();
         }
         return this._animator;

@@ -230,8 +230,8 @@ var TimelineEvent = (function () {
         var _this = this;
         if (!this._animator) {
             var elements = elements_1.queryElements(this.el);
-            var effects = lists_1.map(elements, function (e) { return new KeyframeAnimation_1.KeyframeAnimation(e, _this.keyframes, _this.timings); });
-            this._animator = new Animator_1.Animator(effects, this._timeLoop);
+            var effects = lists_1.map(elements, function (e) { return KeyframeAnimation_1.createKeyframeAnimation(e, _this.keyframes, _this.timings); });
+            this._animator = Animator_1.createMultiAnimator(effects, this._timeLoop);
             this._animator.pause();
         }
         return this._animator;

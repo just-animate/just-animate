@@ -42,8 +42,8 @@ var JustAnimate = (function () {
     JustAnimate.prototype.animate = function (keyframesOrName, targets, timings) {
         var a = this._resolveArguments(keyframesOrName, timings);
         var elements = elements_1.queryElements(targets);
-        var effects = lists_1.map(elements, function (e) { return new KeyframeAnimation_1.KeyframeAnimation(e, a.keyframes, a.timings); });
-        var animator = new Animator_1.Animator(effects, this._timeLoop);
+        var effects = lists_1.map(elements, function (e) { return KeyframeAnimation_1.createKeyframeAnimation(e, a.keyframes, a.timings); });
+        var animator = Animator_1.createMultiAnimator(effects, this._timeLoop);
         animator.play();
         return animator;
     };
@@ -72,15 +72,15 @@ var JustAnimate = (function () {
         var effects = [];
         lists_1.each(effectOptions, function (a) {
             var elements = elements_1.queryElements(a.targets);
-            var animations = lists_1.map(elements, function (e) { return new KeyframeAnimation_1.KeyframeAnimation(e, a.keyframes, a.timings); });
+            var animations = lists_1.map(elements, function (e) { return KeyframeAnimation_1.createKeyframeAnimation(e, a.keyframes, a.timings); });
             if (animations.length === 1) {
                 effects.push(animations[0]);
             }
             else if (animations.length > 1) {
-                effects.push(new Animator_1.Animator(animations, _this._timeLoop));
+                effects.push(Animator_1.createMultiAnimator(animations, _this._timeLoop));
             }
         });
-        var animator = new Animator_1.Animator(effects, this._timeLoop);
+        var animator = Animator_1.createMultiAnimator(effects, this._timeLoop);
         if (options.autoplay) {
             animator.play();
         }

@@ -124,98 +124,98 @@
         return self;
     }
 
-    var KeyframeAnimation = (function () {
-        function KeyframeAnimation(target, keyframes, timings) {
-            var self = this;
-            var dispatcher = createDispatcher();
-            var animator = target['animate'](keyframes, timings);
-            animator.pause();
-            animator['onfinish'] = function () { return dispatcher.trigger('finish'); };
-            self._iterationStart = timings.iterationStart || 0;
-            self._iterations = timings.iterations || 1;
-            self._duration = timings.duration;
-            self._startTime = timings.delay || 0;
-            self._endTime = (timings.endDelay || 0) + timings.duration;
-            self._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
-            self._dispatcher = dispatcher;
-            self._animator = animator;
-        }
-        KeyframeAnimation.prototype.currentTime = function (value) {
+    var keyframeAnimationPrototype = {
+        currentTime: function (value) {
             var self = this;
             if (!isDefined(value)) {
                 return self._animator.currentTime;
             }
             self._animator.currentTime = value;
             return self;
-        };
-        KeyframeAnimation.prototype.playbackRate = function (value) {
+        },
+        playbackRate: function (value) {
             var self = this;
             if (!isDefined(value)) {
                 return self._animator.playbackRate;
             }
             self._animator.playbackRate = value;
             return self;
-        };
-        KeyframeAnimation.prototype.playState = function () {
+        },
+        playState: function () {
             return this._animator.playState;
-        };
-        KeyframeAnimation.prototype.iterationStart = function () {
+        },
+        iterationStart: function () {
             return this._iterationStart;
-        };
-        KeyframeAnimation.prototype.iterations = function () {
+        },
+        iterations: function () {
             return this._iterations;
-        };
-        KeyframeAnimation.prototype.totalDuration = function () {
+        },
+        totalDuration: function () {
             return this._totalDuration;
-        };
-        KeyframeAnimation.prototype.duration = function () {
+        },
+        duration: function () {
             return this._duration;
-        };
-        KeyframeAnimation.prototype.endTime = function () {
+        },
+        endTime: function () {
             return this._endTime;
-        };
-        KeyframeAnimation.prototype.startTime = function () {
+        },
+        startTime: function () {
             return this._startTime;
-        };
-        KeyframeAnimation.prototype.off = function (eventName, listener) {
+        },
+        off: function (eventName, listener) {
             this._dispatcher.off(eventName, listener);
             return this;
-        };
-        KeyframeAnimation.prototype.on = function (eventName, listener) {
+        },
+        on: function (eventName, listener) {
             this._dispatcher.on(eventName, listener);
             return this;
-        };
-        KeyframeAnimation.prototype.cancel = function () {
+        },
+        cancel: function () {
             var self = this;
             self._animator.cancel();
             self._dispatcher.trigger('cancel');
             return self;
-        };
-        KeyframeAnimation.prototype.reverse = function () {
+        },
+        reverse: function () {
             var self = this;
             self._animator.reverse();
             self._dispatcher.trigger('reverse');
             return self;
-        };
-        KeyframeAnimation.prototype.pause = function () {
+        },
+        pause: function () {
             var self = this;
             self._animator.pause();
             self._dispatcher.trigger('pause');
             return self;
-        };
-        KeyframeAnimation.prototype.play = function () {
+        },
+        play: function () {
             var self = this;
             self._animator.play();
             self._dispatcher.trigger('play');
             return self;
-        };
-        KeyframeAnimation.prototype.finish = function () {
+        },
+        finish: function () {
             var self = this;
             self._animator.finish();
             return self;
-        };
-        return KeyframeAnimation;
-    }());
+        }
+    };
+    function createKeyframeAnimation(target, keyframes, timings) {
+        var self = Object.create(keyframeAnimationPrototype);
+        var dispatcher = createDispatcher();
+        var animator = target['animate'](keyframes, timings);
+        animator.pause();
+        animator['onfinish'] = function () { return dispatcher.trigger('finish'); };
+        self._iterationStart = timings.iterationStart || 0;
+        self._iterations = timings.iterations || 1;
+        self._duration = timings.duration;
+        self._startTime = timings.delay || 0;
+        self._endTime = (timings.endDelay || 0) + timings.duration;
+        self._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
+        self._dispatcher = dispatcher;
+        self._animator = animator;
+        return self;
+    }
 
     var call = 'call';
     var finish = 'finish';
@@ -225,28 +225,8 @@
     var reverse = 'reverse';
     var running = 'running';
     var pending = 'pending';
-    var Animator = (function () {
-        function Animator(effects, timeLoop) {
-            var self = this;
-            effects = effects || [];
-            var dispatcher = createDispatcher();
-            var firstEffect = head(effects);
-            if (firstEffect) {
-                firstEffect.on(finish, function () {
-                    self._dispatcher.trigger(finish);
-                    self._timeLoop.off(self._tick);
-                });
-            }
-            each(effects, function (effect) {
-                dispatcher.on(call, function (functionName, arg1) { effect[functionName](arg1); });
-            });
-            self._duration = maxBy(effects, function (e) { return e.totalDuration(); });
-            self._tick = self._tick.bind(self);
-            self._dispatcher = dispatcher;
-            self._timeLoop = timeLoop;
-            self._effects = effects;
-        }
-        Animator.prototype.currentTime = function (value) {
+    var multiAnimatorProtoType = {
+        currentTime: function (value) {
             var self = this;
             if (!isDefined(value)) {
                 return self._currentTime;
@@ -254,8 +234,8 @@
             self._currentTime = value;
             self._dispatcher.trigger(call, ['currentTime', value]);
             return self;
-        };
-        Animator.prototype.playbackRate = function (value) {
+        },
+        playbackRate: function (value) {
             var self = this;
             if (!isDefined(value)) {
                 return self._currentTime;
@@ -263,70 +243,70 @@
             self._playbackRate = value;
             self._dispatcher.trigger(call, ['playbackRate', value]);
             return self;
-        };
-        Animator.prototype.playState = function () {
+        },
+        playState: function () {
             return this._playState;
-        };
-        Animator.prototype.duration = function () {
+        },
+        duration: function () {
             return this._duration;
-        };
-        Animator.prototype.iterationStart = function () {
+        },
+        iterationStart: function () {
             return 0;
-        };
-        Animator.prototype.iterations = function () {
+        },
+        iterations: function () {
             return 1;
-        };
-        Animator.prototype.endTime = function () {
+        },
+        endTime: function () {
             return this._duration;
-        };
-        Animator.prototype.startTime = function () {
+        },
+        startTime: function () {
             return 0;
-        };
-        Animator.prototype.totalDuration = function () {
+        },
+        totalDuration: function () {
             return this._duration;
-        };
-        Animator.prototype.on = function (eventName, listener) {
+        },
+        on: function (eventName, listener) {
             this._dispatcher.on(eventName, listener);
             return this;
-        };
-        Animator.prototype.off = function (eventName, listener) {
+        },
+        off: function (eventName, listener) {
             this._dispatcher.off(eventName, listener);
             return this;
-        };
-        Animator.prototype.cancel = function () {
+        },
+        cancel: function () {
             var self = this;
             self._dispatcher.trigger(call, [cancel]);
             self.currentTime(0);
             self._dispatcher.trigger(cancel);
             return self;
-        };
-        Animator.prototype.finish = function () {
+        },
+        finish: function () {
             var self = this;
             self._dispatcher.trigger(call, [finish]);
             self.currentTime(self._playbackRate < 0 ? 0 : self._duration);
             self._dispatcher.trigger(finish);
             return self;
-        };
-        Animator.prototype.play = function () {
+        },
+        play: function () {
             var self = this;
             self._dispatcher.trigger(call, [play]);
             self._dispatcher.trigger(play);
             self._timeLoop.on(self._tick);
             return self;
-        };
-        Animator.prototype.pause = function () {
+        },
+        pause: function () {
             var self = this;
             self._dispatcher.trigger(call, [pause]);
             self._dispatcher.trigger(pause);
             return self;
-        };
-        Animator.prototype.reverse = function () {
+        },
+        reverse: function () {
             var self = this;
             self._dispatcher.trigger(call, [reverse]);
             self._dispatcher.trigger(reverse);
             return self;
-        };
-        Animator.prototype._tick = function () {
+        },
+        _tick: function () {
             var self = this;
             var firstEffect = head(self._effects);
             self._dispatcher.trigger('update', [self.currentTime]);
@@ -336,9 +316,29 @@
             if (self._playState !== running && self._playState !== pending) {
                 self._timeLoop.off(self._tick);
             }
-        };
-        return Animator;
-    }());
+        }
+    };
+    function createMultiAnimator(effects, timeLoop) {
+        var self = Object.create(multiAnimatorProtoType);
+        effects = effects || [];
+        var dispatcher = createDispatcher();
+        var firstEffect = head(effects);
+        if (firstEffect) {
+            firstEffect.on(finish, function () {
+                self._dispatcher.trigger(finish);
+                self._timeLoop.off(self._tick);
+            });
+        }
+        each(effects, function (effect) {
+            dispatcher.on(call, function (functionName, arg1) { effect[functionName](arg1); });
+        });
+        self._duration = maxBy(effects, function (e) { return e.totalDuration(); });
+        self._tick = self._tick.bind(self);
+        self._dispatcher = dispatcher;
+        self._timeLoop = timeLoop;
+        self._effects = effects;
+        return self;
+    }
 
     var animationPadding = 1.0 / 30;
     var TimelineAnimator = (function () {
@@ -548,8 +548,8 @@
             var _this = this;
             if (!this._animator) {
                 var elements = queryElements(this.el);
-                var effects = map(elements, function (e) { return new KeyframeAnimation(e, _this.keyframes, _this.timings); });
-                this._animator = new Animator(effects, this._timeLoop);
+                var effects = map(elements, function (e) { return createKeyframeAnimation(e, _this.keyframes, _this.timings); });
+                this._animator = createMultiAnimator(effects, this._timeLoop);
                 this._animator.pause();
             }
             return this._animator;
@@ -1041,8 +1041,8 @@
         JustAnimate.prototype.animate = function (keyframesOrName, targets, timings) {
             var a = this._resolveArguments(keyframesOrName, timings);
             var elements = queryElements(targets);
-            var effects = map(elements, function (e) { return new KeyframeAnimation(e, a.keyframes, a.timings); });
-            var animator = new Animator(effects, this._timeLoop);
+            var effects = map(elements, function (e) { return createKeyframeAnimation(e, a.keyframes, a.timings); });
+            var animator = createMultiAnimator(effects, this._timeLoop);
             animator.play();
             return animator;
         };
@@ -1065,15 +1065,15 @@
             var effects = [];
             each(effectOptions, function (a) {
                 var elements = queryElements(a.targets);
-                var animations = map(elements, function (e) { return new KeyframeAnimation(e, a.keyframes, a.timings); });
+                var animations = map(elements, function (e) { return createKeyframeAnimation(e, a.keyframes, a.timings); });
                 if (animations.length === 1) {
                     effects.push(animations[0]);
                 }
                 else if (animations.length > 1) {
-                    effects.push(new Animator(animations, _this._timeLoop));
+                    effects.push(createMultiAnimator(animations, _this._timeLoop));
                 }
             });
-            var animator = new Animator(effects, this._timeLoop);
+            var animator = createMultiAnimator(effects, this._timeLoop);
             if (options.autoplay) {
                 animator.play();
             }
