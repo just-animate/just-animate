@@ -1,8 +1,9 @@
-import {Dispatcher} from './Dispatcher';
+import {createDispatcher, IDispatcher} from './Dispatcher';
+import {isDefined} from '../helpers/type';
 
 export class KeyframeAnimation implements ja.IAnimator {
     private _animator: waapi.IAnimation;
-    private _dispatcher: Dispatcher;
+    private _dispatcher: IDispatcher;
     private _iterationStart: number;
     private _iterations: number;
     private _totalDuration: number;
@@ -10,85 +11,67 @@ export class KeyframeAnimation implements ja.IAnimator {
     private _startTime: number;
     private _endTime: number;
     
-    public get currentTime(): number {
-        return this._animator.currentTime;
-    }
-    public set currentTime(value: number) {
-        this._animator.currentTime = value;
-    }
-	
-    public get playbackRate(): number {
-        return this._animator.playbackRate;
-    }
-    public set playbackRate(value: number) {
-        this._animator.playbackRate = value;
+    public currentTime(): number;    
+    public currentTime(value: number): ja.IAnimator;    
+    public currentTime(value?: number): number | ja.IAnimator {
+        const self = this; 
+        if (!isDefined(value)) {
+            return self._animator.currentTime;
+        }
+        self._animator.currentTime = value;
+        return self;
     }
 
-    public get playState(): ja.AnimationPlaybackState {
+    public playbackRate(): number;    
+    public playbackRate(value: number): ja.IAnimator;       
+    public playbackRate(value?: number): number | ja.IAnimator {
+        const self = this; 
+        if (!isDefined(value)) {
+            return self._animator.playbackRate;
+        }
+        self._animator.playbackRate = value;    
+        return self;
+    }
+
+    public playState(): ja.AnimationPlaybackState {
         return this._animator.playState;
     }
-    public set playState(value: ja.AnimationPlaybackState) {
-        this._animator.playState = value;   
-    }
-
-    public get iterationStart(): number {
+    public iterationStart(): number {
         return this._iterationStart;
     }
-    public set iterationStart(value: number) {
-        this._iterationStart = value;
-    }
-
-    public get iterations(): number {
+    public iterations(): number {
         return this._iterations;
     }
-    public set iterations(value: number) {
-        this._iterations = value;
-    }
-
-    public get totalDuration(): number {
+    public totalDuration(): number {
         return this._totalDuration;
     }
-    public set totalDuration(value: number) {
-        this._totalDuration = value;
-    }
-
-    public get duration(): number {
+    public duration(): number {
         return this._duration;
     }
-    public set duration(value: number) {
-        this._duration = value;
-    }
-
-    public get endTime(): number {
+    public endTime(): number {
         return this._endTime;
     }
-    public set endTime(value: number) {
-        this._endTime = value;
-    }
-
-    public get startTime(): number {
+    public startTime(): number {
         return this._startTime;
-    }
-    public set startTime(value: number) {
-        this._startTime = value;
     }
 
     constructor(target: Element, keyframes: ja.IKeyframeOptions[], timings: ja.IAnimationEffectTiming) {
-        const dispatcher = new Dispatcher();
+        const self = this; 
+        const dispatcher = createDispatcher();
         const animator = target['animate'](keyframes, timings);
 
         animator.pause();
         animator['onfinish'] = () => dispatcher.trigger('finish');
 
-        this._iterationStart = timings.iterationStart || 0;
-        this._iterations = timings.iterations || 1;
-        this._duration = timings.duration;
-        this._startTime = timings.delay || 0;
-        this._endTime = (timings.endDelay || 0) + timings.duration;
-        this._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
+        self._iterationStart = timings.iterationStart || 0;
+        self._iterations = timings.iterations || 1;
+        self._duration = timings.duration;
+        self._startTime = timings.delay || 0;
+        self._endTime = (timings.endDelay || 0) + timings.duration;
+        self._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
 
-        this._dispatcher = dispatcher;
-        this._animator = animator;
+        self._dispatcher = dispatcher;
+        self._animator = animator;
     }
 
     public off(eventName: string, listener: Function): ja.IAnimator  {
@@ -102,32 +85,37 @@ export class KeyframeAnimation implements ja.IAnimator {
     }
 
     public cancel(): ja.IAnimator  {
-        this._animator.cancel();
-        this._dispatcher.trigger('cancel');
-        return this;
+        const self = this; 
+        self._animator.cancel();
+        self._dispatcher.trigger('cancel');
+        return self;
     }
 
     public reverse(): ja.IAnimator  {
-        this._animator.reverse();
-        this._dispatcher.trigger('reverse');
-        return this;
+        const self = this; 
+        self._animator.reverse();
+        self._dispatcher.trigger('reverse');
+        return self;
     }
 
     public pause(): ja.IAnimator { 
-        this._animator.pause();
-        this._dispatcher.trigger('pause');
-        return this;
+        const self = this; 
+        self._animator.pause();
+        self._dispatcher.trigger('pause');
+        return self;
     }
 
     public play(): ja.IAnimator  { 
-        this._animator.play();
-        this._dispatcher.trigger('play');
-        return this;
+        const self = this; 
+        self._animator.play();
+        self._dispatcher.trigger('play');
+        return self;
     }
 
     public finish(): ja.IAnimator  { 
-        this._animator.finish();
-        return this;
+        const self = this; 
+        self._animator.finish();
+        return self;
     }
 }
 

@@ -1,10 +1,10 @@
 import {isFunction} from '../helpers/type';
 
-export class Dispatcher {
 
-    private _fn: ICallbackMap = {};
+const dispatcher = {
+    _fn: undefined as ICallbackMap,
 
-    public trigger(eventName: string, args?: any[]): void {
+    trigger(eventName: string, args?: any[]): void {
         const listeners = this._fn[eventName];
         if (!listeners) {
             return;
@@ -13,9 +13,8 @@ export class Dispatcher {
         for (let i = 0; i < len; i++) {
             listeners[i].apply(undefined, args);
         }
-    }
-
-    public on(eventName: string, listener: Function): void {
+    },
+    on(eventName: string, listener: Function): void {
         if (!isFunction(listener)) {
             throw 'invalid listener';
         }
@@ -28,9 +27,8 @@ export class Dispatcher {
             return;
         }
         listeners.push(listener);
-    }
-
-    public off(eventName: string, listener: Function): boolean {
+    },
+    off(eventName: string, listener: Function): boolean {
         const listeners = this._fn[eventName];
         if (!listeners) {
             return false;
@@ -42,6 +40,18 @@ export class Dispatcher {
         listeners.splice(indexOfListener, 1);
         return true;
     }
+};
+
+export function createDispatcher(): IDispatcher {
+    const self = Object.create(dispatcher);
+    self._fn = {};
+    return self;
+}
+
+export interface IDispatcher {
+    trigger(eventName: string, args?: any[]): void;
+    on(eventName: string, listener: Function): void;
+    off(eventName: string, listener: Function): boolean;
 }
 
 interface ICallbackMap {

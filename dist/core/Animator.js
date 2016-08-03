@@ -1,8 +1,8 @@
 "use strict";
 var lists_1 = require('../helpers/lists');
+var type_1 = require('../helpers/type');
 var Dispatcher_1 = require('./Dispatcher');
 var call = 'call';
-var set = 'set';
 var finish = 'finish';
 var cancel = 'cancel';
 var play = 'play';
@@ -12,97 +12,64 @@ var running = 'running';
 var pending = 'pending';
 var Animator = (function () {
     function Animator(effects, timeLoop) {
-        var _this = this;
+        var self = this;
         effects = effects || [];
-        var dispatcher = new Dispatcher_1.Dispatcher();
+        var dispatcher = Dispatcher_1.createDispatcher();
         var firstEffect = lists_1.head(effects);
         if (firstEffect) {
             firstEffect.on(finish, function () {
-                _this._dispatcher.trigger(finish);
-                _this._timeLoop.off(_this._tick);
+                self._dispatcher.trigger(finish);
+                self._timeLoop.off(self._tick);
             });
         }
         lists_1.each(effects, function (effect) {
-            dispatcher.on(set, function (propName, propValue) { effect[propName] = propValue; });
-            dispatcher.on(call, function (functionName) { effect[functionName](); });
+            dispatcher.on(call, function (functionName, arg1) { effect[functionName](arg1); });
         });
-        this._duration = lists_1.maxBy(effects, function (e) { return e.totalDuration; });
-        this._tick = this._tick.bind(this);
-        this._dispatcher = dispatcher;
-        this._timeLoop = timeLoop;
-        this._effects = effects;
+        self._duration = lists_1.maxBy(effects, function (e) { return e.totalDuration(); });
+        self._tick = self._tick.bind(self);
+        self._dispatcher = dispatcher;
+        self._timeLoop = timeLoop;
+        self._effects = effects;
     }
-    Object.defineProperty(Animator.prototype, "currentTime", {
-        get: function () {
-            return this._currentTime;
-        },
-        set: function (value) {
-            this._currentTime = value;
-            this._dispatcher.trigger(set, ['currentTime', value]);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Animator.prototype, "playbackRate", {
-        get: function () {
-            return this._playbackRate;
-        },
-        set: function (value) {
-            this._playbackRate = value;
-            this._dispatcher.trigger(set, ['playbackRate', value]);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Animator.prototype, "playState", {
-        get: function () {
-            return this._playState;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Animator.prototype, "duration", {
-        get: function () {
-            return this._duration;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Animator.prototype, "iterationStart", {
-        get: function () {
-            return 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Animator.prototype, "iterations", {
-        get: function () {
-            return 1;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Animator.prototype, "endTime", {
-        get: function () {
-            return this._duration;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Animator.prototype, "startTime", {
-        get: function () {
-            return 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Animator.prototype, "totalDuration", {
-        get: function () {
-            return this._duration;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    Animator.prototype.currentTime = function (value) {
+        var self = this;
+        if (!type_1.isDefined(value)) {
+            return self._currentTime;
+        }
+        self._currentTime = value;
+        self._dispatcher.trigger(call, ['currentTime', value]);
+        return self;
+    };
+    Animator.prototype.playbackRate = function (value) {
+        var self = this;
+        if (!type_1.isDefined(value)) {
+            return self._currentTime;
+        }
+        self._playbackRate = value;
+        self._dispatcher.trigger(call, ['playbackRate', value]);
+        return self;
+    };
+    Animator.prototype.playState = function () {
+        return this._playState;
+    };
+    Animator.prototype.duration = function () {
+        return this._duration;
+    };
+    Animator.prototype.iterationStart = function () {
+        return 0;
+    };
+    Animator.prototype.iterations = function () {
+        return 1;
+    };
+    Animator.prototype.endTime = function () {
+        return this._duration;
+    };
+    Animator.prototype.startTime = function () {
+        return 0;
+    };
+    Animator.prototype.totalDuration = function () {
+        return this._duration;
+    };
     Animator.prototype.on = function (eventName, listener) {
         this._dispatcher.on(eventName, listener);
         return this;
@@ -112,41 +79,47 @@ var Animator = (function () {
         return this;
     };
     Animator.prototype.cancel = function () {
-        this._dispatcher.trigger(call, [cancel]);
-        this.currentTime = 0;
-        this._dispatcher.trigger(cancel);
-        return this;
+        var self = this;
+        self._dispatcher.trigger(call, [cancel]);
+        self.currentTime(0);
+        self._dispatcher.trigger(cancel);
+        return self;
     };
     Animator.prototype.finish = function () {
-        this._dispatcher.trigger(call, [finish]);
-        this.currentTime = this.playbackRate < 0 ? 0 : this.duration;
-        this._dispatcher.trigger(finish);
-        return this;
+        var self = this;
+        self._dispatcher.trigger(call, [finish]);
+        self.currentTime(self._playbackRate < 0 ? 0 : self._duration);
+        self._dispatcher.trigger(finish);
+        return self;
     };
     Animator.prototype.play = function () {
-        this._dispatcher.trigger(call, [play]);
-        this._dispatcher.trigger(play);
-        this._timeLoop.on(this._tick);
-        return this;
+        var self = this;
+        self._dispatcher.trigger(call, [play]);
+        self._dispatcher.trigger(play);
+        self._timeLoop.on(self._tick);
+        return self;
     };
     Animator.prototype.pause = function () {
-        this._dispatcher.trigger(call, [pause]);
-        this._dispatcher.trigger(pause);
-        return this;
+        var self = this;
+        self._dispatcher.trigger(call, [pause]);
+        self._dispatcher.trigger(pause);
+        return self;
     };
     Animator.prototype.reverse = function () {
-        this._dispatcher.trigger(call, [reverse]);
-        this._dispatcher.trigger(reverse);
-        return this;
+        var self = this;
+        self._dispatcher.trigger(call, [reverse]);
+        self._dispatcher.trigger(reverse);
+        return self;
     };
     Animator.prototype._tick = function () {
-        this._dispatcher.trigger('update', [this.currentTime]);
-        var firstEffect = lists_1.head(this._effects);
-        this._currentTime = firstEffect.currentTime;
-        this._playbackRate = firstEffect.playbackRate;
-        this._playState = firstEffect.playState;
-        if (this._playState !== running && this._playState !== pending) {
-            this._timeLoop.off(this._tick);
+        var self = this;
+        var firstEffect = lists_1.head(self._effects);
+        self._dispatcher.trigger('update', [self.currentTime]);
+        self._currentTime = firstEffect.currentTime();
+        self._playbackRate = firstEffect.playbackRate();
+        self._playState = firstEffect.playState();
+        if (self._playState !== running && self._playState !== pending) {
+            self._timeLoop.off(self._tick);
         }
     };
     return Animator;

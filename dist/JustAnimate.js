@@ -93,7 +93,13 @@ var JustAnimate = (function () {
      * @returns {ja.IAnimator} (description)
      */
     JustAnimate.prototype.animateTimeline = function (options) {
-        return new TimelineAnimator_1.TimelineAnimator(this, options);
+        var _this = this;
+        options.events.forEach(function (e) {
+            var a = _this._resolveArguments(e.name || e.keyframes, e.timings);
+            e.keyframes = a.keyframes;
+            e.timings = a.timings;
+        });
+        return new TimelineAnimator_1.TimelineAnimator(options, this._timeLoop);
     };
     /**
      * (description)

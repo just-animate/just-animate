@@ -146,15 +146,19 @@ declare module ja {
      * @interface IAnimator
      */
     export interface IAnimator {
-        startTime: number;
-        endTime: number;
-        currentTime: number;
-        duration: number;
-        totalDuration: number;
-        iterations: number;
-        iterationStart: number;
-        playbackRate: number;
-        playState: AnimationPlaybackState;
+        currentTime(): number;
+        currentTime(value: number): IAnimator;
+
+        playbackRate(): number;
+        playbackRate(value: number): IAnimator;
+
+        startTime(): number;  
+        endTime(): number;        
+        duration(): number;
+        totalDuration(): number;
+        iterations(): number;
+        iterationStart(): number;
+        playState(): AnimationPlaybackState;
 
         finish(): IAnimator;
         play(): IAnimator;

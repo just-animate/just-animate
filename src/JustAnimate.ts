@@ -103,7 +103,13 @@ export class JustAnimate implements ja.IAnimationManager {
      * @returns {ja.IAnimator} (description)
      */
     public animateTimeline(options: ja.ITimelineOptions): ja.IAnimator {
-        return new TimelineAnimator(this, options);
+        options.events.forEach(e => {
+            const a = this._resolveArguments(e.name || e.keyframes, e.timings) as ja.IEffectOptions & { targets: ja.ElementSource };
+            e.keyframes = a.keyframes;
+            e.timings = a.timings;
+        });
+
+        return new TimelineAnimator(options, this._timeLoop);
     }
     /**
      * (description)

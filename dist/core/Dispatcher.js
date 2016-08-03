@@ -1,10 +1,8 @@
 "use strict";
 var type_1 = require('../helpers/type');
-var Dispatcher = (function () {
-    function Dispatcher() {
-        this._fn = {};
-    }
-    Dispatcher.prototype.trigger = function (eventName, args) {
+var dispatcher = {
+    _fn: undefined,
+    trigger: function (eventName, args) {
         var listeners = this._fn[eventName];
         if (!listeners) {
             return;
@@ -13,8 +11,8 @@ var Dispatcher = (function () {
         for (var i = 0; i < len; i++) {
             listeners[i].apply(undefined, args);
         }
-    };
-    Dispatcher.prototype.on = function (eventName, listener) {
+    },
+    on: function (eventName, listener) {
         if (!type_1.isFunction(listener)) {
             throw 'invalid listener';
         }
@@ -27,8 +25,8 @@ var Dispatcher = (function () {
             return;
         }
         listeners.push(listener);
-    };
-    Dispatcher.prototype.off = function (eventName, listener) {
+    },
+    off: function (eventName, listener) {
         var listeners = this._fn[eventName];
         if (!listeners) {
             return false;
@@ -39,7 +37,11 @@ var Dispatcher = (function () {
         }
         listeners.splice(indexOfListener, 1);
         return true;
-    };
-    return Dispatcher;
-}());
-exports.Dispatcher = Dispatcher;
+    }
+};
+function createDispatcher() {
+    var self = Object.create(dispatcher);
+    self._fn = {};
+    return self;
+}
+exports.createDispatcher = createDispatcher;

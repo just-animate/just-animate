@@ -53,8 +53,7 @@
             button.addEventListener('click', function() {
                 var player = just.animate('bounceIn', '.badger')
                     .on('finish', function onFinish() {
-                        player.reverse();
-                        player.off('finish', onFinish);
+                        player.reverse().off('finish', onFinish);
                     });
             });
         })();
