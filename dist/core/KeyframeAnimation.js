@@ -2,6 +2,13 @@
 var Dispatcher_1 = require('./Dispatcher');
 var type_1 = require('../helpers/type');
 var keyframeAnimationPrototype = {
+    _dispatcher: undefined,
+    _duration: undefined,
+    _endTime: undefined,
+    _iterationStart: undefined,
+    _iterations: undefined,
+    _startTime: undefined,
+    _totalDuration: undefined,
     currentTime: function (value) {
         var self = this;
         if (!type_1.isDefined(value)) {

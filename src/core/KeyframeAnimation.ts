@@ -1,7 +1,14 @@
-import {createDispatcher} from './Dispatcher';
+import {createDispatcher, IDispatcher} from './Dispatcher';
 import {isDefined} from '../helpers/type';
 
 const keyframeAnimationPrototype = {
+    _dispatcher: undefined as IDispatcher,
+    _duration: undefined as number,
+    _endTime: undefined as number,
+    _iterationStart: undefined as number,    
+    _iterations: undefined as number,
+    _startTime: undefined as number,
+    _totalDuration: undefined as number,
     currentTime(value?: number): number | ja.IAnimator {
         const self = this;
         if (!isDefined(value)) {

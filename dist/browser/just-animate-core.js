@@ -125,6 +125,13 @@
     }
 
     var keyframeAnimationPrototype = {
+        _dispatcher: undefined,
+        _duration: undefined,
+        _endTime: undefined,
+        _iterationStart: undefined,
+        _iterations: undefined,
+        _startTime: undefined,
+        _totalDuration: undefined,
         currentTime: function (value) {
             var self = this;
             if (!isDefined(value)) {
@@ -341,188 +348,200 @@
     }
 
     var animationPadding = 1.0 / 30;
-    var TimelineAnimator = (function () {
-        function TimelineAnimator(options, timeloop) {
-            var duration = options.duration;
-            if (duration === undefined) {
-                throw 'Duration is required';
-            }
-            this._timeLoop = timeloop;
-            this._dispatcher = createDispatcher();
-            this._playbackRate = 0;
-            this._duration = options.duration;
-            this._currentTime = 0;
-            this._events = map(options.events, function (evt) { return new TimelineEvent(timeloop, duration, evt); });
-            this._isPaused = false;
-            this._tick = this._tick.bind(this);
-            if (options.autoplay) {
-                this.play();
-            }
-        }
-        TimelineAnimator.prototype.duration = function () {
-            return this._duration;
-        };
-        TimelineAnimator.prototype.iterationStart = function () {
-            return this._iterationStart;
-        };
-        TimelineAnimator.prototype.iterations = function () {
-            return this._iterations;
-        };
-        TimelineAnimator.prototype.totalDuration = function () {
-            return this._totalDuration;
-        };
-        TimelineAnimator.prototype.endTime = function () {
-            return this._endTime;
-        };
-        TimelineAnimator.prototype.startTime = function () {
-            return this._startTime;
-        };
-        TimelineAnimator.prototype.currentTime = function (value) {
+    var timelineAnimatorPrototype = {
+        __: undefined,
+        duration: function () {
+            return this.__._duration;
+        },
+        iterationStart: function () {
+            return this.__._iterationStart;
+        },
+        iterations: function () {
+            return this.__._iterations;
+        },
+        totalDuration: function () {
+            return this.__._totalDuration;
+        },
+        endTime: function () {
+            return this.__._endTime;
+        },
+        startTime: function () {
+            return this.__._startTime;
+        },
+        currentTime: function (value) {
             if (!isDefined(value)) {
-                return this._currentTime;
+                return this.__._currentTime;
             }
-            this._currentTime = value;
+            this.__._currentTime = value;
             return this;
-        };
-        TimelineAnimator.prototype.playbackRate = function (value) {
+        },
+        playbackRate: function (value) {
             if (!isDefined(value)) {
-                return this._playbackRate;
+                return this.__._playbackRate;
             }
-            this._playbackRate = value;
+            this.__._playbackRate = value;
             return this;
-        };
-        TimelineAnimator.prototype.playState = function (value) {
+        },
+        playState: function (value) {
             if (!isDefined(value)) {
-                return this._playState;
+                return this.__._playState;
             }
-            this._playState = value;
-            this._dispatcher.trigger('set', ['playbackState', value]);
+            this.__._playState = value;
+            this.__._dispatcher.trigger('set', ['playbackState', value]);
             return this;
-        };
-        TimelineAnimator.prototype.on = function (eventName, listener) {
-            this._dispatcher.on(eventName, listener);
+        },
+        on: function (eventName, listener) {
+            this.__._dispatcher.on(eventName, listener);
             return this;
-        };
-        TimelineAnimator.prototype.off = function (eventName, listener) {
-            this._dispatcher.off(eventName, listener);
+        },
+        off: function (eventName, listener) {
+            this.__._dispatcher.off(eventName, listener);
             return this;
-        };
-        TimelineAnimator.prototype.finish = function () {
-            this._isFinished = true;
+        },
+        finish: function () {
+            this.__._isFinished = true;
             return this;
-        };
-        TimelineAnimator.prototype.play = function () {
-            this._playbackRate = 1;
-            this._isPaused = false;
-            if (!this._isInEffect) {
-                if (this._playbackRate < 0) {
-                    this._currentTime = this._duration;
+        },
+        play: function () {
+            this.__._playbackRate = 1;
+            this.__._isPaused = false;
+            if (!this.__._isInEffect) {
+                if (this.__._playbackRate < 0) {
+                    this.__._currentTime = this.__._duration;
                 }
                 else {
-                    this._currentTime = 0;
+                    this.__._currentTime = 0;
                 }
-                window.requestAnimationFrame(this._tick);
+                window.requestAnimationFrame(_tick.bind(undefined, this.__));
             }
             return this;
-        };
-        TimelineAnimator.prototype.pause = function () {
-            if (this._isInEffect) {
-                this._isPaused = true;
+        },
+        pause: function () {
+            if (this.__._isInEffect) {
+                this.__._isPaused = true;
             }
             return this;
-        };
-        TimelineAnimator.prototype.reverse = function () {
-            this._playbackRate = -1;
-            this._isPaused = false;
-            if (!this._isInEffect) {
-                if (this._currentTime <= 0) {
-                    this._currentTime = this._duration;
+        },
+        reverse: function () {
+            this.__._playbackRate = -1;
+            this.__._isPaused = false;
+            if (!this.__._isInEffect) {
+                if (this.__._currentTime <= 0) {
+                    this.__._currentTime = this.__._duration;
                 }
-                window.requestAnimationFrame(this._tick);
+                window.requestAnimationFrame(_tick.bind(undefined, this.__));
             }
             return this;
-        };
-        TimelineAnimator.prototype.cancel = function () {
-            this._playbackRate = 0;
-            this._isCanceled = true;
+        },
+        cancel: function () {
+            this.__._playbackRate = 0;
+            this.__._isCanceled = true;
             return this;
+        }
+    };
+    function createTimelineAnimator(options, timeloop) {
+        var self = Object.create(timelineAnimatorPrototype);
+        var duration = options.duration;
+        if (!isDefined(duration)) {
+            throw 'Duration is required';
+        }
+        self.__ = {
+            _currentTime: 0,
+            _dispatcher: createDispatcher(),
+            _duration: options.duration,
+            _endTime: undefined,
+            _events: map(options.events, function (evt) { return new TimelineEvent(timeloop, duration, evt); }),
+            _isCanceled: undefined,
+            _isFinished: undefined,
+            _isInEffect: undefined,
+            _isPaused: undefined,
+            _iterationStart: 0,
+            _iterations: 1,
+            _lastTick: undefined,
+            _playState: undefined,
+            _playbackRate: 0,
+            _startTime: 0,
+            _timeLoop: timeloop,
+            _totalDuration: options.duration
         };
-        TimelineAnimator.prototype._tick = function () {
-            var _this = this;
-            if (this._isCanceled) {
-                this._triggerCancel();
-                return;
-            }
-            if (this._isFinished) {
-                this._triggerFinish();
-                return;
-            }
-            if (this._isPaused) {
-                this._triggerPause();
-                return;
-            }
-            if (!this._isInEffect) {
-                this._isInEffect = true;
-            }
-            var thisTick = performance.now();
-            var lastTick = this._lastTick;
-            if (lastTick !== undefined) {
-                var delta = (thisTick - lastTick) * this._playbackRate;
-                this._currentTime += delta;
-            }
-            this._lastTick = thisTick;
-            if (this._currentTime > this._duration || this._currentTime < 0) {
-                this._triggerFinish();
-                return;
-            }
-            each(this._events, function (evt) {
-                var startTimeMs = _this._playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
-                var endTimeMs = _this._playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-                var shouldBeActive = startTimeMs <= _this._currentTime && _this._currentTime < endTimeMs;
-                if (!shouldBeActive) {
-                    evt.isInEffect = false;
-                    return;
-                }
-                var animator = evt.animator();
-                animator.playbackRate(_this._playbackRate);
-                evt.isInEffect = true;
-                animator.play();
-            });
-            window.requestAnimationFrame(this._tick);
-        };
-        TimelineAnimator.prototype._triggerFinish = function () {
-            this._reset();
-            each(this._events, function (evt) { return evt.animator().finish(); });
-            this._dispatcher.trigger('finish');
-        };
-        TimelineAnimator.prototype._triggerCancel = function () {
-            this._reset();
-            each(this._events, function (evt) { return evt.animator().cancel(); });
-            this._dispatcher.trigger('cancel');
-        };
-        TimelineAnimator.prototype._triggerPause = function () {
-            this._isPaused = true;
-            this._isInEffect = false;
-            this._lastTick = undefined;
-            this._playbackRate = 0;
-            each(this._events, function (evt) {
+        if (options.autoplay) {
+            self.play();
+        }
+        return self;
+    }
+    function _tick(self) {
+        if (self._isCanceled) {
+            _triggerCancel(self);
+            return;
+        }
+        if (self._isFinished) {
+            _triggerFinish(self);
+            return;
+        }
+        if (self._isPaused) {
+            _triggerPause(self);
+            return;
+        }
+        if (!self._isInEffect) {
+            self._isInEffect = true;
+        }
+        var thisTick = performance.now();
+        var lastTick = self._lastTick;
+        if (lastTick !== undefined) {
+            var delta = (thisTick - lastTick) * self._playbackRate;
+            self._currentTime += delta;
+        }
+        self._lastTick = thisTick;
+        if (self._currentTime > self._duration || self._currentTime < 0) {
+            _triggerFinish(self);
+            return;
+        }
+        each(self._events, function (evt) {
+            var startTimeMs = self._playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+            var endTimeMs = self._playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+            var shouldBeActive = startTimeMs <= self._currentTime && self._currentTime < endTimeMs;
+            if (!shouldBeActive) {
                 evt.isInEffect = false;
-                evt.animator().pause();
-            });
-        };
-        TimelineAnimator.prototype._reset = function () {
-            this._currentTime = 0;
-            this._lastTick = undefined;
-            this._isCanceled = false;
-            this._isFinished = false;
-            this._isPaused = false;
-            this._isInEffect = false;
-            each(this._events, function (evt) {
-                evt.isInEffect = false;
-            });
-        };
-        return TimelineAnimator;
-    }());
+                return;
+            }
+            var animator = evt.animator();
+            animator.playbackRate(self._playbackRate);
+            evt.isInEffect = true;
+            animator.play();
+        });
+        window.requestAnimationFrame(_tick.bind(undefined, self));
+    }
+    function _triggerFinish(self) {
+        _reset(self);
+        each(self._events, function (evt) { return evt.animator().finish(); });
+        self._dispatcher.trigger('finish');
+    }
+    function _triggerCancel(self) {
+        _reset(self);
+        each(self._events, function (evt) { return evt.animator().cancel(); });
+        self._dispatcher.trigger('cancel');
+    }
+    function _triggerPause(self) {
+        self._isPaused = true;
+        self._isInEffect = false;
+        self._lastTick = undefined;
+        self._playbackRate = 0;
+        each(self._events, function (evt) {
+            evt.isInEffect = false;
+            evt.animator().pause();
+        });
+    }
+    function _reset(self) {
+        self._currentTime = 0;
+        self._lastTick = undefined;
+        self._isCanceled = false;
+        self._isFinished = false;
+        self._isPaused = false;
+        self._isInEffect = false;
+        each(self._events, function (evt) {
+            evt.isInEffect = false;
+        });
+    }
     var TimelineEvent = (function () {
         function TimelineEvent(timeloop, timelineDuration, evt) {
             var keyframes = evt.keyframes;
@@ -1086,7 +1105,7 @@
                 e.keyframes = a.keyframes;
                 e.timings = a.timings;
             });
-            return new TimelineAnimator(options, this._timeLoop);
+            return createTimelineAnimator(options, this._timeLoop);
         };
         JustAnimate.prototype.findAnimation = function (name) {
             return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;

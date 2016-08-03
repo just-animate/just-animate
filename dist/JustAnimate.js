@@ -99,7 +99,7 @@ var JustAnimate = (function () {
             e.keyframes = a.keyframes;
             e.timings = a.timings;
         });
-        return new TimelineAnimator_1.TimelineAnimator(options, this._timeLoop);
+        return TimelineAnimator_1.createTimelineAnimator(options, this._timeLoop);
     };
     /**
      * (description)

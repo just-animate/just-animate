@@ -1,5 +1,5 @@
 import {each, map} from './helpers/lists';
-import {TimelineAnimator} from './core/TimelineAnimator';
+import {createTimelineAnimator} from './core/TimelineAnimator';
 import {createLoop, ITimeLoop} from './core/TimeLoop';
 import {createMultiAnimator} from './core/Animator';
 import {easings} from './easings';
@@ -108,7 +108,7 @@ export class JustAnimate implements ja.IAnimationManager {
             e.timings = a.timings;
         });
 
-        return new TimelineAnimator(options, this._timeLoop);
+        return createTimelineAnimator(options, this._timeLoop);
     }
     /**
      * (description)
