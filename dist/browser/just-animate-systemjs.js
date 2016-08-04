@@ -3947,25 +3947,23 @@ System.register("just-animate/helpers/functions", ["just-animate/helpers/type"],
     "use strict";
     var __moduleName = context_88 && context_88.id;
     var type_6;
-    function pipe(initial) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var value = type_6.isFunction(initial) ? initial() : initial;
-        var len = arguments.length;
-        for (var x = 1; x < len; x++) {
-            value = arguments[x](value);
-        }
-        return value;
-    }
-    exports_88("pipe", pipe);
+    var pipe;
     return {
         setters:[
             function (type_6_1) {
                 type_6 = type_6_1;
             }],
         execute: function() {
+            exports_88("pipe", pipe = function pipe() {
+                var args = arguments;
+                var initial = args[0];
+                var value = type_6.isFunction(initial) ? initial() : initial;
+                var len = args.length;
+                for (var x = 1; x < len; x++) {
+                    value = args[x](value);
+                }
+                return value;
+            });
         }
     }
 });
@@ -4443,7 +4441,43 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
     "use strict";
     var __moduleName = context_93 && context_93.id;
     var lists_4, TimelineAnimator_1, TimeLoop_1, Animator_2, easings_1, functions_1, objects_1, type_9, keyframes_1, elements_3, KeyframeAnimation_2;
-    var JustAnimate;
+    var globalAnimations;
+    function JustAnimate() {
+        var self = this;
+        self = self instanceof JustAnimate ? self : Object.create(JustAnimate.prototype);
+        self._registry = {};
+        self._timeLoop = TimeLoop_1.createLoop();
+        return self;
+    }
+    exports_93("JustAnimate", JustAnimate);
+    function inject(animations) {
+        lists_4.each(animations, function (a) { return globalAnimations[a.name] = a; });
+    }
+    function resolveArguments(ctx, keyframesOrName, timings) {
+        var keyframes;
+        if (type_9.isString(keyframesOrName)) {
+            // if keyframes is a string, lookup keyframes from registry
+            var definition = ctx.findAnimation(keyframesOrName);
+            keyframes = functions_1.pipe(lists_4.map(definition.keyframes, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
+            // use registered timings as default, then load timings from params           
+            timings = objects_1.extend({}, definition.timings, timings);
+        }
+        else {
+            // otherwise, translate keyframe properties
+            keyframes = functions_1.pipe(lists_4.map(keyframesOrName, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
+        }
+        if (timings && timings.easing) {
+            // if timings contains an easing property, 
+            var easing = easings_1.easings[timings.easing];
+            if (easing) {
+                timings.easing = easing;
+            }
+        }
+        return {
+            keyframes: keyframes,
+            timings: timings
+        };
+    }
     return {
         setters:[
             function (lists_4_1) {
@@ -4480,54 +4514,24 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                 KeyframeAnimation_2 = KeyframeAnimation_2_1;
             }],
         execute: function() {
-            /**
-             * (description)
-             *
-             * @export
-             * @class JustAnimate
-             * @implements {ja.IAnimationManager}
-             */
-            JustAnimate = (function () {
-                function JustAnimate() {
-                    this._registry = {};
-                    this._timeLoop = TimeLoop_1.createLoop();
-                }
-                /**
-                 * (description)
-                 *
-                 * @static
-                 * @param {ja.IAnimationOptions[]} animations (description)
-                 */
-                JustAnimate.inject = function (animations) {
-                    lists_4.each(animations, function (a) { return JustAnimate._globalAnimations[a.name] = a; });
-                };
-                /**
-                 * (description)
-                 *
-                 * @param {(string | ja.IKeyframeOptions[])} keyframesOrName (description)
-                 * @param {ja.ElementSource} el (description)
-                 * @param {ja.IAnimationEffectTiming} [timings] (description)
-                 * @returns {ja.IAnimator} (description)
-                 */
-                JustAnimate.prototype.animate = function (keyframesOrName, targets, timings) {
-                    var a = this._resolveArguments(keyframesOrName, timings);
+            globalAnimations = {};
+            JustAnimate.inject = inject;
+            JustAnimate.prototype = {
+                _registry: undefined,
+                _timeLoop: undefined,
+                animate: function (keyframesOrName, targets, timings) {
+                    var a = resolveArguments(this, keyframesOrName, timings);
                     var elements = elements_3.queryElements(targets);
                     var effects = lists_4.map(elements, function (e) { return KeyframeAnimation_2.createKeyframeAnimation(e, a.keyframes, a.timings); });
                     var animator = Animator_2.createMultiAnimator(effects, this._timeLoop);
                     animator.play();
                     return animator;
-                };
-                /**
-                 * (description)
-                 *
-                 * @param {ja.ISequenceOptions} options (description)
-                 * @returns {ja.IAnimator} (description)
-                 */
-                JustAnimate.prototype.animateSequence = function (options) {
+                },
+                animateSequence: function (options) {
                     var _this = this;
                     var offset = 0;
                     var effectOptions = lists_4.map(options.steps, function (step) {
-                        var a = _this._resolveArguments(step.name || step.keyframes, step.timings);
+                        var a = resolveArguments(_this, step.name || step.keyframes, step.timings);
                         var startDelay = a.timings.delay || 0;
                         var endDelay = a.timings.endDelay || 0;
                         var duration = a.timings.duration || 0;
@@ -4555,78 +4559,24 @@ System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just
                         animator.play();
                     }
                     return animator;
-                };
-                /**
-                 * (description)
-                 *
-                 * @param {ja.ITimelineOptions} options (description)
-                 * @returns {ja.IAnimator} (description)
-                 */
-                JustAnimate.prototype.animateTimeline = function (options) {
+                },
+                animateTimeline: function (options) {
                     var _this = this;
                     options.events.forEach(function (e) {
-                        var a = _this._resolveArguments(e.name || e.keyframes, e.timings);
+                        var a = resolveArguments(_this, e.name || e.keyframes, e.timings);
                         e.keyframes = a.keyframes;
                         e.timings = a.timings;
                     });
                     return TimelineAnimator_1.createTimelineAnimator(options, this._timeLoop);
-                };
-                /**
-                 * (description)
-                 *
-                 * @param {string} name (description)
-                 * @returns {ja.IEffectOptions} (description)
-                 */
-                JustAnimate.prototype.findAnimation = function (name) {
-                    return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;
-                };
-                /**
-                 * (description)
-                 *
-                 * @param {ja.IAnimationOptions} animationOptions (description)
-                 * @returns {ja.IAnimationManager} (description)
-                 */
-                JustAnimate.prototype.register = function (animationOptions) {
+                },
+                findAnimation: function (name) {
+                    return this._registry[name] || globalAnimations[name] || undefined;
+                },
+                register: function (animationOptions) {
                     this._registry[animationOptions.name] = animationOptions;
-                };
-                /**
-                 * Calls global inject function
-                 *
-                 * @static
-                 * @param {ja.IAnimationOptions[]} animations (description)
-                 */
-                JustAnimate.prototype.inject = function (animations) {
-                    JustAnimate.inject(animations);
-                };
-                JustAnimate.prototype._resolveArguments = function (keyframesOrName, timings) {
-                    var keyframes;
-                    if (type_9.isString(keyframesOrName)) {
-                        // if keyframes is a string, lookup keyframes from registry
-                        var definition = this.findAnimation(keyframesOrName);
-                        keyframes = functions_1.pipe(lists_4.map(definition.keyframes, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
-                        // use registered timings as default, then load timings from params           
-                        timings = objects_1.extend({}, definition.timings, timings);
-                    }
-                    else {
-                        // otherwise, translate keyframe properties
-                        keyframes = functions_1.pipe(lists_4.map(keyframesOrName, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
-                    }
-                    if (timings && timings.easing) {
-                        // if timings contains an easing property, 
-                        var easing = easings_1.easings[timings.easing];
-                        if (easing) {
-                            timings.easing = easing;
-                        }
-                    }
-                    return {
-                        keyframes: keyframes,
-                        timings: timings
-                    };
-                };
-                JustAnimate._globalAnimations = {};
-                return JustAnimate;
-            }());
-            exports_93("JustAnimate", JustAnimate);
+                },
+                inject: inject
+            };
         }
     }
 });

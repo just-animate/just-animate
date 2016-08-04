@@ -10,60 +10,35 @@ import {normalizeProperties, normalizeKeyframes, spaceKeyframes} from './helpers
 import {queryElements} from './helpers/elements';
 import {createKeyframeAnimation} from './core/KeyframeAnimation';
 
-/**
- * (description)
- * 
- * @export
- * @class JustAnimate
- * @implements {ja.IAnimationManager}
- */
-export class JustAnimate implements ja.IAnimationManager {
-    private static _globalAnimations: ja.IMap<ja.IEffectOptions> = {};
-    private _registry: { [key: string]: ja.IEffectOptions } = {};
-    private _timeLoop: ITimeLoop;
-       
-    /**
-     * (description)
-     * 
-     * @static
-     * @param {ja.IAnimationOptions[]} animations (description)
-     */
-    public static inject(animations: ja.IAnimationOptions[]): void {
-        each(animations, (a: ja.IAnimationOptions) => JustAnimate._globalAnimations[a.name] = a);
-    }
+const globalAnimations: ja.IMap<ja.IAnimationOptions> = {};
 
-    constructor() {
-        this._timeLoop = createLoop();
-    }
+export function JustAnimate(): ja.IAnimator {
+    let self = this;
+    self = self instanceof JustAnimate ? self : Object.create(JustAnimate.prototype);
+    self._registry = {};
+    self._timeLoop = createLoop();
+    return self;
+}
+ 
+(JustAnimate as any).inject = inject;
 
-    /**
-     * (description)
-     * 
-     * @param {(string | ja.IKeyframeOptions[])} keyframesOrName (description)
-     * @param {ja.ElementSource} el (description)
-     * @param {ja.IAnimationEffectTiming} [timings] (description)
-     * @returns {ja.IAnimator} (description)
-     */
-    public animate(keyframesOrName: string | ja.IKeyframeOptions[], targets: ja.ElementSource, timings?: ja.IAnimationEffectTiming): ja.IAnimator {
-        const a = this._resolveArguments(keyframesOrName, timings);
+JustAnimate.prototype = {
+    _registry: undefined as { [key: string]: ja.IEffectOptions },
+    _timeLoop: undefined as ITimeLoop,
+    animate(keyframesOrName: string | ja.IKeyframeOptions[], targets: ja.ElementSource, timings?: ja.IAnimationEffectTiming): ja.IAnimator {
+        const a = resolveArguments(this, keyframesOrName, timings);
         const elements = queryElements(targets);
         const effects =  map(elements, (e: any) => createKeyframeAnimation(e, a.keyframes, a.timings));
         const animator = createMultiAnimator(effects, this._timeLoop);
         animator.play();
 
         return animator;
-    }
-    /**
-     * (description)
-     * 
-     * @param {ja.ISequenceOptions} options (description)
-     * @returns {ja.IAnimator} (description)
-     */
-    public animateSequence(options: ja.ISequenceOptions): ja.IAnimator {
+    },
+    animateSequence(options: ja.ISequenceOptions): ja.IAnimator {
         let offset = 0;
 
         const effectOptions = map(options.steps, (step: ja.ISequenceEvent) => {
-            const a = this._resolveArguments(step.name || step.keyframes, step.timings) as ja.IEffectOptions&{targets: ja.ElementSource};
+            const a = resolveArguments(this, step.name || step.keyframes, step.timings) as ja.IEffectOptions&{targets: ja.ElementSource};
             const startDelay = a.timings.delay || 0;
             const endDelay = a.timings.endDelay || 0;
             const duration = a.timings.duration || 0;
@@ -94,80 +69,54 @@ export class JustAnimate implements ja.IAnimationManager {
             animator.play();
         }
         return animator;
-    }
-    /**
-     * (description)
-     * 
-     * @param {ja.ITimelineOptions} options (description)
-     * @returns {ja.IAnimator} (description)
-     */
-    public animateTimeline(options: ja.ITimelineOptions): ja.IAnimator {
+    },
+    animateTimeline(options: ja.ITimelineOptions): ja.IAnimator {
         options.events.forEach(e => {
-            const a = this._resolveArguments(e.name || e.keyframes, e.timings) as ja.IEffectOptions & { targets: ja.ElementSource };
+            const a = resolveArguments(this, e.name || e.keyframes, e.timings) as ja.IEffectOptions & { targets: ja.ElementSource };
             e.keyframes = a.keyframes;
             e.timings = a.timings;
         });
 
         return createTimelineAnimator(options, this._timeLoop);
-    }
-    /**
-     * (description)
-     * 
-     * @param {string} name (description)
-     * @returns {ja.IEffectOptions} (description)
-     */
-    public findAnimation(name: string): ja.IEffectOptions {
-        return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;
-    }
-    /**
-     * (description)
-     * 
-     * @param {ja.IAnimationOptions} animationOptions (description)
-     * @returns {ja.IAnimationManager} (description)
-     */
-    public register(animationOptions: ja.IAnimationOptions): void {        
+    },
+    findAnimation(name: string): ja.IEffectOptions {
+        return this._registry[name] || globalAnimations[name] || undefined;
+    },
+    register(animationOptions: ja.IAnimationOptions): void {        
         this._registry[animationOptions.name] = animationOptions;
+    },
+    inject: inject
+};
+
+function inject(animations: ja.IAnimationOptions[]): void {
+    each(animations, (a: ja.IAnimationOptions) => globalAnimations[a.name] = a);
+}
+
+function resolveArguments(ctx: ja.IAnimationManager, keyframesOrName: string|ja.IKeyframeOptions[],  timings: ja.IAnimationEffectTiming): ja.IEffectOptions {
+
+    let keyframes: ja.IKeyframeOptions[];
+    if (isString(keyframesOrName)) {
+        // if keyframes is a string, lookup keyframes from registry
+        const definition = ctx.findAnimation(keyframesOrName as string);
+        keyframes = pipe(map(definition.keyframes, normalizeProperties), spaceKeyframes, normalizeKeyframes);
+
+        // use registered timings as default, then load timings from params           
+        timings = extend({}, definition.timings, timings);
+    } else {
+        // otherwise, translate keyframe properties
+        keyframes = pipe(map(keyframesOrName as ja.IKeyframeOptions[], normalizeProperties), spaceKeyframes, normalizeKeyframes);
     }
 
-    /**
-     * Calls global inject function
-     * 
-     * @static
-     * @param {ja.IAnimationOptions[]} animations (description)
-     */
-    public inject(animations: ja.IAnimationOptions[]): void {
-        JustAnimate.inject(animations);
-    }
-
-
-    private _resolveArguments(
-        keyframesOrName: string|ja.IKeyframeOptions[], 
-        timings: ja.IAnimationEffectTiming): ja.IEffectOptions {
-
-        let keyframes: ja.IKeyframeOptions[];
-        if (isString(keyframesOrName)) {
-            // if keyframes is a string, lookup keyframes from registry
-            const definition = this.findAnimation(keyframesOrName as string);
-            keyframes = pipe(map(definition.keyframes, normalizeProperties), spaceKeyframes, normalizeKeyframes);
-
-            // use registered timings as default, then load timings from params           
-            timings = extend({}, definition.timings, timings);
-        } else {
-            // otherwise, translate keyframe properties
-            keyframes = pipe(map(keyframesOrName as ja.IKeyframeOptions[], normalizeProperties), spaceKeyframes, normalizeKeyframes);
+    if (timings && timings.easing) {
+        // if timings contains an easing property, 
+        const easing = easings[timings.easing];
+        if (easing) {
+            timings.easing = easing;
         }
-
-        if (timings && timings.easing) {
-            // if timings contains an easing property, 
-            const easing = easings[timings.easing];
-            if (easing) {
-                timings.easing = easing;
-            }
-        }
-
-        return {
-            keyframes: keyframes,
-            timings: timings
-        };
     }
+
+    return {
+        keyframes: keyframes,
+        timings: timings
+    };
 }

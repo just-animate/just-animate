@@ -1,12 +1,14 @@
 import {isFunction} from './type';
 
-export function pipe(initial: any|Function, ...args: Function[]): any {
+export const pipe: Function = function pipe(): any {
+    const args = arguments;
+    const initial = args[0];
     let value: any = isFunction(initial) ? initial() : initial;
 
-    const len = arguments.length;
+    const len = args.length;
     for (let x = 1; x < len; x++) {
-        value = arguments[x](value);
+        value = args[x](value);
     }
 
     return value;
-}
+};

@@ -698,18 +698,16 @@
         elegantSlowStartEnd: 'cubic-bezier(0.175, 0.885, 0.320, 1.275)'
     };
 
-    function pipe(initial) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
+    var pipe = function pipe() {
+        var args = arguments;
+        var initial = args[0];
         var value = isFunction(initial) ? initial() : initial;
-        var len = arguments.length;
+        var len = args.length;
         for (var x = 1; x < len; x++) {
-            value = arguments[x](value);
+            value = args[x](value);
         }
         return value;
-    }
+    };
 
     function extend(target) {
         var sources = [];
@@ -1049,27 +1047,31 @@
         return output;
     }
 
-    var JustAnimate = (function () {
-        function JustAnimate() {
-            this._registry = {};
-            this._timeLoop = createLoop();
-        }
-        JustAnimate.inject = function (animations) {
-            each(animations, function (a) { return JustAnimate._globalAnimations[a.name] = a; });
-        };
-        JustAnimate.prototype.animate = function (keyframesOrName, targets, timings) {
-            var a = this._resolveArguments(keyframesOrName, timings);
+    var globalAnimations = {};
+    function JustAnimate() {
+        var self = this;
+        self = self instanceof JustAnimate ? self : Object.create(JustAnimate.prototype);
+        self._registry = {};
+        self._timeLoop = createLoop();
+        return self;
+    }
+    JustAnimate.inject = inject;
+    JustAnimate.prototype = {
+        _registry: undefined,
+        _timeLoop: undefined,
+        animate: function (keyframesOrName, targets, timings) {
+            var a = resolveArguments(this, keyframesOrName, timings);
             var elements = queryElements(targets);
             var effects = map(elements, function (e) { return createKeyframeAnimation(e, a.keyframes, a.timings); });
             var animator = createMultiAnimator(effects, this._timeLoop);
             animator.play();
             return animator;
-        };
-        JustAnimate.prototype.animateSequence = function (options) {
+        },
+        animateSequence: function (options) {
             var _this = this;
             var offset = 0;
             var effectOptions = map(options.steps, function (step) {
-                var a = _this._resolveArguments(step.name || step.keyframes, step.timings);
+                var a = resolveArguments(_this, step.name || step.keyframes, step.timings);
                 var startDelay = a.timings.delay || 0;
                 var endDelay = a.timings.endDelay || 0;
                 var duration = a.timings.duration || 0;
@@ -1097,49 +1099,48 @@
                 animator.play();
             }
             return animator;
-        };
-        JustAnimate.prototype.animateTimeline = function (options) {
+        },
+        animateTimeline: function (options) {
             var _this = this;
             options.events.forEach(function (e) {
-                var a = _this._resolveArguments(e.name || e.keyframes, e.timings);
+                var a = resolveArguments(_this, e.name || e.keyframes, e.timings);
                 e.keyframes = a.keyframes;
                 e.timings = a.timings;
             });
             return createTimelineAnimator(options, this._timeLoop);
-        };
-        JustAnimate.prototype.findAnimation = function (name) {
-            return this._registry[name] || JustAnimate._globalAnimations[name] || undefined;
-        };
-        JustAnimate.prototype.register = function (animationOptions) {
+        },
+        findAnimation: function (name) {
+            return this._registry[name] || globalAnimations[name] || undefined;
+        },
+        register: function (animationOptions) {
             this._registry[animationOptions.name] = animationOptions;
-        };
-        JustAnimate.prototype.inject = function (animations) {
-            JustAnimate.inject(animations);
-        };
-        JustAnimate.prototype._resolveArguments = function (keyframesOrName, timings) {
-            var keyframes;
-            if (isString(keyframesOrName)) {
-                var definition = this.findAnimation(keyframesOrName);
-                keyframes = pipe(map(definition.keyframes, normalizeProperties), spaceKeyframes, normalizeKeyframes);
-                timings = extend({}, definition.timings, timings);
+        },
+        inject: inject
+    };
+    function inject(animations) {
+        each(animations, function (a) { return globalAnimations[a.name] = a; });
+    }
+    function resolveArguments(ctx, keyframesOrName, timings) {
+        var keyframes;
+        if (isString(keyframesOrName)) {
+            var definition = ctx.findAnimation(keyframesOrName);
+            keyframes = pipe(map(definition.keyframes, normalizeProperties), spaceKeyframes, normalizeKeyframes);
+            timings = extend({}, definition.timings, timings);
+        }
+        else {
+            keyframes = pipe(map(keyframesOrName, normalizeProperties), spaceKeyframes, normalizeKeyframes);
+        }
+        if (timings && timings.easing) {
+            var easing = easings[timings.easing];
+            if (easing) {
+                timings.easing = easing;
             }
-            else {
-                keyframes = pipe(map(keyframesOrName, normalizeProperties), spaceKeyframes, normalizeKeyframes);
-            }
-            if (timings && timings.easing) {
-                var easing = easings[timings.easing];
-                if (easing) {
-                    timings.easing = easing;
-                }
-            }
-            return {
-                keyframes: keyframes,
-                timings: timings
-            };
+        }
+        return {
+            keyframes: keyframes,
+            timings: timings
         };
-        JustAnimate._globalAnimations = {};
-        return JustAnimate;
-    }());
+    }
 
     if (typeof angular !== 'undefined') {
         angular.module('just.animate', []).service('just', JustAnimate);
