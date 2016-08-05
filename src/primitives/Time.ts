@@ -1,4 +1,6 @@
 import {isNumber} from '../helpers/type';
+import {invalidArg} from '../helpers/errors';
+
 const timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
 
 export class Time {
@@ -25,7 +27,7 @@ export class Time {
         } else if (unit === 's') {
             valueMs = value * 1000;
         } else {
-            throw 'bad time format';
+            throw invalidArg('format');
         }
 
         let operatorEnum: number;

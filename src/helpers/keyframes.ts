@@ -1,5 +1,31 @@
 import {isDefined, isNumber, isString, isArray} from '../helpers/type';
 import {toCamelCase} from '../helpers/strings';
+import {invalidArg} from '../helpers/errors';
+
+import {scale3d,
+    scale,
+    scaleX,
+    scaleY,
+    scaleZ,
+    skew,
+    skewX,
+    skewY,
+    rotate3d,
+    rotate,
+    rotateX,
+    rotateY,
+    rotateZ,
+    translate,
+    translate3d,
+    x,
+    y,
+    z,
+    translateX,
+    translateY,
+    translateZ,
+    transform
+} from './resources';
+
 
 const offset = 'offset';
 
@@ -15,7 +41,7 @@ export function spaceKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyframeOp
         first.offset = 0;
     }
 
-    const last = keyframes[keyframes.length - 1];    
+    const last = keyframes[keyframes.length - 1];
     // ensure last offset
     if (last.offset !== 1) {
         last.offset = 1;
@@ -30,7 +56,7 @@ export function spaceKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyframeOp
         // skip entries that have an offset        
         if (isNumber(target.offset)) {
             continue;
-        }        
+        }
 
         // search for the next offset with a value        
         for (let j = i + 1; j < len; j++) {
@@ -38,13 +64,13 @@ export function spaceKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyframeOp
             if (!isNumber(keyframes[j].offset)) {
                 continue;
             }
-            
+
             // calculate timing/position info
             const startTime = keyframes[i - 1].offset;
             const endTime = keyframes[j].offset;
             const timeDelta = endTime - startTime;
-            const deltaLength = j - i + 1; 
-            
+            const deltaLength = j - i + 1;
+
             // set the values of all keyframes between i and j (exclusive)
             for (let k = 1; k < deltaLength; k++) {
                 // set to percentage of change over time delta + starting time
@@ -75,7 +101,7 @@ export function normalizeKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyfra
         first.offset = 0;
     }
 
-    const last = keyframes[keyframes.length - 1];   
+    const last = keyframes[keyframes.length - 1];
 
     // fill initial keyframe with missing props
     const len = keyframes.length;
@@ -99,26 +125,25 @@ export function normalizeKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyfra
             last[prop] = keyframe[prop];
         }
     }
-    
+
     return keyframes;
 }
-
 
 /**
  * Handles transforming short hand key properties into their native form
  */
 export function normalizeProperties(keyframe: ja.IKeyframeOptions): ja.IKeyframeOptions {
-    const x = 0;
-    const y = 1;
-    const z = 2;
+    const xIndex = 0;
+    const yIndex = 1;
+    const zIndex = 2;
 
     // transform properties
-    const scale = new Array<number>(3);
-    const skew = new Array<string | number>(2);
-    const translate = new Array<string | number>(3);
+    const scaleArray: number[] = [];
+    const skewArray: (number | string)[] = [];
+    const translateArray: (number | string)[] = [];
 
     const output: ja.IMap<any> = {};
-    let transform = '';
+    let transformString = '';
 
     for (let prop in keyframe) {
         const value = keyframe[prop];
@@ -128,233 +153,232 @@ export function normalizeProperties(keyframe: ja.IKeyframeOptions): ja.IKeyframe
         }
 
         switch (prop) {
-            case 'scale3d':
+            case scale3d:
                 if (isArray(value)) {
                     const arr = value as number[];
                     if (arr.length !== 3) {
-                        throw Error('scale3d requires x, y, & z');
+                        throw invalidArg(scale3d);
                     }
-                    scale[x] = arr[x];
-                    scale[y] = arr[y];
-                    scale[z] = arr[z];
+                    scaleArray[xIndex] = arr[xIndex];
+                    scaleArray[yIndex] = arr[yIndex];
+                    scaleArray[zIndex] = arr[zIndex];
                     continue;
                 }
                 if (isNumber(value)) {
-                    scale[x] = value;
-                    scale[y] = value;
-                    scale[z] = value;
+                    scaleArray[xIndex] = value;
+                    scaleArray[yIndex] = value;
+                    scaleArray[zIndex] = value;
                     continue;
                 }
-                throw Error('scale3d requires a number or number[]');
-            case 'scale':
+                throw invalidArg(scale3d);
+            case scale:
                 if (isArray(value)) {
                     const arr = value as number[];
                     if (arr.length !== 2) {
-                        throw Error('scale requires x & y');
+                        throw invalidArg(scale);
                     }
-                    scale[x] = arr[x];
-                    scale[y] = arr[y];
+                    scaleArray[xIndex] = arr[xIndex];
+                    scaleArray[yIndex] = arr[yIndex];
                     continue;
                 }
                 if (isNumber(value)) {
-                    scale[x] = value;
-                    scale[y] = value;
+                    scaleArray[xIndex] = value;
+                    scaleArray[yIndex] = value;
                     continue;
                 }
-                throw Error('scale requires a number or number[]');
-            case 'scaleX':
+                throw invalidArg(scale);
+            case scaleX:
                 if (isNumber(value)) {
-                    scale[x] = value;
+                    scaleArray[xIndex] = value;
                     continue;
                 }
-                throw Error('scaleX requires a number');
-            case 'scaleY':
+                throw invalidArg(scaleX);
+            case scaleY:
                 if (isNumber(value)) {
-                    scale[y] = value;
+                    scaleArray[yIndex] = value;
                     continue;
                 }
-                throw Error('scaleY requires a number');
-            case 'scaleZ':
+                throw invalidArg(scaleY);
+            case scaleZ:
                 if (isNumber(value)) {
-                    scale[z] = value;
+                    scaleArray[zIndex] = value;
                     continue;
                 }
-                throw Error('scaleZ requires a number');
-            case 'skew':
+                throw invalidArg(scaleZ);
+            case skew:
                 if (isArray(value)) {
                     const arr = value as number[];
                     if (arr.length !== 2) {
-                        throw Error('skew requires x & y');
+                        throw invalidArg(skew);
                     }
-                    skew[x] = arr[x];
-                    skew[y] = arr[y];
+                    skewArray[xIndex] = arr[xIndex];
+                    skewArray[yIndex] = arr[yIndex];
                     continue;
                 }
                 if (isNumber(value)) {
-                    skew[x] = value;
-                    skew[y] = value;
+                    skewArray[xIndex] = value;
+                    skewArray[yIndex] = value;
                     continue;
                 }
-                throw Error('skew requires a number, string, string[], or number[]');
-            case 'skewX':
+                throw invalidArg(skew);
+            case skewX:
                 if (isString(value)) {
-                    skew[x] = value;
+                    skewArray[xIndex] = value;
                     continue;
                 }
-                throw Error('skewX requires a number or string');
-            case 'skewY':
+                throw invalidArg(skewX);
+            case skewY:
                 if (isString(value)) {
-                    skew[y] = value;
+                    skewArray[yIndex] = value;
                     continue;
                 }
-                throw Error('skewY requires a number or string');
-            case 'rotate3d':
+                throw invalidArg(skewY);
+            case rotate3d:
                 if (isArray(value)) {
                     const arr = value as number[];
                     if (arr.length !== 4) {
-                        throw Error('rotate3d requires x, y, z, & a');
+                        throw invalidArg(rotate3d);
                     }
-                    transform += ` rotate3d(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`;
+                    transformString += ` rotate3d(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`;
                     continue;
                 }
-                throw Error('rotate3d requires an []');
-            case 'rotateX':
+                throw invalidArg(rotate3d);
+            case rotateX:
                 if (isString(value)) {
-                    transform += ` rotate3d(1, 0, 0, ${value})`;
+                    transformString += ` rotate3d(1, 0, 0, ${value})`;
                     continue;
                 }
-                throw Error('rotateX requires a string');
-            case 'rotateY':
+                throw invalidArg(rotateX);
+            case rotateY:
                 if (isString(value)) {
-                    transform += ` rotate3d(0, 1, 0, ${value})`;
+                    transformString += ` rotate3d(0, 1, 0, ${value})`;
                     continue;
                 }
-                throw Error('rotateY requires a string');
-            case 'rotate':
-            case 'rotateZ':
+                throw invalidArg(rotateY);
+            case rotate:
+            case rotateZ:
                 if (isString(value)) {
-                    transform += ` rotate3d(0, 0, 1, ${value})`;
+                    transformString += ` rotate3d(0, 0, 1, ${value})`;
                     continue;
                 }
-                throw Error('rotateZ requires a string');
-            case 'translate3d':
+                throw invalidArg(rotateZ);
+            case translate3d:
                 if (isArray(value)) {
                     const arr = value as (number | string)[];
                     if (arr.length !== 3) {
-                        throw Error('translate3d requires x, y, & z');
+                        throw invalidArg(translate3d);
                     }
-                    translate[x] = arr[x];
-                    translate[y] = arr[y];
-                    translate[z] = arr[z];
+                    translateArray[xIndex] = arr[xIndex];
+                    translateArray[yIndex] = arr[yIndex];
+                    translateArray[zIndex] = arr[zIndex];
                     continue;
                 }
                 if (isString(value) || isNumber(value)) {
-                    translate[x] = value;
-                    translate[y] = value;
-                    translate[z] = value;
+                    translateArray[xIndex] = value;
+                    translateArray[yIndex] = value;
+                    translateArray[zIndex] = value;
                     continue;
                 }
-                throw Error('translate3d requires a number, string, string[], or number[]');
-            case 'translate':
+                throw invalidArg(rotate3d);
+            case translate:
                 if (isArray(value)) {
                     const arr = value as (number | string)[];
                     if (arr.length !== 2) {
-                        throw Error('translate requires x & y');
+                        throw invalidArg(translate);
                     }
-                    translate[x] = arr[x];
-                    translate[y] = arr[y];
+                    translateArray[xIndex] = arr[xIndex];
+                    translateArray[yIndex] = arr[yIndex];
                     continue;
                 }
                 if (isString(value) || isNumber(value)) {
-                    translate[x] = value;
-                    translate[y] = value;
+                    translateArray[xIndex] = value;
+                    translateArray[yIndex] = value;
                     continue;
                 }
-                throw Error('translate requires a number, string, string[], or number[]');
-            case 'x':
-            case 'translateX':
+                throw invalidArg(translate);
+            case x:
+            case translateX:
                 if (isString(value) || isNumber(value)) {
-                    translate[x] = value;
+                    translateArray[xIndex] = value;
                     continue;
                 }
-                throw Error('translateX requires a number or string');
-            case 'y':
-            case 'translateY':
+                throw invalidArg(x);
+            case y:
+            case translateY:
                 if (isString(value) || isNumber(value)) {
-                    translate[y] = value;
+                    translateArray[yIndex] = value;
                     continue;
                 }
-                throw Error('translateY requires a number or string');
-            case 'z':
-            case 'translateZ':
+                throw invalidArg(y);
+            case z:
+            case translateZ:
                 if (isString(value) || isNumber(value)) {
-                    translate[z] = value;
+                    translateArray[zIndex] = value;
                     continue;
                 }
-                throw Error('translateZ requires a number or string');
-            case 'transform':
-                transform += ' ' + value;
+                throw invalidArg(z);
+            case transform:
+                transformString += ' ' + value;
                 break;
             default:
-                const prop2 = toCamelCase(prop);
-                output[prop2] = value;
+                output[toCamelCase(prop)] = value;
                 break;
         }
     }
 
     // combine scale
-    const isScaleX = scale[x] !== undefined;
-    const isScaleY = scale[y] !== undefined;
-    const isScaleZ = scale[z] !== undefined;
+    const isScaleX = scaleArray[xIndex] !== undefined;
+    const isScaleY = scaleArray[yIndex] !== undefined;
+    const isScaleZ = scaleArray[zIndex] !== undefined;
     if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
-        const scaleString = scale.map((s: number) => s || '1').join(',');
-        transform += ` scale3d(${scaleString})`;
+        const scaleString = scaleArray.map((s: number) => s || '1').join(',');
+        transformString += ` scale3d(${scaleString})`;
     } else if (isScaleX && isScaleY) {
-        transform += ` scale(${scale[x] || 1}, ${scale[y] || 1})`;
+        transformString += ` scale(${scaleArray[xIndex] || 1}, ${scaleArray[yIndex] || 1})`;
     } else if (isScaleX) {
-        transform += ` scaleX(${scale[x]})`;
+        transformString += ` scaleX(${scaleArray[xIndex]})`;
     } else if (isScaleY) {
-        transform += ` scaleX(${scale[y]})`;
+        transformString += ` scaleX(${scaleArray[yIndex]})`;
     } else if (isScaleZ) {
-        transform += ` scaleX(${scale[z]})`;
+        transformString += ` scaleX(${scaleArray[zIndex]})`;
     } else {
         // do nothing
     }
 
     // combine skew
-    const isskewX = skew[x] !== undefined;
-    const isskewY = skew[y] !== undefined;
+    const isskewX = skewArray[xIndex] !== undefined;
+    const isskewY = skewArray[yIndex] !== undefined;
     if (isskewX && isskewY) {
-        transform += ` skew(${skew[x] || 1}, ${skew[y] || 1})`;
+        transformString += ` skew(${skewArray[xIndex] || 1}, ${skewArray[yIndex] || 1})`;
     } else if (isskewX) {
-        transform += ` skewX(${skew[x]})`;
+        transformString += ` skewX(${skewArray[xIndex]})`;
     } else if (isskewY) {
-        transform += ` skewY(${skew[y]})`;
+        transformString += ` skewY(${skewArray[yIndex]})`;
     } else {
         // do nothing
     }
 
     // combine translate
-    const istranslateX = translate[x] !== undefined;
-    const istranslateY = translate[y] !== undefined;
-    const istranslateZ = translate[z] !== undefined;
+    const istranslateX = translateArray[xIndex] !== undefined;
+    const istranslateY = translateArray[yIndex] !== undefined;
+    const istranslateZ = translateArray[zIndex] !== undefined;
     if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
-        const translateString = translate.map((s: string) => s || '1').join(',');
-        transform += ` translate3d(${translateString})`;
+        const translateString = translateArray.map((s: string) => s || '1').join(',');
+        transformString += ` translate3d(${translateString})`;
     } else if (istranslateX && istranslateY) {
-        transform += ` translate(${translate[x] || 1}, ${translate[y] || 1})`;
+        transformString += ` translate(${translateArray[xIndex] || 1}, ${translateArray[yIndex] || 1})`;
     } else if (istranslateX) {
-        transform += ` translateX(${translate[x]})`;
+        transformString += ` translateX(${translateArray[xIndex]})`;
     } else if (istranslateY) {
-        transform += ` translateY(${translate[y]})`;
+        transformString += ` translateY(${translateArray[yIndex]})`;
     } else if (istranslateZ) {
-        transform += ` translateZ(${translate[z]})`;
+        transformString += ` translateZ(${translateArray[zIndex]})`;
     } else {
         // do nothing
     }
 
-    if (transform) {
-        output['transform'] = transform;
+    if (transformString) {
+        output['transform'] = transformString;
     }
 
     return output;

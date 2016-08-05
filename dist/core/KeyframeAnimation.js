@@ -1,6 +1,7 @@
 "use strict";
 var Dispatcher_1 = require('./Dispatcher');
 var type_1 = require('../helpers/type');
+var resources_1 = require('../helpers/resources');
 var keyframeAnimationPrototype = {
     _dispatcher: undefined,
     _duration: undefined,
@@ -57,25 +58,25 @@ var keyframeAnimationPrototype = {
     cancel: function () {
         var self = this;
         self._animator.cancel();
-        self._dispatcher.trigger('cancel');
+        self._dispatcher.trigger(resources_1.cancel);
         return self;
     },
     reverse: function () {
         var self = this;
         self._animator.reverse();
-        self._dispatcher.trigger('reverse');
+        self._dispatcher.trigger(resources_1.reverse);
         return self;
     },
     pause: function () {
         var self = this;
         self._animator.pause();
-        self._dispatcher.trigger('pause');
+        self._dispatcher.trigger(resources_1.pause);
         return self;
     },
     play: function () {
         var self = this;
         self._animator.play();
-        self._dispatcher.trigger('play');
+        self._dispatcher.trigger(resources_1.play);
         return self;
     },
     finish: function () {
@@ -87,9 +88,9 @@ var keyframeAnimationPrototype = {
 function createKeyframeAnimation(target, keyframes, timings) {
     var self = Object.create(keyframeAnimationPrototype);
     var dispatcher = Dispatcher_1.createDispatcher();
-    var animator = target['animate'](keyframes, timings);
+    var animator = target[resources_1.animate](keyframes, timings);
     animator.pause();
-    animator['onfinish'] = function () { return dispatcher.trigger('finish'); };
+    animator['onfinish'] = function () { return dispatcher.trigger(resources_1.finish); };
     self._iterationStart = timings.iterationStart || 0;
     self._iterations = timings.iterations || 1;
     self._duration = timings.duration;

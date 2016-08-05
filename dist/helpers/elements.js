@@ -1,6 +1,7 @@
 "use strict";
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
+var errors_1 = require('../helpers/errors');
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources
  *
@@ -9,7 +10,7 @@ var type_1 = require('../helpers/type');
  */
 function queryElements(source) {
     if (!source) {
-        throw 'no elements';
+        throw errors_1.invalidArg('source');
     }
     if (type_1.isString(source)) {
         // if query selector, search for elements 

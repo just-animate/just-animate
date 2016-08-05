@@ -1,6 +1,8 @@
 "use strict";
 var type_1 = require('../helpers/type');
 var strings_1 = require('../helpers/strings');
+var errors_1 = require('../helpers/errors');
+var resources_1 = require('./resources');
 var offset = 'offset';
 function spaceKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes
@@ -92,254 +94,253 @@ exports.normalizeKeyframes = normalizeKeyframes;
  * Handles transforming short hand key properties into their native form
  */
 function normalizeProperties(keyframe) {
-    var x = 0;
-    var y = 1;
-    var z = 2;
+    var xIndex = 0;
+    var yIndex = 1;
+    var zIndex = 2;
     // transform properties
-    var scale = new Array(3);
-    var skew = new Array(2);
-    var translate = new Array(3);
+    var scaleArray = [];
+    var skewArray = [];
+    var translateArray = [];
     var output = {};
-    var transform = '';
+    var transformString = '';
     for (var prop in keyframe) {
         var value = keyframe[prop];
         if (!type_1.isDefined(value)) {
             continue;
         }
         switch (prop) {
-            case 'scale3d':
+            case resources_1.scale3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 3) {
-                        throw Error('scale3d requires x, y, & z');
+                        throw errors_1.invalidArg(resources_1.scale3d);
                     }
-                    scale[x] = arr[x];
-                    scale[y] = arr[y];
-                    scale[z] = arr[z];
+                    scaleArray[xIndex] = arr[xIndex];
+                    scaleArray[yIndex] = arr[yIndex];
+                    scaleArray[zIndex] = arr[zIndex];
                     continue;
                 }
                 if (type_1.isNumber(value)) {
-                    scale[x] = value;
-                    scale[y] = value;
-                    scale[z] = value;
+                    scaleArray[xIndex] = value;
+                    scaleArray[yIndex] = value;
+                    scaleArray[zIndex] = value;
                     continue;
                 }
-                throw Error('scale3d requires a number or number[]');
-            case 'scale':
+                throw errors_1.invalidArg(resources_1.scale3d);
+            case resources_1.scale:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw Error('scale requires x & y');
+                        throw errors_1.invalidArg(resources_1.scale);
                     }
-                    scale[x] = arr[x];
-                    scale[y] = arr[y];
+                    scaleArray[xIndex] = arr[xIndex];
+                    scaleArray[yIndex] = arr[yIndex];
                     continue;
                 }
                 if (type_1.isNumber(value)) {
-                    scale[x] = value;
-                    scale[y] = value;
+                    scaleArray[xIndex] = value;
+                    scaleArray[yIndex] = value;
                     continue;
                 }
-                throw Error('scale requires a number or number[]');
-            case 'scaleX':
+                throw errors_1.invalidArg(resources_1.scale);
+            case resources_1.scaleX:
                 if (type_1.isNumber(value)) {
-                    scale[x] = value;
+                    scaleArray[xIndex] = value;
                     continue;
                 }
-                throw Error('scaleX requires a number');
-            case 'scaleY':
+                throw errors_1.invalidArg(resources_1.scaleX);
+            case resources_1.scaleY:
                 if (type_1.isNumber(value)) {
-                    scale[y] = value;
+                    scaleArray[yIndex] = value;
                     continue;
                 }
-                throw Error('scaleY requires a number');
-            case 'scaleZ':
+                throw errors_1.invalidArg(resources_1.scaleY);
+            case resources_1.scaleZ:
                 if (type_1.isNumber(value)) {
-                    scale[z] = value;
+                    scaleArray[zIndex] = value;
                     continue;
                 }
-                throw Error('scaleZ requires a number');
-            case 'skew':
+                throw errors_1.invalidArg(resources_1.scaleZ);
+            case resources_1.skew:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw Error('skew requires x & y');
+                        throw errors_1.invalidArg(resources_1.skew);
                     }
-                    skew[x] = arr[x];
-                    skew[y] = arr[y];
+                    skewArray[xIndex] = arr[xIndex];
+                    skewArray[yIndex] = arr[yIndex];
                     continue;
                 }
                 if (type_1.isNumber(value)) {
-                    skew[x] = value;
-                    skew[y] = value;
+                    skewArray[xIndex] = value;
+                    skewArray[yIndex] = value;
                     continue;
                 }
-                throw Error('skew requires a number, string, string[], or number[]');
-            case 'skewX':
+                throw errors_1.invalidArg(resources_1.skew);
+            case resources_1.skewX:
                 if (type_1.isString(value)) {
-                    skew[x] = value;
+                    skewArray[xIndex] = value;
                     continue;
                 }
-                throw Error('skewX requires a number or string');
-            case 'skewY':
+                throw errors_1.invalidArg(resources_1.skewX);
+            case resources_1.skewY:
                 if (type_1.isString(value)) {
-                    skew[y] = value;
+                    skewArray[yIndex] = value;
                     continue;
                 }
-                throw Error('skewY requires a number or string');
-            case 'rotate3d':
+                throw errors_1.invalidArg(resources_1.skewY);
+            case resources_1.rotate3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 4) {
-                        throw Error('rotate3d requires x, y, z, & a');
+                        throw errors_1.invalidArg(resources_1.rotate3d);
                     }
-                    transform += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
+                    transformString += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
                     continue;
                 }
-                throw Error('rotate3d requires an []');
-            case 'rotateX':
+                throw errors_1.invalidArg(resources_1.rotate3d);
+            case resources_1.rotateX:
                 if (type_1.isString(value)) {
-                    transform += " rotate3d(1, 0, 0, " + value + ")";
+                    transformString += " rotate3d(1, 0, 0, " + value + ")";
                     continue;
                 }
-                throw Error('rotateX requires a string');
-            case 'rotateY':
+                throw errors_1.invalidArg(resources_1.rotateX);
+            case resources_1.rotateY:
                 if (type_1.isString(value)) {
-                    transform += " rotate3d(0, 1, 0, " + value + ")";
+                    transformString += " rotate3d(0, 1, 0, " + value + ")";
                     continue;
                 }
-                throw Error('rotateY requires a string');
-            case 'rotate':
-            case 'rotateZ':
+                throw errors_1.invalidArg(resources_1.rotateY);
+            case resources_1.rotate:
+            case resources_1.rotateZ:
                 if (type_1.isString(value)) {
-                    transform += " rotate3d(0, 0, 1, " + value + ")";
+                    transformString += " rotate3d(0, 0, 1, " + value + ")";
                     continue;
                 }
-                throw Error('rotateZ requires a string');
-            case 'translate3d':
+                throw errors_1.invalidArg(resources_1.rotateZ);
+            case resources_1.translate3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 3) {
-                        throw Error('translate3d requires x, y, & z');
+                        throw errors_1.invalidArg(resources_1.translate3d);
                     }
-                    translate[x] = arr[x];
-                    translate[y] = arr[y];
-                    translate[z] = arr[z];
+                    translateArray[xIndex] = arr[xIndex];
+                    translateArray[yIndex] = arr[yIndex];
+                    translateArray[zIndex] = arr[zIndex];
                     continue;
                 }
                 if (type_1.isString(value) || type_1.isNumber(value)) {
-                    translate[x] = value;
-                    translate[y] = value;
-                    translate[z] = value;
+                    translateArray[xIndex] = value;
+                    translateArray[yIndex] = value;
+                    translateArray[zIndex] = value;
                     continue;
                 }
-                throw Error('translate3d requires a number, string, string[], or number[]');
-            case 'translate':
+                throw errors_1.invalidArg(resources_1.rotate3d);
+            case resources_1.translate:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw Error('translate requires x & y');
+                        throw errors_1.invalidArg(resources_1.translate);
                     }
-                    translate[x] = arr[x];
-                    translate[y] = arr[y];
+                    translateArray[xIndex] = arr[xIndex];
+                    translateArray[yIndex] = arr[yIndex];
                     continue;
                 }
                 if (type_1.isString(value) || type_1.isNumber(value)) {
-                    translate[x] = value;
-                    translate[y] = value;
+                    translateArray[xIndex] = value;
+                    translateArray[yIndex] = value;
                     continue;
                 }
-                throw Error('translate requires a number, string, string[], or number[]');
-            case 'x':
-            case 'translateX':
+                throw errors_1.invalidArg(resources_1.translate);
+            case resources_1.x:
+            case resources_1.translateX:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
-                    translate[x] = value;
+                    translateArray[xIndex] = value;
                     continue;
                 }
-                throw Error('translateX requires a number or string');
-            case 'y':
-            case 'translateY':
+                throw errors_1.invalidArg(resources_1.x);
+            case resources_1.y:
+            case resources_1.translateY:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
-                    translate[y] = value;
+                    translateArray[yIndex] = value;
                     continue;
                 }
-                throw Error('translateY requires a number or string');
-            case 'z':
-            case 'translateZ':
+                throw errors_1.invalidArg(resources_1.y);
+            case resources_1.z:
+            case resources_1.translateZ:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
-                    translate[z] = value;
+                    translateArray[zIndex] = value;
                     continue;
                 }
-                throw Error('translateZ requires a number or string');
-            case 'transform':
-                transform += ' ' + value;
+                throw errors_1.invalidArg(resources_1.z);
+            case resources_1.transform:
+                transformString += ' ' + value;
                 break;
             default:
-                var prop2 = strings_1.toCamelCase(prop);
-                output[prop2] = value;
+                output[strings_1.toCamelCase(prop)] = value;
                 break;
         }
     }
     // combine scale
-    var isScaleX = scale[x] !== undefined;
-    var isScaleY = scale[y] !== undefined;
-    var isScaleZ = scale[z] !== undefined;
+    var isScaleX = scaleArray[xIndex] !== undefined;
+    var isScaleY = scaleArray[yIndex] !== undefined;
+    var isScaleZ = scaleArray[zIndex] !== undefined;
     if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
-        var scaleString = scale.map(function (s) { return s || '1'; }).join(',');
-        transform += " scale3d(" + scaleString + ")";
+        var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
+        transformString += " scale3d(" + scaleString + ")";
     }
     else if (isScaleX && isScaleY) {
-        transform += " scale(" + (scale[x] || 1) + ", " + (scale[y] || 1) + ")";
+        transformString += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
     }
     else if (isScaleX) {
-        transform += " scaleX(" + scale[x] + ")";
+        transformString += " scaleX(" + scaleArray[xIndex] + ")";
     }
     else if (isScaleY) {
-        transform += " scaleX(" + scale[y] + ")";
+        transformString += " scaleX(" + scaleArray[yIndex] + ")";
     }
     else if (isScaleZ) {
-        transform += " scaleX(" + scale[z] + ")";
+        transformString += " scaleX(" + scaleArray[zIndex] + ")";
     }
     else {
     }
     // combine skew
-    var isskewX = skew[x] !== undefined;
-    var isskewY = skew[y] !== undefined;
+    var isskewX = skewArray[xIndex] !== undefined;
+    var isskewY = skewArray[yIndex] !== undefined;
     if (isskewX && isskewY) {
-        transform += " skew(" + (skew[x] || 1) + ", " + (skew[y] || 1) + ")";
+        transformString += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
     }
     else if (isskewX) {
-        transform += " skewX(" + skew[x] + ")";
+        transformString += " skewX(" + skewArray[xIndex] + ")";
     }
     else if (isskewY) {
-        transform += " skewY(" + skew[y] + ")";
+        transformString += " skewY(" + skewArray[yIndex] + ")";
     }
     else {
     }
     // combine translate
-    var istranslateX = translate[x] !== undefined;
-    var istranslateY = translate[y] !== undefined;
-    var istranslateZ = translate[z] !== undefined;
+    var istranslateX = translateArray[xIndex] !== undefined;
+    var istranslateY = translateArray[yIndex] !== undefined;
+    var istranslateZ = translateArray[zIndex] !== undefined;
     if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
-        var translateString = translate.map(function (s) { return s || '1'; }).join(',');
-        transform += " translate3d(" + translateString + ")";
+        var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
+        transformString += " translate3d(" + translateString + ")";
     }
     else if (istranslateX && istranslateY) {
-        transform += " translate(" + (translate[x] || 1) + ", " + (translate[y] || 1) + ")";
+        transformString += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
     }
     else if (istranslateX) {
-        transform += " translateX(" + translate[x] + ")";
+        transformString += " translateX(" + translateArray[xIndex] + ")";
     }
     else if (istranslateY) {
-        transform += " translateY(" + translate[y] + ")";
+        transformString += " translateY(" + translateArray[yIndex] + ")";
     }
     else if (istranslateZ) {
-        transform += " translateZ(" + translate[z] + ")";
+        transformString += " translateZ(" + translateArray[zIndex] + ")";
     }
     else {
     }
-    if (transform) {
-        output['transform'] = transform;
+    if (transformString) {
+        output['transform'] = transformString;
     }
     return output;
 }

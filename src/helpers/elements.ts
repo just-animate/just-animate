@@ -1,5 +1,6 @@
 import {each, toArray} from '../helpers/lists';
 import {isArray, isFunction, isString} from '../helpers/type';
+import {invalidArg} from '../helpers/errors';
 
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources
@@ -9,7 +10,7 @@ import {isArray, isFunction, isString} from '../helpers/type';
  */
 export function queryElements(source: ja.ElementSource): Element[] {
     if (!source) {
-        throw 'no elements';
+        throw invalidArg('source');
     }
     if (isString(source)) {
         // if query selector, search for elements 

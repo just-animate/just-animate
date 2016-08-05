@@ -3,14 +3,17 @@ import {isDefined} from '../helpers/type';
 import {createDispatcher} from './Dispatcher';
 import {ITimeLoop} from './TimeLoop';
 
-const call = 'call';
-const finish = 'finish';
-const cancel = 'cancel';
-const play = 'play';
-const pause = 'pause';
-const reverse = 'reverse';
-const running = 'running';
-const pending = 'pending';
+import {
+    finish,
+    call,
+    cancel,
+    play,
+    pause,
+    reverse,
+    running,
+    pending
+} from '../helpers/resources';
+
 
 const multiAnimatorProtoType = {
     currentTime(value?: number): number | ja.IAnimator {

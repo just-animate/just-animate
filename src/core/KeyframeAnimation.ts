@@ -1,6 +1,15 @@
 import {createDispatcher, IDispatcher} from './Dispatcher';
 import {isDefined} from '../helpers/type';
 
+import {
+    animate,
+    finish,
+    cancel,
+    play,
+    pause,
+    reverse
+} from '../helpers/resources';
+
 const keyframeAnimationPrototype = {
     _dispatcher: undefined as IDispatcher,
     _duration: undefined as number,
@@ -58,25 +67,25 @@ const keyframeAnimationPrototype = {
     cancel(): ja.IAnimator {
         const self = this;
         self._animator.cancel();
-        self._dispatcher.trigger('cancel');
+        self._dispatcher.trigger(cancel);
         return self;
     },
     reverse(): ja.IAnimator {
         const self = this;
         self._animator.reverse();
-        self._dispatcher.trigger('reverse');
+        self._dispatcher.trigger(reverse);
         return self;
     },
     pause(): ja.IAnimator {
         const self = this;
         self._animator.pause();
-        self._dispatcher.trigger('pause');
+        self._dispatcher.trigger(pause);
         return self;
     },
     play(): ja.IAnimator {
         const self = this;
         self._animator.play();
-        self._dispatcher.trigger('play');
+        self._dispatcher.trigger(play);
         return self;
     },
     finish(): ja.IAnimator {
@@ -88,10 +97,10 @@ const keyframeAnimationPrototype = {
 export function createKeyframeAnimation(target: Element, keyframes: ja.IKeyframeOptions[], timings: ja.IAnimationEffectTiming): ja.IAnimator {
     const self = Object.create(keyframeAnimationPrototype) as ja.IAnimator|any; 
     const dispatcher = createDispatcher();
-    const animator = target['animate'](keyframes, timings);
+    const animator = target[animate](keyframes, timings);
 
     animator.pause();
-    animator['onfinish'] = () => dispatcher.trigger('finish');
+    animator['onfinish'] = () => dispatcher.trigger(finish);
 
     self._iterationStart = timings.iterationStart || 0;
     self._iterations = timings.iterations || 1;

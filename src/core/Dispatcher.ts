@@ -1,5 +1,5 @@
 import {isFunction} from '../helpers/type';
-
+import {invalidArg} from '../helpers/errors';
 
 const dispatcher = {
     _fn: undefined as ICallbackMap,
@@ -16,7 +16,7 @@ const dispatcher = {
     },
     on(eventName: string, listener: Function): void {
         if (!isFunction(listener)) {
-            throw 'invalid listener';
+            throw invalidArg('listener');
         }
         const listeners = this._fn[eventName];
         if (!listeners) {

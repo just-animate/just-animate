@@ -12,7 +12,7 @@ import {createKeyframeAnimation} from './core/KeyframeAnimation';
 
 const globalAnimations: ja.IMap<ja.IAnimationOptions> = {};
 
-export function JustAnimate(): ja.IAnimator {
+export function JustAnimate(): ja.IAnimationManager {
     let self = this;
     self = self instanceof JustAnimate ? self : Object.create(JustAnimate.prototype);
     self._registry = {};

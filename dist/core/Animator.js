@@ -2,14 +2,7 @@
 var lists_1 = require('../helpers/lists');
 var type_1 = require('../helpers/type');
 var Dispatcher_1 = require('./Dispatcher');
-var call = 'call';
-var finish = 'finish';
-var cancel = 'cancel';
-var play = 'play';
-var pause = 'pause';
-var reverse = 'reverse';
-var running = 'running';
-var pending = 'pending';
+var resources_1 = require('../helpers/resources');
 var multiAnimatorProtoType = {
     currentTime: function (value) {
         var self = this;
@@ -17,7 +10,7 @@ var multiAnimatorProtoType = {
             return self._currentTime;
         }
         self._currentTime = value;
-        self._dispatcher.trigger(call, ['currentTime', value]);
+        self._dispatcher.trigger(resources_1.call, ['currentTime', value]);
         return self;
     },
     playbackRate: function (value) {
@@ -26,7 +19,7 @@ var multiAnimatorProtoType = {
             return self._currentTime;
         }
         self._playbackRate = value;
-        self._dispatcher.trigger(call, ['playbackRate', value]);
+        self._dispatcher.trigger(resources_1.call, ['playbackRate', value]);
         return self;
     },
     playState: function () {
@@ -60,35 +53,35 @@ var multiAnimatorProtoType = {
     },
     cancel: function () {
         var self = this;
-        self._dispatcher.trigger(call, [cancel]);
+        self._dispatcher.trigger(resources_1.call, [resources_1.cancel]);
         self.currentTime(0);
-        self._dispatcher.trigger(cancel);
+        self._dispatcher.trigger(resources_1.cancel);
         return self;
     },
     finish: function () {
         var self = this;
-        self._dispatcher.trigger(call, [finish]);
+        self._dispatcher.trigger(resources_1.call, [resources_1.finish]);
         self.currentTime(self._playbackRate < 0 ? 0 : self._duration);
-        self._dispatcher.trigger(finish);
+        self._dispatcher.trigger(resources_1.finish);
         return self;
     },
     play: function () {
         var self = this;
-        self._dispatcher.trigger(call, [play]);
-        self._dispatcher.trigger(play);
+        self._dispatcher.trigger(resources_1.call, [resources_1.play]);
+        self._dispatcher.trigger(resources_1.play);
         self._timeLoop.on(self._tick);
         return self;
     },
     pause: function () {
         var self = this;
-        self._dispatcher.trigger(call, [pause]);
-        self._dispatcher.trigger(pause);
+        self._dispatcher.trigger(resources_1.call, [resources_1.pause]);
+        self._dispatcher.trigger(resources_1.pause);
         return self;
     },
     reverse: function () {
         var self = this;
-        self._dispatcher.trigger(call, [reverse]);
-        self._dispatcher.trigger(reverse);
+        self._dispatcher.trigger(resources_1.call, [resources_1.reverse]);
+        self._dispatcher.trigger(resources_1.reverse);
         return self;
     },
     _tick: function () {
@@ -98,7 +91,7 @@ var multiAnimatorProtoType = {
         self._currentTime = firstEffect.currentTime();
         self._playbackRate = firstEffect.playbackRate();
         self._playState = firstEffect.playState();
-        if (self._playState !== running && self._playState !== pending) {
+        if (self._playState !== resources_1.running && self._playState !== resources_1.pending) {
             self._timeLoop.off(self._tick);
         }
     }
@@ -109,13 +102,13 @@ function createMultiAnimator(effects, timeLoop) {
     var dispatcher = Dispatcher_1.createDispatcher();
     var firstEffect = lists_1.head(effects);
     if (firstEffect) {
-        firstEffect.on(finish, function () {
-            self._dispatcher.trigger(finish);
+        firstEffect.on(resources_1.finish, function () {
+            self._dispatcher.trigger(resources_1.finish);
             self._timeLoop.off(self._tick);
         });
     }
     lists_1.each(effects, function (effect) {
-        dispatcher.on(call, function (functionName, arg1) { effect[functionName](arg1); });
+        dispatcher.on(resources_1.call, function (functionName, arg1) { effect[functionName](arg1); });
     });
     self._duration = lists_1.maxBy(effects, function (e) { return e.totalDuration(); });
     self._tick = self._tick.bind(self);

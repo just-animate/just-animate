@@ -5,6 +5,8 @@ import {createDispatcher, IDispatcher} from './Dispatcher';
 import {createKeyframeAnimation} from './KeyframeAnimation';
 import {createMultiAnimator}from './Animator';
 import {ITimeLoop} from './TimeLoop';
+import {invalidArg} from '../helpers/errors';
+import {duration, finish, cancel} from '../helpers/resources';
 
 
 // fixme!: this controls the amount of time left before the timeline gives up 
@@ -13,146 +15,146 @@ import {ITimeLoop} from './TimeLoop';
 const animationPadding = 1.0 / 30;
 
 const timelineAnimatorPrototype = {
-    __: undefined as ITimelineContext,
+    _: undefined as ITimelineContext,
 
     duration(): number {
-        return this.__._duration;
+        return this._.duration;
     },
     iterationStart(): number {
-        return this.__._iterationStart;
+        return this._.iterationStart;
     },
     iterations(): number {
-        return this.__._iterations;
+        return this._.iterations;
     },
     totalDuration(): number {
-        return this.__._totalDuration;
+        return this._.totalDuration;
     },
     endTime(): number {
-        return this.__._endTime;
+        return this._.endTime;
     },
     startTime(): number {
-        return this.__._startTime;
+        return this._.startTime;
     },
     currentTime(value?: number): number | ja.IAnimator {
         if (!isDefined(value)) {
-            return this.__._currentTime;
+            return this._.currentTime;
         }
-        this.__._currentTime = value;
+        this._.currentTime = value;
         return this;
     },
     playbackRate(value?: number): number | ja.IAnimator {
         if (!isDefined(value)) {
-            return this.__._playbackRate;
+            return this._.playbackRate;
         }
-        this.__._playbackRate = value;
+        this._.playbackRate = value;
         return this;
     },
     playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState | ja.IAnimator {
         if (!isDefined(value)) {
-            return this.__._playState;
+            return this._.playState;
         }
-        this.__._playState = value;
-        this.__._dispatcher.trigger('set', ['playbackState', value]);
+        this._.playState = value;
+        this._.dispatcher.trigger('set', ['playbackState', value]);
         return this;
     },
     on(eventName: string, listener: Function): ja.IAnimator {
-        this.__._dispatcher.on(eventName, listener);
+        this._.dispatcher.on(eventName, listener);
         return this;
     },
     off(eventName: string, listener: Function): ja.IAnimator {
-        this.__._dispatcher.off(eventName, listener);
+        this._.dispatcher.off(eventName, listener);
         return this;
     },
     finish(): ja.IAnimator {
-        this.__._isFinished = true;
+        this._.isFinished = true;
         return this;
     },
     play(): ja.IAnimator {
-        this.__._playbackRate = 1;
-        this.__._isPaused = false;
+        this._.playbackRate = 1;
+        this._.isPaused = false;
 
-        if (!this.__._isInEffect) {
-            if (this.__._playbackRate < 0) {
-                this.__._currentTime = this.__._duration;
+        if (!this._.isInEffect) {
+            if (this._.playbackRate < 0) {
+                this._.currentTime = this._.duration;
             } else {
-                this.__._currentTime = 0;
+                this._.currentTime = 0;
             }
-            window.requestAnimationFrame(_tick.bind(undefined, this.__));
+            window.requestAnimationFrame(tick.bind(undefined, this._));
         }
 
         return this;
     },
     pause(): ja.IAnimator {
-        if (this.__._isInEffect) {
-            this.__._isPaused = true;
+        if (this._.isInEffect) {
+            this._.isPaused = true;
         }
         return this;
     },
     reverse(): ja.IAnimator {
-        this.__._playbackRate = -1;
-        this.__._isPaused = false;
+        this._.playbackRate = -1;
+        this._.isPaused = false;
 
-        if (!this.__._isInEffect) {
-            if (this.__._currentTime <= 0) {
-                this.__._currentTime = this.__._duration;
+        if (!this._.isInEffect) {
+            if (this._.currentTime <= 0) {
+                this._.currentTime = this._.duration;
             }
-            window.requestAnimationFrame(_tick.bind(undefined, this.__));
+            window.requestAnimationFrame(tick.bind(undefined, this._));
         }
         return this;
     },
     cancel(): ja.IAnimator {
-        this.__._playbackRate = 0;
-        this.__._isCanceled = true;
+        this._.playbackRate = 0;
+        this._.isCanceled = true;
         return this;
     }
 };
 
 interface ITimelineContext {
-    _currentTime: number;
-    _dispatcher: IDispatcher;
-    _duration: number;    
-    _endTime: number;
-    _events: TimelineEvent[];
-    _isCanceled: boolean;
-    _isFinished: boolean;
-    _isInEffect: boolean;
-    _isPaused: boolean;
-    _iterationStart: number;    
-    _iterations: number;
-    _lastTick: number;
-    _playState: ja.AnimationPlaybackState;    
-    _playbackRate: number;    
-    _startTime: number;
-    _timeLoop: ITimeLoop;
-    _totalDuration: number;
+    currentTime: number;
+    dispatcher: IDispatcher;
+    duration: number;    
+    endTime: number;
+    events: ITimelineEvent[];
+    isCanceled: boolean;
+    isFinished: boolean;
+    isInEffect: boolean;
+    isPaused: boolean;
+    iterationStart: number;    
+    iterations: number;
+    lastTick: number;
+    playState: ja.AnimationPlaybackState;    
+    playbackRate: number;    
+    startTime: number;
+    timeLoop: ITimeLoop;
+    totalDuration: number;
 }
 
 export function createTimelineAnimator(options: ja.ITimelineOptions, timeloop: ITimeLoop): ja.IAnimator {
-    const self = Object.create(timelineAnimatorPrototype) as ja.IAnimator & { __: ITimelineContext};
+    const self = Object.create(timelineAnimatorPrototype) as ja.IAnimator & { _: ITimelineContext};
 
-    const duration = options.duration;
+    const duration1 = options.duration;
     if (!isDefined(duration)) {
-        throw 'Duration is required';
+        throw invalidArg(duration);
     }
 
-    self.__ = {
-        _currentTime: 0,
-        _dispatcher: createDispatcher(),
-        _duration: options.duration,
-        _endTime: undefined,
-        _events: map(options.events, (evt: ja.ITimelineEvent) => new TimelineEvent(timeloop, duration, evt)),
-        _isCanceled: undefined,
-        _isFinished: undefined,        
-        _isInEffect: undefined,   
-        _isPaused: undefined,        
-        _iterationStart: 0,
-        _iterations: 1,
-        _lastTick: undefined,
-        _playState: undefined,        
-        _playbackRate: 0,
-        _startTime: 0,
-        _timeLoop: timeloop,
-        _totalDuration: options.duration
+    self._ = {
+        currentTime: 0,
+        dispatcher: createDispatcher(),
+        duration: options.duration,
+        endTime: undefined,
+        events: map(options.events, (evt: ja.ITimelineEvent) => createEvent(timeloop, duration1, evt)),
+        isCanceled: undefined,
+        isFinished: undefined,        
+        isInEffect: undefined,   
+        isPaused: undefined,        
+        iterationStart: 0,
+        iterations: 1,
+        lastTick: undefined,
+        playState: undefined,        
+        playbackRate: 0,
+        startTime: 0,
+        timeLoop: timeloop,
+        totalDuration: options.duration
     }; 
 
     if (options.autoplay) {
@@ -163,138 +165,127 @@ export function createTimelineAnimator(options: ja.ITimelineOptions, timeloop: I
 }
 
 
-function _tick(self: ITimelineContext): void {
+function tick(self: ITimelineContext): void {
     // handle cancelation and finishing early
-    if (self._isCanceled) {
-        _triggerCancel(self);
+    if (self.isCanceled) {
+        triggerCancel(self);
         return;
     }
-    if (self._isFinished) {
-        _triggerFinish(self);
+    if (self.isFinished) {
+        triggerFinish(self);
         return;
     }
-    if (self._isPaused) {
-        _triggerPause(self);
+    if (self.isPaused) {
+        triggerPause(self);
         return;
     }
-    if (!self._isInEffect) {
-        self._isInEffect = true;
+    if (!self.isInEffect) {
+        self.isInEffect = true;
     }
 
     // calculate currentTime from delta
     const thisTick = performance.now();
-    const lastTick = self._lastTick;
+    const lastTick = self.lastTick;
     if (lastTick !== undefined) {
-        const delta = (thisTick - lastTick) * self._playbackRate;
-        self._currentTime += delta;
+        const delta = (thisTick - lastTick) * self.playbackRate;
+        self.currentTime += delta;
     }
-    self._lastTick = thisTick;
+    self.lastTick = thisTick;
 
     // check if animation has finished
-    if (self._currentTime > self._duration || self._currentTime < 0) {
-        _triggerFinish(self);
+    if (self.currentTime > self.duration || self.currentTime < 0) {
+        triggerFinish(self);
         return;
     }
 
-    // start animations if should be active and currently aren't       
-    each(self._events, (evt: TimelineEvent) => {
-        const startTimeMs = self._playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
-        const endTimeMs = self._playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-        const shouldBeActive = startTimeMs <= self._currentTime && self._currentTime < endTimeMs;
+    // start animations if should be active and currently aren't   
+    const playbackRate = self.playbackRate;    
+    each(self.events, (evt: ITimelineEvent) => {
+        const startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+        const endTimeMs = self.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+        const shouldBeActive = startTimeMs <= self.currentTime && self.currentTime < endTimeMs;
 
         if (!shouldBeActive) {
-            evt.isInEffect = false;
             return;
         }
 
         const animator = evt.animator();
 
-        animator.playbackRate(self._playbackRate);
-        evt.isInEffect = true;
+        animator.playbackRate(self.playbackRate);
         animator.play();
     });
 
-    window.requestAnimationFrame(_tick.bind(undefined, self));
+    window.requestAnimationFrame(tick.bind(undefined, self));
 }
-function _triggerFinish(self: ITimelineContext): void {
-    _reset(self);
-    each(self._events, (evt: TimelineEvent) => evt.animator().finish());
-    self._dispatcher.trigger('finish');
+function triggerFinish(self: ITimelineContext): void {
+    reset(self);
+    each(self.events, (evt: ITimelineEvent) => evt.animator().finish());
+    self.dispatcher.trigger(finish);
 }
-function _triggerCancel(self: ITimelineContext): void {
-    _reset(self);
-    each(self._events, (evt: TimelineEvent) => evt.animator().cancel());
-    self._dispatcher.trigger('cancel');
+function triggerCancel(self: ITimelineContext): void {
+    reset(self);
+    each(self.events, (evt: ITimelineEvent) => evt.animator().cancel());
+    self.dispatcher.trigger(cancel);
 }
-function _triggerPause(self: ITimelineContext): void {
-    self._isPaused = true;
-    self._isInEffect = false;
-    self._lastTick = undefined;
-    self._playbackRate = 0;
-    each(self._events, (evt: TimelineEvent) => {
-        evt.isInEffect = false;
+function triggerPause(self: ITimelineContext): void {
+    self.isPaused = true;
+    self.isInEffect = false;
+    self.lastTick = undefined;
+    self.playbackRate = 0;
+    each(self.events, (evt: ITimelineEvent) => {
         evt.animator().pause();
     });
 }
-function _reset(self: ITimelineContext): void {
-    self._currentTime = 0;
-    self._lastTick = undefined;
-    self._isCanceled = false;
-    self._isFinished = false;
-    self._isPaused = false;
-    self._isInEffect = false;
-
-    each(self._events, (evt: TimelineEvent) => {
-        evt.isInEffect = false;
-    });
+function reset(self: ITimelineContext): void {
+    self.currentTime = 0;
+    self.lastTick = undefined;
+    self.isCanceled = false;
+    self.isFinished = false;
+    self.isPaused = false;
+    self.isInEffect = false;
 }
 
+function createEvent(timeloop: ITimeLoop, timelineDuration: number, evt: ja.ITimelineEvent) {
+    const keyframes = evt.keyframes;
+    const timings = evt.timings;
+    const el = evt.el;
 
-class TimelineEvent {
-    public offset: number;
-    public el: ja.ElementSource;
-    public timings: ja.IAnimationEffectTiming;
-    public keyframes: ja.IKeyframeOptions[];
-    public endTimeMs: number;
-    public isClipped: boolean;
-    public startTimeMs: number;
-    public isInEffect: boolean;
-    private _animator: ja.IAnimator;
-    private _timeLoop: ITimeLoop;
+    // calculate endtime
+    const startTime = timelineDuration * evt.offset;
+    let endTime = startTime + timings.duration;
+    const isClipped = endTime > timelineDuration;
 
-    public animator(): ja.IAnimator {
-        if (!this._animator) {
-            const elements = queryElements(this.el);
-            const effects = map(elements, (e: any) => createKeyframeAnimation(e, this.keyframes, this.timings));
-            this._animator = createMultiAnimator(effects, this._timeLoop);
-            this._animator.pause();
-        }
-        return this._animator;
+    // if end of animation is clipped, set endTime to duration            
+    if (isClipped) {
+        endTime = timelineDuration;
     }
 
-    constructor(timeloop: ITimeLoop, timelineDuration: number, evt: ja.ITimelineEvent) {
-        const keyframes = evt.keyframes;
-        const timings = evt.timings;
-        const el = evt.el;
+    return {
+        _animator: undefined as ja.IAnimator,
+        _timeLoop: timeloop,
+        animator: animator,
+        el: el,
+        endTimeMs: endTime,        
+        isClipped: isClipped,
+        keyframes: keyframes,
+        offset: evt.offset,
+        startTimeMs: startTime,
+        timings: timings
+    };
+}
 
-        // calculate endtime
-        const startTime = timelineDuration * evt.offset;
-        let endTime = startTime + timings.duration;
-        const isClipped = endTime > timelineDuration;
-
-        // if end of animation is clipped, set endTime to duration            
-        if (isClipped) {
-            endTime = timelineDuration;
-        }
-
-        this.el = el;
-        this.isClipped = isClipped;
-        this.isInEffect = false;
-        this.endTimeMs = endTime;
-        this.keyframes = keyframes;
-        this.offset = evt.offset;
-        this.startTimeMs = startTime;
-        this.timings = timings;
-        this._timeLoop = timeloop;
+function animator(): ja.IAnimator {
+    if (!this._animator) {
+        const elements = queryElements(this.el);
+        const effects = map(elements, (e: any) => createKeyframeAnimation(e, this.keyframes, this.timings));
+        this._animator = createMultiAnimator(effects, this._timeLoop);
+        this._animator.pause();
     }
+    return this._animator;
+}
+
+interface ITimelineEvent {
+    startTimeMs: number;
+    endTimeMs: number;
+    animator(): ja.IAnimator;
 }

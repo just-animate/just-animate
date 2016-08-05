@@ -35,8 +35,8 @@ exports.tail = tail;
  * @param {T[]} list to convert
  * @returns {T[]} array clone of list
  */
-function toArray(indexed) {
-    return slice.call(indexed, 0);
+function toArray(indexed, index) {
+    return slice.call(indexed, index || 0);
 }
 exports.toArray = toArray;
 /**

@@ -1,5 +1,6 @@
 "use strict";
 var type_1 = require('../helpers/type');
+var errors_1 = require('../helpers/errors');
 var timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
 var Time = (function () {
     function Time(value, stagger) {
@@ -22,7 +23,7 @@ var Time = (function () {
             valueMs = value * 1000;
         }
         else {
-            throw 'bad time format';
+            throw errors_1.invalidArg('format');
         }
         var operatorEnum;
         switch (operator) {

@@ -39,8 +39,8 @@ export function tail<T>(indexed: IList<T>): T {
  * @param {T[]} list to convert
  * @returns {T[]} array clone of list
  */
-export function toArray<T>(indexed: IList<T>): T[] {
-    return slice.call(indexed, 0);
+export function toArray<T>(indexed: IList<T>, index?: number): T[] {
+    return slice.call(indexed, index || 0);
 }
 
 /**

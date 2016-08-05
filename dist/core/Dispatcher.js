@@ -1,5 +1,6 @@
 "use strict";
 var type_1 = require('../helpers/type');
+var errors_1 = require('../helpers/errors');
 var dispatcher = {
     _fn: undefined,
     trigger: function (eventName, args) {
@@ -14,7 +15,7 @@ var dispatcher = {
     },
     on: function (eventName, listener) {
         if (!type_1.isFunction(listener)) {
-            throw 'invalid listener';
+            throw errors_1.invalidArg('listener');
         }
         var listeners = this._fn[eventName];
         if (!listeners) {

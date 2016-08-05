@@ -10,4 +10,4 @@ if (typeof angular !== 'undefined') {
     angular.module('just.animate', []).service('just', JustAnimate);
 }
 
-window.just = new JustAnimate();
+window.just = JustAnimate();

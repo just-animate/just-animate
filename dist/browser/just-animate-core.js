@@ -5,8 +5,8 @@
     function head(indexed) {
         return (!indexed || indexed.length < 1) ? undefined : indexed[0];
     }
-    function toArray(indexed) {
-        return slice.call(indexed, 0);
+    function toArray(indexed, index) {
+        return slice.call(indexed, index || 0);
     }
     function each(items, fn) {
         for (var i = 0, len = items.length; i < len; i++) {
@@ -52,9 +52,13 @@
         return typeof a === 'string';
     }
 
+    function invalidArg(name) {
+        return new Error("Bad: " + name);
+    }
+
     function queryElements(source) {
         if (!source) {
-            throw 'no elements';
+            throw invalidArg('source');
         }
         if (isString(source)) {
             var nodeResults = document.querySelectorAll(source);
@@ -93,7 +97,7 @@
         },
         on: function (eventName, listener) {
             if (!isFunction(listener)) {
-                throw 'invalid listener';
+                throw invalidArg('listener');
             }
             var listeners = this._fn[eventName];
             if (!listeners) {
@@ -123,6 +127,40 @@
         self._fn = {};
         return self;
     }
+
+    var animate = 'animate';
+    var call = 'call';
+    var cancel = 'cancel';
+    var cubicBezier = 'cubic-bezier';
+    var duration = 'duration';
+    var finish = 'finish';
+    var pause = 'pause';
+    var pending = 'pending';
+    var play = 'play';
+    var reverse = 'reverse';
+    var rotate = 'rotate';
+    var rotate3d = 'rotate3d';
+    var rotateX = 'rotateX';
+    var rotateY = 'rotateY';
+    var rotateZ = 'rotateZ';
+    var running = 'running';
+    var scale = 'scale';
+    var scale3d = 'scale3d';
+    var scaleX = 'scaleX';
+    var scaleY = 'scaleY';
+    var scaleZ = 'scaleZ';
+    var skew = 'skew';
+    var skewX = 'skewX';
+    var skewY = 'skewY';
+    var transform = 'transform';
+    var translate = 'translate';
+    var translate3d = 'translate3d';
+    var translateX = 'translateX';
+    var translateY = 'translateY';
+    var translateZ = 'translateZ';
+    var x = 'x';
+    var y = 'y';
+    var z = 'z';
 
     var keyframeAnimationPrototype = {
         _dispatcher: undefined,
@@ -180,25 +218,25 @@
         cancel: function () {
             var self = this;
             self._animator.cancel();
-            self._dispatcher.trigger('cancel');
+            self._dispatcher.trigger(cancel);
             return self;
         },
         reverse: function () {
             var self = this;
             self._animator.reverse();
-            self._dispatcher.trigger('reverse');
+            self._dispatcher.trigger(reverse);
             return self;
         },
         pause: function () {
             var self = this;
             self._animator.pause();
-            self._dispatcher.trigger('pause');
+            self._dispatcher.trigger(pause);
             return self;
         },
         play: function () {
             var self = this;
             self._animator.play();
-            self._dispatcher.trigger('play');
+            self._dispatcher.trigger(play);
             return self;
         },
         finish: function () {
@@ -210,9 +248,9 @@
     function createKeyframeAnimation(target, keyframes, timings) {
         var self = Object.create(keyframeAnimationPrototype);
         var dispatcher = createDispatcher();
-        var animator = target['animate'](keyframes, timings);
+        var animator = target[animate](keyframes, timings);
         animator.pause();
-        animator['onfinish'] = function () { return dispatcher.trigger('finish'); };
+        animator['onfinish'] = function () { return dispatcher.trigger(finish); };
         self._iterationStart = timings.iterationStart || 0;
         self._iterations = timings.iterations || 1;
         self._duration = timings.duration;
@@ -224,14 +262,6 @@
         return self;
     }
 
-    var call = 'call';
-    var finish = 'finish';
-    var cancel = 'cancel';
-    var play = 'play';
-    var pause = 'pause';
-    var reverse = 'reverse';
-    var running = 'running';
-    var pending = 'pending';
     var multiAnimatorProtoType = {
         currentTime: function (value) {
             var self = this;
@@ -349,232 +379,227 @@
 
     var animationPadding = 1.0 / 30;
     var timelineAnimatorPrototype = {
-        __: undefined,
+        _: undefined,
         duration: function () {
-            return this.__._duration;
+            return this._.duration;
         },
         iterationStart: function () {
-            return this.__._iterationStart;
+            return this._.iterationStart;
         },
         iterations: function () {
-            return this.__._iterations;
+            return this._.iterations;
         },
         totalDuration: function () {
-            return this.__._totalDuration;
+            return this._.totalDuration;
         },
         endTime: function () {
-            return this.__._endTime;
+            return this._.endTime;
         },
         startTime: function () {
-            return this.__._startTime;
+            return this._.startTime;
         },
         currentTime: function (value) {
             if (!isDefined(value)) {
-                return this.__._currentTime;
+                return this._.currentTime;
             }
-            this.__._currentTime = value;
+            this._.currentTime = value;
             return this;
         },
         playbackRate: function (value) {
             if (!isDefined(value)) {
-                return this.__._playbackRate;
+                return this._.playbackRate;
             }
-            this.__._playbackRate = value;
+            this._.playbackRate = value;
             return this;
         },
         playState: function (value) {
             if (!isDefined(value)) {
-                return this.__._playState;
+                return this._.playState;
             }
-            this.__._playState = value;
-            this.__._dispatcher.trigger('set', ['playbackState', value]);
+            this._.playState = value;
+            this._.dispatcher.trigger('set', ['playbackState', value]);
             return this;
         },
         on: function (eventName, listener) {
-            this.__._dispatcher.on(eventName, listener);
+            this._.dispatcher.on(eventName, listener);
             return this;
         },
         off: function (eventName, listener) {
-            this.__._dispatcher.off(eventName, listener);
+            this._.dispatcher.off(eventName, listener);
             return this;
         },
         finish: function () {
-            this.__._isFinished = true;
+            this._.isFinished = true;
             return this;
         },
         play: function () {
-            this.__._playbackRate = 1;
-            this.__._isPaused = false;
-            if (!this.__._isInEffect) {
-                if (this.__._playbackRate < 0) {
-                    this.__._currentTime = this.__._duration;
+            this._.playbackRate = 1;
+            this._.isPaused = false;
+            if (!this._.isInEffect) {
+                if (this._.playbackRate < 0) {
+                    this._.currentTime = this._.duration;
                 }
                 else {
-                    this.__._currentTime = 0;
+                    this._.currentTime = 0;
                 }
-                window.requestAnimationFrame(_tick.bind(undefined, this.__));
+                window.requestAnimationFrame(tick.bind(undefined, this._));
             }
             return this;
         },
         pause: function () {
-            if (this.__._isInEffect) {
-                this.__._isPaused = true;
+            if (this._.isInEffect) {
+                this._.isPaused = true;
             }
             return this;
         },
         reverse: function () {
-            this.__._playbackRate = -1;
-            this.__._isPaused = false;
-            if (!this.__._isInEffect) {
-                if (this.__._currentTime <= 0) {
-                    this.__._currentTime = this.__._duration;
+            this._.playbackRate = -1;
+            this._.isPaused = false;
+            if (!this._.isInEffect) {
+                if (this._.currentTime <= 0) {
+                    this._.currentTime = this._.duration;
                 }
-                window.requestAnimationFrame(_tick.bind(undefined, this.__));
+                window.requestAnimationFrame(tick.bind(undefined, this._));
             }
             return this;
         },
         cancel: function () {
-            this.__._playbackRate = 0;
-            this.__._isCanceled = true;
+            this._.playbackRate = 0;
+            this._.isCanceled = true;
             return this;
         }
     };
     function createTimelineAnimator(options, timeloop) {
         var self = Object.create(timelineAnimatorPrototype);
-        var duration = options.duration;
+        var duration1 = options.duration;
         if (!isDefined(duration)) {
-            throw 'Duration is required';
+            throw invalidArg(duration);
         }
-        self.__ = {
-            _currentTime: 0,
-            _dispatcher: createDispatcher(),
-            _duration: options.duration,
-            _endTime: undefined,
-            _events: map(options.events, function (evt) { return new TimelineEvent(timeloop, duration, evt); }),
-            _isCanceled: undefined,
-            _isFinished: undefined,
-            _isInEffect: undefined,
-            _isPaused: undefined,
-            _iterationStart: 0,
-            _iterations: 1,
-            _lastTick: undefined,
-            _playState: undefined,
-            _playbackRate: 0,
-            _startTime: 0,
-            _timeLoop: timeloop,
-            _totalDuration: options.duration
+        self._ = {
+            currentTime: 0,
+            dispatcher: createDispatcher(),
+            duration: options.duration,
+            endTime: undefined,
+            events: map(options.events, function (evt) { return createEvent(timeloop, duration1, evt); }),
+            isCanceled: undefined,
+            isFinished: undefined,
+            isInEffect: undefined,
+            isPaused: undefined,
+            iterationStart: 0,
+            iterations: 1,
+            lastTick: undefined,
+            playState: undefined,
+            playbackRate: 0,
+            startTime: 0,
+            timeLoop: timeloop,
+            totalDuration: options.duration
         };
         if (options.autoplay) {
             self.play();
         }
         return self;
     }
-    function _tick(self) {
-        if (self._isCanceled) {
-            _triggerCancel(self);
+    function tick(self) {
+        if (self.isCanceled) {
+            triggerCancel(self);
             return;
         }
-        if (self._isFinished) {
-            _triggerFinish(self);
+        if (self.isFinished) {
+            triggerFinish(self);
             return;
         }
-        if (self._isPaused) {
-            _triggerPause(self);
+        if (self.isPaused) {
+            triggerPause(self);
             return;
         }
-        if (!self._isInEffect) {
-            self._isInEffect = true;
+        if (!self.isInEffect) {
+            self.isInEffect = true;
         }
         var thisTick = performance.now();
-        var lastTick = self._lastTick;
+        var lastTick = self.lastTick;
         if (lastTick !== undefined) {
-            var delta = (thisTick - lastTick) * self._playbackRate;
-            self._currentTime += delta;
+            var delta = (thisTick - lastTick) * self.playbackRate;
+            self.currentTime += delta;
         }
-        self._lastTick = thisTick;
-        if (self._currentTime > self._duration || self._currentTime < 0) {
-            _triggerFinish(self);
+        self.lastTick = thisTick;
+        if (self.currentTime > self.duration || self.currentTime < 0) {
+            triggerFinish(self);
             return;
         }
-        each(self._events, function (evt) {
-            var startTimeMs = self._playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
-            var endTimeMs = self._playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-            var shouldBeActive = startTimeMs <= self._currentTime && self._currentTime < endTimeMs;
+        var playbackRate = self.playbackRate;
+        each(self.events, function (evt) {
+            var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+            var endTimeMs = self.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+            var shouldBeActive = startTimeMs <= self.currentTime && self.currentTime < endTimeMs;
             if (!shouldBeActive) {
-                evt.isInEffect = false;
                 return;
             }
             var animator = evt.animator();
-            animator.playbackRate(self._playbackRate);
-            evt.isInEffect = true;
+            animator.playbackRate(self.playbackRate);
             animator.play();
         });
-        window.requestAnimationFrame(_tick.bind(undefined, self));
+        window.requestAnimationFrame(tick.bind(undefined, self));
     }
-    function _triggerFinish(self) {
-        _reset(self);
-        each(self._events, function (evt) { return evt.animator().finish(); });
-        self._dispatcher.trigger('finish');
+    function triggerFinish(self) {
+        reset(self);
+        each(self.events, function (evt) { return evt.animator().finish(); });
+        self.dispatcher.trigger(finish);
     }
-    function _triggerCancel(self) {
-        _reset(self);
-        each(self._events, function (evt) { return evt.animator().cancel(); });
-        self._dispatcher.trigger('cancel');
+    function triggerCancel(self) {
+        reset(self);
+        each(self.events, function (evt) { return evt.animator().cancel(); });
+        self.dispatcher.trigger(cancel);
     }
-    function _triggerPause(self) {
-        self._isPaused = true;
-        self._isInEffect = false;
-        self._lastTick = undefined;
-        self._playbackRate = 0;
-        each(self._events, function (evt) {
-            evt.isInEffect = false;
+    function triggerPause(self) {
+        self.isPaused = true;
+        self.isInEffect = false;
+        self.lastTick = undefined;
+        self.playbackRate = 0;
+        each(self.events, function (evt) {
             evt.animator().pause();
         });
     }
-    function _reset(self) {
-        self._currentTime = 0;
-        self._lastTick = undefined;
-        self._isCanceled = false;
-        self._isFinished = false;
-        self._isPaused = false;
-        self._isInEffect = false;
-        each(self._events, function (evt) {
-            evt.isInEffect = false;
-        });
+    function reset(self) {
+        self.currentTime = 0;
+        self.lastTick = undefined;
+        self.isCanceled = false;
+        self.isFinished = false;
+        self.isPaused = false;
+        self.isInEffect = false;
     }
-    var TimelineEvent = (function () {
-        function TimelineEvent(timeloop, timelineDuration, evt) {
-            var keyframes = evt.keyframes;
-            var timings = evt.timings;
-            var el = evt.el;
-            var startTime = timelineDuration * evt.offset;
-            var endTime = startTime + timings.duration;
-            var isClipped = endTime > timelineDuration;
-            if (isClipped) {
-                endTime = timelineDuration;
-            }
-            this.el = el;
-            this.isClipped = isClipped;
-            this.isInEffect = false;
-            this.endTimeMs = endTime;
-            this.keyframes = keyframes;
-            this.offset = evt.offset;
-            this.startTimeMs = startTime;
-            this.timings = timings;
-            this._timeLoop = timeloop;
+    function createEvent(timeloop, timelineDuration, evt) {
+        var keyframes = evt.keyframes;
+        var timings = evt.timings;
+        var el = evt.el;
+        var startTime = timelineDuration * evt.offset;
+        var endTime = startTime + timings.duration;
+        var isClipped = endTime > timelineDuration;
+        if (isClipped) {
+            endTime = timelineDuration;
         }
-        TimelineEvent.prototype.animator = function () {
-            var _this = this;
-            if (!this._animator) {
-                var elements = queryElements(this.el);
-                var effects = map(elements, function (e) { return createKeyframeAnimation(e, _this.keyframes, _this.timings); });
-                this._animator = createMultiAnimator(effects, this._timeLoop);
-                this._animator.pause();
-            }
-            return this._animator;
+        return {
+            _animator: undefined,
+            _timeLoop: timeloop,
+            animator: animator,
+            el: el,
+            endTimeMs: endTime,
+            isClipped: isClipped,
+            keyframes: keyframes,
+            offset: evt.offset,
+            startTimeMs: startTime,
+            timings: timings
         };
-        return TimelineEvent;
-    }());
+    }
+    function animator() {
+        var _this = this;
+        if (!this._animator) {
+            var elements = queryElements(this.el);
+            var effects = map(elements, function (e) { return createKeyframeAnimation(e, _this.keyframes, _this.timings); });
+            this._animator = createMultiAnimator(effects, this._timeLoop);
+            this._animator.pause();
+        }
+        return this._animator;
+    }
 
     var now = (performance && performance.now) ? function () { return performance.now(); } : function () { return Date.now(); };
     var raf = (window.requestAnimationFrame !== undefined)
@@ -670,32 +695,44 @@
         }
     }
 
+    var camelCaseRegex = /([a-z])[- ]([a-z])/ig;
+    function camelCaseReplacer(match, p1, p2) {
+        return p1 + p2.toUpperCase();
+    }
+    function toCamelCase(value) {
+        return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : undefined;
+    }
+    var cssFunction = function () {
+        var args = arguments;
+        return args[0] + "(" + toArray(args, 1).join(',') + ")";
+    };
+
     var easings = {
-        easeInBack: 'cubic-bezier(0.600, -0.280, 0.735, 0.045)',
-        easeInCirc: 'cubic-bezier(0.600, 0.040, 0.980, 0.335)',
-        easeInCubic: 'cubic-bezier(0.550, 0.055, 0.675, 0.190)',
-        easeInExpo: 'cubic-bezier(0.950, 0.050, 0.795, 0.035)',
-        easeInOutBack: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)',
-        easeInOutCirc: 'cubic-bezier(0.785, 0.135, 0.150, 0.860)',
-        easeInOutCubic: 'cubic-bezier(0.645, 0.045, 0.355, 1.000)',
-        easeInOutExpo: 'cubic-bezier(1.000, 0.000, 0.000, 1.000)',
-        easeInOutQuad: 'cubic-bezier(0.455, 0.030, 0.515, 0.955)',
-        easeInOutQuart: 'cubic-bezier(0.770, 0.000, 0.175, 1.000)',
-        easeInOutQuint: 'cubic-bezier(0.860, 0.000, 0.070, 1.000)',
-        easeInOutSine: 'cubic-bezier(0.445, 0.050, 0.550, 0.950)',
-        easeInQuad: 'cubic-bezier(0.550, 0.085, 0.680, 0.530)',
-        easeInQuart: 'cubic-bezier(0.895, 0.030, 0.685, 0.220)',
-        easeInQuint: 'cubic-bezier(0.755, 0.050, 0.855, 0.060)',
-        easeInSine: 'cubic-bezier(0.470, 0.000, 0.745, 0.715)',
-        easeOutBack: 'cubic-bezier(0.175,  0.885, 0.320, 1.275)',
-        easeOutCirc: 'cubic-bezier(0.075, 0.820, 0.165, 1.000)',
-        easeOutCubic: 'cubic-bezier(0.215, 0.610, 0.355, 1.000)',
-        easeOutExpo: 'cubic-bezier(0.190, 1.000, 0.220, 1.000)',
-        easeOutQuad: 'cubic-bezier(0.250, 0.460, 0.450, 0.940)',
-        easeOutQuart: 'cubic-bezier(0.165, 0.840, 0.440, 1.000)',
-        easeOutQuint: 'cubic-bezier(0.230, 1.000, 0.320, 1.000)',
-        easeOutSine: 'cubic-bezier(0.390, 0.575, 0.565, 1.000)',
-        elegantSlowStartEnd: 'cubic-bezier(0.175, 0.885, 0.320, 1.275)'
+        easeInBack: cssFunction(cubicBezier, 0.6, -0.28, 0.735, 0.045),
+        easeInCirc: cssFunction(cubicBezier, 0.6, 0.04, 0.98, 0.335),
+        easeInCubic: cssFunction(cubicBezier, 0.55, 0.055, 0.675, 0.19),
+        easeInExpo: cssFunction(cubicBezier, 0.95, 0.05, 0.795, 0.035),
+        easeInOutBack: cssFunction(cubicBezier, 0.68, -0.55, 0.265, 1.55),
+        easeInOutCirc: cssFunction(cubicBezier, 0.785, 0.135, 0.15, 0.86),
+        easeInOutCubic: cssFunction(cubicBezier, 0.645, 0.045, 0.355, 1),
+        easeInOutExpo: cssFunction(cubicBezier, 1, 0, 0, 1),
+        easeInOutQuad: cssFunction(cubicBezier, 0.455, 0.03, 0.515, 0.955),
+        easeInOutQuart: cssFunction(cubicBezier, 0.77, 0, 0.175, 1),
+        easeInOutQuint: cssFunction(cubicBezier, 0.86, 0, 0.07, 1),
+        easeInOutSine: cssFunction(cubicBezier, 0.445, 0.05, 0.55, 0.95),
+        easeInQuad: cssFunction(cubicBezier, 0.55, 0.085, 0.68, 0.53),
+        easeInQuart: cssFunction(cubicBezier, 0.895, 0.03, 0.685, 0.22),
+        easeInQuint: cssFunction(cubicBezier, 0.755, 0.05, 0.855, 0.06),
+        easeInSine: cssFunction(cubicBezier, 0.47, 0, 0.745, 0.715),
+        easeOutBack: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275),
+        easeOutCirc: cssFunction(cubicBezier, 0.075, 0.82, 0.165, 1),
+        easeOutCubic: cssFunction(cubicBezier, 0.215, 0.61, 0.355, 1),
+        easeOutExpo: cssFunction(cubicBezier, 0.19, 1, 0.22, 1),
+        easeOutQuad: cssFunction(cubicBezier, 0.25, 0.46, 0.45, 0.94),
+        easeOutQuart: cssFunction(cubicBezier, 0.165, 0.84, 0.44, 1),
+        easeOutQuint: cssFunction(cubicBezier, 0.23, 1, 0.32, 1),
+        easeOutSine: cssFunction(cubicBezier, 0.39, 0.575, 0.565, 1),
+        elegantSlowStartEnd: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275)
     };
 
     var pipe = function pipe() {
@@ -721,14 +758,6 @@
             }
         }
         return target;
-    }
-
-    var camelCaseRegex = /([a-z])[- ]([a-z])/ig;
-    function camelCaseReplacer(match, p1, p2) {
-        return p1 + p2.toUpperCase();
-    }
-    function toCamelCase(value) {
-        return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : undefined;
     }
 
     var offset = 'offset';
@@ -799,250 +828,249 @@
         return keyframes;
     }
     function normalizeProperties(keyframe) {
-        var x = 0;
-        var y = 1;
-        var z = 2;
-        var scale = new Array(3);
-        var skew = new Array(2);
-        var translate = new Array(3);
+        var xIndex = 0;
+        var yIndex = 1;
+        var zIndex = 2;
+        var scaleArray = [];
+        var skewArray = [];
+        var translateArray = [];
         var output = {};
-        var transform = '';
+        var transformString = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
             if (!isDefined(value)) {
                 continue;
             }
             switch (prop) {
-                case 'scale3d':
+                case scale3d:
                     if (isArray(value)) {
                         var arr = value;
                         if (arr.length !== 3) {
-                            throw Error('scale3d requires x, y, & z');
+                            throw invalidArg(scale3d);
                         }
-                        scale[x] = arr[x];
-                        scale[y] = arr[y];
-                        scale[z] = arr[z];
+                        scaleArray[xIndex] = arr[xIndex];
+                        scaleArray[yIndex] = arr[yIndex];
+                        scaleArray[zIndex] = arr[zIndex];
                         continue;
                     }
                     if (isNumber(value)) {
-                        scale[x] = value;
-                        scale[y] = value;
-                        scale[z] = value;
+                        scaleArray[xIndex] = value;
+                        scaleArray[yIndex] = value;
+                        scaleArray[zIndex] = value;
                         continue;
                     }
-                    throw Error('scale3d requires a number or number[]');
-                case 'scale':
+                    throw invalidArg(scale3d);
+                case scale:
                     if (isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
-                            throw Error('scale requires x & y');
+                            throw invalidArg(scale);
                         }
-                        scale[x] = arr[x];
-                        scale[y] = arr[y];
+                        scaleArray[xIndex] = arr[xIndex];
+                        scaleArray[yIndex] = arr[yIndex];
                         continue;
                     }
                     if (isNumber(value)) {
-                        scale[x] = value;
-                        scale[y] = value;
+                        scaleArray[xIndex] = value;
+                        scaleArray[yIndex] = value;
                         continue;
                     }
-                    throw Error('scale requires a number or number[]');
-                case 'scaleX':
+                    throw invalidArg(scale);
+                case scaleX:
                     if (isNumber(value)) {
-                        scale[x] = value;
+                        scaleArray[xIndex] = value;
                         continue;
                     }
-                    throw Error('scaleX requires a number');
-                case 'scaleY':
+                    throw invalidArg(scaleX);
+                case scaleY:
                     if (isNumber(value)) {
-                        scale[y] = value;
+                        scaleArray[yIndex] = value;
                         continue;
                     }
-                    throw Error('scaleY requires a number');
-                case 'scaleZ':
+                    throw invalidArg(scaleY);
+                case scaleZ:
                     if (isNumber(value)) {
-                        scale[z] = value;
+                        scaleArray[zIndex] = value;
                         continue;
                     }
-                    throw Error('scaleZ requires a number');
-                case 'skew':
+                    throw invalidArg(scaleZ);
+                case skew:
                     if (isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
-                            throw Error('skew requires x & y');
+                            throw invalidArg(skew);
                         }
-                        skew[x] = arr[x];
-                        skew[y] = arr[y];
+                        skewArray[xIndex] = arr[xIndex];
+                        skewArray[yIndex] = arr[yIndex];
                         continue;
                     }
                     if (isNumber(value)) {
-                        skew[x] = value;
-                        skew[y] = value;
+                        skewArray[xIndex] = value;
+                        skewArray[yIndex] = value;
                         continue;
                     }
-                    throw Error('skew requires a number, string, string[], or number[]');
-                case 'skewX':
+                    throw invalidArg(skew);
+                case skewX:
                     if (isString(value)) {
-                        skew[x] = value;
+                        skewArray[xIndex] = value;
                         continue;
                     }
-                    throw Error('skewX requires a number or string');
-                case 'skewY':
+                    throw invalidArg(skewX);
+                case skewY:
                     if (isString(value)) {
-                        skew[y] = value;
+                        skewArray[yIndex] = value;
                         continue;
                     }
-                    throw Error('skewY requires a number or string');
-                case 'rotate3d':
+                    throw invalidArg(skewY);
+                case rotate3d:
                     if (isArray(value)) {
                         var arr = value;
                         if (arr.length !== 4) {
-                            throw Error('rotate3d requires x, y, z, & a');
+                            throw invalidArg(rotate3d);
                         }
-                        transform += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
+                        transformString += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
                         continue;
                     }
-                    throw Error('rotate3d requires an []');
-                case 'rotateX':
+                    throw invalidArg(rotate3d);
+                case rotateX:
                     if (isString(value)) {
-                        transform += " rotate3d(1, 0, 0, " + value + ")";
+                        transformString += " rotate3d(1, 0, 0, " + value + ")";
                         continue;
                     }
-                    throw Error('rotateX requires a string');
-                case 'rotateY':
+                    throw invalidArg(rotateX);
+                case rotateY:
                     if (isString(value)) {
-                        transform += " rotate3d(0, 1, 0, " + value + ")";
+                        transformString += " rotate3d(0, 1, 0, " + value + ")";
                         continue;
                     }
-                    throw Error('rotateY requires a string');
-                case 'rotate':
-                case 'rotateZ':
+                    throw invalidArg(rotateY);
+                case rotate:
+                case rotateZ:
                     if (isString(value)) {
-                        transform += " rotate3d(0, 0, 1, " + value + ")";
+                        transformString += " rotate3d(0, 0, 1, " + value + ")";
                         continue;
                     }
-                    throw Error('rotateZ requires a string');
-                case 'translate3d':
+                    throw invalidArg(rotateZ);
+                case translate3d:
                     if (isArray(value)) {
                         var arr = value;
                         if (arr.length !== 3) {
-                            throw Error('translate3d requires x, y, & z');
+                            throw invalidArg(translate3d);
                         }
-                        translate[x] = arr[x];
-                        translate[y] = arr[y];
-                        translate[z] = arr[z];
+                        translateArray[xIndex] = arr[xIndex];
+                        translateArray[yIndex] = arr[yIndex];
+                        translateArray[zIndex] = arr[zIndex];
                         continue;
                     }
                     if (isString(value) || isNumber(value)) {
-                        translate[x] = value;
-                        translate[y] = value;
-                        translate[z] = value;
+                        translateArray[xIndex] = value;
+                        translateArray[yIndex] = value;
+                        translateArray[zIndex] = value;
                         continue;
                     }
-                    throw Error('translate3d requires a number, string, string[], or number[]');
-                case 'translate':
+                    throw invalidArg(rotate3d);
+                case translate:
                     if (isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
-                            throw Error('translate requires x & y');
+                            throw invalidArg(translate);
                         }
-                        translate[x] = arr[x];
-                        translate[y] = arr[y];
+                        translateArray[xIndex] = arr[xIndex];
+                        translateArray[yIndex] = arr[yIndex];
                         continue;
                     }
                     if (isString(value) || isNumber(value)) {
-                        translate[x] = value;
-                        translate[y] = value;
+                        translateArray[xIndex] = value;
+                        translateArray[yIndex] = value;
                         continue;
                     }
-                    throw Error('translate requires a number, string, string[], or number[]');
-                case 'x':
-                case 'translateX':
+                    throw invalidArg(translate);
+                case x:
+                case translateX:
                     if (isString(value) || isNumber(value)) {
-                        translate[x] = value;
+                        translateArray[xIndex] = value;
                         continue;
                     }
-                    throw Error('translateX requires a number or string');
-                case 'y':
-                case 'translateY':
+                    throw invalidArg(x);
+                case y:
+                case translateY:
                     if (isString(value) || isNumber(value)) {
-                        translate[y] = value;
+                        translateArray[yIndex] = value;
                         continue;
                     }
-                    throw Error('translateY requires a number or string');
-                case 'z':
-                case 'translateZ':
+                    throw invalidArg(y);
+                case z:
+                case translateZ:
                     if (isString(value) || isNumber(value)) {
-                        translate[z] = value;
+                        translateArray[zIndex] = value;
                         continue;
                     }
-                    throw Error('translateZ requires a number or string');
-                case 'transform':
-                    transform += ' ' + value;
+                    throw invalidArg(z);
+                case transform:
+                    transformString += ' ' + value;
                     break;
                 default:
-                    var prop2 = toCamelCase(prop);
-                    output[prop2] = value;
+                    output[toCamelCase(prop)] = value;
                     break;
             }
         }
-        var isScaleX = scale[x] !== undefined;
-        var isScaleY = scale[y] !== undefined;
-        var isScaleZ = scale[z] !== undefined;
+        var isScaleX = scaleArray[xIndex] !== undefined;
+        var isScaleY = scaleArray[yIndex] !== undefined;
+        var isScaleZ = scaleArray[zIndex] !== undefined;
         if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
-            var scaleString = scale.map(function (s) { return s || '1'; }).join(',');
-            transform += " scale3d(" + scaleString + ")";
+            var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
+            transformString += " scale3d(" + scaleString + ")";
         }
         else if (isScaleX && isScaleY) {
-            transform += " scale(" + (scale[x] || 1) + ", " + (scale[y] || 1) + ")";
+            transformString += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
         }
         else if (isScaleX) {
-            transform += " scaleX(" + scale[x] + ")";
+            transformString += " scaleX(" + scaleArray[xIndex] + ")";
         }
         else if (isScaleY) {
-            transform += " scaleX(" + scale[y] + ")";
+            transformString += " scaleX(" + scaleArray[yIndex] + ")";
         }
         else if (isScaleZ) {
-            transform += " scaleX(" + scale[z] + ")";
+            transformString += " scaleX(" + scaleArray[zIndex] + ")";
         }
         else {
         }
-        var isskewX = skew[x] !== undefined;
-        var isskewY = skew[y] !== undefined;
+        var isskewX = skewArray[xIndex] !== undefined;
+        var isskewY = skewArray[yIndex] !== undefined;
         if (isskewX && isskewY) {
-            transform += " skew(" + (skew[x] || 1) + ", " + (skew[y] || 1) + ")";
+            transformString += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
         }
         else if (isskewX) {
-            transform += " skewX(" + skew[x] + ")";
+            transformString += " skewX(" + skewArray[xIndex] + ")";
         }
         else if (isskewY) {
-            transform += " skewY(" + skew[y] + ")";
+            transformString += " skewY(" + skewArray[yIndex] + ")";
         }
         else {
         }
-        var istranslateX = translate[x] !== undefined;
-        var istranslateY = translate[y] !== undefined;
-        var istranslateZ = translate[z] !== undefined;
+        var istranslateX = translateArray[xIndex] !== undefined;
+        var istranslateY = translateArray[yIndex] !== undefined;
+        var istranslateZ = translateArray[zIndex] !== undefined;
         if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
-            var translateString = translate.map(function (s) { return s || '1'; }).join(',');
-            transform += " translate3d(" + translateString + ")";
+            var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
+            transformString += " translate3d(" + translateString + ")";
         }
         else if (istranslateX && istranslateY) {
-            transform += " translate(" + (translate[x] || 1) + ", " + (translate[y] || 1) + ")";
+            transformString += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
         }
         else if (istranslateX) {
-            transform += " translateX(" + translate[x] + ")";
+            transformString += " translateX(" + translateArray[xIndex] + ")";
         }
         else if (istranslateY) {
-            transform += " translateY(" + translate[y] + ")";
+            transformString += " translateY(" + translateArray[yIndex] + ")";
         }
         else if (istranslateZ) {
-            transform += " translateZ(" + translate[z] + ")";
+            transformString += " translateZ(" + translateArray[zIndex] + ")";
         }
         else {
         }
-        if (transform) {
-            output['transform'] = transform;
+        if (transformString) {
+            output['transform'] = transformString;
         }
         return output;
     }
@@ -1145,6 +1173,6 @@
     if (typeof angular !== 'undefined') {
         angular.module('just.animate', []).service('just', JustAnimate);
     }
-    window.just = new JustAnimate();
+    window.just = JustAnimate();
 
 }());
