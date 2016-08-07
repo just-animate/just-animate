@@ -19,23 +19,12 @@
 <body>
     <div class="container text-center">
         <div class="well">
-            <span class="step">step</span>
-            <strong class="step">step</strong>
-            <em class="step">step</em>
-            <span class="step">step</span>
-            <strong class="step">step</strong>
-            <em class="step">step</em>
-            <span class="step">step</span>
-            <strong class="step">step</strong>
-            <em class="step">step</em>
-            <span class="step">step</span>
-            <strong class="step">step</strong>
-            <em class="step">step</em>
-            <span class="step">step</span>
-            <strong class="step">step</strong>
-            <em class="step">step</em>
-            <span class="step">step</span>
-
+            <span id="one" class="step">Step 1</span>
+            <strong id="two" class="step">Step 2</strong>
+            <em id="three" class="step">Step 3</em>
+            <span id="four" class="step">Step 4</span>
+            <strong id="five" class="step">Step 5</strong>
+            <em id="six" class="step">Step 6</em>
         </div>
         <button class="btn btn-primary" id="play">
             Play
@@ -54,25 +43,45 @@
         </button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-    <script src="../dist/browser/just-animate-core.js"></script>
-    <script src="../dist/browser/just-animate-animations.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
+    <script src="../dist/browser/just-animate-core.min.js"></script>
+    <script src="../dist/browser/just-animate-animations.min.js"></script>
     
     <script type="text/javascript">
         var stepElements = document.querySelectorAll('.step');
-        var steps = [];
-        for (var i = 0; i < stepElements.length; i++) {
-            steps.push({
-                el: stepElements[i],
-                name: 'zoomIn'
-            })
-        }
         
-        var player = just.animateSequence({
-            steps: steps,
-            autoplay: false
-        });
-            
+        var player = just
+            .animate({
+                targets: '#one',
+                name: 'zoomIn',
+                fill: 'none'
+            })
+            .animate({
+                targets: '#two',
+                name: 'fadeIn',
+                fill: 'none'
+            })
+            .animate({
+                targets: '#three',
+                name: 'bounceIn',
+                fill: 'none'
+            })
+            .animate({
+                targets: '#four',
+                name: 'zoomIn',
+                fill: 'none'
+            })
+            .animate({
+                targets: '#five',
+                name: 'fadeIn',
+                fill: 'none'
+            })
+            .animate({
+                targets: '#six',
+                name: 'bounceIn',
+                fill: 'none'
+            });
+
         var playButton = document.getElementById('play');
         playButton.addEventListener('click', function() {
             player.play();
@@ -85,7 +94,7 @@
         
         var reverseButton = document.getElementById('reverse');
         reverseButton.addEventListener('click', function() {
-            player.reverse();
+            player.reverse().play();
         });
         
         var cancelButton = document.getElementById('cancel');

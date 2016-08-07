@@ -17,9 +17,7 @@ exports.zoomInDown = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 1000,
-        easing: 'easeInCubic'
-    },
+    to: 1000,
+    easing: 'easeInCubic',
     name: 'zoomInDown'
 };

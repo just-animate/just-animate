@@ -1,4 +1,4 @@
-export const headShake: ja.IAnimationOptions = {
+export const headShake: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -33,9 +33,7 @@ export const headShake: ja.IAnimationOptions = {
       translateX: '0'
     }
   ],
-  timings: {
-    duration: 1000,
-    easing: 'ease-out'
-  },
+  to: 1000,
+  easing: 'ease-out',
   name: 'headShake'
 };

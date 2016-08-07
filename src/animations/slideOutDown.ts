@@ -1,4 +1,4 @@
-export const slideOutDown: ja.IAnimationOptions = {
+export const slideOutDown: ja.IAnimationPreset = {
   keyframes: [
     {
       transform: 'translate3d(0, 0, 0)',
@@ -9,8 +9,8 @@ export const slideOutDown: ja.IAnimationOptions = {
       transform: 'translate3d(0, 100%, 0)'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'slideOutDown'
 };

@@ -1,4 +1,4 @@
-export const slideInDown: ja.IAnimationOptions = {
+export const slideInDown: ja.IAnimationPreset = {
   keyframes: [
     {
       transform: 'translate3d(0, -100%, 0)',
@@ -9,8 +9,8 @@ export const slideInDown: ja.IAnimationOptions = {
       visibility: 'visible'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'slideInDown'
 };

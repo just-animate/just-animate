@@ -1,6 +1,8 @@
+import {nothing} from '../helpers/resources';
+
 const now = (performance && performance.now) ? () => performance.now() : () => Date.now();
 
-const raf = (window.requestAnimationFrame !== undefined)
+const raf = (window.requestAnimationFrame !== nothing)
     ? (ctx: any, fn: Function) => {
         window.requestAnimationFrame(() => { fn(ctx); });
     }
@@ -8,47 +10,48 @@ const raf = (window.requestAnimationFrame !== undefined)
         setTimeout(() => { fn(ctx); }, 16.66);    
     };
 
-export function createLoop(): ITimeLoop {
-    const ctx: ITimeLoopContext = {
-        active: [],
-        elapses: [],
-        isActive: false,
-        lastTime: undefined,
-        offs: [],
-        ons: []
-    };
-    return {
-        off: (fn: ITimeLoopCallback) => off(ctx, fn),
-        on: (fn: ITimeLoopCallback) => on(ctx, fn)
-    };
+export function TimeLoop(): ITimeLoop {
+    const self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
+    self.active = [];
+    self.elapses = [];
+    self.isActive = nothing;
+    self.lastTime = nothing;
+    self.offs = [];
+    self.ons = [];
+    return self;
 }
 
-function on(self: ITimeLoopContext, fn: ITimeLoopCallback): void {
-    const offIndex = self.offs.indexOf(fn);
-    if (offIndex !== -1) {
-        self.offs.splice(offIndex, 1);
+TimeLoop.prototype = {
+    on(fn: ITimeLoopCallback): void {
+        const self = this;
+        const offIndex = self.offs.indexOf(fn);
+        if (offIndex !== -1) {
+            self.offs.splice(offIndex, 1);
+        }
+        if (self.ons.indexOf(fn) === -1) {
+            self.ons.push(fn);
+        }
+        if (!self.isActive) {
+            self.isActive = true;
+            raf(self, update);
+        }
+    },
+    off(fn: ITimeLoopCallback): void {
+        const self = this;
+        const onIndex = self.ons.indexOf(fn);
+        if (onIndex !== -1) {
+            self.ons.splice(onIndex, 1);
+        }
+        if (self.offs.indexOf(fn) === -1) {
+            self.offs.push(fn);
+        }
+        if (!self.isActive) {
+            self.isActive = true;
+            raf(self, update);
+        }
     }
-    if (self.ons.indexOf(fn) === -1) {
-        self.ons.push(fn);
-    }
-    if (!self.isActive) {
-        self.isActive = true;
-        raf(self, update);
-    }
-}
-function off(self: ITimeLoopContext, fn: ITimeLoopCallback): void {  
-    const onIndex = self.ons.indexOf(fn);
-    if (onIndex !== -1) {
-        self.ons.splice(onIndex, 1);
-    }
-    if (self.offs.indexOf(fn) === -1) {
-        self.offs.push(fn);
-    }
-    if (!self.isActive) {
-        self.isActive = true;
-        raf(self, update);
-    }
-}
+};
+
 
 function update(self: ITimeLoopContext): void {
     updateOffs(self);
@@ -65,8 +68,8 @@ function update(self: ITimeLoopContext): void {
     // if nothing is subscribed, kill the cycle
     if (!len) {
         // end recursion
-        self.isActive = false;
-        self.lastTime = undefined;
+        self.isActive = nothing;
+        self.lastTime = nothing;
         return;
     }
 

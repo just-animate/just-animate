@@ -28,8 +28,6 @@ exports.hinge = {
             opacity: 0
         }
     ],
-    timings: {
-        duration: 2000
-    },
+    to: 2000,
     name: 'hinge'
 };

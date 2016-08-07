@@ -1,4 +1,4 @@
-export const rollIn: ja.IAnimationOptions = {
+export const rollIn: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 0,
@@ -9,8 +9,8 @@ export const rollIn: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'rollIn'
 };

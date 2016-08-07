@@ -1,3 +1,5 @@
+import {nothing} from '../helpers/resources';
+
 const ostring = Object.prototype.toString;
 
 /**
@@ -12,7 +14,7 @@ export function isArray(a: any): boolean {
 }
 
 export function isDefined(a: any): boolean {
-    return a !== undefined && a !== null && a !== '';
+    return a !== nothing && a !== null && a !== '';
 }
 
 /**

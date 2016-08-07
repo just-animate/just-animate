@@ -1,4 +1,4 @@
-export const zoomOutDown: ja.IAnimationOptions = {
+export const zoomOutDown: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -19,9 +19,9 @@ export const zoomOutDown: ja.IAnimationOptions = {
       transformOrigin: 'center bottom'
     }
   ],
-  timings: {
-    duration: 1000,
+  
+    to: 1000,
     easing: 'elegantSlowStartEnd'
-  },
+  ,
   name: 'zoomOutDown'
 };

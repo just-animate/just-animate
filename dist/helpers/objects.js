@@ -1,4 +1,5 @@
 "use strict";
+var type_1 = require('./type');
 /**
  * Extends the first object with the properties of each subsequent object
  *
@@ -7,17 +8,27 @@
  * @param {...any[]} sources sources from which to inherit properties
  * @returns {*} first object
  */
-function extend(target) {
-    var sources = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        sources[_i - 1] = arguments[_i];
-    }
-    for (var i = 1, len = arguments.length; i < len; i++) {
-        var source = arguments[i];
+exports.extend = function () {
+    var args = arguments;
+    var target = args[0];
+    for (var i = 1, len = args.length; i < len; i++) {
+        var source = args[i];
         for (var propName in source) {
             target[propName] = source[propName];
         }
     }
     return target;
-}
-exports.extend = extend;
+};
+exports.inherit = function () {
+    var args = arguments;
+    var target = args[0];
+    for (var i = 1, len = args.length; i < len; i++) {
+        var source = args[i];
+        for (var propName in source) {
+            if (!type_1.isDefined(target[propName])) {
+                target[propName] = source[propName];
+            }
+        }
+    }
+    return target;
+};

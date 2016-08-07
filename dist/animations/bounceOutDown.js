@@ -26,9 +26,7 @@ exports.bounceOutDown = {
             transform: 'translate3d(0, 2000px, 0)'
         }
     ],
-    timings: {
-        duration: 900,
-        fill: 'both'
-    },
+    to: 900,
+    fill: 'both',
     name: 'bounceOutDown'
 };

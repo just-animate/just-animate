@@ -45,11 +45,9 @@ System.register("just-animate/animations/bounce", [], function(exports_1, contex
                         y: 0
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    easing: 'easeOutCubic',
-                    fill: 'both'
-                }
+                to: 900,
+                easing: 'easeOutCubic',
+                fill: 'both'
             });
         }
     }
@@ -86,11 +84,9 @@ System.register("just-animate/animations/bounceIn", [], function(exports_2, cont
                         scale: 1
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both',
-                    easing: 'easeOutCubic'
-                }
+                to: 900,
+                fill: 'both',
+                easing: 'easeOutCubic'
             });
         }
     }
@@ -130,11 +126,9 @@ System.register("just-animate/animations/bounceInDown", [], function(exports_3, 
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both',
-                    easing: 'easeOutCubic'
-                },
+                to: 900,
+                fill: 'both',
+                easing: 'easeOutCubic',
                 name: 'bounceInDown'
             });
         }
@@ -175,11 +169,9 @@ System.register("just-animate/animations/bounceInLeft", [], function(exports_4, 
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both',
-                    easing: 'easeOutCubic'
-                },
+                to: 900,
+                fill: 'both',
+                easing: 'easeOutCubic',
                 name: 'bounceInLeft'
             });
         }
@@ -218,11 +210,9 @@ System.register("just-animate/animations/bounceInRight", [], function(exports_5,
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both',
-                    easing: 'easeOutCubic'
-                },
+                to: 900,
+                fill: 'both',
+                easing: 'easeOutCubic',
                 name: 'bounceInRight'
             });
         }
@@ -263,11 +253,9 @@ System.register("just-animate/animations/bounceInUp", [], function(exports_6, co
                         transform: 'translate3d(0, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both',
-                    easing: 'easeOutCubic'
-                },
+                to: 900,
+                fill: 'both',
+                easing: 'easeOutCubic',
                 name: 'bounceInUp'
             });
         }
@@ -307,10 +295,8 @@ System.register("just-animate/animations/bounceOut", [], function(exports_7, con
                         transform: 'scale3d(.3, .3, .3)'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both'
-                },
+                to: 900,
+                fill: 'both',
                 name: 'bounceOut'
             });
         }
@@ -350,10 +336,8 @@ System.register("just-animate/animations/bounceOutDown", [], function(exports_8,
                         transform: 'translate3d(0, 2000px, 0)'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both'
-                },
+                to: 900,
+                fill: 'both',
                 name: 'bounceOutDown'
             });
         }
@@ -384,10 +368,8 @@ System.register("just-animate/animations/bounceOutLeft", [], function(exports_9,
                         transform: 'translate3d(-2000px, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both'
-                },
+                to: 900,
+                fill: 'both',
                 name: 'bounceOutLeft'
             });
         }
@@ -418,10 +400,8 @@ System.register("just-animate/animations/bounceOutRight", [], function(exports_1
                         transform: 'translate3d(2000px, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both'
-                },
+                to: 900,
+                fill: 'both',
                 name: 'bounceOutRight'
             });
         }
@@ -462,10 +442,8 @@ System.register("just-animate/animations/bounceOutUp", [], function(exports_11, 
                         transform: 'translate3d(0, -2000px, 0)'
                     }
                 ],
-                timings: {
-                    duration: 900,
-                    fill: 'both'
-                },
+                to: 900,
+                fill: 'both',
                 name: 'bounceOutUp'
             });
         }
@@ -487,11 +465,9 @@ System.register("just-animate/animations/fadeIn", [], function(exports_12, conte
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 650,
-                    fill: 'both',
-                    easing: 'ease-in'
-                },
+                to: 650,
+                fill: 'both',
+                easing: 'ease-in',
                 name: 'fadeIn'
             });
         }
@@ -515,10 +491,8 @@ System.register("just-animate/animations/fadeInDown", [], function(exports_13, c
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 650,
-                    fill: 'both'
-                },
+                to: 650,
+                fill: 'both',
                 name: 'fadeInDown'
             });
         }
@@ -542,11 +516,9 @@ System.register("just-animate/animations/fadeInDownBig", [], function(exports_14
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1300,
-                    fill: 'both',
-                    easing: 'ease-out'
-                },
+                to: 1300,
+                fill: 'both',
+                easing: 'ease-out',
                 name: 'fadeInDownBig'
             });
         }
@@ -570,11 +542,9 @@ System.register("just-animate/animations/fadeInLeft", [], function(exports_15, c
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 650,
-                    fill: 'both',
-                    easing: 'ease-in'
-                },
+                to: 650,
+                fill: 'both',
+                easing: 'ease-in',
                 name: 'fadeInLeft'
             });
         }
@@ -598,11 +568,9 @@ System.register("just-animate/animations/fadeInLeftBig", [], function(exports_16
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1300,
-                    fill: 'both',
-                    easing: 'ease-out'
-                },
+                to: 1300,
+                fill: 'both',
+                easing: 'ease-out',
                 name: 'fadeInLeftBig'
             });
         }
@@ -626,11 +594,9 @@ System.register("just-animate/animations/fadeInRight", [], function(exports_17, 
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 650,
-                    fill: 'both',
-                    easing: 'ease-in'
-                },
+                to: 650,
+                fill: 'both',
+                easing: 'ease-in',
                 name: 'fadeInRight'
             });
         }
@@ -654,11 +620,9 @@ System.register("just-animate/animations/fadeInRightBig", [], function(exports_1
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1300,
-                    fill: 'both',
-                    easing: 'ease-out'
-                },
+                to: 1300,
+                fill: 'both',
+                easing: 'ease-out',
                 name: 'fadeInRightBig'
             });
         }
@@ -682,11 +646,9 @@ System.register("just-animate/animations/fadeInUp", [], function(exports_19, con
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 650,
-                    fill: 'both',
-                    easing: 'ease-in'
-                },
+                to: 650,
+                fill: 'both',
+                easing: 'ease-in',
                 name: 'fadeInUp'
             });
         }
@@ -710,11 +672,9 @@ System.register("just-animate/animations/fadeInUpBig", [], function(exports_20, 
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1300,
-                    fill: 'both',
-                    easing: 'ease-out'
-                },
+                to: 1300,
+                fill: 'both',
+                easing: 'ease-out',
                 name: 'fadeInUpBig'
             });
         }
@@ -736,10 +696,8 @@ System.register("just-animate/animations/fadeOut", [], function(exports_21, cont
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 650,
-                    fill: 'both'
-                },
+                to: 650,
+                fill: 'both',
                 name: 'fadeOut'
             });
         }
@@ -763,9 +721,7 @@ System.register("just-animate/animations/fadeOutDown", [], function(exports_22, 
                         transform: 'translate3d(0, 100%, 0)'
                     }
                 ],
-                timings: {
-                    duration: 650
-                },
+                to: 650,
                 name: 'fadeOutDown'
             });
         }
@@ -789,9 +745,7 @@ System.register("just-animate/animations/fadeOutDownBig", [], function(exports_2
                         transform: 'translate3d(0, 2000px, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1300
-                },
+                to: 1300,
                 name: 'fadeOutDownBig'
             });
         }
@@ -815,9 +769,7 @@ System.register("just-animate/animations/fadeOutLeft", [], function(exports_24, 
                         transform: 'translate3d(-100%, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 650
-                },
+                to: 650,
                 name: 'fadeOutLeft'
             });
         }
@@ -841,9 +793,7 @@ System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_2
                         transform: 'translate3d(-2000px, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1300
-                },
+                to: 1300,
                 name: 'fadeOutLeftBig'
             });
         }
@@ -867,9 +817,7 @@ System.register("just-animate/animations/fadeOutRight", [], function(exports_26,
                         transform: 'translate3d(100%, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 650
-                },
+                to: 650,
                 name: 'fadeOutRight'
             });
         }
@@ -893,9 +841,7 @@ System.register("just-animate/animations/fadeOutRightBig", [], function(exports_
                         transform: 'translate3d(2000px, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1300
-                },
+                to: 1300,
                 name: 'fadeOutRightBig'
             });
         }
@@ -919,9 +865,7 @@ System.register("just-animate/animations/fadeOutUp", [], function(exports_28, co
                         transform: 'translate3d(0, -100%, 0)'
                     }
                 ],
-                timings: {
-                    duration: 650
-                },
+                to: 650,
                 name: 'fadeOutUp'
             });
         }
@@ -945,9 +889,7 @@ System.register("just-animate/animations/fadeOutUpBig", [], function(exports_29,
                         transform: 'translate3d(0, -2000px, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1300
-                },
+                to: 1300,
                 name: 'fadeOutUpBig'
             });
         }
@@ -978,9 +920,7 @@ System.register("just-animate/animations/flash", [], function(exports_30, contex
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'flash'
             });
         }
@@ -1016,9 +956,7 @@ System.register("just-animate/animations/flip", [], function(exports_31, context
                         transform: 'perspective(400px)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'flip'
             });
         }
@@ -1061,9 +999,7 @@ System.register("just-animate/animations/flipInX", [], function(exports_32, cont
                         transform: 'perspective(400px)'
                     }
                 ],
-                timings: {
-                    duration: 750
-                },
+                to: 750,
                 name: 'flipInX'
             });
         }
@@ -1106,9 +1042,7 @@ System.register("just-animate/animations/flipInY", [], function(exports_33, cont
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 750
-                },
+                to: 750,
                 name: 'flipInY'
             });
         }
@@ -1139,9 +1073,7 @@ System.register("just-animate/animations/flipOutX", [], function(exports_34, con
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 750
-                },
+                to: 750,
                 name: 'flipOutX'
             });
         }
@@ -1172,9 +1104,7 @@ System.register("just-animate/animations/flipOutY", [], function(exports_35, con
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 750
-                },
+                to: 750,
                 name: 'flipOutY'
             });
         }
@@ -1222,10 +1152,8 @@ System.register("just-animate/animations/headShake", [], function(exports_36, co
                         translateX: '0'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'ease-out'
-                },
+                to: 1000,
+                easing: 'ease-out',
                 name: 'headShake'
             });
         }
@@ -1267,9 +1195,7 @@ System.register("just-animate/animations/hinge", [], function(exports_37, contex
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 2000
-                },
+                to: 2000,
                 name: 'hinge'
             });
         }
@@ -1325,11 +1251,9 @@ System.register("just-animate/animations/jello", [], function(exports_38, contex
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    fill: 'both',
-                    easing: 'ease-in-out'
-                },
+                to: 1000,
+                fill: 'both',
+                easing: 'ease-in-out',
                 name: 'jello'
             });
         }
@@ -1365,11 +1289,9 @@ System.register("just-animate/animations/lightSpeedIn", [], function(exports_39,
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    fill: 'both',
-                    easing: 'ease-out'
-                },
+                to: 1000,
+                fill: 'both',
+                easing: 'ease-out',
                 name: 'lightSpeedIn'
             });
         }
@@ -1393,11 +1315,9 @@ System.register("just-animate/animations/lightSpeedOut", [], function(exports_40
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    fill: 'both',
-                    easing: 'ease-in'
-                },
+                to: 1000,
+                fill: 'both',
+                easing: 'ease-in',
                 name: 'lightSpeedOut'
             });
         }
@@ -1422,9 +1342,7 @@ System.register("just-animate/animations/pulse", [], function(exports_41, contex
                         transform: 'scale3d(1, 1, 1)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'pulse'
             });
         }
@@ -1448,9 +1366,7 @@ System.register("just-animate/animations/rollIn", [], function(exports_42, conte
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rollIn'
             });
         }
@@ -1474,9 +1390,7 @@ System.register("just-animate/animations/rollOut", [], function(exports_43, cont
                         transform: 'translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rollOut'
             });
         }
@@ -1502,9 +1416,7 @@ System.register("just-animate/animations/rotateIn", [], function(exports_44, con
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateIn'
             });
         }
@@ -1530,9 +1442,7 @@ System.register("just-animate/animations/rotateInDownLeft", [], function(exports
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateInDownLeft'
             });
         }
@@ -1558,9 +1468,7 @@ System.register("just-animate/animations/rotateInDownRight", [], function(export
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateInDownRight'
             });
         }
@@ -1586,9 +1494,7 @@ System.register("just-animate/animations/rotateInUpLeft", [], function(exports_4
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateInUpLeft'
             });
         }
@@ -1614,9 +1520,7 @@ System.register("just-animate/animations/rotateInUpRight", [], function(exports_
                         opacity: 1
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateInUpRight'
             });
         }
@@ -1642,9 +1546,7 @@ System.register("just-animate/animations/rotateOut", [], function(exports_49, co
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateOut'
             });
         }
@@ -1670,9 +1572,7 @@ System.register("just-animate/animations/rotateOutDownLeft", [], function(export
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateOutDownLeft'
             });
         }
@@ -1698,9 +1598,7 @@ System.register("just-animate/animations/rotateOutDownRight", [], function(expor
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateOutDownRight'
             });
         }
@@ -1726,9 +1624,7 @@ System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateOutUpLeft'
             });
         }
@@ -1754,9 +1650,7 @@ System.register("just-animate/animations/rotateOutUpRight", [], function(exports
                         opacity: 0
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rotateOutUpRight'
             });
         }
@@ -1800,9 +1694,7 @@ System.register("just-animate/animations/rubberBand", [], function(exports_54, c
                         transform: 'scale3d(1, 1, 1)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'rubberBand'
             });
         }
@@ -1851,9 +1743,7 @@ System.register("just-animate/animations/shake", [], function(exports_55, contex
                         transform: 'translate3d(0, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'shake'
             });
         }
@@ -1877,9 +1767,7 @@ System.register("just-animate/animations/slideInDown", [], function(exports_56, 
                         visibility: 'visible'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'slideInDown'
             });
         }
@@ -1903,9 +1791,7 @@ System.register("just-animate/animations/slideInLeft", [], function(exports_57, 
                         visibility: 'visible'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'slideInLeft'
             });
         }
@@ -1929,9 +1815,7 @@ System.register("just-animate/animations/slideInRight", [], function(exports_58,
                         visibility: 'visible'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'slideInRight'
             });
         }
@@ -1955,9 +1839,7 @@ System.register("just-animate/animations/slideInUp", [], function(exports_59, co
                         visibility: 'visible'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'slideInUp'
             });
         }
@@ -1981,9 +1863,7 @@ System.register("just-animate/animations/slideOutDown", [], function(exports_60,
                         transform: 'translate3d(0, 100%, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'slideOutDown'
             });
         }
@@ -2007,9 +1887,7 @@ System.register("just-animate/animations/slideOutLeft", [], function(exports_61,
                         transform: 'translate3d(-100%, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'slideOutLeft'
             });
         }
@@ -2033,9 +1911,7 @@ System.register("just-animate/animations/slideOutRight", [], function(exports_62
                         transform: 'translate3d(100%, 0, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'slideOutRight'
             });
         }
@@ -2059,9 +1935,7 @@ System.register("just-animate/animations/slideOutUp", [], function(exports_63, c
                         transform: 'translate3d(0, -100%, 0)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'slideOutUp'
             });
         }
@@ -2095,9 +1969,7 @@ System.register("just-animate/animations/swing", [], function(exports_64, contex
                         transform: 'rotate3d(0, 0, 1, 0deg)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'swing'
             });
         }
@@ -2146,9 +2018,7 @@ System.register("just-animate/animations/tada", [], function(exports_65, context
                         transform: 'scale3d(1, 1, 1)'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'tada'
             });
         }
@@ -2192,9 +2062,7 @@ System.register("just-animate/animations/wobble", [], function(exports_66, conte
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1000
-                },
+                to: 1000,
                 name: 'wobble'
             });
         }
@@ -2221,10 +2089,8 @@ System.register("just-animate/animations/zoomIn", [], function(exports_67, conte
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomIn'
             });
         }
@@ -2255,10 +2121,8 @@ System.register("just-animate/animations/zoomInDown", [], function(exports_68, c
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'easeInCubic'
-                },
+                to: 1000,
+                easing: 'easeInCubic',
                 name: 'zoomInDown'
             });
         }
@@ -2289,10 +2153,8 @@ System.register("just-animate/animations/zoomInLeft", [], function(exports_69, c
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomInLeft'
             });
         }
@@ -2323,10 +2185,8 @@ System.register("just-animate/animations/zoomInRight", [], function(exports_70, 
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomInRight'
             });
         }
@@ -2357,10 +2217,8 @@ System.register("just-animate/animations/zoomInUp", [], function(exports_71, con
                         transform: 'none'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomInUp'
             });
         }
@@ -2390,10 +2248,8 @@ System.register("just-animate/animations/zoomOut", [], function(exports_72, cont
                         transformOrigin: 'center middle'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomOut'
             });
         }
@@ -2427,10 +2283,8 @@ System.register("just-animate/animations/zoomOutDown", [], function(exports_73, 
                         transformOrigin: 'center bottom'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomOutDown'
             });
         }
@@ -2463,10 +2317,8 @@ System.register("just-animate/animations/zoomOutLeft", [], function(exports_74, 
                         transformOrigin: 'left center'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomOutLeft'
             });
         }
@@ -2499,10 +2351,8 @@ System.register("just-animate/animations/zoomOutRight", [], function(exports_75,
                         transformOrigin: 'right center'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomOutRight'
             });
         }
@@ -2535,10 +2385,8 @@ System.register("just-animate/animations/zoomOutUp", [], function(exports_76, co
                         transformOrigin: 'center bottom'
                     }
                 ],
-                timings: {
-                    duration: 1000,
-                    easing: 'elegantSlowStartEnd'
-                },
+                to: 1000,
+                easing: 'elegantSlowStartEnd',
                 name: 'zoomOutUp'
             });
         }
@@ -2937,9 +2785,88 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
         }
     }
 });
-System.register("just-animate/helpers/lists", [], function(exports_78, context_78) {
+System.register("just-animate/helpers/resources", [], function(exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
+    var nothing, animate, call, cancel, cubicBezier, duration, finish, pause, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, x, y, z;
+    return {
+        setters:[],
+        execute: function() {
+            exports_78("nothing", nothing = undefined);
+            exports_78("animate", animate = 'animate');
+            exports_78("call", call = 'call');
+            exports_78("cancel", cancel = 'cancel');
+            exports_78("cubicBezier", cubicBezier = 'cubic-bezier');
+            exports_78("duration", duration = 'duration');
+            exports_78("finish", finish = 'finish');
+            exports_78("pause", pause = 'pause');
+            exports_78("pending", pending = 'pending');
+            exports_78("play", play = 'play');
+            exports_78("reverse", reverse = 'reverse');
+            exports_78("rotate", rotate = 'rotate');
+            exports_78("rotate3d", rotate3d = 'rotate3d');
+            exports_78("rotateX", rotateX = 'rotateX');
+            exports_78("rotateY", rotateY = 'rotateY');
+            exports_78("rotateZ", rotateZ = 'rotateZ');
+            exports_78("running", running = 'running');
+            exports_78("scale", scale = 'scale');
+            exports_78("scale3d", scale3d = 'scale3d');
+            exports_78("scaleX", scaleX = 'scaleX');
+            exports_78("scaleY", scaleY = 'scaleY');
+            exports_78("scaleZ", scaleZ = 'scaleZ');
+            exports_78("skew", skew = 'skew');
+            exports_78("skewX", skewX = 'skewX');
+            exports_78("skewY", skewY = 'skewY');
+            exports_78("transform", transform = 'transform');
+            exports_78("translate", translate = 'translate');
+            exports_78("translate3d", translate3d = 'translate3d');
+            exports_78("translateX", translateX = 'translateX');
+            exports_78("translateY", translateY = 'translateY');
+            exports_78("translateZ", translateZ = 'translateZ');
+            exports_78("x", x = 'x');
+            exports_78("y", y = 'y');
+            exports_78("z", z = 'z');
+        }
+    }
+});
+System.register("just-animate/core/AnimationResolver", ["just-animate/helpers/resources"], function(exports_79, context_79) {
+    "use strict";
+    var __moduleName = context_79 && context_79.id;
+    var resources_1;
+    var animations;
+    function AnimationResolver() {
+        var self = this instanceof AnimationResolver ? this : Object.create(AnimationResolver.prototype);
+        self.defs = {};
+        return self;
+    }
+    exports_79("AnimationResolver", AnimationResolver);
+    return {
+        setters:[
+            function (resources_1_1) {
+                resources_1 = resources_1_1;
+            }],
+        execute: function() {
+            animations = {};
+            AnimationResolver.prototype = {
+                defs: resources_1.nothing,
+                findAnimation: function (name) {
+                    return this.defs[name] || animations[name] || resources_1.nothing;
+                },
+                registerAnimation: function (animationOptions, isGlobal) {
+                    if (isGlobal) {
+                        animations[animationOptions.name] = animationOptions;
+                        return;
+                    }
+                    this.defs[animationOptions.name] = animationOptions;
+                }
+            };
+        }
+    }
+});
+System.register("just-animate/helpers/lists", ["just-animate/helpers/resources"], function(exports_80, context_80) {
+    "use strict";
+    var __moduleName = context_80 && context_80.id;
+    var resources_2;
     var slice, push;
     /**
      * Returns the first object in the list or undefined
@@ -2950,9 +2877,9 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
      * @returns {T} first object in the list or undefined
      */
     function head(indexed) {
-        return (!indexed || indexed.length < 1) ? undefined : indexed[0];
+        return (!indexed || indexed.length < 1) ? resources_2.nothing : indexed[0];
     }
-    exports_78("head", head);
+    exports_80("head", head);
     /**
      * Returns the last object in the list or undefined
      *
@@ -2962,9 +2889,9 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
      * @returns {T} last object in the list or undefined
      */
     function tail(indexed) {
-        return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
+        return (!indexed || indexed.length < 1) ? resources_2.nothing : indexed[indexed.length - 1];
     }
-    exports_78("tail", tail);
+    exports_80("tail", tail);
     /**
      * Converts list to an Array.
      * Useful for converting NodeList and arguments to []
@@ -2977,7 +2904,7 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
     function toArray(indexed, index) {
         return slice.call(indexed, index || 0);
     }
-    exports_78("toArray", toArray);
+    exports_80("toArray", toArray);
     /**
      * Performs the function against all objects in the list
      *
@@ -2991,7 +2918,7 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
             fn(items[i]);
         }
     }
-    exports_78("each", each);
+    exports_80("each", each);
     /**
      * Returns the max value of a given property in a list
      *
@@ -3012,7 +2939,7 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
         }
         return max;
     }
-    exports_78("max", max);
+    exports_80("max", max);
     /**
      * Returns the max value of a given property in a list
      *
@@ -3033,7 +2960,7 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
         }
         return max;
     }
-    exports_78("maxBy", maxBy);
+    exports_80("maxBy", maxBy);
     /**
      * Maps one list of objects to another.
      * Returning undefined skips the item (effectively filtering it)
@@ -3049,13 +2976,13 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
         var results = [];
         for (var i = 0, len = items.length; i < len; i++) {
             var result = fn(items[i]);
-            if (result !== undefined) {
+            if (result !== resources_2.nothing) {
                 results.push(result);
             }
         }
         return results;
     }
-    exports_78("map", map);
+    exports_80("map", map);
     /**
      * Pushes each item in target into source and returns source
      *
@@ -3067,9 +2994,12 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
     function pushAll(source, target) {
         push.apply(source, target);
     }
-    exports_78("pushAll", pushAll);
+    exports_80("pushAll", pushAll);
     return {
-        setters:[],
+        setters:[
+            function (resources_2_1) {
+                resources_2 = resources_2_1;
+            }],
         execute: function() {
             slice = Array.prototype.slice;
             push = Array.prototype.push;
@@ -3077,9 +3007,10 @@ System.register("just-animate/helpers/lists", [], function(exports_78, context_7
         }
     }
 });
-System.register("just-animate/helpers/type", [], function(exports_79, context_79) {
+System.register("just-animate/helpers/type", ["just-animate/helpers/resources"], function(exports_81, context_81) {
     "use strict";
-    var __moduleName = context_79 && context_79.id;
+    var __moduleName = context_81 && context_81.id;
+    var resources_3;
     var ostring;
     /**
      * Tests if object is a list
@@ -3091,11 +3022,11 @@ System.register("just-animate/helpers/type", [], function(exports_79, context_79
     function isArray(a) {
         return !isString(a) && isNumber(a.length);
     }
-    exports_79("isArray", isArray);
+    exports_81("isArray", isArray);
     function isDefined(a) {
-        return a !== undefined && a !== null && a !== '';
+        return a !== resources_3.nothing && a !== null && a !== '';
     }
-    exports_79("isDefined", isDefined);
+    exports_81("isDefined", isDefined);
     /**
      * Tests if object is a function
      *
@@ -3106,7 +3037,7 @@ System.register("just-animate/helpers/type", [], function(exports_79, context_79
     function isFunction(a) {
         return ostring.call(a) === '[object Function]';
     }
-    exports_79("isFunction", isFunction);
+    exports_81("isFunction", isFunction);
     /**
      * Tests if object is a number
      *
@@ -3117,7 +3048,7 @@ System.register("just-animate/helpers/type", [], function(exports_79, context_79
     function isNumber(a) {
         return typeof a === 'number';
     }
-    exports_79("isNumber", isNumber);
+    exports_81("isNumber", isNumber);
     /**
      * Tests if object is a string
      *
@@ -3128,49 +3059,224 @@ System.register("just-animate/helpers/type", [], function(exports_79, context_79
     function isString(a) {
         return typeof a === 'string';
     }
-    exports_79("isString", isString);
+    exports_81("isString", isString);
     return {
-        setters:[],
+        setters:[
+            function (resources_3_1) {
+                resources_3 = resources_3_1;
+            }],
         execute: function() {
             ostring = Object.prototype.toString;
         }
     }
 });
-System.register("just-animate/helpers/errors", [], function(exports_80, context_80) {
+System.register("just-animate/helpers/objects", ["just-animate/helpers/type"], function(exports_82, context_82) {
     "use strict";
-    var __moduleName = context_80 && context_80.id;
+    var __moduleName = context_82 && context_82.id;
+    var type_1;
+    var extend, inherit;
+    return {
+        setters:[
+            function (type_1_1) {
+                type_1 = type_1_1;
+            }],
+        execute: function() {
+            /**
+             * Extends the first object with the properties of each subsequent object
+             *
+             * @export
+             * @param {*} target object to extend
+             * @param {...any[]} sources sources from which to inherit properties
+             * @returns {*} first object
+             */
+            exports_82("extend", extend = function () {
+                var args = arguments;
+                var target = args[0];
+                for (var i = 1, len = args.length; i < len; i++) {
+                    var source = args[i];
+                    for (var propName in source) {
+                        target[propName] = source[propName];
+                    }
+                }
+                return target;
+            });
+            exports_82("inherit", inherit = function () {
+                var args = arguments;
+                var target = args[0];
+                for (var i = 1, len = args.length; i < len; i++) {
+                    var source = args[i];
+                    for (var propName in source) {
+                        if (!type_1.isDefined(target[propName])) {
+                            target[propName] = source[propName];
+                        }
+                    }
+                }
+                return target;
+            });
+        }
+    }
+});
+System.register("just-animate/helpers/math", ["just-animate/helpers/resources"], function(exports_83, context_83) {
+    "use strict";
+    var __moduleName = context_83 && context_83.id;
+    var resources_4;
+    var linearCubicBezier, SUBDIVISION_EPSILON;
+    /**
+     * Clamps a number between the min and max
+     *
+     * @export
+     * @param {number} val number to clamp
+     * @param {number} min min number allowed
+     * @param {number} max max number allowed
+     * @returns {number} val if between min-max, min if lesser, max if greater
+     */
+    function clamp(val, min, max) {
+        return val === resources_4.nothing ? resources_4.nothing : val < min ? min : val > max ? max : val;
+    }
+    exports_83("clamp", clamp);
+    function inRange(val, min, max) {
+        return min < max ? min <= val && val <= max : max <= val && val <= min;
+    }
+    exports_83("inRange", inRange);
+    function bezier(n1, n2, t) {
+        return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
+    }
+    function cubicBezier(p0, p1, p2, p3) {
+        if (p0 < 0 || p0 > 1 || p2 < 0 || p2 > 1) {
+            return linearCubicBezier;
+        }
+        return function (x) {
+            if (x === 0 || x === 1) {
+                return x;
+            }
+            var start = 0;
+            var end = 1;
+            var limit = 20;
+            while (--limit) {
+                var mid = (start + end) / 2;
+                var xEst = bezier(p0, p2, mid);
+                if (Math.abs(x - xEst) < SUBDIVISION_EPSILON) {
+                    return bezier(p1, p3, mid);
+                }
+                if (xEst < x) {
+                    start = mid;
+                }
+                else {
+                    end = mid;
+                }
+            }
+            // limit is reached        
+            return x;
+        };
+    }
+    exports_83("cubicBezier", cubicBezier);
+    return {
+        setters:[
+            function (resources_4_1) {
+                resources_4 = resources_4_1;
+            }],
+        execute: function() {
+            linearCubicBezier = function (x) { return x; };
+            SUBDIVISION_EPSILON = 0.0001;
+        }
+    }
+});
+System.register("just-animate/helpers/errors", [], function(exports_84, context_84) {
+    "use strict";
+    var __moduleName = context_84 && context_84.id;
     function invalidArg(name) {
         return new Error("Bad: " + name);
     }
-    exports_80("invalidArg", invalidArg);
+    exports_84("invalidArg", invalidArg);
     return {
         setters:[],
         execute: function() {
         }
     }
 });
-System.register("just-animate/core/Dispatcher", ["just-animate/helpers/type", "just-animate/helpers/errors"], function(exports_81, context_81) {
+System.register("just-animate/helpers/elements", ["just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/helpers/errors"], function(exports_85, context_85) {
     "use strict";
-    var __moduleName = context_81 && context_81.id;
-    var type_1, errors_1;
-    var dispatcher;
-    function createDispatcher() {
-        var self = Object.create(dispatcher);
-        self._fn = {};
-        return self;
+    var __moduleName = context_85 && context_85.id;
+    var lists_1, type_2, errors_1;
+    /**
+     * Recursively resolves the element source from dom, selector, jquery, array, and function sources
+     *
+     * @param {ja.ElementSource} source from which to locate elements
+     * @returns {Element[]} array of elements found
+     */
+    function queryElements(source) {
+        if (!source) {
+            throw errors_1.invalidArg('source');
+        }
+        if (type_2.isString(source)) {
+            // if query selector, search for elements 
+            var nodeResults = document.querySelectorAll(source);
+            return lists_1.toArray(nodeResults);
+        }
+        if (typeof source['tagName'] === 'string') {
+            // if a single element, wrap in array 
+            return [source];
+        }
+        if (type_2.isFunction(source)) {
+            // if function, call it and call this function
+            var provider = source;
+            var result = provider();
+            return queryElements(result);
+        }
+        if (type_2.isArray(source)) {
+            // if array or jQuery object, flatten to an array
+            var elements_1 = [];
+            lists_1.each(source, function (i) {
+                // recursively call this function in case of nested elements
+                var innerElements = queryElements(i);
+                elements_1.push.apply(elements_1, innerElements);
+            });
+            return elements_1;
+        }
+        // otherwise return empty    
+        return [];
     }
-    exports_81("createDispatcher", createDispatcher);
+    exports_85("queryElements", queryElements);
     return {
         setters:[
-            function (type_1_1) {
-                type_1 = type_1_1;
+            function (lists_1_1) {
+                lists_1 = lists_1_1;
+            },
+            function (type_2_1) {
+                type_2 = type_2_1;
             },
             function (errors_1_1) {
                 errors_1 = errors_1_1;
             }],
         execute: function() {
-            dispatcher = {
-                _fn: undefined,
+        }
+    }
+});
+System.register("just-animate/core/Dispatcher", ["just-animate/helpers/type", "just-animate/helpers/errors", "just-animate/helpers/resources"], function(exports_86, context_86) {
+    "use strict";
+    var __moduleName = context_86 && context_86.id;
+    var type_3, errors_2, resources_5;
+    function Dispatcher() {
+        var self = this;
+        self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);
+        self._fn = {};
+        return self;
+    }
+    exports_86("Dispatcher", Dispatcher);
+    return {
+        setters:[
+            function (type_3_1) {
+                type_3 = type_3_1;
+            },
+            function (errors_2_1) {
+                errors_2 = errors_2_1;
+            },
+            function (resources_5_1) {
+                resources_5 = resources_5_1;
+            }],
+        execute: function() {
+            Dispatcher.prototype = {
+                _fn: resources_5.nothing,
                 trigger: function (eventName, args) {
                     var listeners = this._fn[eventName];
                     if (!listeners) {
@@ -3178,16 +3284,17 @@ System.register("just-animate/core/Dispatcher", ["just-animate/helpers/type", "j
                     }
                     var len = listeners.length;
                     for (var i = 0; i < len; i++) {
-                        listeners[i].apply(undefined, args);
+                        listeners[i].apply(resources_5.nothing, args);
                     }
                 },
                 on: function (eventName, listener) {
-                    if (!type_1.isFunction(listener)) {
-                        throw errors_1.invalidArg('listener');
+                    if (!type_3.isFunction(listener)) {
+                        throw errors_2.invalidArg('listener');
                     }
-                    var listeners = this._fn[eventName];
+                    var fn = this._fn;
+                    var listeners = fn[eventName];
                     if (!listeners) {
-                        this._fn[eventName] = [listener];
+                        fn[eventName] = [listener];
                         return;
                     }
                     if (listeners.indexOf(listener) !== -1) {
@@ -3197,355 +3304,71 @@ System.register("just-animate/core/Dispatcher", ["just-animate/helpers/type", "j
                 },
                 off: function (eventName, listener) {
                     var listeners = this._fn[eventName];
-                    if (!listeners) {
-                        return false;
+                    if (listeners) {
+                        var indexOfListener = listeners.indexOf(listener);
+                        if (indexOfListener !== -1) {
+                            listeners.splice(indexOfListener, 1);
+                        }
                     }
-                    var indexOfListener = listeners.indexOf(listener);
-                    if (indexOfListener === -1) {
-                        return false;
-                    }
-                    listeners.splice(indexOfListener, 1);
-                    return true;
                 }
             };
         }
     }
 });
-System.register("just-animate/core/TimeLoop", [], function(exports_82, context_82) {
+System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispatcher", "just-animate/helpers/type", "just-animate/helpers/resources"], function(exports_87, context_87) {
     "use strict";
-    var __moduleName = context_82 && context_82.id;
-    var now, raf;
-    function createLoop() {
-        var ctx = {
-            active: [],
-            elapses: [],
-            isActive: false,
-            lastTime: undefined,
-            offs: [],
-            ons: []
-        };
-        return {
-            off: function (fn) { return off(ctx, fn); },
-            on: function (fn) { return on(ctx, fn); }
-        };
-    }
-    exports_82("createLoop", createLoop);
-    function on(self, fn) {
-        var offIndex = self.offs.indexOf(fn);
-        if (offIndex !== -1) {
-            self.offs.splice(offIndex, 1);
-        }
-        if (self.ons.indexOf(fn) === -1) {
-            self.ons.push(fn);
-        }
-        if (!self.isActive) {
-            self.isActive = true;
-            raf(self, update);
-        }
-    }
-    function off(self, fn) {
-        var onIndex = self.ons.indexOf(fn);
-        if (onIndex !== -1) {
-            self.ons.splice(onIndex, 1);
-        }
-        if (self.offs.indexOf(fn) === -1) {
-            self.offs.push(fn);
-        }
-        if (!self.isActive) {
-            self.isActive = true;
-            raf(self, update);
-        }
-    }
-    function update(self) {
-        updateOffs(self);
-        updateOns(self);
-        var callbacks = self.active;
-        var elapses = self.elapses;
-        var len = callbacks.length;
-        var lastTime = self.lastTime || now();
-        var thisTime = now();
-        var delta = thisTime - lastTime;
-        // if nothing is subscribed, kill the cycle
-        if (!len) {
-            // end recursion
-            self.isActive = false;
-            self.lastTime = undefined;
-            return;
-        }
-        // ensure running and requestAnimationFrame is called
-        self.isActive = true;
-        self.lastTime = thisTime;
-        raf(self, update);
-        for (var i = 0; i < len; i++) {
-            // update delta and save result
-            var existingElapsed = elapses[i];
-            var updatedElapsed = existingElapsed + delta;
-            elapses[i] = updatedElapsed;
-            // call sub with updated delta
-            callbacks[i](delta, updatedElapsed);
-        }
-    }
-    function updateOffs(self) {
-        var len = self.offs.length;
-        for (var i = 0; i < len; i++) {
-            var fn = self.offs[i];
-            var indexOfSub = self.active.indexOf(fn);
-            if (indexOfSub !== -1) {
-                self.active.splice(indexOfSub, 1);
-                self.elapses.splice(indexOfSub, 1);
-            }
-        }
-    }
-    function updateOns(self) {
-        var len = self.ons.length;
-        for (var i = 0; i < len; i++) {
-            var fn = self.ons[i];
-            if (self.active.indexOf(fn) === -1) {
-                self.active.push(fn);
-                self.elapses.push(0);
-            }
-        }
-    }
-    return {
-        setters:[],
-        execute: function() {
-            now = (performance && performance.now) ? function () { return performance.now(); } : function () { return Date.now(); };
-            raf = (window.requestAnimationFrame !== undefined)
-                ? function (ctx, fn) {
-                    window.requestAnimationFrame(function () { fn(ctx); });
-                }
-                : function (ctx, fn) {
-                    setTimeout(function () { fn(ctx); }, 16.66);
-                };
-        }
-    }
-});
-System.register("just-animate/helpers/resources", [], function(exports_83, context_83) {
-    "use strict";
-    var __moduleName = context_83 && context_83.id;
-    var animate, call, cancel, cubicBezier, duration, finish, pause, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, x, y, z;
-    return {
-        setters:[],
-        execute: function() {
-            exports_83("animate", animate = 'animate');
-            exports_83("call", call = 'call');
-            exports_83("cancel", cancel = 'cancel');
-            exports_83("cubicBezier", cubicBezier = 'cubic-bezier');
-            exports_83("duration", duration = 'duration');
-            exports_83("finish", finish = 'finish');
-            exports_83("pause", pause = 'pause');
-            exports_83("pending", pending = 'pending');
-            exports_83("play", play = 'play');
-            exports_83("reverse", reverse = 'reverse');
-            exports_83("rotate", rotate = 'rotate');
-            exports_83("rotate3d", rotate3d = 'rotate3d');
-            exports_83("rotateX", rotateX = 'rotateX');
-            exports_83("rotateY", rotateY = 'rotateY');
-            exports_83("rotateZ", rotateZ = 'rotateZ');
-            exports_83("running", running = 'running');
-            exports_83("scale", scale = 'scale');
-            exports_83("scale3d", scale3d = 'scale3d');
-            exports_83("scaleX", scaleX = 'scaleX');
-            exports_83("scaleY", scaleY = 'scaleY');
-            exports_83("scaleZ", scaleZ = 'scaleZ');
-            exports_83("skew", skew = 'skew');
-            exports_83("skewX", skewX = 'skewX');
-            exports_83("skewY", skewY = 'skewY');
-            exports_83("transform", transform = 'transform');
-            exports_83("translate", translate = 'translate');
-            exports_83("translate3d", translate3d = 'translate3d');
-            exports_83("translateX", translateX = 'translateX');
-            exports_83("translateY", translateY = 'translateY');
-            exports_83("translateZ", translateZ = 'translateZ');
-            exports_83("x", x = 'x');
-            exports_83("y", y = 'y');
-            exports_83("z", z = 'z');
-        }
-    }
-});
-System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/core/Dispatcher", "just-animate/helpers/resources"], function(exports_84, context_84) {
-    "use strict";
-    var __moduleName = context_84 && context_84.id;
-    var lists_1, type_2, Dispatcher_1, resources_1;
-    var multiAnimatorProtoType;
-    function createMultiAnimator(effects, timeLoop) {
-        var self = Object.create(multiAnimatorProtoType);
-        effects = effects || [];
-        var dispatcher = Dispatcher_1.createDispatcher();
-        var firstEffect = lists_1.head(effects);
-        if (firstEffect) {
-            firstEffect.on(resources_1.finish, function () {
-                self._dispatcher.trigger(resources_1.finish);
-                self._timeLoop.off(self._tick);
-            });
-        }
-        lists_1.each(effects, function (effect) {
-            dispatcher.on(resources_1.call, function (functionName, arg1) { effect[functionName](arg1); });
+    var __moduleName = context_87 && context_87.id;
+    var Dispatcher_1, type_4, resources_6, resources_7;
+    function KeyframeAnimation(target, keyframes, options) {
+        var self = this instanceof KeyframeAnimation ? this : Object.create(KeyframeAnimation.prototype);
+        var duration = options.to - options.from;
+        self._iterationStart = options.iterationStart || 0;
+        self._iterations = options.iterations || 1;
+        self._duration = duration;
+        self._startTime = options.from || 0;
+        self._endTime = options.to;
+        self._totalDuration = (options.iterations || 1) * duration;
+        var dispatcher = Dispatcher_1.Dispatcher();
+        self._dispatcher = dispatcher;
+        var animator = target[resources_7.animate](keyframes, {
+            direction: options.direction,
+            duration: duration,
+            easing: options.easing || 'linear',
+            fill: options.fill || 'none',
+            iterationStart: self._iterationStart,
+            iterations: self._iterations
         });
-        self._duration = lists_1.maxBy(effects, function (e) { return e.totalDuration(); });
-        self._tick = self._tick.bind(self);
-        self._dispatcher = dispatcher;
-        self._timeLoop = timeLoop;
-        self._effects = effects;
-        return self;
-    }
-    exports_84("createMultiAnimator", createMultiAnimator);
-    return {
-        setters:[
-            function (lists_1_1) {
-                lists_1 = lists_1_1;
-            },
-            function (type_2_1) {
-                type_2 = type_2_1;
-            },
-            function (Dispatcher_1_1) {
-                Dispatcher_1 = Dispatcher_1_1;
-            },
-            function (resources_1_1) {
-                resources_1 = resources_1_1;
-            }],
-        execute: function() {
-            multiAnimatorProtoType = {
-                currentTime: function (value) {
-                    var self = this;
-                    if (!type_2.isDefined(value)) {
-                        return self._currentTime;
-                    }
-                    self._currentTime = value;
-                    self._dispatcher.trigger(resources_1.call, ['currentTime', value]);
-                    return self;
-                },
-                playbackRate: function (value) {
-                    var self = this;
-                    if (!type_2.isDefined(value)) {
-                        return self._currentTime;
-                    }
-                    self._playbackRate = value;
-                    self._dispatcher.trigger(resources_1.call, ['playbackRate', value]);
-                    return self;
-                },
-                playState: function () {
-                    return this._playState;
-                },
-                duration: function () {
-                    return this._duration;
-                },
-                iterationStart: function () {
-                    return 0;
-                },
-                iterations: function () {
-                    return 1;
-                },
-                endTime: function () {
-                    return this._duration;
-                },
-                startTime: function () {
-                    return 0;
-                },
-                totalDuration: function () {
-                    return this._duration;
-                },
-                on: function (eventName, listener) {
-                    this._dispatcher.on(eventName, listener);
-                    return this;
-                },
-                off: function (eventName, listener) {
-                    this._dispatcher.off(eventName, listener);
-                    return this;
-                },
-                cancel: function () {
-                    var self = this;
-                    self._dispatcher.trigger(resources_1.call, [resources_1.cancel]);
-                    self.currentTime(0);
-                    self._dispatcher.trigger(resources_1.cancel);
-                    return self;
-                },
-                finish: function () {
-                    var self = this;
-                    self._dispatcher.trigger(resources_1.call, [resources_1.finish]);
-                    self.currentTime(self._playbackRate < 0 ? 0 : self._duration);
-                    self._dispatcher.trigger(resources_1.finish);
-                    return self;
-                },
-                play: function () {
-                    var self = this;
-                    self._dispatcher.trigger(resources_1.call, [resources_1.play]);
-                    self._dispatcher.trigger(resources_1.play);
-                    self._timeLoop.on(self._tick);
-                    return self;
-                },
-                pause: function () {
-                    var self = this;
-                    self._dispatcher.trigger(resources_1.call, [resources_1.pause]);
-                    self._dispatcher.trigger(resources_1.pause);
-                    return self;
-                },
-                reverse: function () {
-                    var self = this;
-                    self._dispatcher.trigger(resources_1.call, [resources_1.reverse]);
-                    self._dispatcher.trigger(resources_1.reverse);
-                    return self;
-                },
-                _tick: function () {
-                    var self = this;
-                    var firstEffect = lists_1.head(self._effects);
-                    self._dispatcher.trigger('update', [self.currentTime]);
-                    self._currentTime = firstEffect.currentTime();
-                    self._playbackRate = firstEffect.playbackRate();
-                    self._playState = firstEffect.playState();
-                    if (self._playState !== resources_1.running && self._playState !== resources_1.pending) {
-                        self._timeLoop.off(self._tick);
-                    }
-                }
-            };
-        }
-    }
-});
-System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispatcher", "just-animate/helpers/type", "just-animate/helpers/resources"], function(exports_85, context_85) {
-    "use strict";
-    var __moduleName = context_85 && context_85.id;
-    var Dispatcher_2, type_3, resources_2;
-    var keyframeAnimationPrototype;
-    function createKeyframeAnimation(target, keyframes, timings) {
-        var self = Object.create(keyframeAnimationPrototype);
-        var dispatcher = Dispatcher_2.createDispatcher();
-        var animator = target[resources_2.animate](keyframes, timings);
-        animator.pause();
-        animator['onfinish'] = function () { return dispatcher.trigger(resources_2.finish); };
-        self._iterationStart = timings.iterationStart || 0;
-        self._iterations = timings.iterations || 1;
-        self._duration = timings.duration;
-        self._startTime = timings.delay || 0;
-        self._endTime = (timings.endDelay || 0) + timings.duration;
-        self._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
-        self._dispatcher = dispatcher;
+        // immediately cancel to prevent effects until play is called    
+        animator.cancel();
+        animator['onfinish'] = function () { return dispatcher.trigger(resources_7.finish); };
         self._animator = animator;
         return self;
     }
-    exports_85("createKeyframeAnimation", createKeyframeAnimation);
+    exports_87("KeyframeAnimation", KeyframeAnimation);
     return {
         setters:[
-            function (Dispatcher_2_1) {
-                Dispatcher_2 = Dispatcher_2_1;
+            function (Dispatcher_1_1) {
+                Dispatcher_1 = Dispatcher_1_1;
             },
-            function (type_3_1) {
-                type_3 = type_3_1;
+            function (type_4_1) {
+                type_4 = type_4_1;
             },
-            function (resources_2_1) {
-                resources_2 = resources_2_1;
+            function (resources_6_1) {
+                resources_6 = resources_6_1;
+                resources_7 = resources_6_1;
             }],
         execute: function() {
-            keyframeAnimationPrototype = {
-                _dispatcher: undefined,
-                _duration: undefined,
-                _endTime: undefined,
-                _iterationStart: undefined,
-                _iterations: undefined,
-                _startTime: undefined,
-                _totalDuration: undefined,
+            KeyframeAnimation.prototype = {
+                _dispatcher: resources_6.nothing,
+                _duration: resources_6.nothing,
+                _endTime: resources_6.nothing,
+                _iterationStart: resources_6.nothing,
+                _iterations: resources_6.nothing,
+                _startTime: resources_6.nothing,
+                _totalDuration: resources_6.nothing,
                 currentTime: function (value) {
                     var self = this;
-                    if (!type_3.isDefined(value)) {
+                    if (!type_4.isDefined(value)) {
                         return self._animator.currentTime;
                     }
                     self._animator.currentTime = value;
@@ -3553,7 +3376,7 @@ System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispa
                 },
                 playbackRate: function (value) {
                     var self = this;
-                    if (!type_3.isDefined(value)) {
+                    if (!type_4.isDefined(value)) {
                         return self._animator.playbackRate;
                     }
                     self._animator.playbackRate = value;
@@ -3591,25 +3414,25 @@ System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispa
                 cancel: function () {
                     var self = this;
                     self._animator.cancel();
-                    self._dispatcher.trigger(resources_2.cancel);
+                    self._dispatcher.trigger(resources_7.cancel);
                     return self;
                 },
                 reverse: function () {
                     var self = this;
                     self._animator.reverse();
-                    self._dispatcher.trigger(resources_2.reverse);
+                    self._dispatcher.trigger(resources_7.reverse);
                     return self;
                 },
                 pause: function () {
                     var self = this;
                     self._animator.pause();
-                    self._dispatcher.trigger(resources_2.pause);
+                    self._dispatcher.trigger(resources_7.pause);
                     return self;
                 },
                 play: function () {
                     var self = this;
                     self._animator.play();
-                    self._dispatcher.trigger(resources_2.play);
+                    self._dispatcher.trigger(resources_7.play);
                     return self;
                 },
                 finish: function () {
@@ -3621,440 +3444,134 @@ System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispa
         }
     }
 });
-System.register("just-animate/core/PropertyHandler", [], function(exports_86, context_86) {
-    "use strict";
-    var __moduleName = context_86 && context_86.id;
-    var propertyHandlerPrototype;
-    function createPropertyHandler() {
-        var self = Object.create(propertyHandlerPrototype);
-        // TODO: initialization
-        return self;
-    }
-    exports_86("createPropertyHandler", createPropertyHandler);
-    return {
-        setters:[],
-        execute: function() {
-            propertyHandlerPrototype = {
-                addPropertyHandler: function () {
-                }
-            };
-        }
-    }
-});
-System.register("just-animate/helpers/elements", ["just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/helpers/errors"], function(exports_87, context_87) {
-    "use strict";
-    var __moduleName = context_87 && context_87.id;
-    var lists_2, type_4, errors_2;
-    /**
-     * Recursively resolves the element source from dom, selector, jquery, array, and function sources
-     *
-     * @param {ja.ElementSource} source from which to locate elements
-     * @returns {Element[]} array of elements found
-     */
-    function queryElements(source) {
-        if (!source) {
-            throw errors_2.invalidArg('source');
-        }
-        if (type_4.isString(source)) {
-            // if query selector, search for elements 
-            var nodeResults = document.querySelectorAll(source);
-            return lists_2.toArray(nodeResults);
-        }
-        if (typeof source['tagName'] === 'string') {
-            // if a single element, wrap in array 
-            return [source];
-        }
-        if (type_4.isFunction(source)) {
-            // if function, call it and call this function
-            var provider = source;
-            var result = provider();
-            return queryElements(result);
-        }
-        if (type_4.isArray(source)) {
-            // if array or jQuery object, flatten to an array
-            var elements_1 = [];
-            lists_2.each(source, function (i) {
-                // recursively call this function in case of nested elements
-                var innerElements = queryElements(i);
-                elements_1.push.apply(elements_1, innerElements);
-            });
-            return elements_1;
-        }
-        // otherwise return empty    
-        return [];
-    }
-    exports_87("queryElements", queryElements);
-    return {
-        setters:[
-            function (lists_2_1) {
-                lists_2 = lists_2_1;
-            },
-            function (type_4_1) {
-                type_4 = type_4_1;
-            },
-            function (errors_2_1) {
-                errors_2 = errors_2_1;
-            }],
-        execute: function() {
-        }
-    }
-});
-System.register("just-animate/core/TimelineAnimator", ["just-animate/helpers/lists", "just-animate/helpers/type", "just-animate/helpers/elements", "just-animate/core/Dispatcher", "just-animate/core/KeyframeAnimation", "just-animate/core/Animator", "just-animate/helpers/errors", "just-animate/helpers/resources"], function(exports_88, context_88) {
+System.register("just-animate/core/TimeLoop", ["just-animate/helpers/resources"], function(exports_88, context_88) {
     "use strict";
     var __moduleName = context_88 && context_88.id;
-    var lists_3, type_5, elements_2, Dispatcher_3, KeyframeAnimation_1, Animator_1, errors_3, resources_3;
-    var animationPadding, timelineAnimatorPrototype;
-    function createTimelineAnimator(options, timeloop) {
-        var self = Object.create(timelineAnimatorPrototype);
-        var duration1 = options.duration;
-        if (!type_5.isDefined(resources_3.duration)) {
-            throw errors_3.invalidArg(resources_3.duration);
-        }
-        self._ = {
-            currentTime: 0,
-            dispatcher: Dispatcher_3.createDispatcher(),
-            duration: options.duration,
-            endTime: undefined,
-            events: lists_3.map(options.events, function (evt) { return createEvent(timeloop, duration1, evt); }),
-            isCanceled: undefined,
-            isFinished: undefined,
-            isInEffect: undefined,
-            isPaused: undefined,
-            iterationStart: 0,
-            iterations: 1,
-            lastTick: undefined,
-            playState: undefined,
-            playbackRate: 0,
-            startTime: 0,
-            timeLoop: timeloop,
-            totalDuration: options.duration
-        };
-        if (options.autoplay) {
-            self.play();
-        }
+    var resources_8;
+    var now, raf;
+    function TimeLoop() {
+        var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
+        self.active = [];
+        self.elapses = [];
+        self.isActive = resources_8.nothing;
+        self.lastTime = resources_8.nothing;
+        self.offs = [];
+        self.ons = [];
         return self;
     }
-    exports_88("createTimelineAnimator", createTimelineAnimator);
-    function tick(self) {
-        // handle cancelation and finishing early
-        if (self.isCanceled) {
-            triggerCancel(self);
+    exports_88("TimeLoop", TimeLoop);
+    function update(self) {
+        updateOffs(self);
+        updateOns(self);
+        var callbacks = self.active;
+        var elapses = self.elapses;
+        var len = callbacks.length;
+        var lastTime = self.lastTime || now();
+        var thisTime = now();
+        var delta = thisTime - lastTime;
+        // if nothing is subscribed, kill the cycle
+        if (!len) {
+            // end recursion
+            self.isActive = resources_8.nothing;
+            self.lastTime = resources_8.nothing;
             return;
         }
-        if (self.isFinished) {
-            triggerFinish(self);
-            return;
+        // ensure running and requestAnimationFrame is called
+        self.isActive = true;
+        self.lastTime = thisTime;
+        raf(self, update);
+        for (var i = 0; i < len; i++) {
+            // update delta and save result
+            var existingElapsed = elapses[i];
+            var updatedElapsed = existingElapsed + delta;
+            elapses[i] = updatedElapsed;
+            // call sub with updated delta
+            callbacks[i](delta, updatedElapsed);
         }
-        if (self.isPaused) {
-            triggerPause(self);
-            return;
-        }
-        if (!self.isInEffect) {
-            self.isInEffect = true;
-        }
-        // calculate currentTime from delta
-        var thisTick = performance.now();
-        var lastTick = self.lastTick;
-        if (lastTick !== undefined) {
-            var delta = (thisTick - lastTick) * self.playbackRate;
-            self.currentTime += delta;
-        }
-        self.lastTick = thisTick;
-        // check if animation has finished
-        if (self.currentTime > self.duration || self.currentTime < 0) {
-            triggerFinish(self);
-            return;
-        }
-        // start animations if should be active and currently aren't   
-        var playbackRate = self.playbackRate;
-        lists_3.each(self.events, function (evt) {
-            var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
-            var endTimeMs = self.playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-            var shouldBeActive = startTimeMs <= self.currentTime && self.currentTime < endTimeMs;
-            if (!shouldBeActive) {
-                return;
+    }
+    function updateOffs(self) {
+        var len = self.offs.length;
+        for (var i = 0; i < len; i++) {
+            var fn = self.offs[i];
+            var indexOfSub = self.active.indexOf(fn);
+            if (indexOfSub !== -1) {
+                self.active.splice(indexOfSub, 1);
+                self.elapses.splice(indexOfSub, 1);
             }
-            var animator = evt.animator();
-            animator.playbackRate(self.playbackRate);
-            animator.play();
-        });
-        window.requestAnimationFrame(tick.bind(undefined, self));
-    }
-    function triggerFinish(self) {
-        reset(self);
-        lists_3.each(self.events, function (evt) { return evt.animator().finish(); });
-        self.dispatcher.trigger(resources_3.finish);
-    }
-    function triggerCancel(self) {
-        reset(self);
-        lists_3.each(self.events, function (evt) { return evt.animator().cancel(); });
-        self.dispatcher.trigger(resources_3.cancel);
-    }
-    function triggerPause(self) {
-        self.isPaused = true;
-        self.isInEffect = false;
-        self.lastTick = undefined;
-        self.playbackRate = 0;
-        lists_3.each(self.events, function (evt) {
-            evt.animator().pause();
-        });
-    }
-    function reset(self) {
-        self.currentTime = 0;
-        self.lastTick = undefined;
-        self.isCanceled = false;
-        self.isFinished = false;
-        self.isPaused = false;
-        self.isInEffect = false;
-    }
-    function createEvent(timeloop, timelineDuration, evt) {
-        var keyframes = evt.keyframes;
-        var timings = evt.timings;
-        var el = evt.el;
-        // calculate endtime
-        var startTime = timelineDuration * evt.offset;
-        var endTime = startTime + timings.duration;
-        var isClipped = endTime > timelineDuration;
-        // if end of animation is clipped, set endTime to duration            
-        if (isClipped) {
-            endTime = timelineDuration;
         }
-        return {
-            _animator: undefined,
-            _timeLoop: timeloop,
-            animator: animator,
-            el: el,
-            endTimeMs: endTime,
-            isClipped: isClipped,
-            keyframes: keyframes,
-            offset: evt.offset,
-            startTimeMs: startTime,
-            timings: timings
-        };
     }
-    function animator() {
-        var _this = this;
-        if (!this._animator) {
-            var elements = elements_2.queryElements(this.el);
-            var effects = lists_3.map(elements, function (e) { return KeyframeAnimation_1.createKeyframeAnimation(e, _this.keyframes, _this.timings); });
-            this._animator = Animator_1.createMultiAnimator(effects, this._timeLoop);
-            this._animator.pause();
+    function updateOns(self) {
+        var len = self.ons.length;
+        for (var i = 0; i < len; i++) {
+            var fn = self.ons[i];
+            if (self.active.indexOf(fn) === -1) {
+                self.active.push(fn);
+                self.elapses.push(0);
+            }
         }
-        return this._animator;
     }
     return {
         setters:[
-            function (lists_3_1) {
-                lists_3 = lists_3_1;
-            },
-            function (type_5_1) {
-                type_5 = type_5_1;
-            },
-            function (elements_2_1) {
-                elements_2 = elements_2_1;
-            },
-            function (Dispatcher_3_1) {
-                Dispatcher_3 = Dispatcher_3_1;
-            },
-            function (KeyframeAnimation_1_1) {
-                KeyframeAnimation_1 = KeyframeAnimation_1_1;
-            },
-            function (Animator_1_1) {
-                Animator_1 = Animator_1_1;
-            },
-            function (errors_3_1) {
-                errors_3 = errors_3_1;
-            },
-            function (resources_3_1) {
-                resources_3 = resources_3_1;
+            function (resources_8_1) {
+                resources_8 = resources_8_1;
             }],
         execute: function() {
-            // fixme!: this controls the amount of time left before the timeline gives up 
-            // on individual animation and calls finish.  If an animation plays after its time, it looks
-            // like it restarts and that causes jank
-            animationPadding = 1.0 / 30;
-            timelineAnimatorPrototype = {
-                _: undefined,
-                duration: function () {
-                    return this._.duration;
-                },
-                iterationStart: function () {
-                    return this._.iterationStart;
-                },
-                iterations: function () {
-                    return this._.iterations;
-                },
-                totalDuration: function () {
-                    return this._.totalDuration;
-                },
-                endTime: function () {
-                    return this._.endTime;
-                },
-                startTime: function () {
-                    return this._.startTime;
-                },
-                currentTime: function (value) {
-                    if (!type_5.isDefined(value)) {
-                        return this._.currentTime;
+            now = (performance && performance.now) ? function () { return performance.now(); } : function () { return Date.now(); };
+            raf = (window.requestAnimationFrame !== resources_8.nothing)
+                ? function (ctx, fn) {
+                    window.requestAnimationFrame(function () { fn(ctx); });
+                }
+                : function (ctx, fn) {
+                    setTimeout(function () { fn(ctx); }, 16.66);
+                };
+            TimeLoop.prototype = {
+                on: function (fn) {
+                    var self = this;
+                    var offIndex = self.offs.indexOf(fn);
+                    if (offIndex !== -1) {
+                        self.offs.splice(offIndex, 1);
                     }
-                    this._.currentTime = value;
-                    return this;
-                },
-                playbackRate: function (value) {
-                    if (!type_5.isDefined(value)) {
-                        return this._.playbackRate;
+                    if (self.ons.indexOf(fn) === -1) {
+                        self.ons.push(fn);
                     }
-                    this._.playbackRate = value;
-                    return this;
-                },
-                playState: function (value) {
-                    if (!type_5.isDefined(value)) {
-                        return this._.playState;
+                    if (!self.isActive) {
+                        self.isActive = true;
+                        raf(self, update);
                     }
-                    this._.playState = value;
-                    this._.dispatcher.trigger('set', ['playbackState', value]);
-                    return this;
                 },
-                on: function (eventName, listener) {
-                    this._.dispatcher.on(eventName, listener);
-                    return this;
-                },
-                off: function (eventName, listener) {
-                    this._.dispatcher.off(eventName, listener);
-                    return this;
-                },
-                finish: function () {
-                    this._.isFinished = true;
-                    return this;
-                },
-                play: function () {
-                    this._.playbackRate = 1;
-                    this._.isPaused = false;
-                    if (!this._.isInEffect) {
-                        if (this._.playbackRate < 0) {
-                            this._.currentTime = this._.duration;
-                        }
-                        else {
-                            this._.currentTime = 0;
-                        }
-                        window.requestAnimationFrame(tick.bind(undefined, this._));
+                off: function (fn) {
+                    var self = this;
+                    var onIndex = self.ons.indexOf(fn);
+                    if (onIndex !== -1) {
+                        self.ons.splice(onIndex, 1);
                     }
-                    return this;
-                },
-                pause: function () {
-                    if (this._.isInEffect) {
-                        this._.isPaused = true;
+                    if (self.offs.indexOf(fn) === -1) {
+                        self.offs.push(fn);
                     }
-                    return this;
-                },
-                reverse: function () {
-                    this._.playbackRate = -1;
-                    this._.isPaused = false;
-                    if (!this._.isInEffect) {
-                        if (this._.currentTime <= 0) {
-                            this._.currentTime = this._.duration;
-                        }
-                        window.requestAnimationFrame(tick.bind(undefined, this._));
+                    if (!self.isActive) {
+                        self.isActive = true;
+                        raf(self, update);
                     }
-                    return this;
-                },
-                cancel: function () {
-                    this._.playbackRate = 0;
-                    this._.isCanceled = true;
-                    return this;
                 }
             };
         }
     }
 });
-System.register("just-animate/helpers/strings", ["just-animate/helpers/type", "just-animate/helpers/lists"], function(exports_89, context_89) {
+System.register("just-animate/helpers/functions", ["just-animate/helpers/type"], function(exports_89, context_89) {
     "use strict";
     var __moduleName = context_89 && context_89.id;
-    var type_6, lists_4;
-    var camelCaseRegex, cssFunction;
-    function camelCaseReplacer(match, p1, p2) {
-        return p1 + p2.toUpperCase();
-    }
-    function toCamelCase(value) {
-        return type_6.isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : undefined;
-    }
-    exports_89("toCamelCase", toCamelCase);
-    return {
-        setters:[
-            function (type_6_1) {
-                type_6 = type_6_1;
-            },
-            function (lists_4_1) {
-                lists_4 = lists_4_1;
-            }],
-        execute: function() {
-            camelCaseRegex = /([a-z])[- ]([a-z])/ig;
-            exports_89("cssFunction", cssFunction = function () {
-                var args = arguments;
-                return args[0] + "(" + lists_4.toArray(args, 1).join(',') + ")";
-            });
-        }
-    }
-});
-System.register("just-animate/easings", ["just-animate/helpers/strings", "just-animate/helpers/resources"], function(exports_90, context_90) {
-    "use strict";
-    var __moduleName = context_90 && context_90.id;
-    var strings_1, resources_4;
-    var easings;
-    return {
-        setters:[
-            function (strings_1_1) {
-                strings_1 = strings_1_1;
-            },
-            function (resources_4_1) {
-                resources_4 = resources_4_1;
-            }],
-        execute: function() {
-            exports_90("easings", easings = {
-                easeInBack: strings_1.cssFunction(resources_4.cubicBezier, 0.6, -0.28, 0.735, 0.045),
-                easeInCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.6, 0.04, 0.98, 0.335),
-                easeInCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.55, 0.055, 0.675, 0.19),
-                easeInExpo: strings_1.cssFunction(resources_4.cubicBezier, 0.95, 0.05, 0.795, 0.035),
-                easeInOutBack: strings_1.cssFunction(resources_4.cubicBezier, 0.68, -0.55, 0.265, 1.55),
-                easeInOutCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.785, 0.135, 0.15, 0.86),
-                easeInOutCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.645, 0.045, 0.355, 1),
-                easeInOutExpo: strings_1.cssFunction(resources_4.cubicBezier, 1, 0, 0, 1),
-                easeInOutQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.455, 0.03, 0.515, 0.955),
-                easeInOutQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.77, 0, 0.175, 1),
-                easeInOutQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.86, 0, 0.07, 1),
-                easeInOutSine: strings_1.cssFunction(resources_4.cubicBezier, 0.445, 0.05, 0.55, 0.95),
-                easeInQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.55, 0.085, 0.68, 0.53),
-                easeInQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.895, 0.03, 0.685, 0.22),
-                easeInQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.755, 0.05, 0.855, 0.06),
-                easeInSine: strings_1.cssFunction(resources_4.cubicBezier, 0.47, 0, 0.745, 0.715),
-                easeOutBack: strings_1.cssFunction(resources_4.cubicBezier, 0.175, 0.885, 0.32, 1.275),
-                easeOutCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.075, 0.82, 0.165, 1),
-                easeOutCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.215, 0.61, 0.355, 1),
-                easeOutExpo: strings_1.cssFunction(resources_4.cubicBezier, 0.19, 1, 0.22, 1),
-                easeOutQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.25, 0.46, 0.45, 0.94),
-                easeOutQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.165, 0.84, 0.44, 1),
-                easeOutQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.23, 1, 0.32, 1),
-                easeOutSine: strings_1.cssFunction(resources_4.cubicBezier, 0.39, 0.575, 0.565, 1),
-                elegantSlowStartEnd: strings_1.cssFunction(resources_4.cubicBezier, 0.175, 0.885, 0.32, 1.275)
-            });
-        }
-    }
-});
-System.register("just-animate/helpers/functions", ["just-animate/helpers/type"], function(exports_91, context_91) {
-    "use strict";
-    var __moduleName = context_91 && context_91.id;
-    var type_7;
+    var type_5;
     var pipe;
     return {
         setters:[
-            function (type_7_1) {
-                type_7 = type_7_1;
+            function (type_5_1) {
+                type_5 = type_5_1;
             }],
         execute: function() {
-            exports_91("pipe", pipe = function pipe() {
+            exports_89("pipe", pipe = function pipe() {
                 var args = arguments;
                 var initial = args[0];
-                var value = type_7.isFunction(initial) ? initial() : initial;
+                var value = type_5.isFunction(initial) ? initial() : initial;
                 var len = args.length;
                 for (var x = 1; x < len; x++) {
                     value = args[x](value);
@@ -4064,10 +3581,86 @@ System.register("just-animate/helpers/functions", ["just-animate/helpers/type"],
         }
     }
 });
+System.register("just-animate/helpers/strings", ["just-animate/helpers/type", "just-animate/helpers/lists", "just-animate/helpers/resources"], function(exports_90, context_90) {
+    "use strict";
+    var __moduleName = context_90 && context_90.id;
+    var type_6, lists_2, resources_9;
+    var camelCaseRegex, cssFunction;
+    function camelCaseReplacer(match, p1, p2) {
+        return p1 + p2.toUpperCase();
+    }
+    function toCamelCase(value) {
+        return type_6.isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : resources_9.nothing;
+    }
+    exports_90("toCamelCase", toCamelCase);
+    return {
+        setters:[
+            function (type_6_1) {
+                type_6 = type_6_1;
+            },
+            function (lists_2_1) {
+                lists_2 = lists_2_1;
+            },
+            function (resources_9_1) {
+                resources_9 = resources_9_1;
+            }],
+        execute: function() {
+            camelCaseRegex = /([a-z])[- ]([a-z])/ig;
+            exports_90("cssFunction", cssFunction = function () {
+                var args = arguments;
+                return args[0] + "(" + lists_2.toArray(args, 1).join(',') + ")";
+            });
+        }
+    }
+});
+System.register("just-animate/core/easings", ["just-animate/helpers/strings", "just-animate/helpers/resources"], function(exports_91, context_91) {
+    "use strict";
+    var __moduleName = context_91 && context_91.id;
+    var strings_1, resources_10;
+    var easings;
+    return {
+        setters:[
+            function (strings_1_1) {
+                strings_1 = strings_1_1;
+            },
+            function (resources_10_1) {
+                resources_10 = resources_10_1;
+            }],
+        execute: function() {
+            exports_91("easings", easings = {
+                easeInBack: strings_1.cssFunction(resources_10.cubicBezier, 0.6, -0.28, 0.735, 0.045),
+                easeInCirc: strings_1.cssFunction(resources_10.cubicBezier, 0.6, 0.04, 0.98, 0.335),
+                easeInCubic: strings_1.cssFunction(resources_10.cubicBezier, 0.55, 0.055, 0.675, 0.19),
+                easeInExpo: strings_1.cssFunction(resources_10.cubicBezier, 0.95, 0.05, 0.795, 0.035),
+                easeInOutBack: strings_1.cssFunction(resources_10.cubicBezier, 0.68, -0.55, 0.265, 1.55),
+                easeInOutCirc: strings_1.cssFunction(resources_10.cubicBezier, 0.785, 0.135, 0.15, 0.86),
+                easeInOutCubic: strings_1.cssFunction(resources_10.cubicBezier, 0.645, 0.045, 0.355, 1),
+                easeInOutExpo: strings_1.cssFunction(resources_10.cubicBezier, 1, 0, 0, 1),
+                easeInOutQuad: strings_1.cssFunction(resources_10.cubicBezier, 0.455, 0.03, 0.515, 0.955),
+                easeInOutQuart: strings_1.cssFunction(resources_10.cubicBezier, 0.77, 0, 0.175, 1),
+                easeInOutQuint: strings_1.cssFunction(resources_10.cubicBezier, 0.86, 0, 0.07, 1),
+                easeInOutSine: strings_1.cssFunction(resources_10.cubicBezier, 0.445, 0.05, 0.55, 0.95),
+                easeInQuad: strings_1.cssFunction(resources_10.cubicBezier, 0.55, 0.085, 0.68, 0.53),
+                easeInQuart: strings_1.cssFunction(resources_10.cubicBezier, 0.895, 0.03, 0.685, 0.22),
+                easeInQuint: strings_1.cssFunction(resources_10.cubicBezier, 0.755, 0.05, 0.855, 0.06),
+                easeInSine: strings_1.cssFunction(resources_10.cubicBezier, 0.47, 0, 0.745, 0.715),
+                easeOutBack: strings_1.cssFunction(resources_10.cubicBezier, 0.175, 0.885, 0.32, 1.275),
+                easeOutCirc: strings_1.cssFunction(resources_10.cubicBezier, 0.075, 0.82, 0.165, 1),
+                easeOutCubic: strings_1.cssFunction(resources_10.cubicBezier, 0.215, 0.61, 0.355, 1),
+                easeOutExpo: strings_1.cssFunction(resources_10.cubicBezier, 0.19, 1, 0.22, 1),
+                easeOutQuad: strings_1.cssFunction(resources_10.cubicBezier, 0.25, 0.46, 0.45, 0.94),
+                easeOutQuart: strings_1.cssFunction(resources_10.cubicBezier, 0.165, 0.84, 0.44, 1),
+                easeOutQuint: strings_1.cssFunction(resources_10.cubicBezier, 0.23, 1, 0.32, 1),
+                easeOutSine: strings_1.cssFunction(resources_10.cubicBezier, 0.39, 0.575, 0.565, 1),
+                elegantSlowStartEnd: strings_1.cssFunction(resources_10.cubicBezier, 0.175, 0.885, 0.32, 1.275)
+            });
+        }
+    }
+});
 System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", "just-animate/helpers/strings", "just-animate/helpers/errors", "just-animate/helpers/resources"], function(exports_92, context_92) {
     "use strict";
     var __moduleName = context_92 && context_92.id;
-    var type_8, strings_2, errors_4, resources_5;
+    var type_7, strings_2, errors_3, resources_11, resources_12;
     var offset;
     function spaceKeyframes(keyframes) {
         // don't attempt to fill animation if less than 2 keyframes
@@ -4090,13 +3683,13 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         for (var i = 1; i < lasti; i++) {
             var target = keyframes[i];
             // skip entries that have an offset        
-            if (type_8.isNumber(target.offset)) {
+            if (type_7.isNumber(target.offset)) {
                 continue;
             }
             // search for the next offset with a value        
             for (var j = i + 1; j < len; j++) {
                 // pass if offset is not set
-                if (!type_8.isNumber(keyframes[j].offset)) {
+                if (!type_7.isNumber(keyframes[j].offset)) {
                     continue;
                 }
                 // calculate timing/position info
@@ -4136,7 +3729,7 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === offset || type_8.isDefined(first[prop])) {
+                if (prop === offset || type_7.isDefined(first[prop])) {
                     continue;
                 }
                 first[prop] = keyframe[prop];
@@ -4146,7 +3739,7 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         for (var i = len - 2; i > -1; i--) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === offset || type_8.isDefined(last[prop])) {
+                if (prop === offset || type_7.isDefined(last[prop])) {
                     continue;
                 }
                 last[prop] = keyframe[prop];
@@ -4170,175 +3763,175 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         var transformString = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
-            if (!type_8.isDefined(value)) {
+            if (!type_7.isDefined(value)) {
                 continue;
             }
             switch (prop) {
-                case resources_5.scale3d:
-                    if (type_8.isArray(value)) {
+                case resources_12.scale3d:
+                    if (type_7.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 3) {
-                            throw errors_4.invalidArg(resources_5.scale3d);
+                            throw errors_3.invalidArg(resources_12.scale3d);
                         }
                         scaleArray[xIndex] = arr[xIndex];
                         scaleArray[yIndex] = arr[yIndex];
                         scaleArray[zIndex] = arr[zIndex];
                         continue;
                     }
-                    if (type_8.isNumber(value)) {
+                    if (type_7.isNumber(value)) {
                         scaleArray[xIndex] = value;
                         scaleArray[yIndex] = value;
                         scaleArray[zIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.scale3d);
-                case resources_5.scale:
-                    if (type_8.isArray(value)) {
+                    throw errors_3.invalidArg(resources_12.scale3d);
+                case resources_12.scale:
+                    if (type_7.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
-                            throw errors_4.invalidArg(resources_5.scale);
+                            throw errors_3.invalidArg(resources_12.scale);
                         }
                         scaleArray[xIndex] = arr[xIndex];
                         scaleArray[yIndex] = arr[yIndex];
                         continue;
                     }
-                    if (type_8.isNumber(value)) {
+                    if (type_7.isNumber(value)) {
                         scaleArray[xIndex] = value;
                         scaleArray[yIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.scale);
-                case resources_5.scaleX:
-                    if (type_8.isNumber(value)) {
+                    throw errors_3.invalidArg(resources_12.scale);
+                case resources_12.scaleX:
+                    if (type_7.isNumber(value)) {
                         scaleArray[xIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.scaleX);
-                case resources_5.scaleY:
-                    if (type_8.isNumber(value)) {
+                    throw errors_3.invalidArg(resources_12.scaleX);
+                case resources_12.scaleY:
+                    if (type_7.isNumber(value)) {
                         scaleArray[yIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.scaleY);
-                case resources_5.scaleZ:
-                    if (type_8.isNumber(value)) {
+                    throw errors_3.invalidArg(resources_12.scaleY);
+                case resources_12.scaleZ:
+                    if (type_7.isNumber(value)) {
                         scaleArray[zIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.scaleZ);
-                case resources_5.skew:
-                    if (type_8.isArray(value)) {
+                    throw errors_3.invalidArg(resources_12.scaleZ);
+                case resources_12.skew:
+                    if (type_7.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
-                            throw errors_4.invalidArg(resources_5.skew);
+                            throw errors_3.invalidArg(resources_12.skew);
                         }
                         skewArray[xIndex] = arr[xIndex];
                         skewArray[yIndex] = arr[yIndex];
                         continue;
                     }
-                    if (type_8.isNumber(value)) {
+                    if (type_7.isNumber(value)) {
                         skewArray[xIndex] = value;
                         skewArray[yIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.skew);
-                case resources_5.skewX:
-                    if (type_8.isString(value)) {
+                    throw errors_3.invalidArg(resources_12.skew);
+                case resources_12.skewX:
+                    if (type_7.isString(value)) {
                         skewArray[xIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.skewX);
-                case resources_5.skewY:
-                    if (type_8.isString(value)) {
+                    throw errors_3.invalidArg(resources_12.skewX);
+                case resources_12.skewY:
+                    if (type_7.isString(value)) {
                         skewArray[yIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.skewY);
-                case resources_5.rotate3d:
-                    if (type_8.isArray(value)) {
+                    throw errors_3.invalidArg(resources_12.skewY);
+                case resources_12.rotate3d:
+                    if (type_7.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 4) {
-                            throw errors_4.invalidArg(resources_5.rotate3d);
+                            throw errors_3.invalidArg(resources_12.rotate3d);
                         }
                         transformString += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.rotate3d);
-                case resources_5.rotateX:
-                    if (type_8.isString(value)) {
+                    throw errors_3.invalidArg(resources_12.rotate3d);
+                case resources_12.rotateX:
+                    if (type_7.isString(value)) {
                         transformString += " rotate3d(1, 0, 0, " + value + ")";
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.rotateX);
-                case resources_5.rotateY:
-                    if (type_8.isString(value)) {
+                    throw errors_3.invalidArg(resources_12.rotateX);
+                case resources_12.rotateY:
+                    if (type_7.isString(value)) {
                         transformString += " rotate3d(0, 1, 0, " + value + ")";
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.rotateY);
-                case resources_5.rotate:
-                case resources_5.rotateZ:
-                    if (type_8.isString(value)) {
+                    throw errors_3.invalidArg(resources_12.rotateY);
+                case resources_12.rotate:
+                case resources_12.rotateZ:
+                    if (type_7.isString(value)) {
                         transformString += " rotate3d(0, 0, 1, " + value + ")";
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.rotateZ);
-                case resources_5.translate3d:
-                    if (type_8.isArray(value)) {
+                    throw errors_3.invalidArg(resources_12.rotateZ);
+                case resources_12.translate3d:
+                    if (type_7.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 3) {
-                            throw errors_4.invalidArg(resources_5.translate3d);
+                            throw errors_3.invalidArg(resources_12.translate3d);
                         }
                         translateArray[xIndex] = arr[xIndex];
                         translateArray[yIndex] = arr[yIndex];
                         translateArray[zIndex] = arr[zIndex];
                         continue;
                     }
-                    if (type_8.isString(value) || type_8.isNumber(value)) {
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
                         translateArray[xIndex] = value;
                         translateArray[yIndex] = value;
                         translateArray[zIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.rotate3d);
-                case resources_5.translate:
-                    if (type_8.isArray(value)) {
+                    throw errors_3.invalidArg(resources_12.rotate3d);
+                case resources_12.translate:
+                    if (type_7.isArray(value)) {
                         var arr = value;
                         if (arr.length !== 2) {
-                            throw errors_4.invalidArg(resources_5.translate);
+                            throw errors_3.invalidArg(resources_12.translate);
                         }
                         translateArray[xIndex] = arr[xIndex];
                         translateArray[yIndex] = arr[yIndex];
                         continue;
                     }
-                    if (type_8.isString(value) || type_8.isNumber(value)) {
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
                         translateArray[xIndex] = value;
                         translateArray[yIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.translate);
-                case resources_5.x:
-                case resources_5.translateX:
-                    if (type_8.isString(value) || type_8.isNumber(value)) {
+                    throw errors_3.invalidArg(resources_12.translate);
+                case resources_12.x:
+                case resources_12.translateX:
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
                         translateArray[xIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.x);
-                case resources_5.y:
-                case resources_5.translateY:
-                    if (type_8.isString(value) || type_8.isNumber(value)) {
+                    throw errors_3.invalidArg(resources_12.x);
+                case resources_12.y:
+                case resources_12.translateY:
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
                         translateArray[yIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.y);
-                case resources_5.z:
-                case resources_5.translateZ:
-                    if (type_8.isString(value) || type_8.isNumber(value)) {
+                    throw errors_3.invalidArg(resources_12.y);
+                case resources_12.z:
+                case resources_12.translateZ:
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
                         translateArray[zIndex] = value;
                         continue;
                     }
-                    throw errors_4.invalidArg(resources_5.z);
-                case resources_5.transform:
+                    throw errors_3.invalidArg(resources_12.z);
+                case resources_12.transform:
                     transformString += ' ' + value;
                     break;
                 default:
@@ -4347,9 +3940,9 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
             }
         }
         // combine scale
-        var isScaleX = scaleArray[xIndex] !== undefined;
-        var isScaleY = scaleArray[yIndex] !== undefined;
-        var isScaleZ = scaleArray[zIndex] !== undefined;
+        var isScaleX = scaleArray[xIndex] !== resources_11.nothing;
+        var isScaleY = scaleArray[yIndex] !== resources_11.nothing;
+        var isScaleZ = scaleArray[zIndex] !== resources_11.nothing;
         if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
             var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
             transformString += " scale3d(" + scaleString + ")";
@@ -4369,8 +3962,8 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         else {
         }
         // combine skew
-        var isskewX = skewArray[xIndex] !== undefined;
-        var isskewY = skewArray[yIndex] !== undefined;
+        var isskewX = skewArray[xIndex] !== resources_11.nothing;
+        var isskewY = skewArray[yIndex] !== resources_11.nothing;
         if (isskewX && isskewY) {
             transformString += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
         }
@@ -4383,9 +3976,9 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         else {
         }
         // combine translate
-        var istranslateX = translateArray[xIndex] !== undefined;
-        var istranslateY = translateArray[yIndex] !== undefined;
-        var istranslateZ = translateArray[zIndex] !== undefined;
+        var istranslateX = translateArray[xIndex] !== resources_11.nothing;
+        var istranslateY = translateArray[yIndex] !== resources_11.nothing;
+        var istranslateZ = translateArray[zIndex] !== resources_11.nothing;
         if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
             var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
             transformString += " translate3d(" + translateString + ")";
@@ -4412,248 +4005,478 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
     exports_92("normalizeProperties", normalizeProperties);
     return {
         setters:[
-            function (type_8_1) {
-                type_8 = type_8_1;
+            function (type_7_1) {
+                type_7 = type_7_1;
             },
             function (strings_2_1) {
                 strings_2 = strings_2_1;
             },
-            function (errors_4_1) {
-                errors_4 = errors_4_1;
+            function (errors_3_1) {
+                errors_3 = errors_3_1;
             },
-            function (resources_5_1) {
-                resources_5 = resources_5_1;
+            function (resources_11_1) {
+                resources_11 = resources_11_1;
+                resources_12 = resources_11_1;
             }],
         execute: function() {
             offset = 'offset';
         }
     }
 });
-System.register("just-animate/helpers/math", [], function(exports_93, context_93) {
+System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "just-animate/helpers/objects", "just-animate/helpers/type", "just-animate/helpers/math", "just-animate/helpers/elements", "just-animate/core/Dispatcher", "just-animate/core/KeyframeAnimation", "just-animate/helpers/errors", "just-animate/helpers/functions", "just-animate/helpers/resources", "just-animate/core/easings", "just-animate/helpers/keyframes"], function(exports_93, context_93) {
     "use strict";
     var __moduleName = context_93 && context_93.id;
-    var linearCubicBezier, SUBDIVISION_EPSILON;
-    /**
-     * Clamps a number between the min and max
-     *
-     * @export
-     * @param {number} val number to clamp
-     * @param {number} min min number allowed
-     * @param {number} max max number allowed
-     * @returns {number} val if between min-max, min if lesser, max if greater
-     */
-    function clamp(val, min, max) {
-        return val === undefined ? undefined : val < min ? min : val > max ? max : val;
-    }
-    exports_93("clamp", clamp);
-    function bezier(n1, n2, t) {
-        return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
-    }
-    function cubicBezier(p0, p1, p2, p3) {
-        if (p0 < 0 || p0 > 1 || p2 < 0 || p2 > 1) {
-            return linearCubicBezier;
+    var lists_3, objects_1, type_8, math_1, elements_2, Dispatcher_2, KeyframeAnimation_1, errors_4, functions_1, resources_13, resources_14, easings_1, keyframes_1;
+    var animationPadding;
+    function Animator(resolver, timeloop) {
+        var self = this instanceof Animator ? this : Object.create(Animator.prototype);
+        if (!type_8.isDefined(resources_13.duration)) {
+            throw errors_4.invalidArg(resources_13.duration);
         }
-        return function (x) {
-            if (x === 0 || x === 1) {
-                return x;
-            }
-            var start = 0;
-            var end = 1;
-            var limit = 20;
-            while (--limit) {
-                var mid = (start + end) / 2;
-                var xEst = bezier(p0, p2, mid);
-                if (Math.abs(x - xEst) < SUBDIVISION_EPSILON) {
-                    return bezier(p1, p3, mid);
-                }
-                if (xEst < x) {
-                    start = mid;
-                }
-                else {
-                    end = mid;
-                }
-            }
-            // limit is reached        
-            return x;
-        };
-    }
-    exports_93("cubicBezier", cubicBezier);
-    return {
-        setters:[],
-        execute: function() {
-            linearCubicBezier = function (x) { return x; };
-            SUBDIVISION_EPSILON = 0.0001;
-        }
-    }
-});
-System.register("just-animate/helpers/objects", [], function(exports_94, context_94) {
-    "use strict";
-    var __moduleName = context_94 && context_94.id;
-    /**
-     * Extends the first object with the properties of each subsequent object
-     *
-     * @export
-     * @param {*} target object to extend
-     * @param {...any[]} sources sources from which to inherit properties
-     * @returns {*} first object
-     */
-    function extend(target) {
-        var sources = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            sources[_i - 1] = arguments[_i];
-        }
-        for (var i = 1, len = arguments.length; i < len; i++) {
-            var source = arguments[i];
-            for (var propName in source) {
-                target[propName] = source[propName];
-            }
-        }
-        return target;
-    }
-    exports_94("extend", extend);
-    return {
-        setters:[],
-        execute: function() {
-        }
-    }
-});
-System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just-animate/core/TimelineAnimator", "just-animate/core/TimeLoop", "just-animate/core/Animator", "just-animate/easings", "just-animate/helpers/functions", "just-animate/helpers/objects", "just-animate/helpers/type", "just-animate/helpers/keyframes", "just-animate/helpers/elements", "just-animate/core/KeyframeAnimation"], function(exports_95, context_95) {
-    "use strict";
-    var __moduleName = context_95 && context_95.id;
-    var lists_5, TimelineAnimator_1, TimeLoop_1, Animator_2, easings_1, functions_1, objects_1, type_9, keyframes_1, elements_3, KeyframeAnimation_2;
-    var globalAnimations;
-    function JustAnimate() {
-        var self = this;
-        self = self instanceof JustAnimate ? self : Object.create(JustAnimate.prototype);
-        self._registry = {};
-        self._timeLoop = TimeLoop_1.createLoop();
+        self._duration = 0;
+        self._totalDuration = 0;
+        self._currentTime = resources_14.nothing;
+        self._iterationStart = 0;
+        self._iterations = 1;
+        self._lastTick = resources_14.nothing;
+        self._playState = 'idle';
+        self._playbackRate = 1;
+        self._startTime = 0;
+        self._events = [];
+        self._resolver = resolver;
+        self._timeLoop = timeloop;
+        self._dispatcher = Dispatcher_2.Dispatcher();
+        self._onTick = self._onTick.bind(self);
+        self.on(resources_13.finish, self._onFinish);
+        self.on(resources_13.cancel, self._onCancel);
+        self.on(resources_13.pause, self._onPause);
         return self;
     }
-    exports_95("JustAnimate", JustAnimate);
-    function inject(animations) {
-        lists_5.each(animations, function (a) { return globalAnimations[a.name] = a; });
-    }
-    function resolveArguments(ctx, keyframesOrName, timings) {
-        var keyframes;
-        if (type_9.isString(keyframesOrName)) {
-            // if keyframes is a string, lookup keyframes from registry
-            var definition = ctx.findAnimation(keyframesOrName);
-            keyframes = functions_1.pipe(lists_5.map(definition.keyframes, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
-            // use registered timings as default, then load timings from params           
-            timings = objects_1.extend({}, definition.timings, timings);
-        }
-        else {
-            // otherwise, translate keyframe properties
-            keyframes = functions_1.pipe(lists_5.map(keyframesOrName, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
-        }
-        if (timings && timings.easing) {
-            // if timings contains an easing property, 
-            var easing = easings_1.easings[timings.easing];
-            if (easing) {
-                timings.easing = easing;
-            }
-        }
-        return {
-            keyframes: keyframes,
-            timings: timings
-        };
-    }
+    exports_93("Animator", Animator);
     return {
         setters:[
-            function (lists_5_1) {
-                lists_5 = lists_5_1;
-            },
-            function (TimelineAnimator_1_1) {
-                TimelineAnimator_1 = TimelineAnimator_1_1;
-            },
-            function (TimeLoop_1_1) {
-                TimeLoop_1 = TimeLoop_1_1;
-            },
-            function (Animator_2_1) {
-                Animator_2 = Animator_2_1;
-            },
-            function (easings_1_1) {
-                easings_1 = easings_1_1;
-            },
-            function (functions_1_1) {
-                functions_1 = functions_1_1;
+            function (lists_3_1) {
+                lists_3 = lists_3_1;
             },
             function (objects_1_1) {
                 objects_1 = objects_1_1;
             },
-            function (type_9_1) {
-                type_9 = type_9_1;
+            function (type_8_1) {
+                type_8 = type_8_1;
+            },
+            function (math_1_1) {
+                math_1 = math_1_1;
+            },
+            function (elements_2_1) {
+                elements_2 = elements_2_1;
+            },
+            function (Dispatcher_2_1) {
+                Dispatcher_2 = Dispatcher_2_1;
+            },
+            function (KeyframeAnimation_1_1) {
+                KeyframeAnimation_1 = KeyframeAnimation_1_1;
+            },
+            function (errors_4_1) {
+                errors_4 = errors_4_1;
+            },
+            function (functions_1_1) {
+                functions_1 = functions_1_1;
+            },
+            function (resources_13_1) {
+                resources_13 = resources_13_1;
+                resources_14 = resources_13_1;
+            },
+            function (easings_1_1) {
+                easings_1 = easings_1_1;
             },
             function (keyframes_1_1) {
                 keyframes_1 = keyframes_1_1;
-            },
-            function (elements_3_1) {
-                elements_3 = elements_3_1;
-            },
-            function (KeyframeAnimation_2_1) {
-                KeyframeAnimation_2 = KeyframeAnimation_2_1;
             }],
         execute: function() {
-            globalAnimations = {};
+            // fixme!: this controls the amount of time left before the timeline gives up 
+            // on individual animation and calls finish.  If an animation plays after its time, it looks
+            // like it restarts and that causes jank
+            animationPadding = 1.0 / 30;
+            Animator.prototype = {
+                _currentTime: resources_14.nothing,
+                _dispatcher: resources_14.nothing,
+                _duration: resources_14.nothing,
+                _endTime: resources_14.nothing,
+                _events: resources_14.nothing,
+                _iterationStart: resources_14.nothing,
+                _iterations: resources_14.nothing,
+                _lastTick: resources_14.nothing,
+                _playState: resources_14.nothing,
+                _playbackRate: resources_14.nothing,
+                _resolver: resources_14.nothing,
+                _startTime: resources_14.nothing,
+                _timeLoop: resources_14.nothing,
+                _totalDuration: resources_14.nothing,
+                animate: function (options) {
+                    var self = this;
+                    if (type_8.isArray(options)) {
+                        lists_3.each(options, function (e) { return self._addEvent(e); });
+                    }
+                    else {
+                        self._addEvent(options);
+                    }
+                    self._recalculate();
+                    return self;
+                },
+                duration: function () {
+                    return this._duration;
+                },
+                iterationStart: function () {
+                    return this._iterationStart;
+                },
+                iterations: function () {
+                    return this._iterations;
+                },
+                totalDuration: function () {
+                    return this._totalDuration;
+                },
+                endTime: function () {
+                    return this._endTime;
+                },
+                startTime: function () {
+                    return this._startTime;
+                },
+                currentTime: function (value) {
+                    var self = this;
+                    if (!type_8.isDefined(value)) {
+                        return self._currentTime;
+                    }
+                    self._currentTime = value;
+                    return self;
+                },
+                playbackRate: function (value) {
+                    var self = this;
+                    if (!type_8.isDefined(value)) {
+                        return self._playbackRate;
+                    }
+                    self._playbackRate = value;
+                    return self;
+                },
+                playState: function (value) {
+                    var self = this;
+                    if (!type_8.isDefined(value)) {
+                        return self._playState;
+                    }
+                    self._playState = value;
+                    self._dispatcher.trigger('set', ['playbackState', value]);
+                    return self;
+                },
+                on: function (eventName, listener) {
+                    var self = this;
+                    self._dispatcher.on(eventName, listener);
+                    return self;
+                },
+                off: function (eventName, listener) {
+                    var self = this;
+                    self._dispatcher.off(eventName, listener);
+                    return self;
+                },
+                finish: function () {
+                    var self = this;
+                    self._dispatcher.trigger(resources_13.finish, [self]);
+                    return self;
+                },
+                play: function () {
+                    var self = this;
+                    if (self._playState !== 'running' || self._playState !== 'pending') {
+                        self._playState = 'pending';
+                        self._timeLoop.on(self._onTick);
+                    }
+                    return self;
+                },
+                pause: function () {
+                    var self = this;
+                    self._dispatcher.trigger(resources_13.pause, [self]);
+                    return self;
+                },
+                reverse: function () {
+                    var self = this;
+                    self._playbackRate *= -1;
+                    return self;
+                },
+                cancel: function () {
+                    var self = this;
+                    self._dispatcher.trigger(resources_13.cancel, [self]);
+                    return self;
+                },
+                _recalculate: function () {
+                    var self = this;
+                    var endsAt = lists_3.maxBy(self._events, function (e) { return e.endTimeMs; });
+                    self._endTime = endsAt;
+                    self._duration = endsAt;
+                    self._totalDuration = endsAt;
+                },
+                _addEvent: function (event) {
+                    var self = this;
+                    var targets = elements_2.queryElements(event.targets);
+                    if (event.name) {
+                        var def = self._resolver.findAnimation(event.name);
+                        if (!type_8.isDefined(def)) {
+                            throw errors_4.invalidArg('name');
+                        }
+                        objects_1.inherit(event, def);
+                    }
+                    event.from = (event.from || 0) + this._duration;
+                    event.to = (event.to || 0) + this._duration;
+                    if (!event.easing) {
+                        event.easing = 'linear';
+                    }
+                    else {
+                        event.easing = easings_1.easings[event.easing] || event.easing;
+                    }
+                    if (event.keyframes) {
+                        var keyframes_2 = functions_1.pipe(lists_3.map(event.keyframes, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
+                        var animators = lists_3.map(targets, function (e) {
+                            return {
+                                animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes_2, event),
+                                endTimeMs: event.to,
+                                startTimeMs: event.from
+                            };
+                        });
+                        lists_3.pushAll(self._events, animators);
+                    }
+                },
+                _onCancel: function (self) {
+                    self._timeLoop.off(self._onTick);
+                    self._currentTime = 0;
+                    self._playState = 'idle';
+                    self._lastTick = resources_14.nothing;
+                    lists_3.each(self._events, function (evt) { evt.animator.cancel(); });
+                },
+                _onFinish: function (self) {
+                    self._timeLoop.off(self._onTick);
+                    self._currentTime = 0;
+                    self._playState = 'finished';
+                    self._lastTick = resources_14.nothing;
+                    lists_3.each(self._events, function (evt) { evt.animator.finish(); });
+                },
+                _onPause: function (self) {
+                    self._timeLoop.off(self._onTick);
+                    self._playState = 'paused';
+                    self._lastTick = resources_14.nothing;
+                    lists_3.each(self._events, function (evt) { evt.animator.pause(); });
+                },
+                _onTick: function (delta2, runningTime2) {
+                    var self = this;
+                    var dispatcher = self._dispatcher;
+                    var playState = self._playState;
+                    // canceled
+                    if (playState === 'idle') {
+                        dispatcher.trigger(resources_13.cancel, [self]);
+                        return;
+                    }
+                    // finished
+                    if (playState === 'finished') {
+                        dispatcher.trigger(resources_13.finish, [self]);
+                        return;
+                    }
+                    // paused
+                    if (playState === 'paused') {
+                        dispatcher.trigger(resources_13.pause, [self]);
+                        return;
+                    }
+                    // running/pending
+                    var playbackRate = self._playbackRate;
+                    var isReversed = playbackRate < 0;
+                    // calculate running range
+                    var duration1 = self._duration;
+                    var startTime = isReversed ? duration1 : 0;
+                    var endTime = isReversed ? 0 : duration1;
+                    if (self._playState === 'pending') {
+                        var currentTime_1 = self._currentTime;
+                        self._currentTime = currentTime_1 === resources_14.nothing || currentTime_1 === endTime ? startTime : currentTime_1;
+                        self._playState = 'running';
+                    }
+                    // calculate currentTime from delta
+                    var thisTick = performance.now();
+                    var lastTick = self._lastTick;
+                    if (lastTick !== resources_14.nothing) {
+                        var delta = (thisTick - lastTick) * playbackRate;
+                        self._currentTime += delta;
+                    }
+                    self._lastTick = thisTick;
+                    var currentTime = self._currentTime;
+                    // check if animation has finished
+                    if (!math_1.inRange(currentTime, startTime, endTime)) {
+                        dispatcher.trigger(resources_13.finish, [self]);
+                        return;
+                    }
+                    // start animations if should be active and currently aren't   
+                    var events = self._events;
+                    var eventLength = events.length;
+                    for (var i = 0; i < eventLength; i++) {
+                        var evt = events[i];
+                        var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+                        var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+                        var shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
+                        if (shouldBeActive) {
+                            var animator = evt.animator;
+                            animator.playbackRate(playbackRate);
+                            animator.play();
+                        }
+                    }
+                }
+            };
+        }
+    }
+});
+System.register("just-animate/helpers/units", ["just-animate/helpers/type", "just-animate/helpers/resources", "just-animate/helpers/errors"], function(exports_94, context_94) {
+    "use strict";
+    var __moduleName = context_94 && context_94.id;
+    var type_9, resources_15, errors_5;
+    var distanceExpression, percentageExpression, timeExpression, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second;
+    function fromDistance(val) {
+        if (!type_9.isDefined(val)) {
+            return resources_15.nothing;
+        }
+        if (type_9.isNumber(val)) {
+            return Unit(Number(val), px, stepNone);
+        }
+        var match = distanceExpression.exec(val);
+        var unit = match[2];
+        var value = parseFloat(match[1]);
+        return Unit(value, unit, stepNone);
+    }
+    exports_94("fromDistance", fromDistance);
+    function fromPercentage(val) {
+        if (!type_9.isDefined(val)) {
+            return resources_15.nothing;
+        }
+        if (type_9.isNumber(val)) {
+            return Unit(Number(val), percent, stepNone);
+        }
+        var match = percentageExpression.exec(val);
+        var value = parseFloat(match[1]);
+        return Unit(value, percent, stepNone);
+    }
+    exports_94("fromPercentage", fromPercentage);
+    function fromTime(val) {
+        if (type_9.isNumber(val)) {
+            return Unit(Number(val), millisecond, stepNone);
+        }
+        var match = timeExpression.exec(val);
+        var step = match[1] || stepNone;
+        var unit = match[3];
+        var value = parseFloat(match[2]);
+        var valueMs;
+        if (unit === resources_15.nothing || unit === millisecond) {
+            valueMs = value;
+        }
+        else if (unit === second) {
+            valueMs = value * 1000;
+        }
+        else {
+            throw errors_5.invalidArg('format');
+        }
+        return Unit(valueMs, millisecond, step);
+    }
+    exports_94("fromTime", fromTime);
+    function Unit(value, unit, step) {
+        var self = this instanceof Unit ? this : Object.create(Unit.prototype);
+        self.value = value;
+        self.unit = unit;
+        self.step = step;
+        return self;
+    }
+    exports_94("Unit", Unit);
+    return {
+        setters:[
+            function (type_9_1) {
+                type_9 = type_9_1;
+            },
+            function (resources_15_1) {
+                resources_15 = resources_15_1;
+            },
+            function (errors_5_1) {
+                errors_5 = errors_5_1;
+            }],
+        execute: function() {
+            distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/;
+            percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/;
+            timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
+            exports_94("stepNone", stepNone = '=');
+            exports_94("stepForward", stepForward = '+=');
+            exports_94("stepBackward", stepBackward = '-=');
+            exports_94("em", em = 'em');
+            exports_94("ex", ex = 'ex');
+            exports_94("ch", ch = 'ch');
+            exports_94("rem", rem = 'rem');
+            exports_94("vh", vh = 'vh');
+            exports_94("vw", vw = 'vw');
+            exports_94("vmin", vmin = 'vmin');
+            exports_94("vmax", vmax = 'vmax');
+            exports_94("px", px = 'px');
+            exports_94("mm", mm = 'mm');
+            exports_94("q", q = 'q');
+            exports_94("cm", cm = 'cm');
+            exports_94("inch", inch = 'in');
+            exports_94("point", point = 'pt');
+            exports_94("pica", pica = 'pc');
+            exports_94("percent", percent = '%');
+            exports_94("millisecond", millisecond = 'ms');
+            exports_94("second", second = 's');
+            Unit.prototype = {
+                step: resources_15.nothing,
+                unit: resources_15.nothing,
+                value: resources_15.nothing,
+                toString: function () {
+                    return String(this.value) + this.unit;
+                }
+            };
+        }
+    }
+});
+System.register("just-animate/JustAnimate", ["just-animate/helpers/lists", "just-animate/core/Animator", "just-animate/core/TimeLoop", "just-animate/helpers/resources", "just-animate/core/AnimationResolver"], function(exports_95, context_95) {
+    "use strict";
+    var __moduleName = context_95 && context_95.id;
+    var lists_4, Animator_1, TimeLoop_1, resources_16, AnimationResolver_1;
+    function JustAnimate() {
+        var self = this;
+        self = self instanceof JustAnimate ? self : Object.create(JustAnimate.prototype);
+        self._registry = {};
+        self._resolver = AnimationResolver_1.AnimationResolver();
+        self._timeLoop = TimeLoop_1.TimeLoop();
+        return self;
+    }
+    exports_95("JustAnimate", JustAnimate);
+    function inject(animations) {
+        var resolver = AnimationResolver_1.AnimationResolver();
+        lists_4.each(animations, function (a) { return resolver.registerAnimation(a, true); });
+    }
+    return {
+        setters:[
+            function (lists_4_1) {
+                lists_4 = lists_4_1;
+            },
+            function (Animator_1_1) {
+                Animator_1 = Animator_1_1;
+            },
+            function (TimeLoop_1_1) {
+                TimeLoop_1 = TimeLoop_1_1;
+            },
+            function (resources_16_1) {
+                resources_16 = resources_16_1;
+            },
+            function (AnimationResolver_1_1) {
+                AnimationResolver_1 = AnimationResolver_1_1;
+            }],
+        execute: function() {
             JustAnimate.inject = inject;
             JustAnimate.prototype = {
-                _registry: undefined,
-                _timeLoop: undefined,
-                animate: function (keyframesOrName, targets, timings) {
-                    var a = resolveArguments(this, keyframesOrName, timings);
-                    var elements = elements_3.queryElements(targets);
-                    var effects = lists_5.map(elements, function (e) { return KeyframeAnimation_2.createKeyframeAnimation(e, a.keyframes, a.timings); });
-                    var animator = Animator_2.createMultiAnimator(effects, this._timeLoop);
-                    animator.play();
+                _resolver: resources_16.nothing,
+                _timeLoop: resources_16.nothing,
+                animate: function (options) {
+                    var animator = Animator_1.Animator(this._resolver, this._timeLoop);
+                    animator.animate(options);
                     return animator;
                 },
-                animateSequence: function (options) {
-                    var _this = this;
-                    var offset = 0;
-                    var effectOptions = lists_5.map(options.steps, function (step) {
-                        var a = resolveArguments(_this, step.name || step.keyframes, step.timings);
-                        var startDelay = a.timings.delay || 0;
-                        var endDelay = a.timings.endDelay || 0;
-                        var duration = a.timings.duration || 0;
-                        a.timings.delay = offset + startDelay;
-                        a.targets = step.el;
-                        offset += startDelay + duration + endDelay;
-                        return a;
-                    });
-                    lists_5.each(effectOptions, function (e) {
-                        e.timings.endDelay = offset - ((e.timings.delay || 0) + e.timings.duration + (e.timings.endDelay || 0));
-                    });
-                    var effects = [];
-                    lists_5.each(effectOptions, function (a) {
-                        var elements = elements_3.queryElements(a.targets);
-                        var animations = lists_5.map(elements, function (e) { return KeyframeAnimation_2.createKeyframeAnimation(e, a.keyframes, a.timings); });
-                        if (animations.length === 1) {
-                            effects.push(animations[0]);
-                        }
-                        else if (animations.length > 1) {
-                            effects.push(Animator_2.createMultiAnimator(animations, _this._timeLoop));
-                        }
-                    });
-                    var animator = Animator_2.createMultiAnimator(effects, this._timeLoop);
-                    if (options.autoplay) {
-                        animator.play();
-                    }
-                    return animator;
-                },
-                animateTimeline: function (options) {
-                    var _this = this;
-                    options.events.forEach(function (e) {
-                        var a = resolveArguments(_this, e.name || e.keyframes, e.timings);
-                        e.keyframes = a.keyframes;
-                        e.timings = a.timings;
-                    });
-                    return TimelineAnimator_1.createTimelineAnimator(options, this._timeLoop);
-                },
-                findAnimation: function (name) {
-                    return this._registry[name] || globalAnimations[name] || undefined;
-                },
-                register: function (animationOptions) {
-                    this._registry[animationOptions.name] = animationOptions;
+                register: function (preset) {
+                    this._resolver.registerAnimation(preset, false);
                 },
                 inject: inject
             };
@@ -4676,160 +4499,6 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
             }],
         execute: function() {
             exports_96("animations", animations);
-        }
-    }
-});
-System.register("just-animate/primitives/Distance", ["just-animate/helpers/type"], function(exports_97, context_97) {
-    "use strict";
-    var __moduleName = context_97 && context_97.id;
-    var type_10;
-    var distanceExpression, Distance;
-    return {
-        setters:[
-            function (type_10_1) {
-                type_10 = type_10_1;
-            }],
-        execute: function() {
-            distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/;
-            Distance = (function () {
-                function Distance(value, unit) {
-                    this.value = value;
-                    this.unit = unit;
-                }
-                Distance.from = function (val) {
-                    if (!type_10.isDefined(val)) {
-                        return undefined;
-                    }
-                    if (type_10.isNumber(val)) {
-                        return new Distance(val, Distance.px);
-                    }
-                    var match = distanceExpression.exec(val);
-                    var unit = match[2];
-                    var value = parseFloat(match[1]);
-                    return new Distance(value, unit);
-                };
-                Distance.prototype.toString = function () {
-                    return "" + this.value + this.unit;
-                };
-                Distance.em = 'em';
-                Distance.ex = 'ex';
-                Distance.ch = 'ch';
-                Distance.rem = 'rem';
-                Distance.vh = 'vh';
-                Distance.vw = 'vw';
-                Distance.vmin = 'vmin';
-                Distance.vmax = 'vmax';
-                Distance.px = 'px';
-                Distance.mm = 'mm';
-                Distance.q = 'q';
-                Distance.cm = 'cm';
-                Distance.inch = 'in';
-                Distance.point = 'pt';
-                Distance.pica = 'pc';
-                Distance.percent = '%';
-                return Distance;
-            }());
-            exports_97("Distance", Distance);
-        }
-    }
-});
-System.register("just-animate/primitives/Percentage", ["just-animate/helpers/type"], function(exports_98, context_98) {
-    "use strict";
-    var __moduleName = context_98 && context_98.id;
-    var type_11;
-    var distanceExpression, Percentage;
-    return {
-        setters:[
-            function (type_11_1) {
-                type_11 = type_11_1;
-            }],
-        execute: function() {
-            distanceExpression = /(-{0,1}[0-9.]+)%{0,1}/;
-            Percentage = (function () {
-                function Percentage(value) {
-                    this.value = value;
-                }
-                Percentage.from = function (val) {
-                    if (!type_11.isDefined(val)) {
-                        return undefined;
-                    }
-                    if (type_11.isNumber(val)) {
-                        return new Percentage(val);
-                    }
-                    var match = distanceExpression.exec(val);
-                    var value = parseFloat(match[1]);
-                    return new Percentage(value);
-                };
-                Percentage.prototype.toString = function () {
-                    return this.value + "%";
-                };
-                return Percentage;
-            }());
-            exports_98("Percentage", Percentage);
-        }
-    }
-});
-System.register("just-animate/primitives/Time", ["just-animate/helpers/type", "just-animate/helpers/errors"], function(exports_99, context_99) {
-    "use strict";
-    var __moduleName = context_99 && context_99.id;
-    var type_12, errors_5;
-    var timeExpression, Time;
-    return {
-        setters:[
-            function (type_12_1) {
-                type_12 = type_12_1;
-            },
-            function (errors_5_1) {
-                errors_5 = errors_5_1;
-            }],
-        execute: function() {
-            timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
-            Time = (function () {
-                function Time(value, stagger) {
-                    this.value = value;
-                    this.stagger = stagger;
-                }
-                Time.from = function (val) {
-                    if (type_12.isNumber(val)) {
-                        return new Time(val, Time.STAGGER_NONE);
-                    }
-                    var match = timeExpression.exec(val);
-                    var operator = match[1] || '=';
-                    var unit = match[3];
-                    var value = parseFloat(match[2]);
-                    var valueMs;
-                    if (unit === undefined || unit === 'ms') {
-                        valueMs = value;
-                    }
-                    else if (unit === 's') {
-                        valueMs = value * 1000;
-                    }
-                    else {
-                        throw errors_5.invalidArg('format');
-                    }
-                    var operatorEnum;
-                    switch (operator) {
-                        case '+=':
-                            operatorEnum = Time.STAGGER_INCREASE;
-                            break;
-                        case '-=':
-                            operatorEnum = Time.STAGGER_DECREASE;
-                            break;
-                        default:
-                            operatorEnum = Time.STAGGER_NONE;
-                            break;
-                    }
-                    return new Time(valueMs, operatorEnum);
-                };
-                Time.prototype.toString = function () {
-                    return String(this.value) + 'ms';
-                };
-                Time.STAGGER_NONE = 0;
-                Time.STAGGER_INCREASE = 1;
-                Time.STAGGER_DECREASE = -1;
-                return Time;
-            }());
-            exports_99("Time", Time);
         }
     }
 });

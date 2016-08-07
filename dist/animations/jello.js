@@ -42,10 +42,8 @@ exports.jello = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 1000,
-        fill: 'both',
-        easing: 'ease-in-out'
-    },
+    to: 1000,
+    fill: 'both',
+    easing: 'ease-in-out',
     name: 'jello'
 };

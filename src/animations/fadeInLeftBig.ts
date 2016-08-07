@@ -1,4 +1,4 @@
-export const fadeInLeftBig: ja.IAnimationOptions = {
+export const fadeInLeftBig: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 0,
@@ -9,10 +9,8 @@ export const fadeInLeftBig: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 1300,
+   to: 1300,
     fill: 'both',
-    easing: 'ease-out'
-  },
+    easing: 'ease-out',
   name: 'fadeInLeftBig'
 };

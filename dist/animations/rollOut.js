@@ -10,8 +10,6 @@ exports.rollOut = {
             transform: 'translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg)'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'rollOut'
 };

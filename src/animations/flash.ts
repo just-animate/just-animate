@@ -1,4 +1,4 @@
-export const flash: ja.IAnimationOptions = {
+export const flash: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 1
@@ -16,8 +16,8 @@ export const flash: ja.IAnimationOptions = {
       opacity: 1
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'flash'
 };

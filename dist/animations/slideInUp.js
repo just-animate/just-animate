@@ -10,8 +10,6 @@ exports.slideInUp = {
             visibility: 'visible'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'slideInUp'
 };

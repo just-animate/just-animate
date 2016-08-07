@@ -1,4 +1,4 @@
-export const fadeOutUpBig: ja.IAnimationOptions = {
+export const fadeOutUpBig: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 1,
@@ -9,8 +9,8 @@ export const fadeOutUpBig: ja.IAnimationOptions = {
       transform: 'translate3d(0, -2000px, 0)'
     }
   ],
-  timings: {
-    duration: 1300
-  },
+  
+    to: 1300
+  ,
   name: 'fadeOutUpBig'
 };

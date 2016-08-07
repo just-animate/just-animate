@@ -1,4 +1,4 @@
-export const rotateIn: ja.IAnimationOptions = {
+export const rotateIn: ja.IAnimationPreset = {
   keyframes: [
     {
       transformOrigin: 'center',
@@ -11,8 +11,8 @@ export const rotateIn: ja.IAnimationOptions = {
       opacity: 1
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'rotateIn'
 };

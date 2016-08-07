@@ -24,9 +24,7 @@ exports.bounceIn = {
             scale: 1
         }
     ],
-    timings: {
-        duration: 900,
-        fill: 'both',
-        easing: 'easeOutCubic'
-    }
+    to: 900,
+    fill: 'both',
+    easing: 'easeOutCubic'
 };

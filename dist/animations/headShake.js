@@ -34,9 +34,7 @@ exports.headShake = {
             translateX: '0'
         }
     ],
-    timings: {
-        duration: 1000,
-        easing: 'ease-out'
-    },
+    to: 1000,
+    easing: 'ease-out',
     name: 'headShake'
 };

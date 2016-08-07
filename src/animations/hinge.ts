@@ -1,4 +1,4 @@
-export const hinge: ja.IAnimationOptions = {
+export const hinge: ja.IAnimationPreset = {
   keyframes: [
     {
       transform: 'none',
@@ -27,8 +27,8 @@ export const hinge: ja.IAnimationOptions = {
       opacity: 0
     }
   ],
-  timings: {
-    duration: 2000
-  },
+  
+    to: 2000
+  ,
   name: 'hinge'
 };

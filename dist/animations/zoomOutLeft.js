@@ -19,9 +19,7 @@ exports.zoomOutLeft = {
             transformOrigin: 'left center'
         }
     ],
-    timings: {
-        duration: 1000,
-        easing: 'elegantSlowStartEnd'
-    },
+    to: 1000,
+    easing: 'elegantSlowStartEnd',
     name: 'zoomOutLeft'
 };

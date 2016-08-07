@@ -1,4 +1,4 @@
-export const bounceIn: ja.IAnimationOptions = {
+export const bounceIn: ja.IAnimationPreset = {
   name: 'bounceIn',
   keyframes: [
     {
@@ -23,9 +23,7 @@ export const bounceIn: ja.IAnimationOptions = {
       scale: 1
     }
   ],
-  timings: {
-    duration: 900,
-    fill: 'both',
-    easing: 'easeOutCubic'
-  }
+  to: 900,
+  fill: 'both',
+  easing: 'easeOutCubic'
 };

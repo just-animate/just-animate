@@ -1,5 +1,6 @@
-import {createDispatcher, IDispatcher} from './Dispatcher';
+import {Dispatcher, IDispatcher} from './Dispatcher';
 import {isDefined} from '../helpers/type';
+import {nothing} from '../helpers/resources';
 
 import {
     animate,
@@ -10,14 +11,45 @@ import {
     reverse
 } from '../helpers/resources';
 
-const keyframeAnimationPrototype = {
-    _dispatcher: undefined as IDispatcher,
-    _duration: undefined as number,
-    _endTime: undefined as number,
-    _iterationStart: undefined as number,    
-    _iterations: undefined as number,
-    _startTime: undefined as number,
-    _totalDuration: undefined as number,
+export function KeyframeAnimation(target: Element, keyframes: ja.ICssKeyframeOptions[], options: ja.IAnimationOptions): ja.IAnimationController {
+    const self = this instanceof KeyframeAnimation ? this : Object.create(KeyframeAnimation.prototype); 
+    
+    const duration = options.to - options.from;
+
+    self._iterationStart = options.iterationStart || 0;
+    self._iterations = options.iterations || 1;
+    self._duration = duration;
+    self._startTime = options.from || 0;
+    self._endTime = options.to;
+    self._totalDuration = (options.iterations || 1) * duration;
+
+    const dispatcher = Dispatcher();
+    self._dispatcher = dispatcher;
+
+    const animator = target[animate](keyframes, {
+        direction: options.direction,
+        duration: duration,
+        easing: options.easing || 'linear',
+        fill: options.fill || 'none',
+        iterationStart: self._iterationStart,
+        iterations: self._iterations
+    });
+
+    // immediately cancel to prevent effects until play is called    
+    animator.cancel();    
+    animator['onfinish'] = () => dispatcher.trigger(finish);
+    self._animator = animator;
+    return self;
+}
+ 
+KeyframeAnimation.prototype = {
+    _dispatcher: nothing as IDispatcher,
+    _duration: nothing as number,
+    _endTime: nothing as number,
+    _iterationStart: nothing as number,    
+    _iterations: nothing as number,
+    _startTime: nothing as number,
+    _totalDuration: nothing as number,
     currentTime(value?: number): number | ja.IAnimator {
         const self = this;
         if (!isDefined(value)) {
@@ -94,25 +126,6 @@ const keyframeAnimationPrototype = {
         return self;
     }
 };
-export function createKeyframeAnimation(target: Element, keyframes: ja.IKeyframeOptions[], timings: ja.IAnimationEffectTiming): ja.IAnimator {
-    const self = Object.create(keyframeAnimationPrototype) as ja.IAnimator|any; 
-    const dispatcher = createDispatcher();
-    const animator = target[animate](keyframes, timings);
-
-    animator.pause();
-    animator['onfinish'] = () => dispatcher.trigger(finish);
-
-    self._iterationStart = timings.iterationStart || 0;
-    self._iterations = timings.iterations || 1;
-    self._duration = timings.duration;
-    self._startTime = timings.delay || 0;
-    self._endTime = (timings.endDelay || 0) + timings.duration;
-    self._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
-
-    self._dispatcher = dispatcher;
-    self._animator = animator;
-    return self;
-}
 
 declare module waapi {
     export interface IAnimation {
@@ -132,5 +145,16 @@ declare module waapi {
 
         addEventListener(eventName: string, listener: Function): void;
         removeEventListener(eventName: string, listener: Function): void;
+    }
+
+    export interface IAnimationEffectTiming {
+        direction?: string;
+        delay?: number;
+        duration?: number;
+        easing?: string;
+        endDelay?: number;
+        fill?: string;
+        iterationStart?: number;
+        iterations?: number;
     }
 }

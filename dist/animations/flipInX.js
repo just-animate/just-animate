@@ -29,8 +29,6 @@ exports.flipInX = {
             transform: 'perspective(400px)'
         }
     ],
-    timings: {
-        duration: 750
-    },
+    to: 750,
     name: 'flipInX'
 };

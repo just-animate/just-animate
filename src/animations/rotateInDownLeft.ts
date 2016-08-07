@@ -1,4 +1,4 @@
-export const rotateInDownLeft: ja.IAnimationOptions = {
+export const rotateInDownLeft: ja.IAnimationPreset = {
   keyframes: [
     {
       transformOrigin: 'left bottom',
@@ -11,8 +11,8 @@ export const rotateInDownLeft: ja.IAnimationOptions = {
       opacity: 1
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'rotateInDownLeft'
 };

@@ -12,8 +12,6 @@ exports.rotateInUpRight = {
             opacity: 1
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'rotateInUpRight'
 };

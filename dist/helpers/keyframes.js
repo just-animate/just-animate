@@ -2,7 +2,8 @@
 var type_1 = require('../helpers/type');
 var strings_1 = require('../helpers/strings');
 var errors_1 = require('../helpers/errors');
-var resources_1 = require('./resources');
+var resources_1 = require('../helpers/resources');
+var resources_2 = require('./resources');
 var offset = 'offset';
 function spaceKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes
@@ -109,11 +110,11 @@ function normalizeProperties(keyframe) {
             continue;
         }
         switch (prop) {
-            case resources_1.scale3d:
+            case resources_2.scale3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 3) {
-                        throw errors_1.invalidArg(resources_1.scale3d);
+                        throw errors_1.invalidArg(resources_2.scale3d);
                     }
                     scaleArray[xIndex] = arr[xIndex];
                     scaleArray[yIndex] = arr[yIndex];
@@ -126,12 +127,12 @@ function normalizeProperties(keyframe) {
                     scaleArray[zIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.scale3d);
-            case resources_1.scale:
+                throw errors_1.invalidArg(resources_2.scale3d);
+            case resources_2.scale:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw errors_1.invalidArg(resources_1.scale);
+                        throw errors_1.invalidArg(resources_2.scale);
                     }
                     scaleArray[xIndex] = arr[xIndex];
                     scaleArray[yIndex] = arr[yIndex];
@@ -142,30 +143,30 @@ function normalizeProperties(keyframe) {
                     scaleArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.scale);
-            case resources_1.scaleX:
+                throw errors_1.invalidArg(resources_2.scale);
+            case resources_2.scaleX:
                 if (type_1.isNumber(value)) {
                     scaleArray[xIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.scaleX);
-            case resources_1.scaleY:
+                throw errors_1.invalidArg(resources_2.scaleX);
+            case resources_2.scaleY:
                 if (type_1.isNumber(value)) {
                     scaleArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.scaleY);
-            case resources_1.scaleZ:
+                throw errors_1.invalidArg(resources_2.scaleY);
+            case resources_2.scaleZ:
                 if (type_1.isNumber(value)) {
                     scaleArray[zIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.scaleZ);
-            case resources_1.skew:
+                throw errors_1.invalidArg(resources_2.scaleZ);
+            case resources_2.skew:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw errors_1.invalidArg(resources_1.skew);
+                        throw errors_1.invalidArg(resources_2.skew);
                     }
                     skewArray[xIndex] = arr[xIndex];
                     skewArray[yIndex] = arr[yIndex];
@@ -176,53 +177,53 @@ function normalizeProperties(keyframe) {
                     skewArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.skew);
-            case resources_1.skewX:
+                throw errors_1.invalidArg(resources_2.skew);
+            case resources_2.skewX:
                 if (type_1.isString(value)) {
                     skewArray[xIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.skewX);
-            case resources_1.skewY:
+                throw errors_1.invalidArg(resources_2.skewX);
+            case resources_2.skewY:
                 if (type_1.isString(value)) {
                     skewArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.skewY);
-            case resources_1.rotate3d:
+                throw errors_1.invalidArg(resources_2.skewY);
+            case resources_2.rotate3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 4) {
-                        throw errors_1.invalidArg(resources_1.rotate3d);
+                        throw errors_1.invalidArg(resources_2.rotate3d);
                     }
                     transformString += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.rotate3d);
-            case resources_1.rotateX:
+                throw errors_1.invalidArg(resources_2.rotate3d);
+            case resources_2.rotateX:
                 if (type_1.isString(value)) {
                     transformString += " rotate3d(1, 0, 0, " + value + ")";
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.rotateX);
-            case resources_1.rotateY:
+                throw errors_1.invalidArg(resources_2.rotateX);
+            case resources_2.rotateY:
                 if (type_1.isString(value)) {
                     transformString += " rotate3d(0, 1, 0, " + value + ")";
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.rotateY);
-            case resources_1.rotate:
-            case resources_1.rotateZ:
+                throw errors_1.invalidArg(resources_2.rotateY);
+            case resources_2.rotate:
+            case resources_2.rotateZ:
                 if (type_1.isString(value)) {
                     transformString += " rotate3d(0, 0, 1, " + value + ")";
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.rotateZ);
-            case resources_1.translate3d:
+                throw errors_1.invalidArg(resources_2.rotateZ);
+            case resources_2.translate3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 3) {
-                        throw errors_1.invalidArg(resources_1.translate3d);
+                        throw errors_1.invalidArg(resources_2.translate3d);
                     }
                     translateArray[xIndex] = arr[xIndex];
                     translateArray[yIndex] = arr[yIndex];
@@ -235,12 +236,12 @@ function normalizeProperties(keyframe) {
                     translateArray[zIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.rotate3d);
-            case resources_1.translate:
+                throw errors_1.invalidArg(resources_2.rotate3d);
+            case resources_2.translate:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw errors_1.invalidArg(resources_1.translate);
+                        throw errors_1.invalidArg(resources_2.translate);
                     }
                     translateArray[xIndex] = arr[xIndex];
                     translateArray[yIndex] = arr[yIndex];
@@ -251,29 +252,29 @@ function normalizeProperties(keyframe) {
                     translateArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.translate);
-            case resources_1.x:
-            case resources_1.translateX:
+                throw errors_1.invalidArg(resources_2.translate);
+            case resources_2.x:
+            case resources_2.translateX:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translateArray[xIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.x);
-            case resources_1.y:
-            case resources_1.translateY:
+                throw errors_1.invalidArg(resources_2.x);
+            case resources_2.y:
+            case resources_2.translateY:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translateArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.y);
-            case resources_1.z:
-            case resources_1.translateZ:
+                throw errors_1.invalidArg(resources_2.y);
+            case resources_2.z:
+            case resources_2.translateZ:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translateArray[zIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_1.z);
-            case resources_1.transform:
+                throw errors_1.invalidArg(resources_2.z);
+            case resources_2.transform:
                 transformString += ' ' + value;
                 break;
             default:
@@ -282,9 +283,9 @@ function normalizeProperties(keyframe) {
         }
     }
     // combine scale
-    var isScaleX = scaleArray[xIndex] !== undefined;
-    var isScaleY = scaleArray[yIndex] !== undefined;
-    var isScaleZ = scaleArray[zIndex] !== undefined;
+    var isScaleX = scaleArray[xIndex] !== resources_1.nothing;
+    var isScaleY = scaleArray[yIndex] !== resources_1.nothing;
+    var isScaleZ = scaleArray[zIndex] !== resources_1.nothing;
     if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
         var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
         transformString += " scale3d(" + scaleString + ")";
@@ -304,8 +305,8 @@ function normalizeProperties(keyframe) {
     else {
     }
     // combine skew
-    var isskewX = skewArray[xIndex] !== undefined;
-    var isskewY = skewArray[yIndex] !== undefined;
+    var isskewX = skewArray[xIndex] !== resources_1.nothing;
+    var isskewY = skewArray[yIndex] !== resources_1.nothing;
     if (isskewX && isskewY) {
         transformString += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
     }
@@ -318,9 +319,9 @@ function normalizeProperties(keyframe) {
     else {
     }
     // combine translate
-    var istranslateX = translateArray[xIndex] !== undefined;
-    var istranslateY = translateArray[yIndex] !== undefined;
-    var istranslateZ = translateArray[zIndex] !== undefined;
+    var istranslateX = translateArray[xIndex] !== resources_1.nothing;
+    var istranslateY = translateArray[yIndex] !== resources_1.nothing;
+    var istranslateZ = translateArray[zIndex] !== resources_1.nothing;
     if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
         var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
         transformString += " translate3d(" + translateString + ")";

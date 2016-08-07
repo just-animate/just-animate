@@ -27,10 +27,8 @@ exports.bounceInUp = {
             transform: 'translate3d(0, 0, 0)'
         }
     ],
-    timings: {
-        duration: 900,
-        fill: 'both',
-        easing: 'easeOutCubic'
-    },
+    to: 900,
+    fill: 'both',
+    easing: 'easeOutCubic',
     name: 'bounceInUp'
 };

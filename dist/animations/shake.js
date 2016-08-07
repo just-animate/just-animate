@@ -35,8 +35,6 @@ exports.shake = {
             transform: 'translate3d(0, 0, 0)'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'shake'
 };

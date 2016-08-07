@@ -25,10 +25,8 @@ exports.bounceInRight = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 900,
-        fill: 'both',
-        easing: 'easeOutCubic'
-    },
+    to: 900,
+    fill: 'both',
+    easing: 'easeOutCubic',
     name: 'bounceInRight'
 };

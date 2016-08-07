@@ -1,4 +1,4 @@
-export const zoomInRight: ja.IAnimationOptions = {
+export const zoomInRight: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -16,9 +16,9 @@ export const zoomInRight: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 1000,
+  
+    to: 1000,
     easing: 'elegantSlowStartEnd'
-  },
+  ,
   name: 'zoomInRight'
 };

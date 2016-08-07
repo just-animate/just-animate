@@ -35,8 +35,6 @@ exports.tada = {
             transform: 'scale3d(1, 1, 1)'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'tada'
 };

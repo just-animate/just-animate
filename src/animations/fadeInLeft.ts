@@ -1,4 +1,4 @@
-export const fadeInLeft: ja.IAnimationOptions = {
+export const fadeInLeft: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 0,
@@ -9,10 +9,8 @@ export const fadeInLeft: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 650,
+  to: 650,
     fill: 'both',
-    easing: 'ease-in'
-  },
+    easing: 'ease-in',
   name: 'fadeInLeft'
 };

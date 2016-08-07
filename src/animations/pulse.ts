@@ -1,4 +1,4 @@
-export const pulse: ja.IAnimationOptions = {
+export const pulse: ja.IAnimationPreset = {
   keyframes: [
     {
       transform: 'scale3d(1, 1, 1)'
@@ -10,8 +10,8 @@ export const pulse: ja.IAnimationOptions = {
       transform: 'scale3d(1, 1, 1)'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'pulse'
 };

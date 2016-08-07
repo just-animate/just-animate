@@ -10,10 +10,8 @@ exports.fadeInLeft = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 650,
-        fill: 'both',
-        easing: 'ease-in'
-    },
+    to: 650,
+    fill: 'both',
+    easing: 'ease-in',
     name: 'fadeInLeft'
 };

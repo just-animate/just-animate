@@ -22,8 +22,6 @@ exports.flip = {
             transform: 'perspective(400px)'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'flip'
 };

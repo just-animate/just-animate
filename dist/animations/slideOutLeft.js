@@ -10,8 +10,6 @@ exports.slideOutLeft = {
             transform: 'translate3d(-100%, 0, 0)'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'slideOutLeft'
 };

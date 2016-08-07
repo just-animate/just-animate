@@ -1,4 +1,4 @@
-export const fadeInDown: ja.IAnimationOptions = {
+export const fadeInDown: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 0,
@@ -9,9 +9,9 @@ export const fadeInDown: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 650,
+  
+    to: 650,
     fill: 'both'
-  },
+  ,
   name: 'fadeInDown'
 };

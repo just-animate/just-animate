@@ -1,4 +1,4 @@
-export const jello: ja.IAnimationOptions = {
+export const jello: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -41,10 +41,8 @@ export const jello: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 1000,
+  to: 1000,
     fill: 'both',
-    easing: 'ease-in-out'
-  },
+    easing: 'ease-in-out',
   name: 'jello'
 };

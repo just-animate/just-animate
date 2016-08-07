@@ -22,10 +22,8 @@ exports.lightSpeedIn = {
             opacity: 1
         }
     ],
-    timings: {
-        duration: 1000,
-        fill: 'both',
-        easing: 'ease-out'
-    },
+    to: 1000,
+    fill: 'both',
+    easing: 'ease-out',
     name: 'lightSpeedIn'
 };

@@ -10,10 +10,8 @@ exports.lightSpeedOut = {
             opacity: 0
         }
     ],
-    timings: {
-        duration: 1000,
-        fill: 'both',
-        easing: 'ease-in'
-    },
+    to: 1000,
+    fill: 'both',
+    easing: 'ease-in',
     name: 'lightSpeedOut'
 };

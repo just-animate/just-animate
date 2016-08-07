@@ -1,4 +1,4 @@
-export const rollOut: ja.IAnimationOptions = {
+export const rollOut: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 1,
@@ -9,8 +9,8 @@ export const rollOut: ja.IAnimationOptions = {
       transform: 'translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg)'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'rollOut'
 };

@@ -1,17 +1,14 @@
-declare const just: ja.IAnimationManager;
+declare const just: ja.IJustAnimate;
 
 declare module ja {
     export type FillMode = "none" | "forwards" | "backwards" | "both" | "auto";
-    // export type PlaybackDiraction = "normal" | "reverse" | "alternate" | "alternate-reverse";
-
     export type AnimationPlaybackState = "idle" | "pending" | "running" | "paused" | "finished";
-
+    export type ElementSource = Node | Node[] | NodeList | string | IElementProvider;
     export type Angle = string | number;
     export type Color = string;
     export type Distance = string | number;
 
-    export type Easing = string
-        | "ease"
+    export type Easing = "ease"
         | "linear"
         | "initial"
         | "ease-in"
@@ -41,119 +38,51 @@ declare module ja {
         | "easeInBack"
         | "easeOutBack"
         | "easeInOutBack"
-        | "elegantSlowStartEnd";
+        | "elegantSlowStartEnd"
+        | string;
 
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface IAnimationEffectTiming
-     */
-    export interface IAnimationEffectTiming {
-        direction?: string;
-        delay?: number;
-        duration?: number;
-        easing?: Easing;
-        endDelay?: number;
-        fill?: FillMode;
-        iterationStart?: number;
-        iterations?: number;
+    export interface IJustAnimate {
+        animate(options: ja.IAnimationOptions|ja.IAnimationOptions): ja.IAnimator;
+        inject(animationOptionList: ja.IAnimationOptions[]): void;
+        register(animationOptions: ja.IAnimationOptions): void;
     }
 
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface IAnimationManager
-     */
-    export interface IAnimationManager {
-        /**
-         * (description)
-         * 
-         * @param {(string | IKeyframeOptions[])} keyframesOrName (description)
-         * @param {ElementSource} el (description)
-         * @param {IAnimationEffectTiming} [timings] (description)
-         * @returns {IAnimator} (description)
-         */
-        animate(keyframesOrName: string | IKeyframeOptions[], el: ElementSource, timings?: IAnimationEffectTiming): IAnimator;
-        /**
-         * (description)
-         * 
-         * @param {ISequenceOptions} options (description)
-         * @returns {IAnimator} (description)
-         */
-        animateSequence(options: ISequenceOptions): IAnimator;
-        /**
-         * (description)
-         * 
-         * @param {ITimelineOptions} options (description)
-         * @returns {IAnimator} (description)
-         */
-        animateTimeline(options: ITimelineOptions): IAnimator;
-        /**
-         * (description)
-         * 
-         * @param {string} name (description)
-         * @returns {IEffectOptions} (description)
-         */
-        findAnimation(name: string): IEffectOptions;
-        /**
-         * (description)
-         * 
-          * @param {IAnimationOptions} animationOptions (description)
-         */
-        inject(animationOptionList: IAnimationOptions[]): void;
-        /**
-         * (description)
-         * 
-         * @param {IAnimationOptions} animationOptions (description)
-         */
-        register(animationOptions: IAnimationOptions): void;
+    export interface IAnimationController {
+        currentTime(): number;
+        currentTime(value: number): IAnimationController;
+
+        playbackRate(): number;
+        playbackRate(value: number): IAnimationController;
+
+        startTime(): number;
+        endTime(): number;
+        duration(): number;
+        totalDuration(): number;
+        iterations(): number;
+        iterationStart(): number;
+        playState(): AnimationPlaybackState;
+
+        finish(): IAnimationController;
+        play(): IAnimationController;
+        pause(): IAnimationController;
+        reverse(): IAnimationController;
+        cancel(): IAnimationController;
+
+        on(eventName: string, listener: Function): IAnimationController;
+        off(eventName: string, listener: Function): IAnimationController;
     }
 
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface IAnimationOptions
-     * @extends {IEffectOptions}
-     */
-    export interface IAnimationOptions extends IEffectOptions {
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        name: string;
-        /**
-         * (description)
-         * 
-         * @type {IKeyframeOptions[]}
-         */
-        keyframes: IKeyframeOptions[];
-        /**
-         * (description)
-         * 
-         * @type {IAnimationEffectTiming}
-         */
-        timings?: IAnimationEffectTiming;
-    }
-
-    /**
-     * 
-     * 
-     * @export
-     * @interface IAnimator
-     */
     export interface IAnimator {
+        animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator;
+
         currentTime(): number;
         currentTime(value: number): IAnimator;
 
         playbackRate(): number;
         playbackRate(value: number): IAnimator;
 
-        startTime(): number;  
-        endTime(): number;        
+        startTime(): number;
+        endTime(): number;
         duration(): number;
         totalDuration(): number;
         iterations(): number;
@@ -170,30 +99,6 @@ declare module ja {
         off(eventName: string, listener: Function): IAnimator;
     }
 
-
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface ICallbackHandler
-     */
-    export interface ICallbackHandler {
-        (err: (string | Error)[]): void;
-    }
-
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface IConsumer
-     * @template T1
-     */
-    export interface IConsumer<T1> {
-        (consumable: T1): any;
-    }
-
-    export type ElementSource = Node | Node[] | NodeList | string | IElementProvider;
-
     /**
      * (description)
      * 
@@ -204,13 +109,40 @@ declare module ja {
         (): ElementSource;
     }
 
+
+    export interface IAnimationResolver {
+        findAnimation(name: string): IAnimationPreset;
+        registerAnimation(options: IAnimationPreset, isGlobal: boolean): void;
+    }
+
+    export interface IAnimationPreset extends IAnimation {
+        name: string;
+    }
+
+    export interface IAnimation {
+        css?: ICssPropertyOptions;
+        keyframes?: ICssKeyframeOptions[];
+        easing?: Easing;
+        fill?: FillMode;
+        iterations?: number;
+        direction?: string;
+        iterationStart?: number;
+        to: number;
+    }
+
+    export interface IAnimationOptions extends IAnimation {
+        targets?: ElementSource;
+        from?: number;        
+        name?: string;
+    }
+
     /**
      * Describes an animation keyframe
      * 
      * @export
      * @interface IKeyframe
      */
-    export interface IAnimationPropertyOptions {
+    export interface ICssPropertyOptions {
         /**
          * (description)
          * 
@@ -935,7 +867,7 @@ declare module ja {
      * @export
      * @interface IKeyframe
      */
-    export interface IKeyframeOptions {
+    export interface ICssKeyframeOptions {
         /**
          * (description)
          * 
@@ -1670,27 +1602,6 @@ declare module ja {
      * (description)
      * 
      * @export
-     * @interface IEffectOptions
-     */
-    export interface IEffectOptions {
-        /**
-         * (description)
-         * 
-         * @type {IKeyframeOptions[]}
-         */
-        keyframes?: IKeyframeOptions[];
-        /**
-         * (description)
-         * 
-         * @type {IAnimationEffectTiming}
-         */
-        timings?: IAnimationEffectTiming;
-    }
-
-    /**
-     * (description)
-     * 
-     * @export
      * @interface IMap
      * @template T
      */
@@ -1719,131 +1630,5 @@ declare module ja {
      */
     export interface IFunc<T1> {
         (mapable: T1): T1;
-    }
-
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface ISequenceEvent
-     */
-    export interface ISequenceEvent {
-        /**
-         * (description)
-         * 
-         * @type {ElementSource}
-         */
-        el: ElementSource;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        name?: string;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        command?: string;
-        /**
-         * (description)
-         * 
-         * @type {IAnimationEffectTiming}
-         */
-        timings?: IAnimationEffectTiming;
-        /**
-         * (description)
-         * 
-         * @type {IKeyframeOptions[]}
-         */
-        keyframes?: IKeyframeOptions[];
-    }
-
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface ISequenceOptions
-     */
-    export interface ISequenceOptions {
-        /**
-         * (description)
-         * 
-         * @type {ISequenceEvent[]}
-         */
-        steps: ISequenceEvent[];
-        /**
-         * (description)
-         * 
-         * @type {boolean}
-         */
-        autoplay?: boolean;
-    }
-
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface ITimelineEvent
-     */
-    export interface ITimelineEvent {
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        offset: number;
-        /**
-         * (description)
-         * 
-         * @type {ElementSource}
-         */
-        el: ElementSource;
-        /**
-         * (description)
-         * 
-         * @type {string}
-         */
-        name?: string;
-        /**
-         * (description)
-         * 
-         * @type {IAnimationEffectTiming}
-         */
-        timings?: IAnimationEffectTiming;
-        /**
-         * (description)
-         * 
-         * @type {IKeyframeOptions[]}
-         */
-        keyframes?: IKeyframeOptions[];
-    }
-
-    /**
-     * (description)
-     * 
-     * @export
-     * @interface ITimelineOptions
-     */
-    export interface ITimelineOptions {
-        /**
-         * (description)
-         * 
-         * @type {ITimelineEvent[]}
-         */
-        events: ITimelineEvent[];
-        /**
-         * (description)
-         * 
-         * @type {number}
-         */
-        duration: number;
-        /**
-         * (description)
-         * 
-         * @type {boolean}
-         */
-        autoplay?: boolean;
     }
 }

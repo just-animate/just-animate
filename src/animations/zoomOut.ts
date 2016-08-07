@@ -1,4 +1,4 @@
-export const zoomOut: ja.IAnimationOptions = {
+export const zoomOut: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 1,
@@ -15,9 +15,9 @@ export const zoomOut: ja.IAnimationOptions = {
       transformOrigin: 'center middle'
     }
   ],
-  timings: {
-    duration: 1000,
+  
+    to: 1000,
     easing: 'elegantSlowStartEnd'
-  },
+  ,
   name: 'zoomOut'
 };

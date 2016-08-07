@@ -8,10 +8,8 @@ exports.fadeIn = {
             opacity: 1
         }
     ],
-    timings: {
-        duration: 650,
-        fill: 'both',
-        easing: 'ease-in'
-    },
+    to: 650,
+    fill: 'both',
+    easing: 'ease-in',
     name: 'fadeIn'
 };

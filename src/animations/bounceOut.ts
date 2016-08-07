@@ -1,4 +1,4 @@
-export const bounceOut: ja.IAnimationOptions = {
+export const bounceOut: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -25,9 +25,9 @@ export const bounceOut: ja.IAnimationOptions = {
       transform: 'scale3d(.3, .3, .3)'
     }
   ],
-  timings: {
-    duration: 900,
+  
+    to: 900,
     fill: 'both'
-  },
+  ,
   name: 'bounceOut'
 };

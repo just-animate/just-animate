@@ -1,4 +1,4 @@
-export const zoomIn: ja.IAnimationOptions = {
+export const zoomIn: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 0,
@@ -12,9 +12,9 @@ export const zoomIn: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 1000,
+  
+    to: 1000,
     easing: 'elegantSlowStartEnd'
-  },
+  ,
   name: 'zoomIn'
 };

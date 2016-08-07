@@ -10,8 +10,6 @@ exports.fadeOutLeft = {
             transform: 'translate3d(-100%, 0, 0)'
         }
     ],
-    timings: {
-        duration: 650
-    },
+    to: 650,
     name: 'fadeOutLeft'
 };

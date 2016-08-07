@@ -1,4 +1,4 @@
-export const zoomInLeft: ja.IAnimationOptions = {
+export const zoomInLeft: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -16,9 +16,9 @@ export const zoomInLeft: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 1000,
+  
+    to: 1000,
     easing: 'elegantSlowStartEnd'
-  },
+  ,
   name: 'zoomInLeft'
 };

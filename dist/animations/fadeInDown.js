@@ -10,9 +10,7 @@ exports.fadeInDown = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 650,
-        fill: 'both'
-    },
+    to: 650,
+    fill: 'both',
     name: 'fadeInDown'
 };

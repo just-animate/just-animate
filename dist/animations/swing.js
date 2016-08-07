@@ -20,8 +20,6 @@ exports.swing = {
             transform: 'rotate3d(0, 0, 1, 0deg)'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'swing'
 };

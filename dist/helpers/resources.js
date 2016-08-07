@@ -1,4 +1,5 @@
 "use strict";
+exports.nothing = undefined;
 exports.animate = 'animate';
 exports.call = 'call';
 exports.cancel = 'cancel';

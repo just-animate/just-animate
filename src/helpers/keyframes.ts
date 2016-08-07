@@ -1,6 +1,7 @@
 import {isDefined, isNumber, isString, isArray} from '../helpers/type';
 import {toCamelCase} from '../helpers/strings';
 import {invalidArg} from '../helpers/errors';
+import {nothing} from '../helpers/resources';
 
 import {scale3d,
     scale,
@@ -29,7 +30,7 @@ import {scale3d,
 
 const offset = 'offset';
 
-export function spaceKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyframeOptions[] {
+export function spaceKeyframes(keyframes: ja.ICssKeyframeOptions[]): ja.ICssKeyframeOptions[] {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
         return keyframes;
@@ -89,7 +90,7 @@ export function spaceKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyframeOp
 /**
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
-export function normalizeKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyframeOptions[] {
+export function normalizeKeyframes(keyframes: ja.ICssKeyframeOptions[]): ja.ICssKeyframeOptions[] {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
         return keyframes;
@@ -132,7 +133,7 @@ export function normalizeKeyframes(keyframes: ja.IKeyframeOptions[]): ja.IKeyfra
 /**
  * Handles transforming short hand key properties into their native form
  */
-export function normalizeProperties(keyframe: ja.IKeyframeOptions): ja.IKeyframeOptions {
+export function normalizeProperties(keyframe: ja.ICssKeyframeOptions): ja.ICssKeyframeOptions {
     const xIndex = 0;
     const yIndex = 1;
     const zIndex = 2;
@@ -327,9 +328,9 @@ export function normalizeProperties(keyframe: ja.IKeyframeOptions): ja.IKeyframe
     }
 
     // combine scale
-    const isScaleX = scaleArray[xIndex] !== undefined;
-    const isScaleY = scaleArray[yIndex] !== undefined;
-    const isScaleZ = scaleArray[zIndex] !== undefined;
+    const isScaleX = scaleArray[xIndex] !== nothing;
+    const isScaleY = scaleArray[yIndex] !== nothing;
+    const isScaleZ = scaleArray[zIndex] !== nothing;
     if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
         const scaleString = scaleArray.map((s: number) => s || '1').join(',');
         transformString += ` scale3d(${scaleString})`;
@@ -346,8 +347,8 @@ export function normalizeProperties(keyframe: ja.IKeyframeOptions): ja.IKeyframe
     }
 
     // combine skew
-    const isskewX = skewArray[xIndex] !== undefined;
-    const isskewY = skewArray[yIndex] !== undefined;
+    const isskewX = skewArray[xIndex] !== nothing;
+    const isskewY = skewArray[yIndex] !== nothing;
     if (isskewX && isskewY) {
         transformString += ` skew(${skewArray[xIndex] || 1}, ${skewArray[yIndex] || 1})`;
     } else if (isskewX) {
@@ -359,9 +360,9 @@ export function normalizeProperties(keyframe: ja.IKeyframeOptions): ja.IKeyframe
     }
 
     // combine translate
-    const istranslateX = translateArray[xIndex] !== undefined;
-    const istranslateY = translateArray[yIndex] !== undefined;
-    const istranslateZ = translateArray[zIndex] !== undefined;
+    const istranslateX = translateArray[xIndex] !== nothing;
+    const istranslateY = translateArray[yIndex] !== nothing;
+    const istranslateZ = translateArray[zIndex] !== nothing;
     if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
         const translateString = translateArray.map((s: string) => s || '1').join(',');
         transformString += ` translate3d(${translateString})`;

@@ -1,4 +1,4 @@
-export const flipInX: ja.IAnimationOptions = {
+export const flipInX: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -28,8 +28,8 @@ export const flipInX: ja.IAnimationOptions = {
       transform: 'perspective(400px)'
     }
   ],
-  timings: {
-    duration: 750
-  },
+  
+    to: 750
+  ,
   name: 'flipInX'
 };

@@ -1,4 +1,4 @@
-export const shake: ja.IAnimationOptions = {
+export const shake: ja.IAnimationPreset = {
   keyframes: [
     {
       transform: 'translate3d(0, 0, 0)'
@@ -34,8 +34,8 @@ export const shake: ja.IAnimationOptions = {
       transform: 'translate3d(0, 0, 0)'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'shake'
 };

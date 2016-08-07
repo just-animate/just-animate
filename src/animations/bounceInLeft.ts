@@ -1,4 +1,4 @@
-export const bounceInLeft: ja.IAnimationOptions = {
+export const bounceInLeft: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -25,11 +25,10 @@ export const bounceInLeft: ja.IAnimationOptions = {
       opacity: 1,
       transform: 'none'
     }
-  ],
-  timings: {
-    duration: 900,
+  ], 
+  to: 900,
     fill: 'both',
     easing: 'easeOutCubic'
-  },
+  ,
   name: 'bounceInLeft'
 };

@@ -1,4 +1,4 @@
-export const wobble: ja.IAnimationOptions = {
+export const wobble: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -29,8 +29,8 @@ export const wobble: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'wobble'
 };

@@ -1,4 +1,5 @@
 "use strict";
+var resources_1 = require('../helpers/resources');
 var slice = Array.prototype.slice;
 var push = Array.prototype.push;
 ;
@@ -11,7 +12,7 @@ var push = Array.prototype.push;
  * @returns {T} first object in the list or undefined
  */
 function head(indexed) {
-    return (!indexed || indexed.length < 1) ? undefined : indexed[0];
+    return (!indexed || indexed.length < 1) ? resources_1.nothing : indexed[0];
 }
 exports.head = head;
 /**
@@ -23,7 +24,7 @@ exports.head = head;
  * @returns {T} last object in the list or undefined
  */
 function tail(indexed) {
-    return (!indexed || indexed.length < 1) ? undefined : indexed[indexed.length - 1];
+    return (!indexed || indexed.length < 1) ? resources_1.nothing : indexed[indexed.length - 1];
 }
 exports.tail = tail;
 /**
@@ -110,7 +111,7 @@ function map(items, fn) {
     var results = [];
     for (var i = 0, len = items.length; i < len; i++) {
         var result = fn(items[i]);
-        if (result !== undefined) {
+        if (result !== resources_1.nothing) {
             results.push(result);
         }
     }

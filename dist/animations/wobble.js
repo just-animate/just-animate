@@ -30,8 +30,6 @@ exports.wobble = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'wobble'
 };

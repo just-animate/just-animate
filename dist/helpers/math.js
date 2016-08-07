@@ -1,4 +1,5 @@
 "use strict";
+var resources_1 = require('../helpers/resources');
 var linearCubicBezier = function (x) { return x; };
 var SUBDIVISION_EPSILON = 0.0001;
 /**
@@ -11,9 +12,13 @@ var SUBDIVISION_EPSILON = 0.0001;
  * @returns {number} val if between min-max, min if lesser, max if greater
  */
 function clamp(val, min, max) {
-    return val === undefined ? undefined : val < min ? min : val > max ? max : val;
+    return val === resources_1.nothing ? resources_1.nothing : val < min ? min : val > max ? max : val;
 }
 exports.clamp = clamp;
+function inRange(val, min, max) {
+    return min < max ? min <= val && val <= max : max <= val && val <= min;
+}
+exports.inRange = inRange;
 function bezier(n1, n2, t) {
     return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
 }

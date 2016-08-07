@@ -1,3 +1,5 @@
+export const nothing = undefined as any;
+
 export const animate = 'animate';
 export const call = 'call';
 export const cancel = 'cancel';

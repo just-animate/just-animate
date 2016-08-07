@@ -41,11 +41,9 @@
                 y: 0
             }
         ],
-        timings: {
-            duration: 900,
-            easing: 'easeOutCubic',
-            fill: 'both'
-        }
+        to: 900,
+        easing: 'easeOutCubic',
+        fill: 'both'
     };
 
     var bounceIn = {
@@ -73,11 +71,9 @@
                 scale: 1
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both',
-            easing: 'easeOutCubic'
-        }
+        to: 900,
+        fill: 'both',
+        easing: 'easeOutCubic'
     };
 
     var bounceInDown = {
@@ -108,11 +104,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both',
-            easing: 'easeOutCubic'
-        },
+        to: 900,
+        fill: 'both',
+        easing: 'easeOutCubic',
         name: 'bounceInDown'
     };
 
@@ -144,11 +138,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both',
-            easing: 'easeOutCubic'
-        },
+        to: 900,
+        fill: 'both',
+        easing: 'easeOutCubic',
         name: 'bounceInLeft'
     };
 
@@ -178,11 +170,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both',
-            easing: 'easeOutCubic'
-        },
+        to: 900,
+        fill: 'both',
+        easing: 'easeOutCubic',
         name: 'bounceInRight'
     };
 
@@ -214,11 +204,9 @@
                 transform: 'translate3d(0, 0, 0)'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both',
-            easing: 'easeOutCubic'
-        },
+        to: 900,
+        fill: 'both',
+        easing: 'easeOutCubic',
         name: 'bounceInUp'
     };
 
@@ -249,10 +237,8 @@
                 transform: 'scale3d(.3, .3, .3)'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both'
-        },
+        to: 900,
+        fill: 'both',
         name: 'bounceOut'
     };
 
@@ -283,10 +269,8 @@
                 transform: 'translate3d(0, 2000px, 0)'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both'
-        },
+        to: 900,
+        fill: 'both',
         name: 'bounceOutDown'
     };
 
@@ -308,10 +292,8 @@
                 transform: 'translate3d(-2000px, 0, 0)'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both'
-        },
+        to: 900,
+        fill: 'both',
         name: 'bounceOutLeft'
     };
 
@@ -333,10 +315,8 @@
                 transform: 'translate3d(2000px, 0, 0)'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both'
-        },
+        to: 900,
+        fill: 'both',
         name: 'bounceOutRight'
     };
 
@@ -368,10 +348,8 @@
                 transform: 'translate3d(0, -2000px, 0)'
             }
         ],
-        timings: {
-            duration: 900,
-            fill: 'both'
-        },
+        to: 900,
+        fill: 'both',
         name: 'bounceOutUp'
     };
 
@@ -384,11 +362,9 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 650,
-            fill: 'both',
-            easing: 'ease-in'
-        },
+        to: 650,
+        fill: 'both',
+        easing: 'ease-in',
         name: 'fadeIn'
     };
 
@@ -403,10 +379,8 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 650,
-            fill: 'both'
-        },
+        to: 650,
+        fill: 'both',
         name: 'fadeInDown'
     };
 
@@ -421,11 +395,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1300,
-            fill: 'both',
-            easing: 'ease-out'
-        },
+        to: 1300,
+        fill: 'both',
+        easing: 'ease-out',
         name: 'fadeInDownBig'
     };
 
@@ -440,11 +412,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 650,
-            fill: 'both',
-            easing: 'ease-in'
-        },
+        to: 650,
+        fill: 'both',
+        easing: 'ease-in',
         name: 'fadeInLeft'
     };
 
@@ -459,11 +429,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1300,
-            fill: 'both',
-            easing: 'ease-out'
-        },
+        to: 1300,
+        fill: 'both',
+        easing: 'ease-out',
         name: 'fadeInLeftBig'
     };
 
@@ -478,11 +446,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 650,
-            fill: 'both',
-            easing: 'ease-in'
-        },
+        to: 650,
+        fill: 'both',
+        easing: 'ease-in',
         name: 'fadeInRight'
     };
 
@@ -497,11 +463,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1300,
-            fill: 'both',
-            easing: 'ease-out'
-        },
+        to: 1300,
+        fill: 'both',
+        easing: 'ease-out',
         name: 'fadeInRightBig'
     };
 
@@ -516,11 +480,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 650,
-            fill: 'both',
-            easing: 'ease-in'
-        },
+        to: 650,
+        fill: 'both',
+        easing: 'ease-in',
         name: 'fadeInUp'
     };
 
@@ -535,11 +497,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1300,
-            fill: 'both',
-            easing: 'ease-out'
-        },
+        to: 1300,
+        fill: 'both',
+        easing: 'ease-out',
         name: 'fadeInUpBig'
     };
 
@@ -552,10 +512,8 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 650,
-            fill: 'both'
-        },
+        to: 650,
+        fill: 'both',
         name: 'fadeOut'
     };
 
@@ -570,9 +528,7 @@
                 transform: 'translate3d(0, 100%, 0)'
             }
         ],
-        timings: {
-            duration: 650
-        },
+        to: 650,
         name: 'fadeOutDown'
     };
 
@@ -587,9 +543,7 @@
                 transform: 'translate3d(0, 2000px, 0)'
             }
         ],
-        timings: {
-            duration: 1300
-        },
+        to: 1300,
         name: 'fadeOutDownBig'
     };
 
@@ -604,9 +558,7 @@
                 transform: 'translate3d(-100%, 0, 0)'
             }
         ],
-        timings: {
-            duration: 650
-        },
+        to: 650,
         name: 'fadeOutLeft'
     };
 
@@ -621,9 +573,7 @@
                 transform: 'translate3d(-2000px, 0, 0)'
             }
         ],
-        timings: {
-            duration: 1300
-        },
+        to: 1300,
         name: 'fadeOutLeftBig'
     };
 
@@ -638,9 +588,7 @@
                 transform: 'translate3d(100%, 0, 0)'
             }
         ],
-        timings: {
-            duration: 650
-        },
+        to: 650,
         name: 'fadeOutRight'
     };
 
@@ -655,9 +603,7 @@
                 transform: 'translate3d(2000px, 0, 0)'
             }
         ],
-        timings: {
-            duration: 1300
-        },
+        to: 1300,
         name: 'fadeOutRightBig'
     };
 
@@ -672,9 +618,7 @@
                 transform: 'translate3d(0, -100%, 0)'
             }
         ],
-        timings: {
-            duration: 650
-        },
+        to: 650,
         name: 'fadeOutUp'
     };
 
@@ -689,9 +633,7 @@
                 transform: 'translate3d(0, -2000px, 0)'
             }
         ],
-        timings: {
-            duration: 1300
-        },
+        to: 1300,
         name: 'fadeOutUpBig'
     };
 
@@ -713,9 +655,7 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'flash'
     };
 
@@ -742,9 +682,7 @@
                 transform: 'perspective(400px)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'flip'
     };
 
@@ -778,9 +716,7 @@
                 transform: 'perspective(400px)'
             }
         ],
-        timings: {
-            duration: 750
-        },
+        to: 750,
         name: 'flipInX'
     };
 
@@ -814,9 +750,7 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 750
-        },
+        to: 750,
         name: 'flipInY'
     };
 
@@ -838,9 +772,7 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 750
-        },
+        to: 750,
         name: 'flipOutX'
     };
 
@@ -862,9 +794,7 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 750
-        },
+        to: 750,
         name: 'flipOutY'
     };
 
@@ -903,10 +833,8 @@
                 translateX: '0'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'ease-out'
-        },
+        to: 1000,
+        easing: 'ease-out',
         name: 'headShake'
     };
 
@@ -939,9 +867,7 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 2000
-        },
+        to: 2000,
         name: 'hinge'
     };
 
@@ -988,11 +914,9 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1000,
-            fill: 'both',
-            easing: 'ease-in-out'
-        },
+        to: 1000,
+        fill: 'both',
+        easing: 'ease-in-out',
         name: 'jello'
     };
 
@@ -1019,11 +943,9 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 1000,
-            fill: 'both',
-            easing: 'ease-out'
-        },
+        to: 1000,
+        fill: 'both',
+        easing: 'ease-out',
         name: 'lightSpeedIn'
     };
 
@@ -1038,11 +960,9 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 1000,
-            fill: 'both',
-            easing: 'ease-in'
-        },
+        to: 1000,
+        fill: 'both',
+        easing: 'ease-in',
         name: 'lightSpeedOut'
     };
 
@@ -1058,9 +978,7 @@
                 transform: 'scale3d(1, 1, 1)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'pulse'
     };
 
@@ -1075,9 +993,7 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rollIn'
     };
 
@@ -1092,9 +1008,7 @@
                 transform: 'translate3d(100%, 0, 0) rotate3d(0, 0, 1, 120deg)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rollOut'
     };
 
@@ -1111,9 +1025,7 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateIn'
     };
 
@@ -1130,9 +1042,7 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateInDownLeft'
     };
 
@@ -1149,9 +1059,7 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateInDownRight'
     };
 
@@ -1168,9 +1076,7 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateInUpLeft'
     };
 
@@ -1187,9 +1093,7 @@
                 opacity: 1
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateInUpRight'
     };
 
@@ -1206,9 +1110,7 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateOut'
     };
 
@@ -1225,9 +1127,7 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateOutDownLeft'
     };
 
@@ -1244,9 +1144,7 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateOutDownRight'
     };
 
@@ -1263,9 +1161,7 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateOutUpLeft'
     };
 
@@ -1282,9 +1178,7 @@
                 opacity: 0
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rotateOutUpRight'
     };
 
@@ -1319,9 +1213,7 @@
                 transform: 'scale3d(1, 1, 1)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'rubberBand'
     };
 
@@ -1361,9 +1253,7 @@
                 transform: 'translate3d(0, 0, 0)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'shake'
     };
 
@@ -1378,9 +1268,7 @@
                 visibility: 'visible'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'slideInDown'
     };
 
@@ -1395,9 +1283,7 @@
                 visibility: 'visible'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'slideInLeft'
     };
 
@@ -1412,9 +1298,7 @@
                 visibility: 'visible'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'slideInRight'
     };
 
@@ -1429,9 +1313,7 @@
                 visibility: 'visible'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'slideInUp'
     };
 
@@ -1446,9 +1328,7 @@
                 transform: 'translate3d(0, 100%, 0)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'slideOutDown'
     };
 
@@ -1463,9 +1343,7 @@
                 transform: 'translate3d(-100%, 0, 0)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'slideOutLeft'
     };
 
@@ -1480,9 +1358,7 @@
                 transform: 'translate3d(100%, 0, 0)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'slideOutRight'
     };
 
@@ -1497,9 +1373,7 @@
                 transform: 'translate3d(0, -100%, 0)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'slideOutUp'
     };
 
@@ -1524,9 +1398,7 @@
                 transform: 'rotate3d(0, 0, 1, 0deg)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'swing'
     };
 
@@ -1566,9 +1438,7 @@
                 transform: 'scale3d(1, 1, 1)'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'tada'
     };
 
@@ -1603,9 +1473,7 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1000
-        },
+        to: 1000,
         name: 'wobble'
     };
 
@@ -1623,10 +1491,8 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomIn'
     };
 
@@ -1648,10 +1514,8 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'easeInCubic'
-        },
+        to: 1000,
+        easing: 'easeInCubic',
         name: 'zoomInDown'
     };
 
@@ -1673,10 +1537,8 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomInLeft'
     };
 
@@ -1698,10 +1560,8 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomInRight'
     };
 
@@ -1723,10 +1583,8 @@
                 transform: 'none'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomInUp'
     };
 
@@ -1747,10 +1605,8 @@
                 transformOrigin: 'center middle'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomOut'
     };
 
@@ -1775,10 +1631,8 @@
                 transformOrigin: 'center bottom'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomOutDown'
     };
 
@@ -1802,10 +1656,8 @@
                 transformOrigin: 'left center'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomOutLeft'
     };
 
@@ -1829,10 +1681,8 @@
                 transformOrigin: 'right center'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomOutRight'
     };
 
@@ -1856,10 +1706,8 @@
                 transformOrigin: 'center bottom'
             }
         ],
-        timings: {
-            duration: 1000,
-            easing: 'elegantSlowStartEnd'
-        },
+        to: 1000,
+        easing: 'elegantSlowStartEnd',
         name: 'zoomOutUp'
     };
 

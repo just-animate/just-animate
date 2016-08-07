@@ -1,4 +1,4 @@
-export const bounceInDown: ja.IAnimationOptions = {
+export const bounceInDown: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -26,10 +26,8 @@ export const bounceInDown: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 900,
-    fill: 'both',
-    easing: 'easeOutCubic'
-  },
+  to: 900,
+  fill: 'both',
+  easing: 'easeOutCubic',
   name: 'bounceInDown'
-}
+};

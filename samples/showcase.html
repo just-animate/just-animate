@@ -18,9 +18,9 @@
         </div>
 
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-    <script src="../dist/browser/just-animate-core.js"></script>
-    <script src="../dist/browser/just-animate-animations.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
+    <script src="../dist/browser/just-animate-core.min.js"></script>
+    <script src="../dist/browser/just-animate-animations.min.js"></script>
     <script>
         var animations = [
             "bounce",
@@ -119,9 +119,16 @@
             var name = animations[index];
             el.innerHTML = name;
 
-            just.animate(name, el, { fill: 'both' })
-                .on('finish', callAnimation);
+            just.animate({
+                name: name, 
+                targets: el, 
+                fill: 'both'
+            })
+            .on('finish', callAnimation)
+            .play();
         }());
+
+
     </script>
 </body>
 

@@ -1,4 +1,4 @@
-export const flipInY: ja.IAnimationOptions = {
+export const flipInY: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -28,8 +28,8 @@ export const flipInY: ja.IAnimationOptions = {
       opacity: 1
     }
   ],
-  timings: {
-    duration: 750
-  },
+  
+    to: 750
+  ,
   name: 'flipInY'
 };

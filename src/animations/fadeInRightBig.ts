@@ -1,4 +1,4 @@
-export const fadeInRightBig: ja.IAnimationOptions = {
+export const fadeInRightBig: ja.IAnimationPreset = {
   keyframes: [
     {
       opacity: 0,
@@ -9,10 +9,8 @@ export const fadeInRightBig: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
- timings: {
-    duration: 1300,
+ to: 1300,
     fill: 'both',
-    easing: 'ease-out'
-  },
+    easing: 'ease-out',
   name: 'fadeInRightBig'
 };

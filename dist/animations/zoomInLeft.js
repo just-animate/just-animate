@@ -17,9 +17,7 @@ exports.zoomInLeft = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 1000,
-        easing: 'elegantSlowStartEnd'
-    },
+    to: 1000,
+    easing: 'elegantSlowStartEnd',
     name: 'zoomInLeft'
 };

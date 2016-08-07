@@ -1,5 +1,5 @@
-import {cssFunction} from './helpers/strings';
-import {cubicBezier} from './helpers/resources';
+import {cssFunction} from '../helpers/strings';
+import {cubicBezier} from '../helpers/resources';
 
 export const easings: ja.IMap<string> = {
     easeInBack: cssFunction(cubicBezier, 0.6, -0.28, 0.735, 0.045),

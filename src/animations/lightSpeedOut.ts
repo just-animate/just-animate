@@ -1,4 +1,4 @@
-export const lightSpeedOut: ja.IAnimationOptions = {
+export const lightSpeedOut: ja.IAnimationPreset = {
   keyframes: [
     {
       transform: 'none',
@@ -9,10 +9,8 @@ export const lightSpeedOut: ja.IAnimationOptions = {
       opacity: 0
     }
   ],
-  timings: {
-    duration: 1000,
+  to: 1000,
     fill: 'both',
-    easing: 'ease-in'
-  },
+    easing: 'ease-in',
   name: 'lightSpeedOut'
 };

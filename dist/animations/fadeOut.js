@@ -8,9 +8,7 @@ exports.fadeOut = {
             opacity: 0
         }
     ],
-    timings: {
-        duration: 650,
-        fill: 'both'
-    },
+    to: 650,
+    fill: 'both',
     name: 'fadeOut'
 };

@@ -99,53 +99,44 @@
         <button id="cancel">.cancel()</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-    <script src="../dist/browser/just-animate-core.js"></script>
-    <script src="../dist/browser/just-animate-animations.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
+    <script src="../dist/browser/just-animate-core.min.js"></script>
+    <script src="../dist/browser/just-animate-animations.min.js"></script>
     <script>
-        var player = just.animateTimeline({
-            autoplay: true,
-            duration: 5000,
-            events: [
-                {
-                    offset: 0,
-                    el: '.car-1', 
-                    keyframes: [
-                        { left: 0 },
-                        { left: '700px' }
-                    ],
-                    timings: {
-                        duration: 4200,
-                        fill: 'both',
-                        easing: 'ease-in'
-                    }
-                },
-                {
-                    offset: 0,
-                    el: '.car-2', 
-                    keyframes: [
-                        { left: 0 },
-                        { left: '700px' }
-                    ],
-                    timings: {
-                        duration: 5000,
-                        fill: 'both',
-                        easing: 'linear'
-                    }
-                },
-                {
-                    offset: 0.1,
-                    el: '.red.car', 
-                    name: 'rubberBand',
-                    timings: {
-                        iterations: 1
-                    }
-                }
-            ]
-        });
+        var player = just.animate([
+            {
+                targets: '.car-1', 
+                from: 0,
+                to: 4200,
+                fill: 'both',
+                easing: 'ease-in',
+                keyframes: [
+                    { x: 0 },
+                    { x: '700px' }
+                ]
+            },
+            {
+                targets: '.car-2', 
+                from: 0,
+                to: 5000,
+                fill: 'both',
+                easing: 'linear',
+                keyframes: [
+                    { x: 0 },
+                    { x: '700px' }
+                ]
+            },
+            {
+                targets: '.red.car', 
+                from: 1000,
+                to: 2000,
+                name: 'rubberBand'
+            },
+        ])
+        .play();
         
         document.getElementById('reverse').addEventListener('click', function() {
-           player.reverse(); 
+           player.reverse().play(); 
         });
          document.getElementById('pause').addEventListener('click', function() {
            player.pause(); 

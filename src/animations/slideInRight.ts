@@ -1,4 +1,4 @@
-export const slideInRight: ja.IAnimationOptions = {
+export const slideInRight: ja.IAnimationPreset = {
   keyframes: [
     {
       transform: 'translate3d(100%, 0, 0)',
@@ -9,8 +9,8 @@ export const slideInRight: ja.IAnimationOptions = {
       visibility: 'visible'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'slideInRight'
 };

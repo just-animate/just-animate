@@ -17,9 +17,7 @@ exports.bounceOutRight = {
             transform: 'translate3d(2000px, 0, 0)'
         }
     ],
-    timings: {
-        duration: 900,
-        fill: 'both'
-    },
+    to: 900,
+    fill: 'both',
     name: 'bounceOutRight'
 };

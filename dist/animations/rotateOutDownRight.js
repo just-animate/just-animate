@@ -12,8 +12,6 @@ exports.rotateOutDownRight = {
             opacity: 0
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'rotateOutDownRight'
 };

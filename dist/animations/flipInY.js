@@ -29,8 +29,6 @@ exports.flipInY = {
             opacity: 1
         }
     ],
-    timings: {
-        duration: 750
-    },
+    to: 750,
     name: 'flipInY'
 };

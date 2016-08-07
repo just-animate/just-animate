@@ -39,9 +39,7 @@ exports.bounce = {
             y: 0
         }
     ],
-    timings: {
-        duration: 900,
-        easing: 'easeOutCubic',
-        fill: 'both'
-    }
+    to: 900,
+    easing: 'easeOutCubic',
+    fill: 'both'
 };

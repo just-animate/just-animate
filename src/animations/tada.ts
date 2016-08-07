@@ -1,4 +1,4 @@
-export const tada: ja.IAnimationOptions = {
+export const tada: ja.IAnimationPreset = {
   keyframes: [
     {
       transform: 'scale3d(1, 1, 1)'
@@ -34,8 +34,8 @@ export const tada: ja.IAnimationOptions = {
       transform: 'scale3d(1, 1, 1)'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'tada'
 };

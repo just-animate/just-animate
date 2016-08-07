@@ -1,4 +1,4 @@
-export const rotateOutDownRight: ja.IAnimationOptions = {
+export const rotateOutDownRight: ja.IAnimationPreset = {
   keyframes: [
     {
       transformOrigin: 'right bottom',
@@ -11,8 +11,8 @@ export const rotateOutDownRight: ja.IAnimationOptions = {
       opacity: 0
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'rotateOutDownRight'
 };

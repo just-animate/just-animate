@@ -1,4 +1,4 @@
-export const flipOutX: ja.IAnimationOptions = {
+export const flipOutX: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -16,8 +16,8 @@ export const flipOutX: ja.IAnimationOptions = {
       opacity: 0
     }
   ],
-  timings: {
-    duration: 750
-  },
+  
+    to: 750
+  ,
   name: 'flipOutX'
 };

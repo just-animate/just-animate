@@ -1,3 +1,5 @@
+import {nothing} from '../helpers/resources';
+
 const linearCubicBezier: ja.IFunc<number> = (x: number) => x;
 const SUBDIVISION_EPSILON = 0.0001;
 
@@ -12,7 +14,11 @@ const SUBDIVISION_EPSILON = 0.0001;
  * @returns {number} val if between min-max, min if lesser, max if greater
  */
 export function clamp(val: number, min: number, max: number): number {
-    return val === undefined ? undefined : val < min ? min : val > max ? max : val;
+    return val === nothing ? nothing : val < min ? min : val > max ? max : val;
+}
+
+export function inRange(val: number, min: number, max: number): boolean {
+    return min < max ? min <= val && val <= max : max <= val && val <= min ;
 }
 
 function bezier(n1: number, n2: number, t: number): number {

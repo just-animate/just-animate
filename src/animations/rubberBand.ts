@@ -1,4 +1,4 @@
-export const rubberBand: ja.IAnimationOptions = {
+export const rubberBand: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -29,8 +29,8 @@ export const rubberBand: ja.IAnimationOptions = {
       transform: 'scale3d(1, 1, 1)'
     }
   ],
-  timings: {
-    duration: 1000
-  },
+  
+    to: 1000
+  ,
   name: 'rubberBand'
 };

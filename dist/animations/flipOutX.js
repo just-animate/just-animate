@@ -17,8 +17,6 @@ exports.flipOutX = {
             opacity: 0
         }
     ],
-    timings: {
-        duration: 750
-    },
+    to: 750,
     name: 'flipOutX'
 };

@@ -19,9 +19,7 @@ exports.zoomOutUp = {
             transformOrigin: 'center bottom'
         }
     ],
-    timings: {
-        duration: 1000,
-        easing: 'elegantSlowStartEnd'
-    },
+    to: 1000,
+    easing: 'elegantSlowStartEnd',
     name: 'zoomOutUp'
 };

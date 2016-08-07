@@ -10,8 +10,6 @@ exports.rollIn = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'rollIn'
 };

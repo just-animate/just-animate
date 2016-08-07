@@ -1,4 +1,5 @@
 "use strict";
+var resources_1 = require('../helpers/resources');
 var ostring = Object.prototype.toString;
 /**
  * Tests if object is a list
@@ -12,7 +13,7 @@ function isArray(a) {
 }
 exports.isArray = isArray;
 function isDefined(a) {
-    return a !== undefined && a !== null && a !== '';
+    return a !== resources_1.nothing && a !== null && a !== '';
 }
 exports.isDefined = isDefined;
 /**

@@ -10,8 +10,6 @@ exports.slideOutDown = {
             transform: 'translate3d(0, 100%, 0)'
         }
     ],
-    timings: {
-        duration: 1000
-    },
+    to: 1000,
     name: 'slideOutDown'
 };

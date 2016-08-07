@@ -10,10 +10,8 @@ exports.fadeInRightBig = {
             transform: 'none'
         }
     ],
-    timings: {
-        duration: 1300,
-        fill: 'both',
-        easing: 'ease-out'
-    },
+    to: 1300,
+    fill: 'both',
+    easing: 'ease-out',
     name: 'fadeInRightBig'
 };

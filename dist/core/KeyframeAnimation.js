@@ -2,14 +2,41 @@
 var Dispatcher_1 = require('./Dispatcher');
 var type_1 = require('../helpers/type');
 var resources_1 = require('../helpers/resources');
-var keyframeAnimationPrototype = {
-    _dispatcher: undefined,
-    _duration: undefined,
-    _endTime: undefined,
-    _iterationStart: undefined,
-    _iterations: undefined,
-    _startTime: undefined,
-    _totalDuration: undefined,
+var resources_2 = require('../helpers/resources');
+function KeyframeAnimation(target, keyframes, options) {
+    var self = this instanceof KeyframeAnimation ? this : Object.create(KeyframeAnimation.prototype);
+    var duration = options.to - options.from;
+    self._iterationStart = options.iterationStart || 0;
+    self._iterations = options.iterations || 1;
+    self._duration = duration;
+    self._startTime = options.from || 0;
+    self._endTime = options.to;
+    self._totalDuration = (options.iterations || 1) * duration;
+    var dispatcher = Dispatcher_1.Dispatcher();
+    self._dispatcher = dispatcher;
+    var animator = target[resources_2.animate](keyframes, {
+        direction: options.direction,
+        duration: duration,
+        easing: options.easing || 'linear',
+        fill: options.fill || 'none',
+        iterationStart: self._iterationStart,
+        iterations: self._iterations
+    });
+    // immediately cancel to prevent effects until play is called    
+    animator.cancel();
+    animator['onfinish'] = function () { return dispatcher.trigger(resources_2.finish); };
+    self._animator = animator;
+    return self;
+}
+exports.KeyframeAnimation = KeyframeAnimation;
+KeyframeAnimation.prototype = {
+    _dispatcher: resources_1.nothing,
+    _duration: resources_1.nothing,
+    _endTime: resources_1.nothing,
+    _iterationStart: resources_1.nothing,
+    _iterations: resources_1.nothing,
+    _startTime: resources_1.nothing,
+    _totalDuration: resources_1.nothing,
     currentTime: function (value) {
         var self = this;
         if (!type_1.isDefined(value)) {
@@ -58,25 +85,25 @@ var keyframeAnimationPrototype = {
     cancel: function () {
         var self = this;
         self._animator.cancel();
-        self._dispatcher.trigger(resources_1.cancel);
+        self._dispatcher.trigger(resources_2.cancel);
         return self;
     },
     reverse: function () {
         var self = this;
         self._animator.reverse();
-        self._dispatcher.trigger(resources_1.reverse);
+        self._dispatcher.trigger(resources_2.reverse);
         return self;
     },
     pause: function () {
         var self = this;
         self._animator.pause();
-        self._dispatcher.trigger(resources_1.pause);
+        self._dispatcher.trigger(resources_2.pause);
         return self;
     },
     play: function () {
         var self = this;
         self._animator.play();
-        self._dispatcher.trigger(resources_1.play);
+        self._dispatcher.trigger(resources_2.play);
         return self;
     },
     finish: function () {
@@ -85,20 +112,3 @@ var keyframeAnimationPrototype = {
         return self;
     }
 };
-function createKeyframeAnimation(target, keyframes, timings) {
-    var self = Object.create(keyframeAnimationPrototype);
-    var dispatcher = Dispatcher_1.createDispatcher();
-    var animator = target[resources_1.animate](keyframes, timings);
-    animator.pause();
-    animator['onfinish'] = function () { return dispatcher.trigger(resources_1.finish); };
-    self._iterationStart = timings.iterationStart || 0;
-    self._iterations = timings.iterations || 1;
-    self._duration = timings.duration;
-    self._startTime = timings.delay || 0;
-    self._endTime = (timings.endDelay || 0) + timings.duration;
-    self._totalDuration = (timings.delay || 0) + ((timings.iterations || 1) * timings.duration) + (timings.endDelay || 0);
-    self._dispatcher = dispatcher;
-    self._animator = animator;
-    return self;
-}
-exports.createKeyframeAnimation = createKeyframeAnimation;

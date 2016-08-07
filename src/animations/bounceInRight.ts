@@ -1,4 +1,4 @@
-export const bounceInRight: ja.IAnimationOptions = {
+export const bounceInRight: ja.IAnimationPreset = {
   keyframes: [
     {
       offset: 0,
@@ -24,10 +24,10 @@ export const bounceInRight: ja.IAnimationOptions = {
       transform: 'none'
     }
   ],
-  timings: {
-    duration: 900,
+  
+    to: 900,
     fill: 'both',
     easing: 'easeOutCubic'
-  },
+  ,
   name: 'bounceInRight'
 };
