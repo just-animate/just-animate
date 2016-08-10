@@ -1,7 +1,7 @@
 #JustAnimate
 *Just Animate creates beautify animations using the latest browser standards*
 
-For designers and developers that are new to animations, Just Animate provides a toolbox of over 75 preset animations to help them get started, and an API that is designed to make motion design flow really well.
+Just Animate provides a toolbox of over 75 preset animations and an API that is designed to make motion design flow really well.
 
 ## Documentation (needs update!)
 
