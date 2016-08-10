@@ -1,4 +1,4 @@
-import {isDefined} from './type';
+import {isDefined, isFunction, isObject} from './type';
 
 /**
  * Extends the first object with the properties of each subsequent object
@@ -18,7 +18,7 @@ export const extend: Function = function (): any {
         }
     }
     return target;
-}
+};
 
 export const inherit: Function = function (): any {
     const args = arguments;
@@ -32,4 +32,25 @@ export const inherit: Function = function (): any {
         }
     }
     return target;
+};
+
+export const expand: Function = function (expandable: any): any {
+    const result = {};
+    for (let prop in expandable) {
+        let propVal = expandable[prop];
+        if (isFunction(propVal)) {
+            propVal = propVal();
+        } else if (isObject(propVal)) {
+            propVal = expand(propVal);
+        }
+        result[prop] = propVal;
+    }
+    return result;
+};
+
+export function unwrap<T>(value: T | ja.IProvider<T>): T {
+    if (isFunction(value)) {
+        return (value as ja.IProvider<T>)();
+    } 
+    return value as T;
 };

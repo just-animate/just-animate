@@ -39,6 +39,10 @@ export function isNumber(a: any): boolean {
     return typeof a === 'number';
 }
 
+export function isObject(a: any): boolean {
+    return typeof a === 'object' && a !== null;
+}
+
 /**
  * Tests if object is a string
  * 

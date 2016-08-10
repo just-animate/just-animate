@@ -82,6 +82,9 @@
     function isNumber(a) {
         return typeof a === 'number';
     }
+    function isObject(a) {
+        return typeof a === 'object' && a !== null;
+    }
     function isString(a) {
         return typeof a === 'string';
     }
@@ -99,6 +102,27 @@
         }
         return target;
     };
+    var expand = function (expandable) {
+        var result = {};
+        for (var prop in expandable) {
+            var propVal = expandable[prop];
+            if (isFunction(propVal)) {
+                propVal = propVal();
+            }
+            else if (isObject(propVal)) {
+                propVal = expand(propVal);
+            }
+            result[prop] = propVal;
+        }
+        return result;
+    };
+    function unwrap(value) {
+        if (isFunction(value)) {
+            return value();
+        }
+        return value;
+    }
+    ;
 
     function inRange(val, min, max) {
         return min < max ? min <= val && val <= max : max <= val && val <= min;
@@ -182,16 +206,17 @@
     function KeyframeAnimation(target, keyframes, options) {
         var self = this instanceof KeyframeAnimation ? this : Object.create(KeyframeAnimation.prototype);
         var duration = options.to - options.from;
-        self._iterationStart = options.iterationStart || 0;
-        self._iterations = options.iterations || 1;
+        self._iterationStart = unwrap(options.iterationStart) || 0;
+        self._iterations = unwrap(options.iterations) || 1;
         self._duration = duration;
         self._startTime = options.from || 0;
         self._endTime = options.to;
-        self._totalDuration = (options.iterations || 1) * duration;
+        self._totalDuration = (self._iterations || 1) * duration;
         var dispatcher = Dispatcher();
         self._dispatcher = dispatcher;
         var animator = target[animate](keyframes, {
-            direction: options.direction,
+            delay: unwrap(options.delay) || undefined,
+            direction: unwrap(options.direction),
             duration: duration,
             easing: options.easing || 'linear',
             fill: options.fill || 'none',
@@ -811,10 +836,12 @@
                 event.easing = easings[event.easing] || event.easing;
             }
             if (event.keyframes) {
-                var keyframes_1 = pipe(map(event.keyframes, normalizeProperties), spaceKeyframes, normalizeKeyframes);
                 var animators = map(targets, function (e) {
+                    var expanded = map(event.keyframes, expand);
+                    var normalized = map(expanded, normalizeProperties);
+                    var keyframes = pipe(normalized, spaceKeyframes, normalizeKeyframes);
                     return {
-                        animator: KeyframeAnimation(e, keyframes_1, event),
+                        animator: KeyframeAnimation(e, keyframes, event),
                         endTimeMs: event.to,
                         startTimeMs: event.from
                     };

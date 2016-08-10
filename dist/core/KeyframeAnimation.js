@@ -2,20 +2,22 @@
 var Dispatcher_1 = require('./Dispatcher');
 var type_1 = require('../helpers/type');
 var resources_1 = require('../helpers/resources');
+var objects_1 = require('../helpers/objects');
 var resources_2 = require('../helpers/resources');
 function KeyframeAnimation(target, keyframes, options) {
     var self = this instanceof KeyframeAnimation ? this : Object.create(KeyframeAnimation.prototype);
     var duration = options.to - options.from;
-    self._iterationStart = options.iterationStart || 0;
-    self._iterations = options.iterations || 1;
+    self._iterationStart = objects_1.unwrap(options.iterationStart) || 0;
+    self._iterations = objects_1.unwrap(options.iterations) || 1;
     self._duration = duration;
     self._startTime = options.from || 0;
     self._endTime = options.to;
-    self._totalDuration = (options.iterations || 1) * duration;
+    self._totalDuration = (self._iterations || 1) * duration;
     var dispatcher = Dispatcher_1.Dispatcher();
     self._dispatcher = dispatcher;
     var animator = target[resources_2.animate](keyframes, {
-        direction: options.direction,
+        delay: objects_1.unwrap(options.delay) || undefined,
+        direction: objects_1.unwrap(options.direction),
         duration: duration,
         easing: options.easing || 'linear',
         fill: options.fill || 'none',

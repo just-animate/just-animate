@@ -38,6 +38,10 @@ function isNumber(a) {
     return typeof a === 'number';
 }
 exports.isNumber = isNumber;
+function isObject(a) {
+    return typeof a === 'object' && a !== null;
+}
+exports.isObject = isObject;
 /**
  * Tests if object is a string
  *

@@ -174,10 +174,12 @@ Animator.prototype = {
             event.easing = easings_1.easings[event.easing] || event.easing;
         }
         if (event.keyframes) {
-            var keyframes_2 = functions_1.pipe(lists_1.map(event.keyframes, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
             var animators = lists_1.map(targets, function (e) {
+                var expanded = lists_1.map(event.keyframes, objects_1.expand);
+                var normalized = lists_1.map(expanded, keyframes_1.normalizeProperties);
+                var keyframes = functions_1.pipe(normalized, keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
                 return {
-                    animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes_2, event),
+                    animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes, event),
                     endTimeMs: event.to,
                     startTimeMs: event.from
                 };

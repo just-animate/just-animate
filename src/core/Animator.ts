@@ -1,6 +1,6 @@
 import {each, map, pushAll, maxBy} from '../helpers/lists';
-import {inherit} from '../helpers/objects';
-import {isArray, isDefined} from '../helpers/type';
+import {expand, inherit} from '../helpers/objects';
+import {isArray, isDefined, isFunction} from '../helpers/type';
 import {inRange} from '../helpers/math';
 import {queryElements} from '../helpers/elements';
 import {Dispatcher, IDispatcher} from './Dispatcher';
@@ -183,9 +183,10 @@ Animator.prototype = {
         }
 
         if (event.keyframes) {
-            const keyframes = pipe(map(event.keyframes, normalizeProperties), spaceKeyframes, normalizeKeyframes);
-
             const animators = map(targets, (e: Element) => {
+                const expanded = map(event.keyframes, expand as ja.IMapper<ja.ICssKeyframeOptions, ja.ICssKeyframeOptions>);
+                const normalized = map(expanded, normalizeProperties);
+                const keyframes = pipe(normalized, spaceKeyframes, normalizeKeyframes);
                 return {
                     animator: KeyframeAnimation(e, keyframes, event),
                     endTimeMs: event.to,

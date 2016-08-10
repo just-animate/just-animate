@@ -1,6 +1,7 @@
 import {Dispatcher, IDispatcher} from './Dispatcher';
 import {isDefined} from '../helpers/type';
 import {nothing} from '../helpers/resources';
+import {unwrap} from '../helpers/objects';
 
 import {
     animate,
@@ -16,18 +17,19 @@ export function KeyframeAnimation(target: Element, keyframes: ja.ICssKeyframeOpt
     
     const duration = options.to - options.from;
 
-    self._iterationStart = options.iterationStart || 0;
-    self._iterations = options.iterations || 1;
+    self._iterationStart = unwrap(options.iterationStart) || 0;
+    self._iterations = unwrap(options.iterations) || 1;
     self._duration = duration;
     self._startTime = options.from || 0;
     self._endTime = options.to;
-    self._totalDuration = (options.iterations || 1) * duration;
+    self._totalDuration = (self._iterations || 1) * duration;
 
     const dispatcher = Dispatcher();
     self._dispatcher = dispatcher;
 
     const animator = target[animate](keyframes, {
-        direction: options.direction,
+        delay: unwrap(options.delay) || undefined,
+        direction: unwrap(options.direction),
         duration: duration,
         easing: options.easing || 'linear',
         fill: options.fill || 'none',

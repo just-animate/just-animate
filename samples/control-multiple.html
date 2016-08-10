@@ -114,7 +114,10 @@
                     .animate({ 
                         name: 'bounceIn', 
                         targets: '.badger', 
-                        to: 1400 
+                        to: 1400,
+                        delay() {
+                            return Math.random() * 1000;
+                        }
                     })
                     .on('finish', function onFinish() {
                         player.reverse().play().off('finish', onFinish);

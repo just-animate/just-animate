@@ -32,3 +32,25 @@ exports.inherit = function () {
     }
     return target;
 };
+exports.expand = function (expandable) {
+    var result = {};
+    for (var prop in expandable) {
+        var propVal = expandable[prop];
+        if (type_1.isFunction(propVal)) {
+            propVal = propVal();
+        }
+        else if (type_1.isObject(propVal)) {
+            propVal = exports.expand(propVal);
+        }
+        result[prop] = propVal;
+    }
+    return result;
+};
+function unwrap(value) {
+    if (type_1.isFunction(value)) {
+        return value();
+    }
+    return value;
+}
+exports.unwrap = unwrap;
+;

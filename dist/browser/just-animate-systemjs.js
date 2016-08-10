@@ -3049,6 +3049,10 @@ System.register("just-animate/helpers/type", ["just-animate/helpers/resources"],
         return typeof a === 'number';
     }
     exports_81("isNumber", isNumber);
+    function isObject(a) {
+        return typeof a === 'object' && a !== null;
+    }
+    exports_81("isObject", isObject);
     /**
      * Tests if object is a string
      *
@@ -3074,7 +3078,14 @@ System.register("just-animate/helpers/objects", ["just-animate/helpers/type"], f
     "use strict";
     var __moduleName = context_82 && context_82.id;
     var type_1;
-    var extend, inherit;
+    var extend, inherit, expand;
+    function unwrap(value) {
+        if (type_1.isFunction(value)) {
+            return value();
+        }
+        return value;
+    }
+    exports_82("unwrap", unwrap);
     return {
         setters:[
             function (type_1_1) {
@@ -3113,6 +3124,21 @@ System.register("just-animate/helpers/objects", ["just-animate/helpers/type"], f
                 }
                 return target;
             });
+            exports_82("expand", expand = function (expandable) {
+                var result = {};
+                for (var prop in expandable) {
+                    var propVal = expandable[prop];
+                    if (type_1.isFunction(propVal)) {
+                        propVal = propVal();
+                    }
+                    else if (type_1.isObject(propVal)) {
+                        propVal = expand(propVal);
+                    }
+                    result[prop] = propVal;
+                }
+                return result;
+            });
+            ;
         }
     }
 });
@@ -3315,23 +3341,24 @@ System.register("just-animate/core/Dispatcher", ["just-animate/helpers/type", "j
         }
     }
 });
-System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispatcher", "just-animate/helpers/type", "just-animate/helpers/resources"], function(exports_87, context_87) {
+System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispatcher", "just-animate/helpers/type", "just-animate/helpers/resources", "just-animate/helpers/objects"], function(exports_87, context_87) {
     "use strict";
     var __moduleName = context_87 && context_87.id;
-    var Dispatcher_1, type_4, resources_6, resources_7;
+    var Dispatcher_1, type_4, resources_6, objects_1, resources_7;
     function KeyframeAnimation(target, keyframes, options) {
         var self = this instanceof KeyframeAnimation ? this : Object.create(KeyframeAnimation.prototype);
         var duration = options.to - options.from;
-        self._iterationStart = options.iterationStart || 0;
-        self._iterations = options.iterations || 1;
+        self._iterationStart = objects_1.unwrap(options.iterationStart) || 0;
+        self._iterations = objects_1.unwrap(options.iterations) || 1;
         self._duration = duration;
         self._startTime = options.from || 0;
         self._endTime = options.to;
-        self._totalDuration = (options.iterations || 1) * duration;
+        self._totalDuration = (self._iterations || 1) * duration;
         var dispatcher = Dispatcher_1.Dispatcher();
         self._dispatcher = dispatcher;
         var animator = target[resources_7.animate](keyframes, {
-            direction: options.direction,
+            delay: objects_1.unwrap(options.delay) || undefined,
+            direction: objects_1.unwrap(options.direction),
             duration: duration,
             easing: options.easing || 'linear',
             fill: options.fill || 'none',
@@ -3356,6 +3383,9 @@ System.register("just-animate/core/KeyframeAnimation", ["just-animate/core/Dispa
             function (resources_6_1) {
                 resources_6 = resources_6_1;
                 resources_7 = resources_6_1;
+            },
+            function (objects_1_1) {
+                objects_1 = objects_1_1;
             }],
         execute: function() {
             KeyframeAnimation.prototype = {
@@ -4026,7 +4056,7 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
 System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "just-animate/helpers/objects", "just-animate/helpers/type", "just-animate/helpers/math", "just-animate/helpers/elements", "just-animate/core/Dispatcher", "just-animate/core/KeyframeAnimation", "just-animate/helpers/errors", "just-animate/helpers/functions", "just-animate/helpers/resources", "just-animate/core/easings", "just-animate/helpers/keyframes"], function(exports_93, context_93) {
     "use strict";
     var __moduleName = context_93 && context_93.id;
-    var lists_3, objects_1, type_8, math_1, elements_2, Dispatcher_2, KeyframeAnimation_1, errors_4, functions_1, resources_13, resources_14, easings_1, keyframes_1;
+    var lists_3, objects_2, type_8, math_1, elements_2, Dispatcher_2, KeyframeAnimation_1, errors_4, functions_1, resources_13, resources_14, easings_1, keyframes_1;
     var animationPadding;
     function Animator(resolver, timeloop) {
         var self = this instanceof Animator ? this : Object.create(Animator.prototype);
@@ -4058,8 +4088,8 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
             function (lists_3_1) {
                 lists_3 = lists_3_1;
             },
-            function (objects_1_1) {
-                objects_1 = objects_1_1;
+            function (objects_2_1) {
+                objects_2 = objects_2_1;
             },
             function (type_8_1) {
                 type_8 = type_8_1;
@@ -4219,7 +4249,7 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                         if (!type_8.isDefined(def)) {
                             throw errors_4.invalidArg('name');
                         }
-                        objects_1.inherit(event, def);
+                        objects_2.inherit(event, def);
                     }
                     event.from = (event.from || 0) + this._duration;
                     event.to = (event.to || 0) + this._duration;
@@ -4230,10 +4260,12 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                         event.easing = easings_1.easings[event.easing] || event.easing;
                     }
                     if (event.keyframes) {
-                        var keyframes_2 = functions_1.pipe(lists_3.map(event.keyframes, keyframes_1.normalizeProperties), keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
                         var animators = lists_3.map(targets, function (e) {
+                            var expanded = lists_3.map(event.keyframes, objects_2.expand);
+                            var normalized = lists_3.map(expanded, keyframes_1.normalizeProperties);
+                            var keyframes = functions_1.pipe(normalized, keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
                             return {
-                                animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes_2, event),
+                                animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes, event),
                                 endTimeMs: event.to,
                                 startTimeMs: event.from
                             };

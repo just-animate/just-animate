@@ -127,6 +127,7 @@ declare module ja {
         iterations?: number;
         direction?: string;
         iterationStart?: number;
+        delay?: number | IProvider<number>;
         to: number;
     }
 
@@ -1630,5 +1631,9 @@ declare module ja {
      */
     export interface IFunc<T1> {
         (mapable: T1): T1;
+    }
+
+    export interface IProvider<T> {
+        (): T;
     }
 }
