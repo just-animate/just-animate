@@ -1,13 +1,13 @@
 #JustAnimate
 *Just animate your websites*
 
-`Just Animate is an easy to use Animation library that lets you add animations and *just* move on.
+`Just Animate helps your reuse animations so you can just animate and move on.
 
 ## Documentation
 
 Check out the [Full Documentation Here](https://just-animate.github.io)
 
-## Demos
+## Demos (needs update!)
   - [Basic Animations](http://codepen.io/notoriousb1t/pen/BjgGmY)
   - [Basic Animation with Angular 1.x](http://codepen.io/notoriousb1t/pen/Rrzvjb)
   - [Basic Animation with JQuery](http://codepen.io/notoriousb1t/pen/obrmMr)
@@ -15,123 +15,82 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
   - [Registering Custom Animations](http://codepen.io/notoriousb1t/pen/WwNvON)
   
 ## Getting Started
-1. Include these scripts on your document
+1. For support in Internet Explorer, Edge, or Safari, include this script. Just Animate uses the Web Animation API and is not yet supported in these browsers.
 
-  ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="just-animate-core.js"></script>
-  <script src="just-animate-animations.js"></script>
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
   ```
-  Just Animate uses the new Web Animations API in JavaScript.  For maximum browser compatibility, this should be included even
-  if your browser supports this new standard.
-  
 
-2. Call the animation function any of these ways
+2. Include the core script and optionally the animations script for ready to use animation presets.
+
+```html
+<script src="just-animate-core.min.js"></script>
+<script src="just-animate-animations.min.js"></script>
+```
+  
+3. Call .animate(). The targets property can be a html selector, an Element, NodeList, jQuery object, or a function or 
+array of any combination of those.  Specify keyframes just like CSS or use the name property to use a preset.  The to property tells Just Animate when to stop animating.
  ```javascript
-  Just.animate('fadeIn', '#animate-me')
- ```
-
- ```javascript
-  Just.animate('fadeIn', document.getElementById('animate-me'))
- ```
-
-   ```javascript
-  Just.animate('fadeIn', $('#animate-me'))
-  ```
-
-   ```javascript
-  Just.animate('fadeIn', function() {
-      return document.getElementById('animate-me');
-  });
-  ```
-
-   ```javascript
-  Just.animate('fadeIn', [$('input:checkbox'), document.getElementById('#animate-me')]);
-  ```
-
-3. Use the player returned from animate to do more advanced things:
- 
- ```javascript
- var player = Just.animate('fadeIn', '#animate-me');
- player.play();
- player.pause();
- player.finish();
- player.reverse();
- player.cancel();
- ```
-
-## Getting Started with Angular 1.x
-1. Include these scripts on your document
-
-  ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="just-animate-core.js"></script>
-  <script src="just-animate-animations.js"></script>
-  ```
-  
-2. Import the JustAnimate module into your application
-  ```javascript
-  angular.module('myApp', ['just.animate']);
-  ```
-
-3. Inject the service into your controller or directive
-
-  ```javascript
-  angular.module('myApp').controller('myCtrl', function(just) {
-    /* logic here */
-  });
-  ```
-  
-4. Finally you need to call the animate function
- 
-  ```javascript
-  just.animate('fadeIn', '#animate-me');
-  ```
-
-**Full Example**
-  ```javascript
-  angular.module('myApp', ['just.animate'])
-    .controller('myCtrl', function(just) {
-      just.animate('fadeIn', '#animate-me');
-    });
-  ```
-  See **Getting Started** above for more information
-
-## Getting Started with Angular 2.x (with SystemJS)
-1. Include these scripts in the head of the document after systemjs
-
-  ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.1.4/web-animations.min.js"></script>
-  <script src="browser/just-animate-systemjs.js"></script>
-  ```
-  
-2. Import the JustAnimate module into your application and inject the Animate.css animations
-  ```typescript
-  import { JustAnimate, animations } from 'just-animate';
-  
-  JustAnimate.inject(animations.ANIMATE_CSS);
-  ```
-
-3. Inject the service into your component and call animate()
-
-  ```typescript
-  import { Component } from 'angular2/core';
-  import { JustAnimate } from 'just-animate';
-  
-  @Component({
-     template: '<div><button (click)="onClick($event)"></button></div>',
-     providers: [ JustAnimate ]
+  just.animate({
+    targets: '#animate-me'
+    // targets: document.getElementById('animate-me),
+    // targets: document.querySelectorAll('#animate-me),
+    // targets: $('animate-me),
+    // targets: ['#animate-me'],
+    // targets: () => document.getElementById('animate-me'),
+    keyframes: [
+      { opacity: 0 },
+      { opacity: 1 }
+    ],
+    to: '1s'
   })
-  class MyComponent {
-    constructor(private just: JustAnimate) { }
-    
-    onClick($event: Event) {
-        this.just.animate('bounceIn', $event.target);
-    }
-  }
-  ```
+ ```
 
-  See **Getting Started** above for more information
+4. Use the player returned from animate to do more advanced things:
+ 
+ ```javascript
+ var player = just
+   // animate multiple elements simultaneously
+  .animate({
+    name: 'fadeIn',
+    targets: ['#first', '#second'],
+    to: '1s'
+  })
+  // animate in sequence
+  // animate on a timeline
+  .animate([
+    {
+      name: 'fadeOutLeft',
+      targets: '#first',
+      to: '2s',
+      delay: function() {
+        // delay animation for a random # of ms between 0 and 1000
+        return Math.random() * 1000;
+      }
+    },
+    {
+      name: 'fadeOutRight',
+      targets: '#second',
+      to: '1.5s',
+      delay: 0
+    }
+  ])
+  // sequence animation after existing animation
+  .on('finish', () => console.log("I'm finished!"))
+  .on('cancel', () => console.log("I'm canceled!"))
+  .on('pause', () => console.log("I'm paused!"))
+  .on('update', function(delta, runningTime) {
+    console.log(delta + 'ms since last update');
+  });
+
+player
+  .reverse()
+  .play()
+  .pause()
+  .finish()
+  .cancel();
+ ```
+
 
 ## Included animations
 
@@ -216,5 +175,9 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
 ## License
 JustAnimate is licensed under the MIT license. (http://opensource.org/licenses/MIT)
 
-## Contributing
-Pull requests are the best way.  If you have an idea, create an issue so we can talk through it.
+## How can you contribute?
+
+ - make awesome things with Just Animate.  If you make it on Code Pen or otherwise, send me a link so I can put show it off.
+ - create issues if there is a bug or an unexpected behavior (if it isn't reported, it probably won't get fixed)
+ - contribute code and help me make this library great!
+ - help with documentation.  It takes four times as long at least to build out docs.  When you contribute docs, you are helping out everyone including me.
