@@ -15,20 +15,20 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
   - [Registering Custom Animations](http://codepen.io/notoriousb1t/pen/WwNvON)
   
 ## Getting Started
-1. For support in Internet Explorer, Edge, or Safari, include this script. Just Animate uses the Web Animation API and is not yet supported in these browsers.
+ - For support in Internet Explorer, Edge, or Safari, include this script. Just Animate uses the Web Animation API and is not yet supported in these browsers.
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
   ```
 
-2. Include the core script and optionally the animations script for ready to use animation presets.
+ - Include the core script and optionally the animations script for ready to use animation presets.
 
 ```html
 <script src="just-animate-core.min.js"></script>
 <script src="just-animate-animations.min.js"></script>
 ```
-  
-3. Call .animate(). The targets property can be a html selector, an Element, NodeList, jQuery object, or a function or 
+
+ - Call .animate(). The targets property can be a html selector, an Element, NodeList, jQuery object, or a function or 
 array of any combination of those.  Specify keyframes just like CSS or use the name property to use a preset.  The to property tells Just Animate when to stop animating.
  ```javascript
   just.animate({
@@ -46,7 +46,7 @@ array of any combination of those.  Specify keyframes just like CSS or use the n
   })
  ```
 
-4. Use the player returned from animate to do more advanced things:
+ - Use the player returned from animate to do more advanced things:
  
  ```javascript
  var player = just
