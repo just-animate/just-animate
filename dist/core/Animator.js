@@ -38,6 +38,8 @@ function Animator(resolver, timeloop) {
     self.on(resources_1.finish, self._onFinish);
     self.on(resources_1.cancel, self._onCancel);
     self.on(resources_1.pause, self._onPause);
+    // autoplay    
+    self.play();
     return self;
 }
 exports.Animator = Animator;

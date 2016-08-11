@@ -699,6 +699,7 @@
         self.on(finish, self._onFinish);
         self.on(cancel, self._onCancel);
         self.on(pause, self._onPause);
+        self.play();
         return self;
     }
     Animator.prototype = {

@@ -115,13 +115,11 @@
         function animateTheLabel() {
             var animationType = select.options[select.selectedIndex].value;
             
-            var animator = just.animate({ 
-            targets: '#animateLabel',
-            name: animationType,
-            fill: 'none' 
+            just.animate({ 
+                targets: '#animateLabel',
+                name: animationType,
+                fill: 'none' 
             });
-
-            animator.play();
         }
 
         var button = document.getElementById('animateButton');

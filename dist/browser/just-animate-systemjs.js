@@ -4078,6 +4078,8 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
         self.on(resources_13.finish, self._onFinish);
         self.on(resources_13.cancel, self._onCancel);
         self.on(resources_13.pause, self._onPause);
+        // autoplay    
+        self.play();
         return self;
     }
     exports_93("Animator", Animator);

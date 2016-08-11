@@ -43,6 +43,9 @@ export function Animator(resolver: ja.IAnimationResolver, timeloop: ITimeLoop): 
     self.on(cancel, self._onCancel);
     self.on(pause, self._onPause);
 
+    // autoplay    
+    self.play();
+
     return self;
 }
 

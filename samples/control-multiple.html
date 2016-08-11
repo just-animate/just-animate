@@ -30,7 +30,7 @@
             <strong class="badger">Badger</strong>
             <span class="badger">Badger</span>
             <span class="badger">Badger</span>
-            <strong class="mushroom">MUSHROOM</strong>
+            <strong class="mushroom one">MUSHROOM</strong>
             <span class="badger">Badger</span>
             <span class="badger">Badger</span>
             <strong class="badger">Badger</strong>
@@ -78,7 +78,7 @@
             <strong class="badger">Badger</strong>
             <span class="badger">Badger</span>
             <span class="badger">Badger</span>
-            <strong class="mushroom">MUSHROOM</strong>
+            <strong class="mushroom two">MUSHROOM</strong>
             <span class="badger">Badger</span>
             <span class="badger">Badger</span>
             <strong class="badger">Badger</strong>
@@ -111,29 +111,43 @@
             let index = -1;
 
             button.addEventListener('click', function() {
-                var player = just
-                .animate({ 
-                    name: 'bounceIn', 
-                    targets: '.badger', 
-                    to: 1400,
-                    fill: 'forwards',
-                    delay() {
-                        return Math.random() * 1000;
-                    }
-                })
-                .animate({ 
-                    name: 'bounceIn', 
-                    targets: '.badger', 
-                    to: 1400,
-                    fill: 'forwards',
-                    direction: 'reverse'
-                })
-                .animate({
-                    name: 'zoomIn',
-                    targets: '.mushroom',
-                    to: 1800
-                })
-                .play();
+                just.animate({ 
+                        name: 'bounceIn', 
+                        targets: '.badger', 
+                        to: 1400,
+                        fill: 'forwards',
+                        delay() {
+                            return Math.random() * 1000;
+                        }
+                    })
+                    .animate({ 
+                        name: 'bounceIn', 
+                        targets: '.badger', 
+                        to: 1400,
+                        fill: 'forwards',
+                        direction: 'reverse'
+                    })
+                    .animate([
+                        {
+                            name: 'zoomIn',
+                            targets: '.mushroom.one',
+                            from: 0,
+                            to: 1800
+                        },
+                        {
+                            name: 'zoomIn',
+                            targets: '.mushroom.one',
+                            direction: 'reverse',
+                            from: 1800,
+                            to: 2700
+                        },
+                        {
+                            name: 'zoomIn',
+                            targets: '.mushroom.two',
+                            from: 900,
+                            to: 2700
+                        }
+                    ]);
             });
         })();
     </script>
