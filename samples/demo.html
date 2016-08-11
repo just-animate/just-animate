@@ -112,25 +112,24 @@
   <script src="../dist/browser/just-animate-animations.min.js"></script>
   <script>
     (function () {
-    var button = document.getElementById('animateButton');
-    var select = document.getElementById('animateSelect');
+        function animateTheLabel() {
+            var animationType = select.options[select.selectedIndex].value;
+            
+            var animator = just.animate({ 
+            targets: '#animateLabel',
+            name: animationType,
+            fill: 'none' 
+            });
 
-    function animateTheLabel() {
-        var animationType = select.options[select.selectedIndex].value;
-        
-        var animator = just.animate({ 
-          targets: '#animateLabel',
-          name: animationType,
-          fill: 'none' 
-        });
+            animator.play();
+        }
 
-        animator.play();
-    }
-    
-    button.addEventListener('click',  animateTheLabel);
-    select.addEventListener('change',  animateTheLabel);
+        var button = document.getElementById('animateButton');
+        button.addEventListener('click', animateTheLabel);
 
-})();
+        var select = document.getElementById('animateSelect');
+        select.addEventListener('change', animateTheLabel);
+    })();
   </script>
 </body>
 

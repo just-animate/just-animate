@@ -30,6 +30,6 @@ exports.rubberBand = {
             transform: 'scale3d(1, 1, 1)'
         }
     ],
-    to: 1000,
-    name: 'rubberBand'
+    name: 'rubberBand',
+    to: 1000
 };

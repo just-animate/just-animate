@@ -109,10 +109,9 @@ export function normalizeKeyframes(keyframes: ja.ICssKeyframeOptions[]): ja.ICss
     for (let i = 1; i < len; i++) {
         const keyframe = keyframes[i];
         for (let prop in keyframe) {
-            if (prop === offset || isDefined(first[prop])) {
-                continue;
+            if (prop !== offset && !isDefined(first[prop])) {
+                first[prop] = keyframe[prop];
             }
-            first[prop] = keyframe[prop];
         }
     }
 
@@ -120,10 +119,9 @@ export function normalizeKeyframes(keyframes: ja.ICssKeyframeOptions[]): ja.ICss
     for (let i = len - 2; i > -1; i--) {
         const keyframe = keyframes[i];
         for (let prop in keyframe) {
-            if (prop === offset || isDefined(last[prop])) {
-                continue;
+            if (prop !== offset && !isDefined(last[prop])) {
+                last[prop] = keyframe[prop];
             }
-            last[prop] = keyframe[prop];
         }
     }
 

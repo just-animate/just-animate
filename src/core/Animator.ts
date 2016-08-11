@@ -1,6 +1,6 @@
 import {each, map, pushAll, maxBy} from '../helpers/lists';
 import {expand, inherit} from '../helpers/objects';
-import {isArray, isDefined, isFunction} from '../helpers/type';
+import {isArray, isDefined} from '../helpers/type';
 import {inRange} from '../helpers/math';
 import {queryElements} from '../helpers/elements';
 import {Dispatcher, IDispatcher} from './Dispatcher';
@@ -155,7 +155,7 @@ Animator.prototype = {
     },
     _recalculate(): void {
         const self = this;
-        const endsAt = maxBy(self._events, (e: ITimelineEvent) => e.endTimeMs);
+        const endsAt = maxBy(self._events, (e: ITimelineEvent) => e.startTimeMs + e.animator.totalDuration());
 
         self._endTime = endsAt;
         self._duration = endsAt;
@@ -164,7 +164,7 @@ Animator.prototype = {
     _addEvent(event: ja.IAnimationOptions): void {
         const self = this;
         const targets = queryElements(event.targets);
-
+        
         if (event.name) {
             const def = self._resolver.findAnimation(event.name);
             if (!isDefined(def)) {
@@ -173,8 +173,8 @@ Animator.prototype = {
             inherit(event, def);
         }
 
-        event.from = (event.from || 0) + this._duration;
-        event.to = (event.to || 0) + this._duration;
+        event.from = event.from || 0;
+        event.to = event.to || 0;
 
         if (!event.easing) {
             event.easing = 'linear';
@@ -182,19 +182,20 @@ Animator.prototype = {
             event.easing = easings[event.easing] || event.easing;
         }
 
-        if (event.keyframes) {
-            const animators = map(targets, (e: Element) => {
-                const expanded = map(event.keyframes, expand as ja.IMapper<ja.ICssKeyframeOptions, ja.ICssKeyframeOptions>);
-                const normalized = map(expanded, normalizeProperties);
-                const keyframes = pipe(normalized, spaceKeyframes, normalizeKeyframes);
-                return {
-                    animator: KeyframeAnimation(e, keyframes, event),
-                    endTimeMs: event.to,
-                    startTimeMs: event.from
-                };
-            });
-            pushAll(self._events, animators);
-        }
+        const animators = map(targets, (e: Element) => {
+            const to = event.to + self._duration;
+            const from =  event.from + self._duration;
+            const expanded = map(event.keyframes, expand as ja.IMapper<ja.ICssKeyframeOptions, ja.ICssKeyframeOptions>);
+            const normalized = map(expanded, normalizeProperties);
+            const keyframes = pipe(normalized, spaceKeyframes, normalizeKeyframes);
+
+            return {
+                animator: KeyframeAnimation(e, keyframes, event),
+                endTimeMs: to,
+                startTimeMs: from
+            };
+        });
+        pushAll(self._events, animators);
     },
     _onCancel(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);

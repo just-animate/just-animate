@@ -1694,8 +1694,8 @@ System.register("just-animate/animations/rubberBand", [], function(exports_54, c
                         transform: 'scale3d(1, 1, 1)'
                     }
                 ],
-                to: 1000,
-                name: 'rubberBand'
+                name: 'rubberBand',
+                to: 1000
             });
         }
     }
@@ -3759,20 +3759,18 @@ System.register("just-animate/helpers/keyframes", ["just-animate/helpers/type", 
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === offset || type_7.isDefined(first[prop])) {
-                    continue;
+                if (prop !== offset && !type_7.isDefined(first[prop])) {
+                    first[prop] = keyframe[prop];
                 }
-                first[prop] = keyframe[prop];
             }
         }
         // fill end keyframe with missing props
         for (var i = len - 2; i > -1; i--) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === offset || type_7.isDefined(last[prop])) {
-                    continue;
+                if (prop !== offset && !type_7.isDefined(last[prop])) {
+                    last[prop] = keyframe[prop];
                 }
-                last[prop] = keyframe[prop];
             }
         }
         return keyframes;
@@ -4236,7 +4234,7 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                 },
                 _recalculate: function () {
                     var self = this;
-                    var endsAt = lists_3.maxBy(self._events, function (e) { return e.endTimeMs; });
+                    var endsAt = lists_3.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
                     self._endTime = endsAt;
                     self._duration = endsAt;
                     self._totalDuration = endsAt;
@@ -4251,27 +4249,27 @@ System.register("just-animate/core/Animator", ["just-animate/helpers/lists", "ju
                         }
                         objects_2.inherit(event, def);
                     }
-                    event.from = (event.from || 0) + this._duration;
-                    event.to = (event.to || 0) + this._duration;
+                    event.from = event.from || 0;
+                    event.to = event.to || 0;
                     if (!event.easing) {
                         event.easing = 'linear';
                     }
                     else {
                         event.easing = easings_1.easings[event.easing] || event.easing;
                     }
-                    if (event.keyframes) {
-                        var animators = lists_3.map(targets, function (e) {
-                            var expanded = lists_3.map(event.keyframes, objects_2.expand);
-                            var normalized = lists_3.map(expanded, keyframes_1.normalizeProperties);
-                            var keyframes = functions_1.pipe(normalized, keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
-                            return {
-                                animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes, event),
-                                endTimeMs: event.to,
-                                startTimeMs: event.from
-                            };
-                        });
-                        lists_3.pushAll(self._events, animators);
-                    }
+                    var animators = lists_3.map(targets, function (e) {
+                        var to = event.to + self._duration;
+                        var from = event.from + self._duration;
+                        var expanded = lists_3.map(event.keyframes, objects_2.expand);
+                        var normalized = lists_3.map(expanded, keyframes_1.normalizeProperties);
+                        var keyframes = functions_1.pipe(normalized, keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
+                        return {
+                            animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes, event),
+                            endTimeMs: to,
+                            startTimeMs: from
+                        };
+                    });
+                    lists_3.pushAll(self._events, animators);
                 },
                 _onCancel: function (self) {
                     self._timeLoop.off(self._onTick);

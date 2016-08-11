@@ -1,5 +1,5 @@
 import {Dispatcher, IDispatcher} from './Dispatcher';
-import {isDefined} from '../helpers/type';
+import {isDefined, isFunction} from '../helpers/type';
 import {nothing} from '../helpers/resources';
 import {unwrap} from '../helpers/objects';
 

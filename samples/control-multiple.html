@@ -8,7 +8,7 @@
             margin-top: 1em;
         }
         
-        .badger {
+        .badger, .mushroom {
             display: inline-block;
             font-size: 2em;
             padding-left: 2.5rem;
@@ -30,7 +30,7 @@
             <strong class="badger">Badger</strong>
             <span class="badger">Badger</span>
             <span class="badger">Badger</span>
-            <strong class="badger">Badger</strong>
+            <strong class="mushroom">MUSHROOM</strong>
             <span class="badger">Badger</span>
             <span class="badger">Badger</span>
             <strong class="badger">Badger</strong>
@@ -78,7 +78,7 @@
             <strong class="badger">Badger</strong>
             <span class="badger">Badger</span>
             <span class="badger">Badger</span>
-            <strong class="badger">Badger</strong>
+            <strong class="mushroom">MUSHROOM</strong>
             <span class="badger">Badger</span>
             <span class="badger">Badger</span>
             <strong class="badger">Badger</strong>
@@ -108,21 +108,32 @@
     <script>
         (function() {
             var button = document.getElementById('animate-button');
+            let index = -1;
 
             button.addEventListener('click', function() {
                 var player = just
-                    .animate({ 
-                        name: 'bounceIn', 
-                        targets: '.badger', 
-                        to: 1400,
-                        delay() {
-                            return Math.random() * 1000;
-                        }
-                    })
-                    .on('finish', function onFinish() {
-                        player.reverse().play().off('finish', onFinish);
-                    })
-                    .play();
+                .animate({ 
+                    name: 'bounceIn', 
+                    targets: '.badger', 
+                    to: 1400,
+                    fill: 'forwards',
+                    delay() {
+                        return Math.random() * 1000;
+                    }
+                })
+                .animate({ 
+                    name: 'bounceIn', 
+                    targets: '.badger', 
+                    to: 1400,
+                    fill: 'forwards',
+                    direction: 'reverse'
+                })
+                .animate({
+                    name: 'zoomIn',
+                    targets: '.mushroom',
+                    to: 1800
+                })
+                .play();
             });
         })();
     </script>

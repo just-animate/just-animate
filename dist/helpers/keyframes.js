@@ -72,20 +72,18 @@ function normalizeKeyframes(keyframes) {
     for (var i = 1; i < len; i++) {
         var keyframe = keyframes[i];
         for (var prop in keyframe) {
-            if (prop === offset || type_1.isDefined(first[prop])) {
-                continue;
+            if (prop !== offset && !type_1.isDefined(first[prop])) {
+                first[prop] = keyframe[prop];
             }
-            first[prop] = keyframe[prop];
         }
     }
     // fill end keyframe with missing props
     for (var i = len - 2; i > -1; i--) {
         var keyframe = keyframes[i];
         for (var prop in keyframe) {
-            if (prop === offset || type_1.isDefined(last[prop])) {
-                continue;
+            if (prop !== offset && !type_1.isDefined(last[prop])) {
+                last[prop] = keyframe[prop];
             }
-            last[prop] = keyframe[prop];
         }
     }
     return keyframes;

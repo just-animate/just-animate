@@ -150,7 +150,7 @@ Animator.prototype = {
     },
     _recalculate: function () {
         var self = this;
-        var endsAt = lists_1.maxBy(self._events, function (e) { return e.endTimeMs; });
+        var endsAt = lists_1.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
         self._endTime = endsAt;
         self._duration = endsAt;
         self._totalDuration = endsAt;
@@ -165,27 +165,27 @@ Animator.prototype = {
             }
             objects_1.inherit(event, def);
         }
-        event.from = (event.from || 0) + this._duration;
-        event.to = (event.to || 0) + this._duration;
+        event.from = event.from || 0;
+        event.to = event.to || 0;
         if (!event.easing) {
             event.easing = 'linear';
         }
         else {
             event.easing = easings_1.easings[event.easing] || event.easing;
         }
-        if (event.keyframes) {
-            var animators = lists_1.map(targets, function (e) {
-                var expanded = lists_1.map(event.keyframes, objects_1.expand);
-                var normalized = lists_1.map(expanded, keyframes_1.normalizeProperties);
-                var keyframes = functions_1.pipe(normalized, keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
-                return {
-                    animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes, event),
-                    endTimeMs: event.to,
-                    startTimeMs: event.from
-                };
-            });
-            lists_1.pushAll(self._events, animators);
-        }
+        var animators = lists_1.map(targets, function (e) {
+            var to = event.to + self._duration;
+            var from = event.from + self._duration;
+            var expanded = lists_1.map(event.keyframes, objects_1.expand);
+            var normalized = lists_1.map(expanded, keyframes_1.normalizeProperties);
+            var keyframes = functions_1.pipe(normalized, keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
+            return {
+                animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes, event),
+                endTimeMs: to,
+                startTimeMs: from
+            };
+        });
+        lists_1.pushAll(self._events, animators);
     },
     _onCancel: function (self) {
         self._timeLoop.off(self._onTick);

@@ -413,19 +413,17 @@
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === offset || isDefined(first[prop])) {
-                    continue;
+                if (prop !== offset && !isDefined(first[prop])) {
+                    first[prop] = keyframe[prop];
                 }
-                first[prop] = keyframe[prop];
             }
         }
         for (var i = len - 2; i > -1; i--) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop === offset || isDefined(last[prop])) {
-                    continue;
+                if (prop !== offset && !isDefined(last[prop])) {
+                    last[prop] = keyframe[prop];
                 }
-                last[prop] = keyframe[prop];
             }
         }
         return keyframes;
@@ -812,7 +810,7 @@
         },
         _recalculate: function () {
             var self = this;
-            var endsAt = maxBy(self._events, function (e) { return e.endTimeMs; });
+            var endsAt = maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
             self._endTime = endsAt;
             self._duration = endsAt;
             self._totalDuration = endsAt;
@@ -827,27 +825,27 @@
                 }
                 inherit(event, def);
             }
-            event.from = (event.from || 0) + this._duration;
-            event.to = (event.to || 0) + this._duration;
+            event.from = event.from || 0;
+            event.to = event.to || 0;
             if (!event.easing) {
                 event.easing = 'linear';
             }
             else {
                 event.easing = easings[event.easing] || event.easing;
             }
-            if (event.keyframes) {
-                var animators = map(targets, function (e) {
-                    var expanded = map(event.keyframes, expand);
-                    var normalized = map(expanded, normalizeProperties);
-                    var keyframes = pipe(normalized, spaceKeyframes, normalizeKeyframes);
-                    return {
-                        animator: KeyframeAnimation(e, keyframes, event),
-                        endTimeMs: event.to,
-                        startTimeMs: event.from
-                    };
-                });
-                pushAll(self._events, animators);
-            }
+            var animators = map(targets, function (e) {
+                var to = event.to + self._duration;
+                var from = event.from + self._duration;
+                var expanded = map(event.keyframes, expand);
+                var normalized = map(expanded, normalizeProperties);
+                var keyframes = pipe(normalized, spaceKeyframes, normalizeKeyframes);
+                return {
+                    animator: KeyframeAnimation(e, keyframes, event),
+                    endTimeMs: to,
+                    startTimeMs: from
+                };
+            });
+            pushAll(self._events, animators);
         },
         _onCancel: function (self) {
             self._timeLoop.off(self._onTick);
