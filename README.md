@@ -1,9 +1,9 @@
 #JustAnimate
-*Just animate your websites*
+*Just Animate creates beautify animations using the latest browser standards*
 
-`Just Animate helps your reuse animations so you can just animate and move on.
+Just Animate provides a toolbox of over 75 preset animations and an API that is designed to make motion design flow really well.
 
-## Documentation
+## Documentation (needs update!)
 
 Check out the [Full Documentation Here](https://just-animate.github.io)
 
@@ -15,21 +15,67 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
   - [Registering Custom Animations](http://codepen.io/notoriousb1t/pen/WwNvON)
   
 ## Getting Started
-1. For support in Internet Explorer, Edge, or Safari, include this script. Just Animate uses the Web Animation API and is not yet supported in these browsers.
-
-```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
+### Setting up the environment
+ - For support in Internet Explorer, Edge, or Safari, include this script. Just Animate uses the Web Animation API and is not yet supported in these browsers.
+  ```html
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
   ```
 
-2. Include the core script and optionally the animations script for ready to use animation presets.
+ - Include the core script and (optionally) the animations script for ready to use animation presets.
+  ```html
+  <script src="just-animate-core.min.js"></script>
+  <script src="just-animate-animations.min.js"></script>
+  ```
+ - That's it!
 
-```html
-<script src="just-animate-core.min.js"></script>
-<script src="just-animate-animations.min.js"></script>
-```
+### Using Just Animate as an Angular 1.x Service
+ - Import the JustAnimate module into your application
+  ```javascript
+  angular.module('myApp', ['just.animate']);
+  ```
+
+ - Inject the service into your controller or directive
+
+  ```javascript
+  angular.module('myApp').controller('myCtrl', function(just) {
+    /* logic here */
+  });
+  ```
   
-3. Call .animate(). The targets property can be a html selector, an Element, NodeList, jQuery object, or a function or 
-array of any combination of those.  Specify keyframes just like CSS or use the name property to use a preset.  The to property tells Just Animate when to stop animating.
+### Using Just Animate as an Angular 2 Service
+
+ - For debugging, include this script after systemjs instead of the core and animation scripts above
+
+  ```html
+  <script src="browser/just-animate-systemjs.js"></script>
+  ```
+ - Import the JustAnimate module into your application and inject the Animate.css animations
+  ```typescript
+  import { JustAnimate, animations } from 'just-animate';
+  
+  JustAnimate.inject(animations.ANIMATE_CSS);
+  ```
+
+- Inject the service into your component as a provider
+  ```typescript
+  import { Component } from 'angular2/core';
+  import { JustAnimate } from 'just-animate';
+  
+  @Component({
+     providers: [ JustAnimate ]
+  })
+  class MyComponent {
+    /* more code */
+  }
+  ```
+  
+## Usage
+ - Call just.animate()
+   - targets: the animation targets.  Can be a html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.
+   - keyframes: the same as CSS keyframes
+   - to: number of miliseconds until the end of the animation
+   - from: number of milliseconds until the animation starts
+   - name: adds preset values into the animation (e.g. fadeIn, hinge, zoomOutLeft)
  ```javascript
   just.animate({
     targets: '#animate-me'
@@ -46,7 +92,7 @@ array of any combination of those.  Specify keyframes just like CSS or use the n
   })
  ```
 
-4. Use the player returned from animate to do more advanced things:
+ - Use the player returned from animate to do more advanced things:
  
  ```javascript
  var player = just
