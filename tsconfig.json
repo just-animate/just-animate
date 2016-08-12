@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "rootDir": "src",
         "outDir": "dist",
         "module": "commonjs",
@@ -16,8 +16,14 @@
         "newLine": "LF",
         "noFallthroughCasesInSwitch": true,
         "sourceMap": true,
-        "watch": true
+        "watch": true,
+        "lib": [
+            "es2015"
+        ]
     },
+    "include": [
+        "node_modules/typescript/lib/lib.es2015.collection.d.ts"
+    ],
     "exclude": [
         "node_modules", 
         "src/just-animate-core.ts",

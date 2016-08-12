@@ -81,12 +81,7 @@ declare module ja {
         playbackRate(): number;
         playbackRate(value: number): IAnimator;
 
-        startTime(): number;
-        endTime(): number;
         duration(): number;
-        totalDuration(): number;
-        iterations(): number;
-        iterationStart(): number;
         playState(): AnimationPlaybackState;
 
         finish(): IAnimator;
@@ -107,12 +102,6 @@ declare module ja {
      */
     export interface IElementProvider {
         (): ElementSource;
-    }
-
-
-    export interface IAnimationResolver {
-        findAnimation(name: string): IAnimationPreset;
-        registerAnimation(options: IAnimationPreset, isGlobal: boolean): void;
     }
 
     export interface IAnimationPreset extends IAnimation {

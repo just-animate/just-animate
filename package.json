@@ -3,11 +3,11 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "del-cli": "^0.2.0",
-    "jsdom": "^9.4.1",
+    "jsdom": "^9.4.2",
     "mocha": "^2.5.3",
     "mocha-jsdom": "^1.1.0",
-    "rollup": "^0.33.0",
-    "rollup-plugin-typescript": "^0.7.6",
+    "rollup": "^0.34.7",
+    "rollup-plugin-typescript": "^0.7.7",
     "tslint": "^3.10.2",
     "typescript": "2.1.0-dev.20160715",
     "uglify": "^0.1.5"

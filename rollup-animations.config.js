@@ -12,7 +12,9 @@ module.exports = {
             "module": "es2015",
             "preserveConstEnums": false,
             "removeComments": true,
-            "declaration": false
+            "declaration": false,
+            typescript: require('typescript'),
+            noImplicitAny: true
         })
     ]
 };

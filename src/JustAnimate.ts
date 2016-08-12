@@ -1,36 +1,30 @@
-import {each} from './helpers/lists';
-import {Animator} from './core/Animator';
-import {TimeLoop, ITimeLoop} from './core/TimeLoop';
-import {nothing} from './helpers/resources';
-import {AnimationResolver} from './core/AnimationResolver';
+import {each} from './common/lists';
+import {Animator} from './plugins/core/Animator';
+import {TimeLoop, ITimeLoop} from './plugins/core/TimeLoop';
+import {MixinService} from './plugins/core/MixinService';
 
-export function JustAnimate(): ja.IJustAnimate {
-    let self = this;
-    self = self instanceof JustAnimate ? self : Object.create(JustAnimate.prototype);
-    self._registry = {};
-    self._resolver = AnimationResolver();
-    self._timeLoop = TimeLoop();
-    return self;
-}
+export class JustAnimate {
+    private _resolver: MixinService;
+    private _timeLoop: ITimeLoop;
 
-(JustAnimate as any).inject = inject;
+    public static inject(animations: ja.IAnimationPreset[]): void {
+        const resolver = new MixinService();
+        each(animations, (a: ja.IAnimationPreset) => resolver.registerAnimation(a, true));
+    }
 
-JustAnimate.prototype = {
-    _resolver: nothing as ja.IAnimationResolver,
-    _timeLoop: nothing as ITimeLoop,
-    
-    animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator {
-        const animator = Animator(this._resolver, this._timeLoop);        
-        animator.animate(options);
-        return animator;
-    },
-    register(preset: ja.IAnimationPreset): void {
+    constructor() {
+        const self = this;
+        self._resolver = new MixinService();
+        self._timeLoop = TimeLoop();
+    }
+    public animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator {
+        return new Animator(this._resolver, this._timeLoop).animate(options);
+    }
+    public register(preset: ja.IAnimationPreset): void {
         this._resolver.registerAnimation(preset, false);
-    },
-    inject: inject
-};
-
-function inject(animations: ja.IAnimationPreset[]): void {
-    const resolver = AnimationResolver();
-    each(animations, (a: ja.IAnimationPreset) => resolver.registerAnimation(a, true));
+    }
+    public inject(animations: ja.IAnimationPreset[]): void {
+        const resolver = this._resolver;
+        each(animations, (a: ja.IAnimationPreset) => resolver.registerAnimation(a, true));
+    }
 }

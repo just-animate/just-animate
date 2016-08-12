@@ -1,0 +1,46 @@
+export const nada = null as any;
+export const nil = undefined as any;
+
+export const animate = 'animate';
+export const call = 'call';
+export const cancel = 'cancel';
+export const cubicBezier = 'cubic-bezier';
+export const duration = 'duration';
+export const finish = 'finish';
+export const pause = 'pause';
+export const pending = 'pending';
+export const play = 'play';
+export const reverse = 'reverse';
+export const rotate = 'rotate';
+export const rotate3d = 'rotate3d';
+export const rotateX = 'rotateX';
+export const rotateY = 'rotateY';
+export const rotateZ = 'rotateZ';
+export const running = 'running';
+export const scale = 'scale';
+export const scale3d = 'scale3d';
+export const scaleX = 'scaleX';
+export const scaleY = 'scaleY';
+export const scaleZ = 'scaleZ';
+export const skew = 'skew';
+export const skewX = 'skewX';
+export const skewY = 'skewY';
+export const transform = 'transform';
+export const translate = 'translate';
+export const translate3d = 'translate3d';
+export const translateX = 'translateX';
+export const translateY = 'translateY';
+export const translateZ = 'translateZ';
+export const x = 'x';
+export const y = 'y';
+export const z = 'z';
+
+export const functionTypeString = '[object Function]';
+export const numberString = 'number';
+export const objectString = 'object';
+export const stringString = 'string';
+
+export const camelCaseRegex = /([a-z])[- ]([a-z])/ig;
+export const distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/;
+export const percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/;
+export const timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;

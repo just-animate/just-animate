@@ -10,6 +10,9 @@
         "allowUnreachableCode": false,
         "declaration": false
     },
+    "include": [
+        "node_modules/typescript/lib/lib.es2015.collection.d.ts"
+    ],
     "exclude": [
         "node_modules", 
         "src/just-animate-core.ts",
