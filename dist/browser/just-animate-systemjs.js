@@ -3860,18 +3860,18 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     self._timeLoop.off(self._onTick);
                     self._currentTime = 0;
                     self._playState = 'idle';
-                    lists_3.each(self._events, function (evt) { evt.animator.cancel(); });
+                    lists_3.each(self._events, function (evt) { evt.animator.playState('idle'); });
                 };
                 Animator.prototype._onFinish = function (self) {
                     self._timeLoop.off(self._onTick);
                     self._currentTime = 0;
                     self._playState = 'finished';
-                    lists_3.each(self._events, function (evt) { evt.animator.finish(); });
+                    lists_3.each(self._events, function (evt) { evt.animator.playState('finished'); });
                 };
                 Animator.prototype._onPause = function (self) {
                     self._timeLoop.off(self._onTick);
                     self._playState = 'paused';
-                    lists_3.each(self._events, function (evt) { evt.animator.pause(); });
+                    lists_3.each(self._events, function (evt) { evt.animator.playState('paused'); });
                 };
                 Animator.prototype._onTick = function (delta, runningTime) {
                     var self = this;
@@ -3922,8 +3922,10 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                         var shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
                         if (shouldBeActive) {
                             var animator = evt.animator;
-                            animator.playbackRate(playbackRate);
-                            animator.play();
+                            if (animator.playState() !== 'running') {
+                                animator.playbackRate(playbackRate);
+                                animator.playState('running');
+                            }
                         }
                     }
                 };
@@ -3999,18 +4001,15 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
         }
     }
 });
-System.register("just-animate/plugins/waapi/KeyframeAnimation", ["just-animate/common/resources", "just-animate/plugins/core/Dispatcher"], function(exports_96, context_96) {
+System.register("just-animate/plugins/waapi/KeyframeAnimation", ["just-animate/common/resources"], function(exports_96, context_96) {
     "use strict";
     var __moduleName = context_96 && context_96.id;
-    var resources_12, Dispatcher_2;
+    var resources_12;
     var KeyframeAnimator;
     return {
         setters:[
             function (resources_12_1) {
                 resources_12 = resources_12_1;
-            },
-            function (Dispatcher_2_1) {
-                Dispatcher_2 = Dispatcher_2_1;
             }],
         execute: function() {
             KeyframeAnimator = (function () {
@@ -4019,59 +4018,48 @@ System.register("just-animate/plugins/waapi/KeyframeAnimation", ["just-animate/c
                     var endDelay = timings.endDelay || 0;
                     var iterations = timings.iterations || 1;
                     var duration = timings.duration || 0;
-                    var dispatcher = Dispatcher_2.Dispatcher();
                     var self = this;
                     self._totalTime = delay + ((iterations || 1) * duration) + endDelay;
-                    self._dispatcher = dispatcher;
                     var animator = target[resources_12.animate](keyframes, timings);
                     // immediately cancel to prevent effects until play is called    
                     animator.cancel();
-                    animator.onfinish = function () { return dispatcher.trigger(resources_12.finish); };
                     self._animator = animator;
                 }
                 KeyframeAnimator.prototype.totalDuration = function () {
                     return this._totalTime;
                 };
                 KeyframeAnimator.prototype.seek = function (value) {
-                    var self = this;
-                    self._animator.currentTime = value;
+                    this._animator.currentTime = value;
                 };
                 KeyframeAnimator.prototype.playbackRate = function (value) {
-                    var self = this;
-                    self._animator.playbackRate = value;
-                };
-                KeyframeAnimator.prototype.playState = function () {
-                    return this._animator.playState;
-                };
-                KeyframeAnimator.prototype.off = function (eventName, listener) {
-                    this._dispatcher.off(eventName, listener);
-                };
-                KeyframeAnimator.prototype.on = function (eventName, listener) {
-                    this._dispatcher.on(eventName, listener);
-                };
-                KeyframeAnimator.prototype.cancel = function () {
-                    var self = this;
-                    self._animator.cancel();
-                    self._dispatcher.trigger(resources_12.cancel);
+                    this._animator.playbackRate = value;
                 };
                 KeyframeAnimator.prototype.reverse = function () {
-                    var self = this;
-                    self._animator.reverse();
-                    self._dispatcher.trigger(resources_12.reverse);
+                    this._animator.playbackRate *= -1;
                 };
-                KeyframeAnimator.prototype.pause = function () {
+                KeyframeAnimator.prototype.playState = function (value) {
                     var self = this;
-                    self._animator.pause();
-                    self._dispatcher.trigger(resources_12.pause);
-                };
-                KeyframeAnimator.prototype.play = function () {
-                    var self = this;
-                    self._animator.play();
-                    self._dispatcher.trigger(resources_12.play);
-                };
-                KeyframeAnimator.prototype.finish = function () {
-                    var self = this;
-                    self._animator.finish();
+                    var animator = self._animator;
+                    var playState = animator.playState;
+                    if (value === resources_12.nil) {
+                        return playState;
+                    }
+                    if (value === 'finished') {
+                        animator.finish();
+                        return;
+                    }
+                    if (value === 'idle') {
+                        animator.cancel();
+                        return;
+                    }
+                    if (value === 'paused') {
+                        animator.pause();
+                        return;
+                    }
+                    if (value === 'running') {
+                        animator.play();
+                        return;
+                    }
                 };
                 return KeyframeAnimator;
             }());

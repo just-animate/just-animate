@@ -180,18 +180,18 @@ export class Animator implements ja.IAnimator {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'idle';
-        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.cancel(); });
+        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.playState('idle'); });
     }
     private _onFinish(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'finished';
-        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.finish(); });
+        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.playState('finished'); });
     }
     private _onPause(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._playState = 'paused';
-        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.pause(); });
+        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.playState('paused'); });
     }
     private _onTick(delta: number, runningTime: number): void {
         const self = this;
@@ -249,8 +249,10 @@ export class Animator implements ja.IAnimator {
 
             if (shouldBeActive) {
                 const animator = evt.animator;
-                animator.playbackRate(playbackRate);
-                animator.play();
+                if (animator.playState() !== 'running') {
+                    animator.playbackRate(playbackRate);
+                    animator.playState('running');
+                }
             }
         }
     }

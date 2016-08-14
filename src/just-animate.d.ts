@@ -64,18 +64,18 @@ declare module ja {
     export interface IAnimationController {
         seek(value: number): void;
         playbackRate(value: number): void;
-
         playState(): AnimationPlaybackState;
-        totalDuration(): number; 
-
-        finish(): void;
-        play(): void;
-        pause(): void;
+        playState(value: AnimationPlaybackState): void;
         reverse(): void;
-        cancel(): void;
+        totalDuration(): number;
+        onupdate(context: IAnimationTimeContext): void;
+    }
 
-        on(eventName: string, listener: Function): void;
-        off(eventName: string, listener: Function): void;
+    export interface IAnimationTimeContext {
+        offset(): number;
+        relativeOffset(): number;
+        delta(): number;
+        totalDuration(): number;
     }
 
     export interface IAnimator {

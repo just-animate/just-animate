@@ -1,8 +1,6 @@
-import {animate, finish, cancel, play, pause, reverse} from '../../common/resources';
-import {Dispatcher, IDispatcher} from '../core/Dispatcher';
+import {animate, finish, cancel, play, pause, reverse, nil} from '../../common/resources';
 
 export class KeyframeAnimator implements ja.IAnimationController {
-    private _dispatcher: IDispatcher;
     private _animator: waapi.IAnimation;
     private _totalTime: number;
 
@@ -11,17 +9,14 @@ export class KeyframeAnimator implements ja.IAnimationController {
         const endDelay = timings.endDelay || 0;
         const iterations = timings.iterations || 1;
         const duration = timings.duration || 0;
-        const dispatcher = Dispatcher();
 
         const self = this;        
         self._totalTime = delay + ((iterations || 1) * duration) + endDelay;
-        self._dispatcher = dispatcher;
 
         const animator = target[animate](keyframes, timings);
 
         // immediately cancel to prevent effects until play is called    
         animator.cancel();
-        animator.onfinish = () => dispatcher.trigger(finish);
         self._animator = animator;
     }
 
@@ -30,46 +25,42 @@ export class KeyframeAnimator implements ja.IAnimationController {
     }
 
     public seek(value: number): void {
-        const self = this;
-        self._animator.currentTime = value;
+        this._animator.currentTime = value;
     }
     public playbackRate(value: number): void {
-        const self = this;
-        self._animator.playbackRate = value;
-    }
-
-    public playState(): ja.AnimationPlaybackState {
-        return this._animator.playState;
-    }
-    public off(eventName: string, listener: Function): void {
-        this._dispatcher.off(eventName, listener);
-    }
-    public on(eventName: string, listener: Function): void {
-        this._dispatcher.on(eventName, listener);
-    }
-    public cancel(): void {
-        const self = this;
-        self._animator.cancel();
-        self._dispatcher.trigger(cancel);
+        this._animator.playbackRate = value;
     }
     public reverse(): void {
-        const self = this;
-        self._animator.reverse();
-        self._dispatcher.trigger(reverse);
+        this._animator.playbackRate *= -1;
     }
-    public pause(): void {
+
+    public playState(): ja.AnimationPlaybackState;
+    public playState(value: ja.AnimationPlaybackState): void;
+    public playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState | void {
         const self = this;
-        self._animator.pause();
-        self._dispatcher.trigger(pause);
+        const animator = self._animator;
+        const playState = animator.playState;
+        if (value === nil) {
+            return playState;
+        }
+        if (value === 'finished') {
+            animator.finish();
+            return;
+        }
+        if (value === 'idle') {
+            animator.cancel();
+            return;
+        }
+        if (value === 'paused') {
+            animator.pause();
+            return;
+        }
+        if (value === 'running') {
+            animator.play();
+            return;
+        }
     }
-    public play(): void {
-        const self = this;
-        self._animator.play();
-        self._dispatcher.trigger(play);
-    }
-    public finish(): void {
-        const self = this;
-        self._animator.finish();
-    }
+
+    public onupdate(context: ja.IAnimationTimeContext): void { /* do nothing */ }
 }
 

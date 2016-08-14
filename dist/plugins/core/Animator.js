@@ -152,18 +152,18 @@ var Animator = (function () {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'idle';
-        lists_1.each(self._events, function (evt) { evt.animator.cancel(); });
+        lists_1.each(self._events, function (evt) { evt.animator.playState('idle'); });
     };
     Animator.prototype._onFinish = function (self) {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'finished';
-        lists_1.each(self._events, function (evt) { evt.animator.finish(); });
+        lists_1.each(self._events, function (evt) { evt.animator.playState('finished'); });
     };
     Animator.prototype._onPause = function (self) {
         self._timeLoop.off(self._onTick);
         self._playState = 'paused';
-        lists_1.each(self._events, function (evt) { evt.animator.pause(); });
+        lists_1.each(self._events, function (evt) { evt.animator.playState('paused'); });
     };
     Animator.prototype._onTick = function (delta, runningTime) {
         var self = this;
@@ -214,8 +214,10 @@ var Animator = (function () {
             var shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
             if (shouldBeActive) {
                 var animator = evt.animator;
-                animator.playbackRate(playbackRate);
-                animator.play();
+                if (animator.playState() !== 'running') {
+                    animator.playbackRate(playbackRate);
+                    animator.playState('running');
+                }
             }
         }
     };
