@@ -44,11 +44,12 @@ var KeyframePlugin = (function () {
                     targetKeyframe[propertyName] = objects_1.unwrap(sourceValue);
                 }
                 // fixme: replace with mutation instead of copy                
-                targetKeyframe = KeyframeTransformers_1.normalizeProperties(targetKeyframe);
+                KeyframeTransformers_1.normalizeProperties(targetKeyframe);
                 targetKeyframes.push(targetKeyframe);
             }
-            var keyframes = KeyframeTransformers_1.normalizeKeyframes(KeyframeTransformers_1.spaceKeyframes(targetKeyframes));
-            return new KeyframeAnimation_1.KeyframeAnimator(target, keyframes, timings);
+            KeyframeTransformers_1.spaceKeyframes(targetKeyframes);
+            KeyframeTransformers_1.normalizeKeyframes(targetKeyframes);
+            return new KeyframeAnimation_1.KeyframeAnimator(target, targetKeyframes, timings);
         });
         return animations;
     };

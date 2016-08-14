@@ -1,24 +1,40 @@
-import {nada} from './resources';
+import {nil} from './resources';
 
 declare const Map: IMapConstructor;
 const isMappedSupported = !!Map;
 
-export interface IMap<K, V> {
-    size: number;
+export interface IMap {
     clear(): void;
-    delete(key: K): boolean;
-    forEach(callbackfn: (value: V, index: K, map: IMap<K, V>) => void, thisArg?: any): void;
-    get(key: K): V;
-    has(key: K): boolean;
-    set(key: K, value?: V): this;
+    delete(key: string): boolean;
+    has(key: string): boolean;
 }
 
 interface IMapConstructor {
-    new (): IMap<any, any>;
-    new <K, V>(entries?: [K, V][]): IMap<K, V>;
-    prototype: IMap<any, any>;
+    new (): IMap;
+    new <K, V>(entries?: [K, V][]): IMap;
+    prototype: IMapConstructor;
 }
 
-export function createMap<T>(): T {
-    return (isMappedSupported ? new Map() : Object.create(nada)) as T;
+class CustomMap implements IMap {
+    public has(key: string): boolean {
+        return this[key] === nil;
+    }
+    public delete(key: string): boolean {
+        const self = this;
+        const hasKey = self.has(key);
+        if (hasKey) {
+            self[key] = nil;
+        }
+        return hasKey;
+    }
+    public clear(): void {
+        const self = this;
+        for (let key in self) {
+            self[key] = nil;
+        }
+    }
+}
+
+export function createMap<T>(): T & IMap {
+    return (isMappedSupported ? new Map() : Object.create(CustomMap.prototype)) as T & IMap;
 }

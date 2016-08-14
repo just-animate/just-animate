@@ -2,6 +2,7 @@ import {isDefined, isNumber, isString, isArray} from '../../common/type';
 import {toCamelCase} from '../../common/strings';
 import {invalidArg} from '../../common/errors';
 import {nil} from '../../common/resources';
+import {IMap} from '../../common/dict';
 
 import {scale3d,
     scale,
@@ -30,10 +31,10 @@ import {scale3d,
 
 const offset = 'offset';
 
-export function spaceKeyframes(keyframes: waapi.IKeyframe[]): waapi.IKeyframe[] {
+export function spaceKeyframes(keyframes: waapi.IKeyframe[]): void {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
-        return keyframes;
+        return;
     }
 
     const first = keyframes[0];
@@ -83,17 +84,15 @@ export function spaceKeyframes(keyframes: waapi.IKeyframe[]): waapi.IKeyframe[] 
             break;
         }
     }
-
-    return keyframes;
 }
 
 /**
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
-export function normalizeKeyframes(keyframes: waapi.IKeyframe[]): waapi.IKeyframe[] {
+export function normalizeKeyframes(keyframes: waapi.IKeyframe[]): void {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
-        return keyframes;
+        return;
     }
 
     const first = keyframes[0];
@@ -124,14 +123,12 @@ export function normalizeKeyframes(keyframes: waapi.IKeyframe[]): waapi.IKeyfram
             }
         }
     }
-
-    return keyframes;
 }
 
 /**
  * Handles transforming short hand key properties into their native form
  */
-export function normalizeProperties(keyframe: waapi.IKeyframe): waapi.IKeyframe {
+export function normalizeProperties(keyframe: waapi.IKeyframe & IMap): void {
     const xIndex = 0;
     const yIndex = 1;
     const zIndex = 2;
@@ -140,14 +137,13 @@ export function normalizeProperties(keyframe: waapi.IKeyframe): waapi.IKeyframe 
     const scaleArray: number[] = [];
     const skewArray: (number | string)[] = [];
     const translateArray: (number | string)[] = [];
-
-    const output: ja.IMap<any> = {};
     let transformString = '';
 
     for (let prop in keyframe) {
         const value = keyframe[prop];
 
         if (!isDefined(value)) {
+            keyframe.delete(prop);
             continue;
         }
 
@@ -320,7 +316,8 @@ export function normalizeProperties(keyframe: waapi.IKeyframe): waapi.IKeyframe 
                 transformString += ' ' + value;
                 break;
             default:
-                output[toCamelCase(prop)] = value;
+                keyframe.delete(prop);
+                keyframe[toCamelCase(prop)] = value;
                 break;
         }
     }
@@ -377,9 +374,7 @@ export function normalizeProperties(keyframe: waapi.IKeyframe): waapi.IKeyframe 
     }
 
     if (transformString) {
-        output['transform'] = transformString;
+        keyframe['transform'] = transformString;
     }
-
-    return output;
 }
 

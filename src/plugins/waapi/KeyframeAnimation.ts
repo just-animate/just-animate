@@ -1,4 +1,4 @@
-import {animate, finish, cancel, play, pause, reverse, nil} from '../../common/resources';
+import {animate, nil} from '../../common/resources';
 
 export class KeyframeAnimator implements ja.IAnimationController {
     private _animator: waapi.IAnimation;

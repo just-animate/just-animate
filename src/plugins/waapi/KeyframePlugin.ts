@@ -32,8 +32,8 @@ export class KeyframePlugin implements ja.IPlugin {
             timings.easing = options.easing || 'linear';
 
             const sourceKeyframes = options.keyframes;          
-            const targetKeyframes : waapi.IKeyframe[] = [];
-
+            const targetKeyframes: waapi.IKeyframe[] = [];
+            
             const keyframeLength = sourceKeyframes.length;            
             for (let i = 0; i < keyframeLength; i++) {
                 const sourceKeyframe = sourceKeyframes[i];
@@ -51,12 +51,14 @@ export class KeyframePlugin implements ja.IPlugin {
                 }
 
                 // fixme: replace with mutation instead of copy                
-                targetKeyframe = normalizeProperties(targetKeyframe);
+                normalizeProperties(targetKeyframe);
                 targetKeyframes.push(targetKeyframe);                
             }
 
-            const keyframes = normalizeKeyframes(spaceKeyframes(targetKeyframes));
-            return new KeyframeAnimator(target, keyframes, timings);
+            spaceKeyframes(targetKeyframes);            
+            normalizeKeyframes(targetKeyframes);
+            
+            return new KeyframeAnimator(target, targetKeyframes, timings);
         });
 
         return animations;

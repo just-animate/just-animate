@@ -49,6 +49,7 @@ var KeyframeAnimator = (function () {
             return;
         }
     };
+    KeyframeAnimator.prototype.onupdate = function (context) { };
     return KeyframeAnimator;
 }());
 exports.KeyframeAnimator = KeyframeAnimator;

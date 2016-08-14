@@ -108,7 +108,7 @@
     <script>
         (function() {
             var button = document.getElementById('animate-button');
-            let index = -1;
+            var index = -1;
 
             button.addEventListener('click', function() {
                 just.animate({ 
@@ -116,16 +116,15 @@
                         targets: '.badger', 
                         to: 1400,
                         fill: 'forwards',
-                        delay() {
+                        delay: function() {
                             return Math.random() * 1000;
                         }
                     })
                     .animate({ 
-                        name: 'bounceIn', 
+                        name: 'bounceOut', 
                         targets: '.badger', 
-                        to: 1400,
-                        fill: 'forwards',
-                        direction: 'reverse'
+                        to: 650,
+                        fill: 'both'
                     })
                     .animate([
                         {
@@ -135,9 +134,8 @@
                             to: 1800
                         },
                         {
-                            name: 'zoomIn',
+                            name: 'zoomOut',
                             targets: '.mushroom.one',
-                            direction: 'reverse',
                             from: 1800,
                             to: 2700
                         },

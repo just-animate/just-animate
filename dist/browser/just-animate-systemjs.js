@@ -2842,9 +2842,9 @@ System.register("just-animate/common/dict", ["just-animate/common/resources"], f
     "use strict";
     var __moduleName = context_79 && context_79.id;
     var resources_1;
-    var isMappedSupported;
+    var isMappedSupported, CustomMap;
     function createMap() {
-        return (isMappedSupported ? new Map() : Object.create(resources_1.nada));
+        return (isMappedSupported ? new Map() : Object.create(CustomMap.prototype));
     }
     exports_79("createMap", createMap);
     return {
@@ -2854,6 +2854,28 @@ System.register("just-animate/common/dict", ["just-animate/common/resources"], f
             }],
         execute: function() {
             isMappedSupported = !!Map;
+            CustomMap = (function () {
+                function CustomMap() {
+                }
+                CustomMap.prototype.has = function (key) {
+                    return this[key] === resources_1.nil;
+                };
+                CustomMap.prototype.delete = function (key) {
+                    var self = this;
+                    var hasKey = self.has(key);
+                    if (hasKey) {
+                        self[key] = resources_1.nil;
+                    }
+                    return hasKey;
+                };
+                CustomMap.prototype.clear = function () {
+                    var self = this;
+                    for (var key in self) {
+                        self[key] = resources_1.nil;
+                    }
+                };
+                return CustomMap;
+            }());
         }
     }
 });
@@ -4061,6 +4083,7 @@ System.register("just-animate/plugins/waapi/KeyframeAnimation", ["just-animate/c
                         return;
                     }
                 };
+                KeyframeAnimator.prototype.onupdate = function (context) { };
                 return KeyframeAnimator;
             }());
             exports_96("KeyframeAnimator", KeyframeAnimator);
@@ -4075,7 +4098,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
     function spaceKeyframes(keyframes) {
         // don't attempt to fill animation if less than 2 keyframes
         if (keyframes.length < 2) {
-            return keyframes;
+            return;
         }
         var first = keyframes[0];
         // ensure first offset    
@@ -4117,7 +4140,6 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 break;
             }
         }
-        return keyframes;
     }
     exports_97("spaceKeyframes", spaceKeyframes);
     /**
@@ -4126,7 +4148,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
     function normalizeKeyframes(keyframes) {
         // don't attempt to fill animation if less than 2 keyframes
         if (keyframes.length < 2) {
-            return keyframes;
+            return;
         }
         var first = keyframes[0];
         // ensure first offset    
@@ -4153,7 +4175,6 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 }
             }
         }
-        return keyframes;
     }
     exports_97("normalizeKeyframes", normalizeKeyframes);
     /**
@@ -4167,11 +4188,11 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         var scaleArray = [];
         var skewArray = [];
         var translateArray = [];
-        var output = {};
         var transformString = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
             if (!type_7.isDefined(value)) {
+                keyframe.delete(prop);
                 continue;
             }
             switch (prop) {
@@ -4343,7 +4364,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                     transformString += ' ' + value;
                     break;
                 default:
-                    output[strings_2.toCamelCase(prop)] = value;
+                    keyframe.delete(prop);
+                    keyframe[strings_2.toCamelCase(prop)] = value;
                     break;
             }
         }
@@ -4406,9 +4428,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         else {
         }
         if (transformString) {
-            output['transform'] = transformString;
+            keyframe['transform'] = transformString;
         }
-        return output;
     }
     exports_97("normalizeProperties", normalizeProperties);
     return {
@@ -4499,11 +4520,12 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                                 targetKeyframe[propertyName] = objects_2.unwrap(sourceValue);
                             }
                             // fixme: replace with mutation instead of copy                
-                            targetKeyframe = KeyframeTransformers_1.normalizeProperties(targetKeyframe);
+                            KeyframeTransformers_1.normalizeProperties(targetKeyframe);
                             targetKeyframes.push(targetKeyframe);
                         }
-                        var keyframes = KeyframeTransformers_1.normalizeKeyframes(KeyframeTransformers_1.spaceKeyframes(targetKeyframes));
-                        return new KeyframeAnimation_1.KeyframeAnimator(target, keyframes, timings);
+                        KeyframeTransformers_1.spaceKeyframes(targetKeyframes);
+                        KeyframeTransformers_1.normalizeKeyframes(targetKeyframes);
+                        return new KeyframeAnimation_1.KeyframeAnimator(target, targetKeyframes, timings);
                     });
                     return animations;
                 };

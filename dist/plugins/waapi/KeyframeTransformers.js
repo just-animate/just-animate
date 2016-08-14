@@ -8,7 +8,7 @@ var offset = 'offset';
 function spaceKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
-        return keyframes;
+        return;
     }
     var first = keyframes[0];
     // ensure first offset    
@@ -50,7 +50,6 @@ function spaceKeyframes(keyframes) {
             break;
         }
     }
-    return keyframes;
 }
 exports.spaceKeyframes = spaceKeyframes;
 /**
@@ -59,7 +58,7 @@ exports.spaceKeyframes = spaceKeyframes;
 function normalizeKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
-        return keyframes;
+        return;
     }
     var first = keyframes[0];
     // ensure first offset    
@@ -86,7 +85,6 @@ function normalizeKeyframes(keyframes) {
             }
         }
     }
-    return keyframes;
 }
 exports.normalizeKeyframes = normalizeKeyframes;
 /**
@@ -100,11 +98,11 @@ function normalizeProperties(keyframe) {
     var scaleArray = [];
     var skewArray = [];
     var translateArray = [];
-    var output = {};
     var transformString = '';
     for (var prop in keyframe) {
         var value = keyframe[prop];
         if (!type_1.isDefined(value)) {
+            keyframe.delete(prop);
             continue;
         }
         switch (prop) {
@@ -276,7 +274,8 @@ function normalizeProperties(keyframe) {
                 transformString += ' ' + value;
                 break;
             default:
-                output[strings_1.toCamelCase(prop)] = value;
+                keyframe.delete(prop);
+                keyframe[strings_1.toCamelCase(prop)] = value;
                 break;
         }
     }
@@ -339,8 +338,7 @@ function normalizeProperties(keyframe) {
     else {
     }
     if (transformString) {
-        output['transform'] = transformString;
+        keyframe['transform'] = transformString;
     }
-    return output;
 }
 exports.normalizeProperties = normalizeProperties;

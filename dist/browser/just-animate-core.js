@@ -579,14 +579,36 @@
     }
 
     var isMappedSupported = !!Map;
+    var CustomMap = (function () {
+        function CustomMap() {
+        }
+        CustomMap.prototype.has = function (key) {
+            return this[key] === nil;
+        };
+        CustomMap.prototype.delete = function (key) {
+            var self = this;
+            var hasKey = self.has(key);
+            if (hasKey) {
+                self[key] = nil;
+            }
+            return hasKey;
+        };
+        CustomMap.prototype.clear = function () {
+            var self = this;
+            for (var key in self) {
+                self[key] = nil;
+            }
+        };
+        return CustomMap;
+    }());
     function createMap() {
-        return (isMappedSupported ? new Map() : Object.create(nada));
+        return (isMappedSupported ? new Map() : Object.create(CustomMap.prototype));
     }
 
     var offset = 'offset';
     function spaceKeyframes(keyframes) {
         if (keyframes.length < 2) {
-            return keyframes;
+            return;
         }
         var first = keyframes[0];
         if (first.offset !== 0) {
@@ -618,11 +640,10 @@
                 break;
             }
         }
-        return keyframes;
     }
     function normalizeKeyframes(keyframes) {
         if (keyframes.length < 2) {
-            return keyframes;
+            return;
         }
         var first = keyframes[0];
         if (first.offset !== 0) {
@@ -646,7 +667,6 @@
                 }
             }
         }
-        return keyframes;
     }
     function normalizeProperties(keyframe) {
         var xIndex = 0;
@@ -655,11 +675,11 @@
         var scaleArray = [];
         var skewArray = [];
         var translateArray = [];
-        var output = {};
         var transformString = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
             if (!isDefined(value)) {
+                keyframe.delete(prop);
                 continue;
             }
             switch (prop) {
@@ -831,7 +851,8 @@
                     transformString += ' ' + value;
                     break;
                 default:
-                    output[toCamelCase(prop)] = value;
+                    keyframe.delete(prop);
+                    keyframe[toCamelCase(prop)] = value;
                     break;
             }
         }
@@ -891,9 +912,8 @@
         else {
         }
         if (transformString) {
-            output['transform'] = transformString;
+            keyframe['transform'] = transformString;
         }
-        return output;
     }
 
     var KeyframeAnimator = (function () {
@@ -944,6 +964,7 @@
                 return;
             }
         };
+        KeyframeAnimator.prototype.onupdate = function (context) { };
         return KeyframeAnimator;
     }());
 
@@ -981,11 +1002,12 @@
                         }
                         targetKeyframe[propertyName] = unwrap(sourceValue);
                     }
-                    targetKeyframe = normalizeProperties(targetKeyframe);
+                    normalizeProperties(targetKeyframe);
                     targetKeyframes.push(targetKeyframe);
                 }
-                var keyframes = normalizeKeyframes(spaceKeyframes(targetKeyframes));
-                return new KeyframeAnimator(target, keyframes, timings);
+                spaceKeyframes(targetKeyframes);
+                normalizeKeyframes(targetKeyframes);
+                return new KeyframeAnimator(target, targetKeyframes, timings);
             });
             return animations;
         };
