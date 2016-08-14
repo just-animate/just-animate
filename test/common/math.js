@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var math = require('../../dist/helpers/math');
+var math = require('../../dist/common/math');
 
 describe('math', function () {
     describe('clamp()', function () {

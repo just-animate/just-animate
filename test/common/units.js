@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var units = require('../../dist/helpers/units');
+var units = require('../../dist/common/units');
 
 describe('units', function () {
     describe('fromDistance()', function () {

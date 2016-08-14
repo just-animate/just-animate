@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var type = require('../../dist/helpers/type')
+var type = require('../../dist/common/type')
 
 describe('type', function () {
   describe('isArray()', function () {

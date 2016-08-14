@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var strings = require('../../dist/helpers/strings');
+var strings = require('../../dist/common/strings');
 
 describe('strings', function () {
     describe('hyphenatedToCamelCase()', function () {

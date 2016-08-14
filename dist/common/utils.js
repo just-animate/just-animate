@@ -11,6 +11,3 @@ exports.raf = (requestAnimationFrame)
     : function (ctx, fn) {
         setTimeout(function () { fn(ctx); }, 16.66);
     };
-function dict(it) {
-}
-exports.dict = dict;

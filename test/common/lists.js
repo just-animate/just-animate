@@ -1,5 +1,5 @@
 var chai = require('chai');
-var lists = require('../../dist/helpers/lists');
+var lists = require('../../dist/common/lists');
 
 var assert = chai.assert;
 var expect = chai.expect;

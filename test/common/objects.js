@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var objects = require('../../dist/helpers/objects');
+var objects = require('../../dist/common/objects');
 
 describe('objects', function () {
     describe('extend()', function () {

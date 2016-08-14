@@ -1,14 +1,14 @@
 "use strict";
 var resources_1 = require('../../common/resources');
 var presets = {};
-exports.MixinService = (function () {
-    function class_1() {
+var MixinService = (function () {
+    function MixinService() {
         this.defs = {};
     }
-    class_1.prototype.findAnimation = function (name) {
+    MixinService.prototype.findAnimation = function (name) {
         return this.defs[name] || presets[name] || resources_1.nil;
     };
-    class_1.prototype.registerAnimation = function (animationOptions, isGlobal) {
+    MixinService.prototype.registerAnimation = function (animationOptions, isGlobal) {
         var name = animationOptions.name;
         if (isGlobal) {
             presets[name] = animationOptions;
@@ -16,5 +16,6 @@ exports.MixinService = (function () {
         }
         this.defs[name] = animationOptions;
     };
-    return class_1;
+    return MixinService;
 }());
+exports.MixinService = MixinService;

@@ -9,6 +9,8 @@ declare module ja {
     export type Distance = string | number;
 
     export type Easing = "ease"
+        
+        
         | "linear"
         | "initial"
         | "ease-in"
@@ -41,35 +43,39 @@ declare module ja {
         | "elegantSlowStartEnd"
         | string;
 
+    
     export interface IJustAnimate {
-        animate(options: ja.IAnimationOptions|ja.IAnimationOptions): ja.IAnimator;
+        animate(options: ja.IAnimationOptions | ja.IAnimationOptions): ja.IAnimator;
         inject(animationOptionList: ja.IAnimationOptions[]): void;
         register(animationOptions: ja.IAnimationOptions): void;
     }
 
+    export interface IPlugin {
+        handle(options: ja.IAnimationOptions): ja.IAnimationController[]; 
+        canHandle(options: ja.IAnimationOptions): boolean;
+    }
+
+    export interface ITimelineEvent {
+        startTimeMs: number;
+        endTimeMs: number;
+        animator: IAnimationController;
+    }
+
     export interface IAnimationController {
-        currentTime(): number;
-        currentTime(value: number): IAnimationController;
+        seek(value: number): void;
+        playbackRate(value: number): void;
 
-        playbackRate(): number;
-        playbackRate(value: number): IAnimationController;
-
-        startTime(): number;
-        endTime(): number;
-        duration(): number;
-        totalDuration(): number;
-        iterations(): number;
-        iterationStart(): number;
         playState(): AnimationPlaybackState;
+        totalDuration(): number; 
 
-        finish(): IAnimationController;
-        play(): IAnimationController;
-        pause(): IAnimationController;
-        reverse(): IAnimationController;
-        cancel(): IAnimationController;
+        finish(): void;
+        play(): void;
+        pause(): void;
+        reverse(): void;
+        cancel(): void;
 
-        on(eventName: string, listener: Function): IAnimationController;
-        off(eventName: string, listener: Function): IAnimationController;
+        on(eventName: string, listener: Function): void;
+        off(eventName: string, listener: Function): void;
     }
 
     export interface IAnimator {

@@ -35,7 +35,6 @@
     var z = 'z';
     var functionTypeString = '[object Function]';
     var numberString = 'number';
-    var objectString = 'object';
     var stringString = 'string';
     var camelCaseRegex = /([a-z])[- ]([a-z])/ig;
 
@@ -87,9 +86,6 @@
     function isNumber(a) {
         return typeof a === numberString;
     }
-    function isObject(a) {
-        return typeof a === objectString && a !== nada;
-    }
     function isString(a) {
         return typeof a === stringString;
     }
@@ -107,20 +103,6 @@
         }
         return target;
     };
-    var expand = function (expandable) {
-        var result = {};
-        for (var prop in expandable) {
-            var propVal = expandable[prop];
-            if (isFunction(propVal)) {
-                propVal = propVal();
-            }
-            else if (isObject(propVal)) {
-                propVal = expand(propVal);
-            }
-            result[prop] = propVal;
-        }
-        return result;
-    };
     function unwrap(value) {
         if (isFunction(value)) {
             return value();
@@ -135,6 +117,439 @@
     function invalidArg(name) {
         return new Error("Bad: " + name);
     }
+
+    function Dispatcher() {
+        var self = this;
+        self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);
+        self._fn = {};
+        return self;
+    }
+    Dispatcher.prototype = {
+        _fn: nil,
+        trigger: function (eventName, args) {
+            var listeners = this._fn[eventName];
+            if (!listeners) {
+                return;
+            }
+            var len = listeners.length;
+            for (var i = 0; i < len; i++) {
+                listeners[i].apply(nil, args);
+            }
+        },
+        on: function (eventName, listener) {
+            if (!isFunction(listener)) {
+                throw invalidArg('listener');
+            }
+            var fn = this._fn;
+            var listeners = fn[eventName];
+            if (!listeners) {
+                fn[eventName] = [listener];
+                return;
+            }
+            if (listeners.indexOf(listener) !== -1) {
+                return;
+            }
+            listeners.push(listener);
+        },
+        off: function (eventName, listener) {
+            var listeners = this._fn[eventName];
+            if (listeners) {
+                var indexOfListener = listeners.indexOf(listener);
+                if (indexOfListener !== -1) {
+                    listeners.splice(indexOfListener, 1);
+                }
+            }
+        }
+    };
+
+    function camelCaseReplacer(match, p1, p2) {
+        return p1 + p2.toUpperCase();
+    }
+    function toCamelCase(value) {
+        return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : nil;
+    }
+    var cssFunction = function () {
+        var args = arguments;
+        return args[0] + "(" + toArray(args, 1).join(',') + ")";
+    };
+
+    var easings = {
+        easeInBack: cssFunction(cubicBezier, 0.6, -0.28, 0.735, 0.045),
+        easeInCirc: cssFunction(cubicBezier, 0.6, 0.04, 0.98, 0.335),
+        easeInCubic: cssFunction(cubicBezier, 0.55, 0.055, 0.675, 0.19),
+        easeInExpo: cssFunction(cubicBezier, 0.95, 0.05, 0.795, 0.035),
+        easeInOutBack: cssFunction(cubicBezier, 0.68, -0.55, 0.265, 1.55),
+        easeInOutCirc: cssFunction(cubicBezier, 0.785, 0.135, 0.15, 0.86),
+        easeInOutCubic: cssFunction(cubicBezier, 0.645, 0.045, 0.355, 1),
+        easeInOutExpo: cssFunction(cubicBezier, 1, 0, 0, 1),
+        easeInOutQuad: cssFunction(cubicBezier, 0.455, 0.03, 0.515, 0.955),
+        easeInOutQuart: cssFunction(cubicBezier, 0.77, 0, 0.175, 1),
+        easeInOutQuint: cssFunction(cubicBezier, 0.86, 0, 0.07, 1),
+        easeInOutSine: cssFunction(cubicBezier, 0.445, 0.05, 0.55, 0.95),
+        easeInQuad: cssFunction(cubicBezier, 0.55, 0.085, 0.68, 0.53),
+        easeInQuart: cssFunction(cubicBezier, 0.895, 0.03, 0.685, 0.22),
+        easeInQuint: cssFunction(cubicBezier, 0.755, 0.05, 0.855, 0.06),
+        easeInSine: cssFunction(cubicBezier, 0.47, 0, 0.745, 0.715),
+        easeOutBack: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275),
+        easeOutCirc: cssFunction(cubicBezier, 0.075, 0.82, 0.165, 1),
+        easeOutCubic: cssFunction(cubicBezier, 0.215, 0.61, 0.355, 1),
+        easeOutExpo: cssFunction(cubicBezier, 0.19, 1, 0.22, 1),
+        easeOutQuad: cssFunction(cubicBezier, 0.25, 0.46, 0.45, 0.94),
+        easeOutQuart: cssFunction(cubicBezier, 0.165, 0.84, 0.44, 1),
+        easeOutQuint: cssFunction(cubicBezier, 0.23, 1, 0.32, 1),
+        easeOutSine: cssFunction(cubicBezier, 0.39, 0.575, 0.565, 1),
+        elegantSlowStartEnd: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275)
+    };
+
+    var animationPadding = 1.0 / 30;
+    var Animator = (function () {
+        function Animator(resolver, timeloop, plugins) {
+            var self = this;
+            if (!isDefined(duration)) {
+                throw invalidArg(duration);
+            }
+            self._duration = 0;
+            self._currentTime = nil;
+            self._playState = 'idle';
+            self._playbackRate = 1;
+            self._events = [];
+            self._resolver = resolver;
+            self._timeLoop = timeloop;
+            self._plugins = plugins;
+            self._dispatcher = Dispatcher();
+            self._onTick = self._onTick.bind(self);
+            self.on(finish, self._onFinish);
+            self.on(cancel, self._onCancel);
+            self.on(pause, self._onPause);
+            self.play();
+            return self;
+        }
+        Animator.prototype.animate = function (options) {
+            var self = this;
+            if (isArray(options)) {
+                each(options, function (e) { return self._addEvent(e); });
+            }
+            else {
+                self._addEvent(options);
+            }
+            self._recalculate();
+            return self;
+        };
+        Animator.prototype.duration = function () {
+            return this._duration;
+        };
+        Animator.prototype.currentTime = function (value) {
+            var self = this;
+            if (!isDefined(value)) {
+                return self._currentTime;
+            }
+            self._currentTime = value;
+            return self;
+        };
+        Animator.prototype.playbackRate = function (value) {
+            var self = this;
+            if (!isDefined(value)) {
+                return self._playbackRate;
+            }
+            self._playbackRate = value;
+            return self;
+        };
+        Animator.prototype.playState = function (value) {
+            var self = this;
+            if (!isDefined(value)) {
+                return self._playState;
+            }
+            self._playState = value;
+            self._dispatcher.trigger('set', ['playbackState', value]);
+            return self;
+        };
+        Animator.prototype.on = function (eventName, listener) {
+            var self = this;
+            self._dispatcher.on(eventName, listener);
+            return self;
+        };
+        Animator.prototype.off = function (eventName, listener) {
+            var self = this;
+            self._dispatcher.off(eventName, listener);
+            return self;
+        };
+        Animator.prototype.finish = function () {
+            var self = this;
+            self._dispatcher.trigger(finish, [self]);
+            return self;
+        };
+        Animator.prototype.play = function () {
+            var self = this;
+            if (self._playState !== 'running' || self._playState !== 'pending') {
+                self._playState = 'pending';
+                self._timeLoop.on(self._onTick);
+            }
+            return self;
+        };
+        Animator.prototype.pause = function () {
+            var self = this;
+            self._dispatcher.trigger(pause, [self]);
+            return self;
+        };
+        Animator.prototype.reverse = function () {
+            var self = this;
+            self._playbackRate *= -1;
+            return self;
+        };
+        Animator.prototype.cancel = function () {
+            var self = this;
+            self._dispatcher.trigger(cancel, [self]);
+            return self;
+        };
+        Animator.prototype._recalculate = function () {
+            var self = this;
+            var endsAt = maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
+            self._duration = endsAt;
+        };
+        Animator.prototype._addEvent = function (event) {
+            var self = this;
+            if (event.name) {
+                var def = self._resolver.findAnimation(event.name);
+                if (!isDefined(def)) {
+                    throw invalidArg('name');
+                }
+                inherit(event, def);
+            }
+            event.from = (event.from || 0) + this._duration;
+            event.to = (event.to || 0) + this._duration;
+            if (!event.easing) {
+                event.easing = 'linear';
+            }
+            else {
+                event.easing = easings[event.easing] || event.easing;
+            }
+            each(this._plugins, function (plugin) {
+                if (plugin.canHandle(event)) {
+                    var animators = plugin.handle(event);
+                    var events = map(animators, function (animator) {
+                        return {
+                            animator: animator,
+                            endTimeMs: event.from + animator.totalDuration(),
+                            startTimeMs: event.from
+                        };
+                    });
+                    pushAll(self._events, events);
+                }
+            });
+        };
+        Animator.prototype._onCancel = function (self) {
+            self._timeLoop.off(self._onTick);
+            self._currentTime = 0;
+            self._playState = 'idle';
+            each(self._events, function (evt) { evt.animator.cancel(); });
+        };
+        Animator.prototype._onFinish = function (self) {
+            self._timeLoop.off(self._onTick);
+            self._currentTime = 0;
+            self._playState = 'finished';
+            each(self._events, function (evt) { evt.animator.finish(); });
+        };
+        Animator.prototype._onPause = function (self) {
+            self._timeLoop.off(self._onTick);
+            self._playState = 'paused';
+            each(self._events, function (evt) { evt.animator.pause(); });
+        };
+        Animator.prototype._onTick = function (delta, runningTime) {
+            var self = this;
+            var dispatcher = self._dispatcher;
+            var playState = self._playState;
+            if (playState === 'idle') {
+                dispatcher.trigger(cancel, [self]);
+                return;
+            }
+            if (playState === 'finished') {
+                dispatcher.trigger(finish, [self]);
+                return;
+            }
+            if (playState === 'paused') {
+                dispatcher.trigger(pause, [self]);
+                return;
+            }
+            var playbackRate = self._playbackRate;
+            var isReversed = playbackRate < 0;
+            var duration1 = self._duration;
+            var startTime = isReversed ? duration1 : 0;
+            var endTime = isReversed ? 0 : duration1;
+            if (self._playState === 'pending') {
+                var currentTime_1 = self._currentTime;
+                self._currentTime = currentTime_1 === nil || currentTime_1 === endTime ? startTime : currentTime_1;
+                self._playState = 'running';
+            }
+            var currentTime = self._currentTime + delta * playbackRate;
+            self._currentTime = currentTime;
+            if (!inRange(currentTime, startTime, endTime)) {
+                dispatcher.trigger(finish, [self]);
+                return;
+            }
+            var events = self._events;
+            var eventLength = events.length;
+            for (var i = 0; i < eventLength; i++) {
+                var evt = events[i];
+                var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+                var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+                var shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
+                if (shouldBeActive) {
+                    var animator = evt.animator;
+                    animator.playbackRate(playbackRate);
+                    animator.play();
+                }
+            }
+        };
+        return Animator;
+    }());
+
+    var global = window;
+    var requestAnimationFrame = global.requestAnimationFrame;
+    var now = (performance && performance.now)
+        ? function () { return performance.now(); }
+        : function () { return Date.now(); };
+    var raf = (requestAnimationFrame)
+        ? function (ctx, fn) {
+            requestAnimationFrame(function () { fn(ctx); });
+        }
+        : function (ctx, fn) {
+            setTimeout(function () { fn(ctx); }, 16.66);
+        };
+
+    function TimeLoop() {
+        var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
+        self.active = [];
+        self.elapses = [];
+        self.isActive = nil;
+        self.lastTime = nil;
+        self.offs = [];
+        self.ons = [];
+        return self;
+    }
+    TimeLoop.prototype = {
+        on: function (fn) {
+            var self = this;
+            var offs = self.offs;
+            var ons = self.ons;
+            var offIndex = offs.indexOf(fn);
+            if (offIndex !== -1) {
+                offs.splice(offIndex, 1);
+            }
+            if (ons.indexOf(fn) === -1) {
+                ons.push(fn);
+            }
+            if (!self.isActive) {
+                self.isActive = true;
+                raf(self, update);
+            }
+        },
+        off: function (fn) {
+            var self = this;
+            var offs = self.offs;
+            var ons = self.ons;
+            var onIndex = ons.indexOf(fn);
+            if (onIndex !== -1) {
+                ons.splice(onIndex, 1);
+            }
+            if (offs.indexOf(fn) === -1) {
+                offs.push(fn);
+            }
+            if (!self.isActive) {
+                self.isActive = true;
+                raf(self, update);
+            }
+        }
+    };
+    function update(self) {
+        updateOffs(self);
+        updateOns(self);
+        var callbacks = self.active;
+        var elapses = self.elapses;
+        var len = callbacks.length;
+        var lastTime = self.lastTime || now();
+        var thisTime = now();
+        var delta = thisTime - lastTime;
+        if (!len) {
+            self.isActive = nil;
+            self.lastTime = nil;
+            return;
+        }
+        self.isActive = true;
+        self.lastTime = thisTime;
+        raf(self, update);
+        for (var i = 0; i < len; i++) {
+            var existingElapsed = elapses[i];
+            var updatedElapsed = existingElapsed + delta;
+            elapses[i] = updatedElapsed;
+            callbacks[i](delta, updatedElapsed);
+        }
+    }
+    function updateOffs(self) {
+        var len = self.offs.length;
+        var active = self.active;
+        for (var i = 0; i < len; i++) {
+            var fn = self.offs[i];
+            var indexOfSub = active.indexOf(fn);
+            if (indexOfSub !== -1) {
+                active.splice(indexOfSub, 1);
+                self.elapses.splice(indexOfSub, 1);
+            }
+        }
+    }
+    function updateOns(self) {
+        var len = self.ons.length;
+        var active = self.active;
+        for (var i = 0; i < len; i++) {
+            var fn = self.ons[i];
+            if (active.indexOf(fn) === -1) {
+                active.push(fn);
+                self.elapses.push(0);
+            }
+        }
+    }
+
+    var presets = {};
+    var MixinService = (function () {
+        function MixinService() {
+            this.defs = {};
+        }
+        MixinService.prototype.findAnimation = function (name) {
+            return this.defs[name] || presets[name] || nil;
+        };
+        MixinService.prototype.registerAnimation = function (animationOptions, isGlobal) {
+            var name = animationOptions.name;
+            if (isGlobal) {
+                presets[name] = animationOptions;
+                return;
+            }
+            this.defs[name] = animationOptions;
+        };
+        return MixinService;
+    }());
+
+    var JustAnimate = (function () {
+        function JustAnimate() {
+            var self = this;
+            self._resolver = new MixinService();
+            self._timeLoop = TimeLoop();
+            self.plugins = [];
+        }
+        JustAnimate.inject = function (animations) {
+            var resolver = new MixinService();
+            each(animations, function (a) { return resolver.registerAnimation(a, true); });
+        };
+        JustAnimate.prototype.animate = function (options) {
+            return new Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
+        };
+        JustAnimate.prototype.register = function (preset) {
+            this._resolver.registerAnimation(preset, false);
+        };
+        JustAnimate.prototype.inject = function (animations) {
+            var resolver = this._resolver;
+            each(animations, function (a) { return resolver.registerAnimation(a, true); });
+        };
+        return JustAnimate;
+    }());
 
     function queryElements(source) {
         if (!source) {
@@ -163,27 +578,10 @@
         return [];
     }
 
-    var pipe = function pipe() {
-        var args = arguments;
-        var initial = args[0];
-        var value = isFunction(initial) ? initial() : initial;
-        var len = args.length;
-        for (var x = 1; x < len; x++) {
-            value = args[x](value);
-        }
-        return value;
-    };
-
-    function camelCaseReplacer(match, p1, p2) {
-        return p1 + p2.toUpperCase();
+    var isMappedSupported = !!Map;
+    function createMap() {
+        return (isMappedSupported ? new Map() : Object.create(nada));
     }
-    function toCamelCase(value) {
-        return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : nil;
-    }
-    var cssFunction = function () {
-        var args = arguments;
-        return args[0] + "(" + toArray(args, 1).join(',') + ")";
-    };
 
     var offset = 'offset';
     function spaceKeyframes(keyframes) {
@@ -498,539 +896,118 @@
         return output;
     }
 
-    function Dispatcher() {
-        var self = this;
-        self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);
-        self._fn = {};
-        return self;
-    }
-    Dispatcher.prototype = {
-        _fn: nil,
-        trigger: function (eventName, args) {
-            var listeners = this._fn[eventName];
-            if (!listeners) {
-                return;
-            }
-            var len = listeners.length;
-            for (var i = 0; i < len; i++) {
-                listeners[i].apply(nil, args);
-            }
-        },
-        on: function (eventName, listener) {
-            if (!isFunction(listener)) {
-                throw invalidArg('listener');
-            }
-            var fn = this._fn;
-            var listeners = fn[eventName];
-            if (!listeners) {
-                fn[eventName] = [listener];
-                return;
-            }
-            if (listeners.indexOf(listener) !== -1) {
-                return;
-            }
-            listeners.push(listener);
-        },
-        off: function (eventName, listener) {
-            var listeners = this._fn[eventName];
-            if (listeners) {
-                var indexOfListener = listeners.indexOf(listener);
-                if (indexOfListener !== -1) {
-                    listeners.splice(indexOfListener, 1);
-                }
-            }
+    var KeyframeAnimator = (function () {
+        function KeyframeAnimator(target, keyframes, timings) {
+            var delay = timings.delay || 0;
+            var endDelay = timings.endDelay || 0;
+            var iterations = timings.iterations || 1;
+            var duration = timings.duration || 0;
+            var dispatcher = Dispatcher();
+            var self = this;
+            self._totalTime = delay + ((iterations || 1) * duration) + endDelay;
+            self._dispatcher = dispatcher;
+            var animator = target[animate](keyframes, timings);
+            animator.cancel();
+            animator.onfinish = function () { return dispatcher.trigger(finish); };
+            self._animator = animator;
         }
-    };
-
-    function KeyframeAnimation(target, keyframes, options) {
-        var self = this instanceof KeyframeAnimation ? this : Object.create(KeyframeAnimation.prototype);
-        var duration = options.to - options.from;
-        self._iterationStart = unwrap(options.iterationStart) || 0;
-        self._iterations = unwrap(options.iterations) || 1;
-        self._duration = duration;
-        self._startTime = options.from || 0;
-        self._endTime = options.to;
-        self._totalDuration = (self._iterations || 1) * duration;
-        var dispatcher = Dispatcher();
-        self._dispatcher = dispatcher;
-        var animator = target[animate](keyframes, {
-            delay: unwrap(options.delay) || undefined,
-            direction: unwrap(options.direction),
-            duration: duration,
-            easing: options.easing || 'linear',
-            fill: options.fill || 'none',
-            iterationStart: self._iterationStart,
-            iterations: self._iterations
-        });
-        animator.cancel();
-        animator['onfinish'] = function () { return dispatcher.trigger(finish); };
-        self._animator = animator;
-        return self;
-    }
-    KeyframeAnimation.prototype = {
-        _dispatcher: nil,
-        _duration: nil,
-        _endTime: nil,
-        _iterationStart: nil,
-        _iterations: nil,
-        _startTime: nil,
-        _totalDuration: nil,
-        currentTime: function (value) {
+        KeyframeAnimator.prototype.totalDuration = function () {
+            return this._totalTime;
+        };
+        KeyframeAnimator.prototype.seek = function (value) {
             var self = this;
-            if (!isDefined(value)) {
-                return self._animator.currentTime;
-            }
             self._animator.currentTime = value;
-            return self;
-        },
-        playbackRate: function (value) {
+        };
+        KeyframeAnimator.prototype.playbackRate = function (value) {
             var self = this;
-            if (!isDefined(value)) {
-                return self._animator.playbackRate;
-            }
             self._animator.playbackRate = value;
-            return self;
-        },
-        playState: function () {
+        };
+        KeyframeAnimator.prototype.playState = function () {
             return this._animator.playState;
-        },
-        iterationStart: function () {
-            return this._iterationStart;
-        },
-        iterations: function () {
-            return this._iterations;
-        },
-        totalDuration: function () {
-            return this._totalDuration;
-        },
-        duration: function () {
-            return this._duration;
-        },
-        endTime: function () {
-            return this._endTime;
-        },
-        startTime: function () {
-            return this._startTime;
-        },
-        off: function (eventName, listener) {
+        };
+        KeyframeAnimator.prototype.off = function (eventName, listener) {
             this._dispatcher.off(eventName, listener);
-            return this;
-        },
-        on: function (eventName, listener) {
+        };
+        KeyframeAnimator.prototype.on = function (eventName, listener) {
             this._dispatcher.on(eventName, listener);
-            return this;
-        },
-        cancel: function () {
+        };
+        KeyframeAnimator.prototype.cancel = function () {
             var self = this;
             self._animator.cancel();
             self._dispatcher.trigger(cancel);
-            return self;
-        },
-        reverse: function () {
+        };
+        KeyframeAnimator.prototype.reverse = function () {
             var self = this;
             self._animator.reverse();
             self._dispatcher.trigger(reverse);
-            return self;
-        },
-        pause: function () {
+        };
+        KeyframeAnimator.prototype.pause = function () {
             var self = this;
             self._animator.pause();
             self._dispatcher.trigger(pause);
-            return self;
-        },
-        play: function () {
+        };
+        KeyframeAnimator.prototype.play = function () {
             var self = this;
             self._animator.play();
             self._dispatcher.trigger(play);
-            return self;
-        },
-        finish: function () {
+        };
+        KeyframeAnimator.prototype.finish = function () {
             var self = this;
             self._animator.finish();
-            return self;
-        }
-    };
+        };
+        return KeyframeAnimator;
+    }());
 
-    var easings = {
-        easeInBack: cssFunction(cubicBezier, 0.6, -0.28, 0.735, 0.045),
-        easeInCirc: cssFunction(cubicBezier, 0.6, 0.04, 0.98, 0.335),
-        easeInCubic: cssFunction(cubicBezier, 0.55, 0.055, 0.675, 0.19),
-        easeInExpo: cssFunction(cubicBezier, 0.95, 0.05, 0.795, 0.035),
-        easeInOutBack: cssFunction(cubicBezier, 0.68, -0.55, 0.265, 1.55),
-        easeInOutCirc: cssFunction(cubicBezier, 0.785, 0.135, 0.15, 0.86),
-        easeInOutCubic: cssFunction(cubicBezier, 0.645, 0.045, 0.355, 1),
-        easeInOutExpo: cssFunction(cubicBezier, 1, 0, 0, 1),
-        easeInOutQuad: cssFunction(cubicBezier, 0.455, 0.03, 0.515, 0.955),
-        easeInOutQuart: cssFunction(cubicBezier, 0.77, 0, 0.175, 1),
-        easeInOutQuint: cssFunction(cubicBezier, 0.86, 0, 0.07, 1),
-        easeInOutSine: cssFunction(cubicBezier, 0.445, 0.05, 0.55, 0.95),
-        easeInQuad: cssFunction(cubicBezier, 0.55, 0.085, 0.68, 0.53),
-        easeInQuart: cssFunction(cubicBezier, 0.895, 0.03, 0.685, 0.22),
-        easeInQuint: cssFunction(cubicBezier, 0.755, 0.05, 0.855, 0.06),
-        easeInSine: cssFunction(cubicBezier, 0.47, 0, 0.745, 0.715),
-        easeOutBack: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275),
-        easeOutCirc: cssFunction(cubicBezier, 0.075, 0.82, 0.165, 1),
-        easeOutCubic: cssFunction(cubicBezier, 0.215, 0.61, 0.355, 1),
-        easeOutExpo: cssFunction(cubicBezier, 0.19, 1, 0.22, 1),
-        easeOutQuad: cssFunction(cubicBezier, 0.25, 0.46, 0.45, 0.94),
-        easeOutQuart: cssFunction(cubicBezier, 0.165, 0.84, 0.44, 1),
-        easeOutQuint: cssFunction(cubicBezier, 0.23, 1, 0.32, 1),
-        easeOutSine: cssFunction(cubicBezier, 0.39, 0.575, 0.565, 1),
-        elegantSlowStartEnd: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275)
-    };
-
-    var animationPadding = 1.0 / 30;
-    var Animator = (function () {
-        function Animator(resolver, timeloop) {
-            var self = this;
-            if (!isDefined(duration)) {
-                throw invalidArg(duration);
-            }
-            self._duration = 0;
-            self._currentTime = nil;
-            self._playState = 'idle';
-            self._playbackRate = 1;
-            self._events = [];
-            self._resolver = resolver;
-            self._timeLoop = timeloop;
-            self._dispatcher = Dispatcher();
-            self._onTick = self._onTick.bind(self);
-            self.on(finish, self._onFinish);
-            self.on(cancel, self._onCancel);
-            self.on(pause, self._onPause);
-            self.play();
-            return self;
+    var KeyframePlugin = (function () {
+        function KeyframePlugin() {
         }
-        Animator.prototype.animate = function (options) {
-            var self = this;
-            if (isArray(options)) {
-                each(options, function (e) { return self._addEvent(e); });
-            }
-            else {
-                self._addEvent(options);
-            }
-            self._recalculate();
-            return self;
+        KeyframePlugin.prototype.canHandle = function (options) {
+            return !!(options.name || options.css || options.keyframes);
         };
-        Animator.prototype.duration = function () {
-            return this._duration;
-        };
-        Animator.prototype.currentTime = function (value) {
-            var self = this;
-            if (!isDefined(value)) {
-                return self._currentTime;
-            }
-            self._currentTime = value;
-            return self;
-        };
-        Animator.prototype.playbackRate = function (value) {
-            var self = this;
-            if (!isDefined(value)) {
-                return self._playbackRate;
-            }
-            self._playbackRate = value;
-            return self;
-        };
-        Animator.prototype.playState = function (value) {
-            var self = this;
-            if (!isDefined(value)) {
-                return self._playState;
-            }
-            self._playState = value;
-            self._dispatcher.trigger('set', ['playbackState', value]);
-            return self;
-        };
-        Animator.prototype.on = function (eventName, listener) {
-            var self = this;
-            self._dispatcher.on(eventName, listener);
-            return self;
-        };
-        Animator.prototype.off = function (eventName, listener) {
-            var self = this;
-            self._dispatcher.off(eventName, listener);
-            return self;
-        };
-        Animator.prototype.finish = function () {
-            var self = this;
-            self._dispatcher.trigger(finish, [self]);
-            return self;
-        };
-        Animator.prototype.play = function () {
-            var self = this;
-            if (self._playState !== 'running' || self._playState !== 'pending') {
-                self._playState = 'pending';
-                self._timeLoop.on(self._onTick);
-            }
-            return self;
-        };
-        Animator.prototype.pause = function () {
-            var self = this;
-            self._dispatcher.trigger(pause, [self]);
-            return self;
-        };
-        Animator.prototype.reverse = function () {
-            var self = this;
-            self._playbackRate *= -1;
-            return self;
-        };
-        Animator.prototype.cancel = function () {
-            var self = this;
-            self._dispatcher.trigger(cancel, [self]);
-            return self;
-        };
-        Animator.prototype._recalculate = function () {
-            var self = this;
-            var endsAt = maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
-            self._duration = endsAt;
-        };
-        Animator.prototype._addEvent = function (event) {
-            var self = this;
-            var targets = queryElements(event.targets);
-            if (event.name) {
-                var def = self._resolver.findAnimation(event.name);
-                if (!isDefined(def)) {
-                    throw invalidArg('name');
+        KeyframePlugin.prototype.handle = function (options) {
+            var targets = queryElements(options.targets);
+            var animations = map(targets, function (target) {
+                var timings = createMap();
+                timings.delay = unwrap(options.delay) || 0;
+                timings.endDelay = 0;
+                timings.duration = options.to - options.from;
+                timings.iterations = unwrap(options.iterations) || 1;
+                timings.iterationStart = unwrap(options.iterationStart) || 0;
+                timings.fill = unwrap(options.fill) || 'none';
+                timings.direction = unwrap(options.direction) || nil;
+                timings.easing = options.easing || 'linear';
+                var sourceKeyframes = options.keyframes;
+                var targetKeyframes = [];
+                var keyframeLength = sourceKeyframes.length;
+                for (var i = 0; i < keyframeLength; i++) {
+                    var sourceKeyframe = sourceKeyframes[i];
+                    var targetKeyframe = createMap();
+                    for (var propertyName in sourceKeyframe) {
+                        if (!sourceKeyframe.hasOwnProperty(propertyName)) {
+                            continue;
+                        }
+                        var sourceValue = sourceKeyframe[propertyName];
+                        if (!isDefined(sourceValue)) {
+                            continue;
+                        }
+                        targetKeyframe[propertyName] = unwrap(sourceValue);
+                    }
+                    targetKeyframe = normalizeProperties(targetKeyframe);
+                    targetKeyframes.push(targetKeyframe);
                 }
-                inherit(event, def);
-            }
-            event.from = event.from || 0;
-            event.to = event.to || 0;
-            if (!event.easing) {
-                event.easing = 'linear';
-            }
-            else {
-                event.easing = easings[event.easing] || event.easing;
-            }
-            var animators = map(targets, function (e) {
-                var to = event.to + self._duration;
-                var from = event.from + self._duration;
-                var expanded = map(event.keyframes, expand);
-                var normalized = map(expanded, normalizeProperties);
-                var keyframes = pipe(normalized, spaceKeyframes, normalizeKeyframes);
-                return {
-                    animator: KeyframeAnimation(e, keyframes, event),
-                    endTimeMs: to,
-                    startTimeMs: from
-                };
+                var keyframes = normalizeKeyframes(spaceKeyframes(targetKeyframes));
+                return new KeyframeAnimator(target, keyframes, timings);
             });
-            pushAll(self._events, animators);
+            return animations;
         };
-        Animator.prototype._onCancel = function (self) {
-            self._timeLoop.off(self._onTick);
-            self._currentTime = 0;
-            self._playState = 'idle';
-            each(self._events, function (evt) { evt.animator.cancel(); });
-        };
-        Animator.prototype._onFinish = function (self) {
-            self._timeLoop.off(self._onTick);
-            self._currentTime = 0;
-            self._playState = 'finished';
-            each(self._events, function (evt) { evt.animator.finish(); });
-        };
-        Animator.prototype._onPause = function (self) {
-            self._timeLoop.off(self._onTick);
-            self._playState = 'paused';
-            each(self._events, function (evt) { evt.animator.pause(); });
-        };
-        Animator.prototype._onTick = function (delta, runningTime) {
-            var self = this;
-            var dispatcher = self._dispatcher;
-            var playState = self._playState;
-            if (playState === 'idle') {
-                dispatcher.trigger(cancel, [self]);
-                return;
-            }
-            if (playState === 'finished') {
-                dispatcher.trigger(finish, [self]);
-                return;
-            }
-            if (playState === 'paused') {
-                dispatcher.trigger(pause, [self]);
-                return;
-            }
-            var playbackRate = self._playbackRate;
-            var isReversed = playbackRate < 0;
-            var duration1 = self._duration;
-            var startTime = isReversed ? duration1 : 0;
-            var endTime = isReversed ? 0 : duration1;
-            if (self._playState === 'pending') {
-                var currentTime_1 = self._currentTime;
-                self._currentTime = currentTime_1 === nil || currentTime_1 === endTime ? startTime : currentTime_1;
-                self._playState = 'running';
-            }
-            var currentTime = self._currentTime + delta * playbackRate;
-            self._currentTime = currentTime;
-            if (!inRange(currentTime, startTime, endTime)) {
-                dispatcher.trigger(finish, [self]);
-                return;
-            }
-            var events = self._events;
-            var eventLength = events.length;
-            for (var i = 0; i < eventLength; i++) {
-                var evt = events[i];
-                var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
-                var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-                var shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
-                if (shouldBeActive) {
-                    var animator = evt.animator;
-                    animator.playbackRate(playbackRate);
-                    animator.play();
-                }
-            }
-        };
-        return Animator;
-    }());
-
-    var global = window;
-    var requestAnimationFrame = global.requestAnimationFrame;
-    var now = (performance && performance.now)
-        ? function () { return performance.now(); }
-        : function () { return Date.now(); };
-    var raf = (requestAnimationFrame)
-        ? function (ctx, fn) {
-            requestAnimationFrame(function () { fn(ctx); });
-        }
-        : function (ctx, fn) {
-            setTimeout(function () { fn(ctx); }, 16.66);
-        };
-
-    function TimeLoop() {
-        var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
-        self.active = [];
-        self.elapses = [];
-        self.isActive = nil;
-        self.lastTime = nil;
-        self.offs = [];
-        self.ons = [];
-        return self;
-    }
-    TimeLoop.prototype = {
-        on: function (fn) {
-            var self = this;
-            var offs = self.offs;
-            var ons = self.ons;
-            var offIndex = offs.indexOf(fn);
-            if (offIndex !== -1) {
-                offs.splice(offIndex, 1);
-            }
-            if (ons.indexOf(fn) === -1) {
-                ons.push(fn);
-            }
-            if (!self.isActive) {
-                self.isActive = true;
-                raf(self, update);
-            }
-        },
-        off: function (fn) {
-            var self = this;
-            var offs = self.offs;
-            var ons = self.ons;
-            var onIndex = ons.indexOf(fn);
-            if (onIndex !== -1) {
-                ons.splice(onIndex, 1);
-            }
-            if (offs.indexOf(fn) === -1) {
-                offs.push(fn);
-            }
-            if (!self.isActive) {
-                self.isActive = true;
-                raf(self, update);
-            }
-        }
-    };
-    function update(self) {
-        updateOffs(self);
-        updateOns(self);
-        var callbacks = self.active;
-        var elapses = self.elapses;
-        var len = callbacks.length;
-        var lastTime = self.lastTime || now();
-        var thisTime = now();
-        var delta = thisTime - lastTime;
-        if (!len) {
-            self.isActive = nil;
-            self.lastTime = nil;
-            return;
-        }
-        self.isActive = true;
-        self.lastTime = thisTime;
-        raf(self, update);
-        for (var i = 0; i < len; i++) {
-            var existingElapsed = elapses[i];
-            var updatedElapsed = existingElapsed + delta;
-            elapses[i] = updatedElapsed;
-            callbacks[i](delta, updatedElapsed);
-        }
-    }
-    function updateOffs(self) {
-        var len = self.offs.length;
-        var active = self.active;
-        for (var i = 0; i < len; i++) {
-            var fn = self.offs[i];
-            var indexOfSub = active.indexOf(fn);
-            if (indexOfSub !== -1) {
-                active.splice(indexOfSub, 1);
-                self.elapses.splice(indexOfSub, 1);
-            }
-        }
-    }
-    function updateOns(self) {
-        var len = self.ons.length;
-        var active = self.active;
-        for (var i = 0; i < len; i++) {
-            var fn = self.ons[i];
-            if (active.indexOf(fn) === -1) {
-                active.push(fn);
-                self.elapses.push(0);
-            }
-        }
-    }
-
-    var presets = {};
-    var MixinService = (function () {
-        function MixinService() {
-            this.defs = {};
-        }
-        MixinService.prototype.findAnimation = function (name) {
-            return this.defs[name] || presets[name] || nil;
-        };
-        MixinService.prototype.registerAnimation = function (animationOptions, isGlobal) {
-            var name = animationOptions.name;
-            if (isGlobal) {
-                presets[name] = animationOptions;
-                return;
-            }
-            this.defs[name] = animationOptions;
-        };
-        return MixinService;
-    }());
-
-    var JustAnimate = (function () {
-        function JustAnimate() {
-            var self = this;
-            self._resolver = new MixinService();
-            self._timeLoop = TimeLoop();
-        }
-        JustAnimate.inject = function (animations) {
-            var resolver = new MixinService();
-            each(animations, function (a) { return resolver.registerAnimation(a, true); });
-        };
-        JustAnimate.prototype.animate = function (options) {
-            return new Animator(this._resolver, this._timeLoop).animate(options);
-        };
-        JustAnimate.prototype.register = function (preset) {
-            this._resolver.registerAnimation(preset, false);
-        };
-        JustAnimate.prototype.inject = function (animations) {
-            var resolver = this._resolver;
-            each(animations, function (a) { return resolver.registerAnimation(a, true); });
-        };
-        return JustAnimate;
+        return KeyframePlugin;
     }());
 
     if (typeof angular !== 'undefined') {
         angular.module('just.animate', []).service('just', JustAnimate);
     }
-    window.just = new JustAnimate();
+    var just = new JustAnimate();
+    just.plugins.push(new KeyframePlugin());
+    window.just = just;
 
 }());

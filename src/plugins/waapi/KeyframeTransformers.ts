@@ -1,7 +1,7 @@
-import {isDefined, isNumber, isString, isArray} from './type';
-import {toCamelCase} from './strings';
-import {invalidArg} from './errors';
-import {nil} from './resources';
+import {isDefined, isNumber, isString, isArray} from '../../common/type';
+import {toCamelCase} from '../../common/strings';
+import {invalidArg} from '../../common/errors';
+import {nil} from '../../common/resources';
 
 import {scale3d,
     scale,
@@ -25,12 +25,12 @@ import {scale3d,
     translateY,
     translateZ,
     transform
-} from './resources';
+} from '../../common/resources';
 
 
 const offset = 'offset';
 
-export function spaceKeyframes(keyframes: ja.ICssKeyframeOptions[]): ja.ICssKeyframeOptions[] {
+export function spaceKeyframes(keyframes: waapi.IKeyframe[]): waapi.IKeyframe[] {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
         return keyframes;
@@ -90,7 +90,7 @@ export function spaceKeyframes(keyframes: ja.ICssKeyframeOptions[]): ja.ICssKeyf
 /**
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
-export function normalizeKeyframes(keyframes: ja.ICssKeyframeOptions[]): ja.ICssKeyframeOptions[] {
+export function normalizeKeyframes(keyframes: waapi.IKeyframe[]): waapi.IKeyframe[] {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
         return keyframes;
@@ -131,7 +131,7 @@ export function normalizeKeyframes(keyframes: ja.ICssKeyframeOptions[]): ja.ICss
 /**
  * Handles transforming short hand key properties into their native form
  */
-export function normalizeProperties(keyframe: ja.ICssKeyframeOptions): ja.ICssKeyframeOptions {
+export function normalizeProperties(keyframe: waapi.IKeyframe): waapi.IKeyframe {
     const xIndex = 0;
     const yIndex = 1;
     const zIndex = 2;

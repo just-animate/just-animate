@@ -1,9 +1,9 @@
 "use strict";
-var type_1 = require('./type');
-var strings_1 = require('./strings');
-var errors_1 = require('./errors');
-var resources_1 = require('./resources');
-var resources_2 = require('./resources');
+var type_1 = require('../../common/type');
+var strings_1 = require('../../common/strings');
+var errors_1 = require('../../common/errors');
+var resources_1 = require('../../common/resources');
+var resources_2 = require('../../common/resources');
 var offset = 'offset';
 function spaceKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes

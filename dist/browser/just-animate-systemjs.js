@@ -2838,10 +2838,29 @@ System.register("just-animate/common/resources", [], function(exports_78, contex
         }
     }
 });
-System.register("just-animate/common/type", ["just-animate/common/resources"], function(exports_79, context_79) {
+System.register("just-animate/common/dict", ["just-animate/common/resources"], function(exports_79, context_79) {
     "use strict";
     var __moduleName = context_79 && context_79.id;
     var resources_1;
+    var isMappedSupported;
+    function createMap() {
+        return (isMappedSupported ? new Map() : Object.create(resources_1.nada));
+    }
+    exports_79("createMap", createMap);
+    return {
+        setters:[
+            function (resources_1_1) {
+                resources_1 = resources_1_1;
+            }],
+        execute: function() {
+            isMappedSupported = !!Map;
+        }
+    }
+});
+System.register("just-animate/common/type", ["just-animate/common/resources"], function(exports_80, context_80) {
+    "use strict";
+    var __moduleName = context_80 && context_80.id;
+    var resources_2;
     /**
      * Tests if object is a list
      *
@@ -2852,11 +2871,11 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
     function isArray(a) {
         return !isString(a) && isNumber(a.length);
     }
-    exports_79("isArray", isArray);
+    exports_80("isArray", isArray);
     function isDefined(a) {
-        return a !== resources_1.nil && a !== resources_1.nada && a !== '';
+        return a !== resources_2.nil && a !== resources_2.nada && a !== '';
     }
-    exports_79("isDefined", isDefined);
+    exports_80("isDefined", isDefined);
     /**
      * Tests if object is a function
      *
@@ -2865,9 +2884,9 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
      * @returns {boolean} true if object.toString reports it as a Function
      */
     function isFunction(a) {
-        return toString.call(a) === resources_1.functionTypeString;
+        return toString.call(a) === resources_2.functionTypeString;
     }
-    exports_79("isFunction", isFunction);
+    exports_80("isFunction", isFunction);
     /**
      * Tests if object is a number
      *
@@ -2876,13 +2895,13 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
      * @returns {boolean} true if the object is typeof number
      */
     function isNumber(a) {
-        return typeof a === resources_1.numberString;
+        return typeof a === resources_2.numberString;
     }
-    exports_79("isNumber", isNumber);
+    exports_80("isNumber", isNumber);
     function isObject(a) {
-        return typeof a === resources_1.objectString && a !== resources_1.nada;
+        return typeof a === resources_2.objectString && a !== resources_2.nada;
     }
-    exports_79("isObject", isObject);
+    exports_80("isObject", isObject);
     /**
      * Tests if object is a string
      *
@@ -2891,22 +2910,22 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
      * @returns {boolean} true if object is typeof string
      */
     function isString(a) {
-        return typeof a === resources_1.stringString;
+        return typeof a === resources_2.stringString;
     }
-    exports_79("isString", isString);
+    exports_80("isString", isString);
     return {
         setters:[
-            function (resources_1_1) {
-                resources_1 = resources_1_1;
+            function (resources_2_1) {
+                resources_2 = resources_2_1;
             }],
         execute: function() {
         }
     }
 });
-System.register("just-animate/common/lists", ["just-animate/common/resources"], function(exports_80, context_80) {
+System.register("just-animate/common/lists", ["just-animate/common/resources"], function(exports_81, context_81) {
     "use strict";
-    var __moduleName = context_80 && context_80.id;
-    var resources_2;
+    var __moduleName = context_81 && context_81.id;
+    var resources_3;
     var slice, push;
     /**
      * Returns the first object in the list or undefined
@@ -2917,9 +2936,9 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
      * @returns {T} first object in the list or undefined
      */
     function head(indexed) {
-        return (!indexed || indexed.length < 1) ? resources_2.nil : indexed[0];
+        return (!indexed || indexed.length < 1) ? resources_3.nil : indexed[0];
     }
-    exports_80("head", head);
+    exports_81("head", head);
     /**
      * Returns the last object in the list or undefined
      *
@@ -2929,9 +2948,9 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
      * @returns {T} last object in the list or undefined
      */
     function tail(indexed) {
-        return (!indexed || indexed.length < 1) ? resources_2.nil : indexed[indexed.length - 1];
+        return (!indexed || indexed.length < 1) ? resources_3.nil : indexed[indexed.length - 1];
     }
-    exports_80("tail", tail);
+    exports_81("tail", tail);
     /**
      * Converts list to an Array.
      * Useful for converting NodeList and arguments to []
@@ -2944,7 +2963,7 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
     function toArray(indexed, index) {
         return slice.call(indexed, index || 0);
     }
-    exports_80("toArray", toArray);
+    exports_81("toArray", toArray);
     /**
      * Performs the function against all objects in the list
      *
@@ -2958,7 +2977,7 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
             fn(items[i]);
         }
     }
-    exports_80("each", each);
+    exports_81("each", each);
     /**
      * Returns the max value of a given property in a list
      *
@@ -2979,7 +2998,7 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
         return max;
     }
-    exports_80("max", max);
+    exports_81("max", max);
     /**
      * Returns the max value of a given property in a list
      *
@@ -3000,7 +3019,7 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
         return max;
     }
-    exports_80("maxBy", maxBy);
+    exports_81("maxBy", maxBy);
     /**
      * Maps one list of objects to another.
      * Returning undefined skips the item (effectively filtering it)
@@ -3016,13 +3035,13 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         var results = [];
         for (var i = 0, len = items.length; i < len; i++) {
             var result = fn(items[i]);
-            if (result !== resources_2.nil) {
+            if (result !== resources_3.nil) {
                 results.push(result);
             }
         }
         return results;
     }
-    exports_80("map", map);
+    exports_81("map", map);
     /**
      * Pushes each item in target into source and returns source
      *
@@ -3034,11 +3053,11 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
     function pushAll(source, target) {
         push.apply(source, target);
     }
-    exports_80("pushAll", pushAll);
+    exports_81("pushAll", pushAll);
     return {
         setters:[
-            function (resources_2_1) {
-                resources_2 = resources_2_1;
+            function (resources_3_1) {
+                resources_3 = resources_3_1;
             }],
         execute: function() {
             slice = Array.prototype.slice;
@@ -3047,22 +3066,22 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
     }
 });
-System.register("just-animate/common/strings", ["just-animate/common/type", "just-animate/common/lists", "just-animate/common/resources"], function(exports_81, context_81) {
+System.register("just-animate/common/strings", ["just-animate/common/type", "just-animate/common/lists", "just-animate/common/resources"], function(exports_82, context_82) {
     "use strict";
-    var __moduleName = context_81 && context_81.id;
-    var type_1, lists_1, resources_3;
+    var __moduleName = context_82 && context_82.id;
+    var type_1, lists_1, resources_4;
     var ostring, cssFunction;
     function camelCaseReplacer(match, p1, p2) {
         return p1 + p2.toUpperCase();
     }
     function toCamelCase(value) {
-        return type_1.isString(value) ? value.replace(resources_3.camelCaseRegex, camelCaseReplacer) : resources_3.nil;
+        return type_1.isString(value) ? value.replace(resources_4.camelCaseRegex, camelCaseReplacer) : resources_4.nil;
     }
-    exports_81("toCamelCase", toCamelCase);
+    exports_82("toCamelCase", toCamelCase);
     function toString(val) {
         return ostring.call(val);
     }
-    exports_81("toString", toString);
+    exports_82("toString", toString);
     return {
         setters:[
             function (type_1_1) {
@@ -3071,78 +3090,78 @@ System.register("just-animate/common/strings", ["just-animate/common/type", "jus
             function (lists_1_1) {
                 lists_1 = lists_1_1;
             },
-            function (resources_3_1) {
-                resources_3 = resources_3_1;
+            function (resources_4_1) {
+                resources_4 = resources_4_1;
             }],
         execute: function() {
             ostring = Object.prototype.toString;
-            exports_81("cssFunction", cssFunction = function () {
+            exports_82("cssFunction", cssFunction = function () {
                 var args = arguments;
                 return args[0] + "(" + lists_1.toArray(args, 1).join(',') + ")";
             });
         }
     }
 });
-System.register("just-animate/common/easings", ["just-animate/common/strings", "just-animate/common/resources"], function(exports_82, context_82) {
+System.register("just-animate/common/easings", ["just-animate/common/strings", "just-animate/common/resources"], function(exports_83, context_83) {
     "use strict";
-    var __moduleName = context_82 && context_82.id;
-    var strings_1, resources_4;
+    var __moduleName = context_83 && context_83.id;
+    var strings_1, resources_5;
     var easings;
     return {
         setters:[
             function (strings_1_1) {
                 strings_1 = strings_1_1;
             },
-            function (resources_4_1) {
-                resources_4 = resources_4_1;
+            function (resources_5_1) {
+                resources_5 = resources_5_1;
             }],
         execute: function() {
-            exports_82("easings", easings = {
-                easeInBack: strings_1.cssFunction(resources_4.cubicBezier, 0.6, -0.28, 0.735, 0.045),
-                easeInCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.6, 0.04, 0.98, 0.335),
-                easeInCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.55, 0.055, 0.675, 0.19),
-                easeInExpo: strings_1.cssFunction(resources_4.cubicBezier, 0.95, 0.05, 0.795, 0.035),
-                easeInOutBack: strings_1.cssFunction(resources_4.cubicBezier, 0.68, -0.55, 0.265, 1.55),
-                easeInOutCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.785, 0.135, 0.15, 0.86),
-                easeInOutCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.645, 0.045, 0.355, 1),
-                easeInOutExpo: strings_1.cssFunction(resources_4.cubicBezier, 1, 0, 0, 1),
-                easeInOutQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.455, 0.03, 0.515, 0.955),
-                easeInOutQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.77, 0, 0.175, 1),
-                easeInOutQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.86, 0, 0.07, 1),
-                easeInOutSine: strings_1.cssFunction(resources_4.cubicBezier, 0.445, 0.05, 0.55, 0.95),
-                easeInQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.55, 0.085, 0.68, 0.53),
-                easeInQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.895, 0.03, 0.685, 0.22),
-                easeInQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.755, 0.05, 0.855, 0.06),
-                easeInSine: strings_1.cssFunction(resources_4.cubicBezier, 0.47, 0, 0.745, 0.715),
-                easeOutBack: strings_1.cssFunction(resources_4.cubicBezier, 0.175, 0.885, 0.32, 1.275),
-                easeOutCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.075, 0.82, 0.165, 1),
-                easeOutCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.215, 0.61, 0.355, 1),
-                easeOutExpo: strings_1.cssFunction(resources_4.cubicBezier, 0.19, 1, 0.22, 1),
-                easeOutQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.25, 0.46, 0.45, 0.94),
-                easeOutQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.165, 0.84, 0.44, 1),
-                easeOutQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.23, 1, 0.32, 1),
-                easeOutSine: strings_1.cssFunction(resources_4.cubicBezier, 0.39, 0.575, 0.565, 1),
-                elegantSlowStartEnd: strings_1.cssFunction(resources_4.cubicBezier, 0.175, 0.885, 0.32, 1.275)
+            exports_83("easings", easings = {
+                easeInBack: strings_1.cssFunction(resources_5.cubicBezier, 0.6, -0.28, 0.735, 0.045),
+                easeInCirc: strings_1.cssFunction(resources_5.cubicBezier, 0.6, 0.04, 0.98, 0.335),
+                easeInCubic: strings_1.cssFunction(resources_5.cubicBezier, 0.55, 0.055, 0.675, 0.19),
+                easeInExpo: strings_1.cssFunction(resources_5.cubicBezier, 0.95, 0.05, 0.795, 0.035),
+                easeInOutBack: strings_1.cssFunction(resources_5.cubicBezier, 0.68, -0.55, 0.265, 1.55),
+                easeInOutCirc: strings_1.cssFunction(resources_5.cubicBezier, 0.785, 0.135, 0.15, 0.86),
+                easeInOutCubic: strings_1.cssFunction(resources_5.cubicBezier, 0.645, 0.045, 0.355, 1),
+                easeInOutExpo: strings_1.cssFunction(resources_5.cubicBezier, 1, 0, 0, 1),
+                easeInOutQuad: strings_1.cssFunction(resources_5.cubicBezier, 0.455, 0.03, 0.515, 0.955),
+                easeInOutQuart: strings_1.cssFunction(resources_5.cubicBezier, 0.77, 0, 0.175, 1),
+                easeInOutQuint: strings_1.cssFunction(resources_5.cubicBezier, 0.86, 0, 0.07, 1),
+                easeInOutSine: strings_1.cssFunction(resources_5.cubicBezier, 0.445, 0.05, 0.55, 0.95),
+                easeInQuad: strings_1.cssFunction(resources_5.cubicBezier, 0.55, 0.085, 0.68, 0.53),
+                easeInQuart: strings_1.cssFunction(resources_5.cubicBezier, 0.895, 0.03, 0.685, 0.22),
+                easeInQuint: strings_1.cssFunction(resources_5.cubicBezier, 0.755, 0.05, 0.855, 0.06),
+                easeInSine: strings_1.cssFunction(resources_5.cubicBezier, 0.47, 0, 0.745, 0.715),
+                easeOutBack: strings_1.cssFunction(resources_5.cubicBezier, 0.175, 0.885, 0.32, 1.275),
+                easeOutCirc: strings_1.cssFunction(resources_5.cubicBezier, 0.075, 0.82, 0.165, 1),
+                easeOutCubic: strings_1.cssFunction(resources_5.cubicBezier, 0.215, 0.61, 0.355, 1),
+                easeOutExpo: strings_1.cssFunction(resources_5.cubicBezier, 0.19, 1, 0.22, 1),
+                easeOutQuad: strings_1.cssFunction(resources_5.cubicBezier, 0.25, 0.46, 0.45, 0.94),
+                easeOutQuart: strings_1.cssFunction(resources_5.cubicBezier, 0.165, 0.84, 0.44, 1),
+                easeOutQuint: strings_1.cssFunction(resources_5.cubicBezier, 0.23, 1, 0.32, 1),
+                easeOutSine: strings_1.cssFunction(resources_5.cubicBezier, 0.39, 0.575, 0.565, 1),
+                elegantSlowStartEnd: strings_1.cssFunction(resources_5.cubicBezier, 0.175, 0.885, 0.32, 1.275)
             });
         }
     }
 });
-System.register("just-animate/common/errors", [], function(exports_83, context_83) {
+System.register("just-animate/common/errors", [], function(exports_84, context_84) {
     "use strict";
-    var __moduleName = context_83 && context_83.id;
+    var __moduleName = context_84 && context_84.id;
     function invalidArg(name) {
         return new Error("Bad: " + name);
     }
-    exports_83("invalidArg", invalidArg);
+    exports_84("invalidArg", invalidArg);
     return {
         setters:[],
         execute: function() {
         }
     }
 });
-System.register("just-animate/common/elements", ["just-animate/common/lists", "just-animate/common/type", "just-animate/common/errors"], function(exports_84, context_84) {
+System.register("just-animate/common/elements", ["just-animate/common/lists", "just-animate/common/type", "just-animate/common/errors"], function(exports_85, context_85) {
     "use strict";
-    var __moduleName = context_84 && context_84.id;
+    var __moduleName = context_85 && context_85.id;
     var lists_2, type_2, errors_1;
     /**
      * Recursively resolves the element source from dom, selector, jquery, array, and function sources
@@ -3182,7 +3201,7 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         // otherwise return empty    
         return [];
     }
-    exports_84("queryElements", queryElements);
+    exports_85("queryElements", queryElements);
     return {
         setters:[
             function (lists_2_1) {
@@ -3198,398 +3217,10 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         }
     }
 });
-System.register("just-animate/common/functions", ["just-animate/common/type"], function(exports_85, context_85) {
-    "use strict";
-    var __moduleName = context_85 && context_85.id;
-    var type_3;
-    var pipe;
-    return {
-        setters:[
-            function (type_3_1) {
-                type_3 = type_3_1;
-            }],
-        execute: function() {
-            exports_85("pipe", pipe = function pipe() {
-                var args = arguments;
-                var initial = args[0];
-                var value = type_3.isFunction(initial) ? initial() : initial;
-                var len = args.length;
-                for (var x = 1; x < len; x++) {
-                    value = args[x](value);
-                }
-                return value;
-            });
-        }
-    }
-});
-System.register("just-animate/common/keyframes", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/resources"], function(exports_86, context_86) {
+System.register("just-animate/common/math", ["just-animate/common/resources"], function(exports_86, context_86) {
     "use strict";
     var __moduleName = context_86 && context_86.id;
-    var type_4, strings_2, errors_2, resources_5, resources_6;
-    var offset;
-    function spaceKeyframes(keyframes) {
-        // don't attempt to fill animation if less than 2 keyframes
-        if (keyframes.length < 2) {
-            return keyframes;
-        }
-        var first = keyframes[0];
-        // ensure first offset    
-        if (first.offset !== 0) {
-            first.offset = 0;
-        }
-        var last = keyframes[keyframes.length - 1];
-        // ensure last offset
-        if (last.offset !== 1) {
-            last.offset = 1;
-        }
-        // explicitly set implicit offsets
-        var len = keyframes.length;
-        var lasti = len - 1;
-        for (var i = 1; i < lasti; i++) {
-            var target = keyframes[i];
-            // skip entries that have an offset        
-            if (type_4.isNumber(target.offset)) {
-                continue;
-            }
-            // search for the next offset with a value        
-            for (var j = i + 1; j < len; j++) {
-                // pass if offset is not set
-                if (!type_4.isNumber(keyframes[j].offset)) {
-                    continue;
-                }
-                // calculate timing/position info
-                var startTime = keyframes[i - 1].offset;
-                var endTime = keyframes[j].offset;
-                var timeDelta = endTime - startTime;
-                var deltaLength = j - i + 1;
-                // set the values of all keyframes between i and j (exclusive)
-                for (var k = 1; k < deltaLength; k++) {
-                    // set to percentage of change over time delta + starting time
-                    keyframes[k - 1 + i].offset = ((k / j) * timeDelta) + startTime;
-                }
-                // move i past this keyframe since all frames between should be processed
-                i = j;
-                break;
-            }
-        }
-        return keyframes;
-    }
-    exports_86("spaceKeyframes", spaceKeyframes);
-    /**
-     * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
-     */
-    function normalizeKeyframes(keyframes) {
-        // don't attempt to fill animation if less than 2 keyframes
-        if (keyframes.length < 2) {
-            return keyframes;
-        }
-        var first = keyframes[0];
-        // ensure first offset    
-        if (first.offset !== 0) {
-            first.offset = 0;
-        }
-        var last = keyframes[keyframes.length - 1];
-        // fill initial keyframe with missing props
-        var len = keyframes.length;
-        for (var i = 1; i < len; i++) {
-            var keyframe = keyframes[i];
-            for (var prop in keyframe) {
-                if (prop !== offset && !type_4.isDefined(first[prop])) {
-                    first[prop] = keyframe[prop];
-                }
-            }
-        }
-        // fill end keyframe with missing props
-        for (var i = len - 2; i > -1; i--) {
-            var keyframe = keyframes[i];
-            for (var prop in keyframe) {
-                if (prop !== offset && !type_4.isDefined(last[prop])) {
-                    last[prop] = keyframe[prop];
-                }
-            }
-        }
-        return keyframes;
-    }
-    exports_86("normalizeKeyframes", normalizeKeyframes);
-    /**
-     * Handles transforming short hand key properties into their native form
-     */
-    function normalizeProperties(keyframe) {
-        var xIndex = 0;
-        var yIndex = 1;
-        var zIndex = 2;
-        // transform properties
-        var scaleArray = [];
-        var skewArray = [];
-        var translateArray = [];
-        var output = {};
-        var transformString = '';
-        for (var prop in keyframe) {
-            var value = keyframe[prop];
-            if (!type_4.isDefined(value)) {
-                continue;
-            }
-            switch (prop) {
-                case resources_6.scale3d:
-                    if (type_4.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 3) {
-                            throw errors_2.invalidArg(resources_6.scale3d);
-                        }
-                        scaleArray[xIndex] = arr[xIndex];
-                        scaleArray[yIndex] = arr[yIndex];
-                        scaleArray[zIndex] = arr[zIndex];
-                        continue;
-                    }
-                    if (type_4.isNumber(value)) {
-                        scaleArray[xIndex] = value;
-                        scaleArray[yIndex] = value;
-                        scaleArray[zIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.scale3d);
-                case resources_6.scale:
-                    if (type_4.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 2) {
-                            throw errors_2.invalidArg(resources_6.scale);
-                        }
-                        scaleArray[xIndex] = arr[xIndex];
-                        scaleArray[yIndex] = arr[yIndex];
-                        continue;
-                    }
-                    if (type_4.isNumber(value)) {
-                        scaleArray[xIndex] = value;
-                        scaleArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.scale);
-                case resources_6.scaleX:
-                    if (type_4.isNumber(value)) {
-                        scaleArray[xIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.scaleX);
-                case resources_6.scaleY:
-                    if (type_4.isNumber(value)) {
-                        scaleArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.scaleY);
-                case resources_6.scaleZ:
-                    if (type_4.isNumber(value)) {
-                        scaleArray[zIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.scaleZ);
-                case resources_6.skew:
-                    if (type_4.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 2) {
-                            throw errors_2.invalidArg(resources_6.skew);
-                        }
-                        skewArray[xIndex] = arr[xIndex];
-                        skewArray[yIndex] = arr[yIndex];
-                        continue;
-                    }
-                    if (type_4.isNumber(value)) {
-                        skewArray[xIndex] = value;
-                        skewArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.skew);
-                case resources_6.skewX:
-                    if (type_4.isString(value)) {
-                        skewArray[xIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.skewX);
-                case resources_6.skewY:
-                    if (type_4.isString(value)) {
-                        skewArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.skewY);
-                case resources_6.rotate3d:
-                    if (type_4.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 4) {
-                            throw errors_2.invalidArg(resources_6.rotate3d);
-                        }
-                        transformString += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.rotate3d);
-                case resources_6.rotateX:
-                    if (type_4.isString(value)) {
-                        transformString += " rotate3d(1, 0, 0, " + value + ")";
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.rotateX);
-                case resources_6.rotateY:
-                    if (type_4.isString(value)) {
-                        transformString += " rotate3d(0, 1, 0, " + value + ")";
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.rotateY);
-                case resources_6.rotate:
-                case resources_6.rotateZ:
-                    if (type_4.isString(value)) {
-                        transformString += " rotate3d(0, 0, 1, " + value + ")";
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.rotateZ);
-                case resources_6.translate3d:
-                    if (type_4.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 3) {
-                            throw errors_2.invalidArg(resources_6.translate3d);
-                        }
-                        translateArray[xIndex] = arr[xIndex];
-                        translateArray[yIndex] = arr[yIndex];
-                        translateArray[zIndex] = arr[zIndex];
-                        continue;
-                    }
-                    if (type_4.isString(value) || type_4.isNumber(value)) {
-                        translateArray[xIndex] = value;
-                        translateArray[yIndex] = value;
-                        translateArray[zIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.rotate3d);
-                case resources_6.translate:
-                    if (type_4.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 2) {
-                            throw errors_2.invalidArg(resources_6.translate);
-                        }
-                        translateArray[xIndex] = arr[xIndex];
-                        translateArray[yIndex] = arr[yIndex];
-                        continue;
-                    }
-                    if (type_4.isString(value) || type_4.isNumber(value)) {
-                        translateArray[xIndex] = value;
-                        translateArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.translate);
-                case resources_6.x:
-                case resources_6.translateX:
-                    if (type_4.isString(value) || type_4.isNumber(value)) {
-                        translateArray[xIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.x);
-                case resources_6.y:
-                case resources_6.translateY:
-                    if (type_4.isString(value) || type_4.isNumber(value)) {
-                        translateArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.y);
-                case resources_6.z:
-                case resources_6.translateZ:
-                    if (type_4.isString(value) || type_4.isNumber(value)) {
-                        translateArray[zIndex] = value;
-                        continue;
-                    }
-                    throw errors_2.invalidArg(resources_6.z);
-                case resources_6.transform:
-                    transformString += ' ' + value;
-                    break;
-                default:
-                    output[strings_2.toCamelCase(prop)] = value;
-                    break;
-            }
-        }
-        // combine scale
-        var isScaleX = scaleArray[xIndex] !== resources_5.nil;
-        var isScaleY = scaleArray[yIndex] !== resources_5.nil;
-        var isScaleZ = scaleArray[zIndex] !== resources_5.nil;
-        if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
-            var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
-            transformString += " scale3d(" + scaleString + ")";
-        }
-        else if (isScaleX && isScaleY) {
-            transformString += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
-        }
-        else if (isScaleX) {
-            transformString += " scaleX(" + scaleArray[xIndex] + ")";
-        }
-        else if (isScaleY) {
-            transformString += " scaleX(" + scaleArray[yIndex] + ")";
-        }
-        else if (isScaleZ) {
-            transformString += " scaleX(" + scaleArray[zIndex] + ")";
-        }
-        else {
-        }
-        // combine skew
-        var isskewX = skewArray[xIndex] !== resources_5.nil;
-        var isskewY = skewArray[yIndex] !== resources_5.nil;
-        if (isskewX && isskewY) {
-            transformString += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
-        }
-        else if (isskewX) {
-            transformString += " skewX(" + skewArray[xIndex] + ")";
-        }
-        else if (isskewY) {
-            transformString += " skewY(" + skewArray[yIndex] + ")";
-        }
-        else {
-        }
-        // combine translate
-        var istranslateX = translateArray[xIndex] !== resources_5.nil;
-        var istranslateY = translateArray[yIndex] !== resources_5.nil;
-        var istranslateZ = translateArray[zIndex] !== resources_5.nil;
-        if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
-            var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
-            transformString += " translate3d(" + translateString + ")";
-        }
-        else if (istranslateX && istranslateY) {
-            transformString += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
-        }
-        else if (istranslateX) {
-            transformString += " translateX(" + translateArray[xIndex] + ")";
-        }
-        else if (istranslateY) {
-            transformString += " translateY(" + translateArray[yIndex] + ")";
-        }
-        else if (istranslateZ) {
-            transformString += " translateZ(" + translateArray[zIndex] + ")";
-        }
-        else {
-        }
-        if (transformString) {
-            output['transform'] = transformString;
-        }
-        return output;
-    }
-    exports_86("normalizeProperties", normalizeProperties);
-    return {
-        setters:[
-            function (type_4_1) {
-                type_4 = type_4_1;
-            },
-            function (strings_2_1) {
-                strings_2 = strings_2_1;
-            },
-            function (errors_2_1) {
-                errors_2 = errors_2_1;
-            },
-            function (resources_5_1) {
-                resources_5 = resources_5_1;
-                resources_6 = resources_5_1;
-            }],
-        execute: function() {
-            offset = 'offset';
-        }
-    }
-});
-System.register("just-animate/common/math", ["just-animate/common/resources"], function(exports_87, context_87) {
-    "use strict";
-    var __moduleName = context_87 && context_87.id;
-    var resources_7;
+    var resources_6;
     var linearCubicBezier, SUBDIVISION_EPSILON;
     /**
      * Clamps a number between the min and max
@@ -3601,13 +3232,13 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
      * @returns {number} val if between min-max, min if lesser, max if greater
      */
     function clamp(val, min, max) {
-        return val === resources_7.nil ? resources_7.nil : val < min ? min : val > max ? max : val;
+        return val === resources_6.nil ? resources_6.nil : val < min ? min : val > max ? max : val;
     }
-    exports_87("clamp", clamp);
+    exports_86("clamp", clamp);
     function inRange(val, min, max) {
         return min < max ? min <= val && val <= max : max <= val && val <= min;
     }
-    exports_87("inRange", inRange);
+    exports_86("inRange", inRange);
     function bezier(n1, n2, t) {
         return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
     }
@@ -3639,11 +3270,11 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
             return x;
         };
     }
-    exports_87("cubicBezier", cubicBezier);
+    exports_86("cubicBezier", cubicBezier);
     return {
         setters:[
-            function (resources_7_1) {
-                resources_7 = resources_7_1;
+            function (resources_6_1) {
+                resources_6 = resources_6_1;
             }],
         execute: function() {
             linearCubicBezier = function (x) { return x; };
@@ -3651,22 +3282,22 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
         }
     }
 });
-System.register("just-animate/common/objects", ["just-animate/common/type"], function(exports_88, context_88) {
+System.register("just-animate/common/objects", ["just-animate/common/type"], function(exports_87, context_87) {
     "use strict";
-    var __moduleName = context_88 && context_88.id;
-    var type_5;
+    var __moduleName = context_87 && context_87.id;
+    var type_3;
     var extend, inherit, expand;
     function unwrap(value) {
-        if (type_5.isFunction(value)) {
+        if (type_3.isFunction(value)) {
             return value();
         }
         return value;
     }
-    exports_88("unwrap", unwrap);
+    exports_87("unwrap", unwrap);
     return {
         setters:[
-            function (type_5_1) {
-                type_5 = type_5_1;
+            function (type_3_1) {
+                type_3 = type_3_1;
             }],
         execute: function() {
             /**
@@ -3677,7 +3308,7 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
              * @param {...any[]} sources sources from which to inherit properties
              * @returns {*} first object
              */
-            exports_88("extend", extend = function () {
+            exports_87("extend", extend = function () {
                 var args = arguments;
                 var target = args[0];
                 for (var i = 1, len = args.length; i < len; i++) {
@@ -3688,27 +3319,27 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
                 }
                 return target;
             });
-            exports_88("inherit", inherit = function () {
+            exports_87("inherit", inherit = function () {
                 var args = arguments;
                 var target = args[0];
                 for (var i = 1, len = args.length; i < len; i++) {
                     var source = args[i];
                     for (var propName in source) {
-                        if (!type_5.isDefined(target[propName])) {
+                        if (!type_3.isDefined(target[propName])) {
                             target[propName] = source[propName];
                         }
                     }
                 }
                 return target;
             });
-            exports_88("expand", expand = function (expandable) {
+            exports_87("expand", expand = function (expandable) {
                 var result = {};
                 for (var prop in expandable) {
                     var propVal = expandable[prop];
-                    if (type_5.isFunction(propVal)) {
+                    if (type_3.isFunction(propVal)) {
                         propVal = propVal();
                     }
-                    else if (type_5.isObject(propVal)) {
+                    else if (type_3.isObject(propVal)) {
                         propVal = expand(propVal);
                     }
                     result[prop] = propVal;
@@ -3718,57 +3349,57 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
         }
     }
 });
-System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function(exports_89, context_89) {
+System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function(exports_88, context_88) {
     "use strict";
-    var __moduleName = context_89 && context_89.id;
-    var type_6, resources_8, errors_3;
+    var __moduleName = context_88 && context_88.id;
+    var type_4, resources_7, errors_2;
     var stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second;
     function fromDistance(val) {
-        if (!type_6.isDefined(val)) {
-            return resources_8.nil;
+        if (!type_4.isDefined(val)) {
+            return resources_7.nil;
         }
-        if (type_6.isNumber(val)) {
+        if (type_4.isNumber(val)) {
             return Unit(Number(val), px, stepNone);
         }
-        var match = resources_8.distanceExpression.exec(val);
+        var match = resources_7.distanceExpression.exec(val);
         var unit = match[2];
         var value = parseFloat(match[1]);
         return Unit(value, unit, stepNone);
     }
-    exports_89("fromDistance", fromDistance);
+    exports_88("fromDistance", fromDistance);
     function fromPercentage(val) {
-        if (!type_6.isDefined(val)) {
-            return resources_8.nil;
+        if (!type_4.isDefined(val)) {
+            return resources_7.nil;
         }
-        if (type_6.isNumber(val)) {
+        if (type_4.isNumber(val)) {
             return Unit(Number(val), percent, stepNone);
         }
-        var match = resources_8.percentageExpression.exec(val);
+        var match = resources_7.percentageExpression.exec(val);
         var value = parseFloat(match[1]);
         return Unit(value, percent, stepNone);
     }
-    exports_89("fromPercentage", fromPercentage);
+    exports_88("fromPercentage", fromPercentage);
     function fromTime(val) {
-        if (type_6.isNumber(val)) {
+        if (type_4.isNumber(val)) {
             return Unit(Number(val), millisecond, stepNone);
         }
-        var match = resources_8.timeExpression.exec(val);
+        var match = resources_7.timeExpression.exec(val);
         var step = match[1] || stepNone;
         var unit = match[3];
         var value = parseFloat(match[2]);
         var valueMs;
-        if (unit === resources_8.nil || unit === millisecond) {
+        if (unit === resources_7.nil || unit === millisecond) {
             valueMs = value;
         }
         else if (unit === second) {
             valueMs = value * 1000;
         }
         else {
-            throw errors_3.invalidArg('format');
+            throw errors_2.invalidArg('format');
         }
         return Unit(valueMs, millisecond, step);
     }
-    exports_89("fromTime", fromTime);
+    exports_88("fromTime", fromTime);
     function Unit(value, unit, step) {
         var self = this instanceof Unit ? this : Object.create(Unit.prototype);
         self.value = value;
@@ -3776,44 +3407,44 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         self.step = step;
         return self;
     }
-    exports_89("Unit", Unit);
+    exports_88("Unit", Unit);
     return {
         setters:[
-            function (type_6_1) {
-                type_6 = type_6_1;
+            function (type_4_1) {
+                type_4 = type_4_1;
             },
-            function (resources_8_1) {
-                resources_8 = resources_8_1;
+            function (resources_7_1) {
+                resources_7 = resources_7_1;
             },
-            function (errors_3_1) {
-                errors_3 = errors_3_1;
+            function (errors_2_1) {
+                errors_2 = errors_2_1;
             }],
         execute: function() {
-            exports_89("stepNone", stepNone = '=');
-            exports_89("stepForward", stepForward = '+=');
-            exports_89("stepBackward", stepBackward = '-=');
-            exports_89("em", em = 'em');
-            exports_89("ex", ex = 'ex');
-            exports_89("ch", ch = 'ch');
-            exports_89("rem", rem = 'rem');
-            exports_89("vh", vh = 'vh');
-            exports_89("vw", vw = 'vw');
-            exports_89("vmin", vmin = 'vmin');
-            exports_89("vmax", vmax = 'vmax');
-            exports_89("px", px = 'px');
-            exports_89("mm", mm = 'mm');
-            exports_89("q", q = 'q');
-            exports_89("cm", cm = 'cm');
-            exports_89("inch", inch = 'in');
-            exports_89("point", point = 'pt');
-            exports_89("pica", pica = 'pc');
-            exports_89("percent", percent = '%');
-            exports_89("millisecond", millisecond = 'ms');
-            exports_89("second", second = 's');
+            exports_88("stepNone", stepNone = '=');
+            exports_88("stepForward", stepForward = '+=');
+            exports_88("stepBackward", stepBackward = '-=');
+            exports_88("em", em = 'em');
+            exports_88("ex", ex = 'ex');
+            exports_88("ch", ch = 'ch');
+            exports_88("rem", rem = 'rem');
+            exports_88("vh", vh = 'vh');
+            exports_88("vw", vw = 'vw');
+            exports_88("vmin", vmin = 'vmin');
+            exports_88("vmax", vmax = 'vmax');
+            exports_88("px", px = 'px');
+            exports_88("mm", mm = 'mm');
+            exports_88("q", q = 'q');
+            exports_88("cm", cm = 'cm');
+            exports_88("inch", inch = 'in');
+            exports_88("point", point = 'pt');
+            exports_88("pica", pica = 'pc');
+            exports_88("percent", percent = '%');
+            exports_88("millisecond", millisecond = 'ms');
+            exports_88("second", second = 's');
             Unit.prototype = {
-                step: resources_8.nil,
-                unit: resources_8.nil,
-                value: resources_8.nil,
+                step: resources_7.nil,
+                unit: resources_7.nil,
+                value: resources_7.nil,
                 toString: function () {
                     return String(this.value) + this.unit;
                 }
@@ -3821,22 +3452,19 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         }
     }
 });
-System.register("just-animate/common/utils", [], function(exports_90, context_90) {
+System.register("just-animate/common/utils", [], function(exports_89, context_89) {
     "use strict";
-    var __moduleName = context_90 && context_90.id;
+    var __moduleName = context_89 && context_89.id;
     var global, requestAnimationFrame, now, raf;
-    function dict(it) {
-    }
-    exports_90("dict", dict);
     return {
         setters:[],
         execute: function() {
             global = window;
             requestAnimationFrame = global.requestAnimationFrame;
-            exports_90("now", now = (performance && performance.now)
+            exports_89("now", now = (performance && performance.now)
                 ? function () { return performance.now(); }
                 : function () { return Date.now(); });
-            exports_90("raf", raf = (requestAnimationFrame)
+            exports_89("raf", raf = (requestAnimationFrame)
                 ? function (ctx, fn) {
                     requestAnimationFrame(function () { fn(ctx); });
                 }
@@ -3846,31 +3474,31 @@ System.register("just-animate/common/utils", [], function(exports_90, context_90
         }
     }
 });
-System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/type", "just-animate/common/errors", "just-animate/common/resources"], function(exports_91, context_91) {
+System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/type", "just-animate/common/errors", "just-animate/common/resources"], function(exports_90, context_90) {
     "use strict";
-    var __moduleName = context_91 && context_91.id;
-    var type_7, errors_4, resources_9;
+    var __moduleName = context_90 && context_90.id;
+    var type_5, errors_3, resources_8;
     function Dispatcher() {
         var self = this;
         self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);
         self._fn = {};
         return self;
     }
-    exports_91("Dispatcher", Dispatcher);
+    exports_90("Dispatcher", Dispatcher);
     return {
         setters:[
-            function (type_7_1) {
-                type_7 = type_7_1;
+            function (type_5_1) {
+                type_5 = type_5_1;
             },
-            function (errors_4_1) {
-                errors_4 = errors_4_1;
+            function (errors_3_1) {
+                errors_3 = errors_3_1;
             },
-            function (resources_9_1) {
-                resources_9 = resources_9_1;
+            function (resources_8_1) {
+                resources_8 = resources_8_1;
             }],
         execute: function() {
             Dispatcher.prototype = {
-                _fn: resources_9.nil,
+                _fn: resources_8.nil,
                 trigger: function (eventName, args) {
                     var listeners = this._fn[eventName];
                     if (!listeners) {
@@ -3878,12 +3506,12 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
                     }
                     var len = listeners.length;
                     for (var i = 0; i < len; i++) {
-                        listeners[i].apply(resources_9.nil, args);
+                        listeners[i].apply(resources_8.nil, args);
                     }
                 },
                 on: function (eventName, listener) {
-                    if (!type_7.isFunction(listener)) {
-                        throw errors_4.invalidArg('listener');
+                    if (!type_5.isFunction(listener)) {
+                        throw errors_3.invalidArg('listener');
                     }
                     var fn = this._fn;
                     var listeners = fn[eventName];
@@ -3909,26 +3537,26 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
         }
     }
 });
-System.register("just-animate/plugins/core/MixinService", ["just-animate/common/resources"], function(exports_92, context_92) {
+System.register("just-animate/plugins/core/MixinService", ["just-animate/common/resources"], function(exports_91, context_91) {
     "use strict";
-    var __moduleName = context_92 && context_92.id;
-    var resources_10;
+    var __moduleName = context_91 && context_91.id;
+    var resources_9;
     var presets, MixinService;
     return {
         setters:[
-            function (resources_10_1) {
-                resources_10 = resources_10_1;
+            function (resources_9_1) {
+                resources_9 = resources_9_1;
             }],
         execute: function() {
             presets = {};
-            exports_92("MixinService", MixinService = (function () {
-                function class_1() {
+            MixinService = (function () {
+                function MixinService() {
                     this.defs = {};
                 }
-                class_1.prototype.findAnimation = function (name) {
-                    return this.defs[name] || presets[name] || resources_10.nil;
+                MixinService.prototype.findAnimation = function (name) {
+                    return this.defs[name] || presets[name] || resources_9.nil;
                 };
-                class_1.prototype.registerAnimation = function (animationOptions, isGlobal) {
+                MixinService.prototype.registerAnimation = function (animationOptions, isGlobal) {
                     var name = animationOptions.name;
                     if (isGlobal) {
                         presets[name] = animationOptions;
@@ -3936,158 +3564,27 @@ System.register("just-animate/plugins/core/MixinService", ["just-animate/common/
                     }
                     this.defs[name] = animationOptions;
                 };
-                return class_1;
-            }()));
+                return MixinService;
+            }());
+            exports_91("MixinService", MixinService);
         }
     }
 });
-System.register("just-animate/plugins/core/KeyframeAnimation", ["just-animate/common/type", "just-animate/common/objects", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher"], function(exports_93, context_93) {
+System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/resources", "just-animate/common/utils"], function(exports_92, context_92) {
     "use strict";
-    var __moduleName = context_93 && context_93.id;
-    var type_8, objects_1, resources_11, Dispatcher_1;
-    function KeyframeAnimation(target, keyframes, options) {
-        var self = this instanceof KeyframeAnimation ? this : Object.create(KeyframeAnimation.prototype);
-        var duration = options.to - options.from;
-        self._iterationStart = objects_1.unwrap(options.iterationStart) || 0;
-        self._iterations = objects_1.unwrap(options.iterations) || 1;
-        self._duration = duration;
-        self._startTime = options.from || 0;
-        self._endTime = options.to;
-        self._totalDuration = (self._iterations || 1) * duration;
-        var dispatcher = Dispatcher_1.Dispatcher();
-        self._dispatcher = dispatcher;
-        var animator = target[resources_11.animate](keyframes, {
-            delay: objects_1.unwrap(options.delay) || undefined,
-            direction: objects_1.unwrap(options.direction),
-            duration: duration,
-            easing: options.easing || 'linear',
-            fill: options.fill || 'none',
-            iterationStart: self._iterationStart,
-            iterations: self._iterations
-        });
-        // immediately cancel to prevent effects until play is called    
-        animator.cancel();
-        animator['onfinish'] = function () { return dispatcher.trigger(resources_11.finish); };
-        self._animator = animator;
-        return self;
-    }
-    exports_93("KeyframeAnimation", KeyframeAnimation);
-    return {
-        setters:[
-            function (type_8_1) {
-                type_8 = type_8_1;
-            },
-            function (objects_1_1) {
-                objects_1 = objects_1_1;
-            },
-            function (resources_11_1) {
-                resources_11 = resources_11_1;
-            },
-            function (Dispatcher_1_1) {
-                Dispatcher_1 = Dispatcher_1_1;
-            }],
-        execute: function() {
-            KeyframeAnimation.prototype = {
-                _dispatcher: resources_11.nil,
-                _duration: resources_11.nil,
-                _endTime: resources_11.nil,
-                _iterationStart: resources_11.nil,
-                _iterations: resources_11.nil,
-                _startTime: resources_11.nil,
-                _totalDuration: resources_11.nil,
-                currentTime: function (value) {
-                    var self = this;
-                    if (!type_8.isDefined(value)) {
-                        return self._animator.currentTime;
-                    }
-                    self._animator.currentTime = value;
-                    return self;
-                },
-                playbackRate: function (value) {
-                    var self = this;
-                    if (!type_8.isDefined(value)) {
-                        return self._animator.playbackRate;
-                    }
-                    self._animator.playbackRate = value;
-                    return self;
-                },
-                playState: function () {
-                    return this._animator.playState;
-                },
-                iterationStart: function () {
-                    return this._iterationStart;
-                },
-                iterations: function () {
-                    return this._iterations;
-                },
-                totalDuration: function () {
-                    return this._totalDuration;
-                },
-                duration: function () {
-                    return this._duration;
-                },
-                endTime: function () {
-                    return this._endTime;
-                },
-                startTime: function () {
-                    return this._startTime;
-                },
-                off: function (eventName, listener) {
-                    this._dispatcher.off(eventName, listener);
-                    return this;
-                },
-                on: function (eventName, listener) {
-                    this._dispatcher.on(eventName, listener);
-                    return this;
-                },
-                cancel: function () {
-                    var self = this;
-                    self._animator.cancel();
-                    self._dispatcher.trigger(resources_11.cancel);
-                    return self;
-                },
-                reverse: function () {
-                    var self = this;
-                    self._animator.reverse();
-                    self._dispatcher.trigger(resources_11.reverse);
-                    return self;
-                },
-                pause: function () {
-                    var self = this;
-                    self._animator.pause();
-                    self._dispatcher.trigger(resources_11.pause);
-                    return self;
-                },
-                play: function () {
-                    var self = this;
-                    self._animator.play();
-                    self._dispatcher.trigger(resources_11.play);
-                    return self;
-                },
-                finish: function () {
-                    var self = this;
-                    self._animator.finish();
-                    return self;
-                }
-            };
-        }
-    }
-});
-System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/resources", "just-animate/common/utils"], function(exports_94, context_94) {
-    "use strict";
-    var __moduleName = context_94 && context_94.id;
-    var resources_12, utils_1;
+    var __moduleName = context_92 && context_92.id;
+    var resources_10, utils_1;
     function TimeLoop() {
         var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
         self.active = [];
         self.elapses = [];
-        self.isActive = resources_12.nil;
-        self.lastTime = resources_12.nil;
+        self.isActive = resources_10.nil;
+        self.lastTime = resources_10.nil;
         self.offs = [];
         self.ons = [];
         return self;
     }
-    exports_94("TimeLoop", TimeLoop);
+    exports_92("TimeLoop", TimeLoop);
     function update(self) {
         updateOffs(self);
         updateOns(self);
@@ -4100,8 +3597,8 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
         // if nil is subscribed, kill the cycle
         if (!len) {
             // end recursion
-            self.isActive = resources_12.nil;
-            self.lastTime = resources_12.nil;
+            self.isActive = resources_10.nil;
+            self.lastTime = resources_10.nil;
             return;
         }
         // ensure running and requestAnimationFrame is called
@@ -4142,8 +3639,8 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
     }
     return {
         setters:[
-            function (resources_12_1) {
-                resources_12 = resources_12_1;
+            function (resources_10_1) {
+                resources_10 = resources_10_1;
             },
             function (utils_1_1) {
                 utils_1 = utils_1_1;
@@ -4186,99 +3683,69 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
         }
     }
 });
-System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/elements", "just-animate/common/errors", "just-animate/common/functions", "just-animate/common/resources", "just-animate/common/keyframes", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/KeyframeAnimation", "just-animate/common/easings"], function(exports_95, context_95) {
+System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/common/easings"], function(exports_93, context_93) {
     "use strict";
-    var __moduleName = context_95 && context_95.id;
-    var lists_3, objects_2, type_9, math_1, elements_2, errors_5, functions_1, resources_13, keyframes_1, Dispatcher_2, KeyframeAnimation_1, easings_1;
-    var animationPadding;
-    function Animator(resolver, timeloop) {
-        var self = this instanceof Animator ? this : Object.create(Animator.prototype);
-        if (!type_9.isDefined(resources_13.duration)) {
-            throw errors_5.invalidArg(resources_13.duration);
-        }
-        self._duration = 0;
-        self._totalDuration = 0;
-        self._currentTime = resources_13.nil;
-        self._iterationStart = 0;
-        self._iterations = 1;
-        self._lastTick = resources_13.nil;
-        self._playState = 'idle';
-        self._playbackRate = 1;
-        self._startTime = 0;
-        self._events = [];
-        self._resolver = resolver;
-        self._timeLoop = timeloop;
-        self._dispatcher = Dispatcher_2.Dispatcher();
-        self._onTick = self._onTick.bind(self);
-        self.on(resources_13.finish, self._onFinish);
-        self.on(resources_13.cancel, self._onCancel);
-        self.on(resources_13.pause, self._onPause);
-        // autoplay    
-        self.play();
-        return self;
-    }
-    exports_95("Animator", Animator);
+    var __moduleName = context_93 && context_93.id;
+    var lists_3, objects_1, type_6, math_1, errors_4, resources_11, Dispatcher_1, easings_1;
+    var animationPadding, Animator;
     return {
         setters:[
             function (lists_3_1) {
                 lists_3 = lists_3_1;
             },
-            function (objects_2_1) {
-                objects_2 = objects_2_1;
+            function (objects_1_1) {
+                objects_1 = objects_1_1;
             },
-            function (type_9_1) {
-                type_9 = type_9_1;
+            function (type_6_1) {
+                type_6 = type_6_1;
             },
             function (math_1_1) {
                 math_1 = math_1_1;
             },
-            function (elements_2_1) {
-                elements_2 = elements_2_1;
+            function (errors_4_1) {
+                errors_4 = errors_4_1;
             },
-            function (errors_5_1) {
-                errors_5 = errors_5_1;
+            function (resources_11_1) {
+                resources_11 = resources_11_1;
             },
-            function (functions_1_1) {
-                functions_1 = functions_1_1;
-            },
-            function (resources_13_1) {
-                resources_13 = resources_13_1;
-            },
-            function (keyframes_1_1) {
-                keyframes_1 = keyframes_1_1;
-            },
-            function (Dispatcher_2_1) {
-                Dispatcher_2 = Dispatcher_2_1;
-            },
-            function (KeyframeAnimation_1_1) {
-                KeyframeAnimation_1 = KeyframeAnimation_1_1;
+            function (Dispatcher_1_1) {
+                Dispatcher_1 = Dispatcher_1_1;
             },
             function (easings_1_1) {
                 easings_1 = easings_1_1;
             }],
         execute: function() {
+            // todo: remove these imports as soon as possible
             // fixme!: this controls the amount of time left before the timeline gives up 
             // on individual animation and calls finish.  If an animation plays after its time, it looks
             // like it restarts and that causes jank
             animationPadding = 1.0 / 30;
-            Animator.prototype = {
-                _currentTime: resources_13.nil,
-                _dispatcher: resources_13.nil,
-                _duration: resources_13.nil,
-                _endTime: resources_13.nil,
-                _events: resources_13.nil,
-                _iterationStart: resources_13.nil,
-                _iterations: resources_13.nil,
-                _lastTick: resources_13.nil,
-                _playState: resources_13.nil,
-                _playbackRate: resources_13.nil,
-                _resolver: resources_13.nil,
-                _startTime: resources_13.nil,
-                _timeLoop: resources_13.nil,
-                _totalDuration: resources_13.nil,
-                animate: function (options) {
+            Animator = (function () {
+                function Animator(resolver, timeloop, plugins) {
                     var self = this;
-                    if (type_9.isArray(options)) {
+                    if (!type_6.isDefined(resources_11.duration)) {
+                        throw errors_4.invalidArg(resources_11.duration);
+                    }
+                    self._duration = 0;
+                    self._currentTime = resources_11.nil;
+                    self._playState = 'idle';
+                    self._playbackRate = 1;
+                    self._events = [];
+                    self._resolver = resolver;
+                    self._timeLoop = timeloop;
+                    self._plugins = plugins;
+                    self._dispatcher = Dispatcher_1.Dispatcher();
+                    self._onTick = self._onTick.bind(self);
+                    self.on(resources_11.finish, self._onFinish);
+                    self.on(resources_11.cancel, self._onCancel);
+                    self.on(resources_11.pause, self._onPause);
+                    // autoplay    
+                    self.play();
+                    return self;
+                }
+                Animator.prototype.animate = function (options) {
+                    var self = this;
+                    if (type_6.isArray(options)) {
                         lists_3.each(options, function (e) { return self._addEvent(e); });
                     }
                     else {
@@ -4286,164 +3753,143 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     }
                     self._recalculate();
                     return self;
-                },
-                duration: function () {
+                };
+                Animator.prototype.duration = function () {
                     return this._duration;
-                },
-                iterationStart: function () {
-                    return this._iterationStart;
-                },
-                iterations: function () {
-                    return this._iterations;
-                },
-                totalDuration: function () {
-                    return this._totalDuration;
-                },
-                endTime: function () {
-                    return this._endTime;
-                },
-                startTime: function () {
-                    return this._startTime;
-                },
-                currentTime: function (value) {
+                };
+                Animator.prototype.currentTime = function (value) {
                     var self = this;
-                    if (!type_9.isDefined(value)) {
+                    if (!type_6.isDefined(value)) {
                         return self._currentTime;
                     }
                     self._currentTime = value;
                     return self;
-                },
-                playbackRate: function (value) {
+                };
+                Animator.prototype.playbackRate = function (value) {
                     var self = this;
-                    if (!type_9.isDefined(value)) {
+                    if (!type_6.isDefined(value)) {
                         return self._playbackRate;
                     }
                     self._playbackRate = value;
                     return self;
-                },
-                playState: function (value) {
+                };
+                Animator.prototype.playState = function (value) {
                     var self = this;
-                    if (!type_9.isDefined(value)) {
+                    if (!type_6.isDefined(value)) {
                         return self._playState;
                     }
                     self._playState = value;
                     self._dispatcher.trigger('set', ['playbackState', value]);
                     return self;
-                },
-                on: function (eventName, listener) {
+                };
+                Animator.prototype.on = function (eventName, listener) {
                     var self = this;
                     self._dispatcher.on(eventName, listener);
                     return self;
-                },
-                off: function (eventName, listener) {
+                };
+                Animator.prototype.off = function (eventName, listener) {
                     var self = this;
                     self._dispatcher.off(eventName, listener);
                     return self;
-                },
-                finish: function () {
+                };
+                Animator.prototype.finish = function () {
                     var self = this;
-                    self._dispatcher.trigger(resources_13.finish, [self]);
+                    self._dispatcher.trigger(resources_11.finish, [self]);
                     return self;
-                },
-                play: function () {
+                };
+                Animator.prototype.play = function () {
                     var self = this;
                     if (self._playState !== 'running' || self._playState !== 'pending') {
                         self._playState = 'pending';
                         self._timeLoop.on(self._onTick);
                     }
                     return self;
-                },
-                pause: function () {
+                };
+                Animator.prototype.pause = function () {
                     var self = this;
-                    self._dispatcher.trigger(resources_13.pause, [self]);
+                    self._dispatcher.trigger(resources_11.pause, [self]);
                     return self;
-                },
-                reverse: function () {
+                };
+                Animator.prototype.reverse = function () {
                     var self = this;
                     self._playbackRate *= -1;
                     return self;
-                },
-                cancel: function () {
+                };
+                Animator.prototype.cancel = function () {
                     var self = this;
-                    self._dispatcher.trigger(resources_13.cancel, [self]);
+                    self._dispatcher.trigger(resources_11.cancel, [self]);
                     return self;
-                },
-                _recalculate: function () {
+                };
+                Animator.prototype._recalculate = function () {
                     var self = this;
                     var endsAt = lists_3.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
-                    self._endTime = endsAt;
                     self._duration = endsAt;
-                    self._totalDuration = endsAt;
-                },
-                _addEvent: function (event) {
+                };
+                Animator.prototype._addEvent = function (event) {
                     var self = this;
-                    var targets = elements_2.queryElements(event.targets);
                     if (event.name) {
                         var def = self._resolver.findAnimation(event.name);
-                        if (!type_9.isDefined(def)) {
-                            throw errors_5.invalidArg('name');
+                        if (!type_6.isDefined(def)) {
+                            throw errors_4.invalidArg('name');
                         }
-                        objects_2.inherit(event, def);
+                        objects_1.inherit(event, def);
                     }
-                    event.from = event.from || 0;
-                    event.to = event.to || 0;
+                    event.from = (event.from || 0) + this._duration;
+                    event.to = (event.to || 0) + this._duration;
                     if (!event.easing) {
                         event.easing = 'linear';
                     }
                     else {
                         event.easing = easings_1.easings[event.easing] || event.easing;
                     }
-                    var animators = lists_3.map(targets, function (e) {
-                        var to = event.to + self._duration;
-                        var from = event.from + self._duration;
-                        var expanded = lists_3.map(event.keyframes, objects_2.expand);
-                        var normalized = lists_3.map(expanded, keyframes_1.normalizeProperties);
-                        var keyframes = functions_1.pipe(normalized, keyframes_1.spaceKeyframes, keyframes_1.normalizeKeyframes);
-                        return {
-                            animator: KeyframeAnimation_1.KeyframeAnimation(e, keyframes, event),
-                            endTimeMs: to,
-                            startTimeMs: from
-                        };
+                    lists_3.each(this._plugins, function (plugin) {
+                        if (plugin.canHandle(event)) {
+                            var animators = plugin.handle(event);
+                            var events = lists_3.map(animators, function (animator) {
+                                return {
+                                    animator: animator,
+                                    endTimeMs: event.from + animator.totalDuration(),
+                                    startTimeMs: event.from
+                                };
+                            });
+                            lists_3.pushAll(self._events, events);
+                        }
                     });
-                    lists_3.pushAll(self._events, animators);
-                },
-                _onCancel: function (self) {
+                };
+                Animator.prototype._onCancel = function (self) {
                     self._timeLoop.off(self._onTick);
                     self._currentTime = 0;
                     self._playState = 'idle';
-                    self._lastTick = resources_13.nil;
                     lists_3.each(self._events, function (evt) { evt.animator.cancel(); });
-                },
-                _onFinish: function (self) {
+                };
+                Animator.prototype._onFinish = function (self) {
                     self._timeLoop.off(self._onTick);
                     self._currentTime = 0;
                     self._playState = 'finished';
-                    self._lastTick = resources_13.nil;
                     lists_3.each(self._events, function (evt) { evt.animator.finish(); });
-                },
-                _onPause: function (self) {
+                };
+                Animator.prototype._onPause = function (self) {
                     self._timeLoop.off(self._onTick);
                     self._playState = 'paused';
-                    self._lastTick = resources_13.nil;
                     lists_3.each(self._events, function (evt) { evt.animator.pause(); });
-                },
-                _onTick: function (delta2, runningTime2) {
+                };
+                Animator.prototype._onTick = function (delta, runningTime) {
                     var self = this;
                     var dispatcher = self._dispatcher;
                     var playState = self._playState;
                     // canceled
                     if (playState === 'idle') {
-                        dispatcher.trigger(resources_13.cancel, [self]);
+                        dispatcher.trigger(resources_11.cancel, [self]);
                         return;
                     }
                     // finished
                     if (playState === 'finished') {
-                        dispatcher.trigger(resources_13.finish, [self]);
+                        dispatcher.trigger(resources_11.finish, [self]);
                         return;
                     }
                     // paused
                     if (playState === 'paused') {
-                        dispatcher.trigger(resources_13.pause, [self]);
+                        dispatcher.trigger(resources_11.pause, [self]);
                         return;
                     }
                     // running/pending
@@ -4455,21 +3901,15 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     var endTime = isReversed ? 0 : duration1;
                     if (self._playState === 'pending') {
                         var currentTime_1 = self._currentTime;
-                        self._currentTime = currentTime_1 === resources_13.nil || currentTime_1 === endTime ? startTime : currentTime_1;
+                        self._currentTime = currentTime_1 === resources_11.nil || currentTime_1 === endTime ? startTime : currentTime_1;
                         self._playState = 'running';
                     }
                     // calculate currentTime from delta
-                    var thisTick = performance.now();
-                    var lastTick = self._lastTick;
-                    if (lastTick !== resources_13.nil) {
-                        var delta = (thisTick - lastTick) * playbackRate;
-                        self._currentTime += delta;
-                    }
-                    self._lastTick = thisTick;
-                    var currentTime = self._currentTime;
+                    var currentTime = self._currentTime + delta * playbackRate;
+                    self._currentTime = currentTime;
                     // check if animation has finished
                     if (!math_1.inRange(currentTime, startTime, endTime)) {
-                        dispatcher.trigger(resources_13.finish, [self]);
+                        dispatcher.trigger(resources_11.finish, [self]);
                         return;
                     }
                     // start animations if should be active and currently aren't   
@@ -4486,35 +3926,22 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                             animator.play();
                         }
                     }
-                }
-            };
+                };
+                return Animator;
+            }());
+            exports_93("Animator", Animator);
         }
     }
 });
-System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-animate/common/resources", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function(exports_96, context_96) {
+System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function(exports_94, context_94) {
     "use strict";
-    var __moduleName = context_96 && context_96.id;
-    var lists_4, resources_14, Animator_1, TimeLoop_1, MixinService_1;
-    function JustAnimate() {
-        var self = this;
-        self = self instanceof JustAnimate ? self : Object.create(JustAnimate.prototype);
-        self._registry = {};
-        self._resolver = new MixinService_1.MixinService();
-        self._timeLoop = TimeLoop_1.TimeLoop();
-        return self;
-    }
-    exports_96("JustAnimate", JustAnimate);
-    function inject(animations) {
-        var resolver = new MixinService_1.MixinService();
-        lists_4.each(animations, function (a) { return resolver.registerAnimation(a, true); });
-    }
+    var __moduleName = context_94 && context_94.id;
+    var lists_4, Animator_1, TimeLoop_1, MixinService_1;
+    var JustAnimate;
     return {
         setters:[
             function (lists_4_1) {
                 lists_4 = lists_4_1;
-            },
-            function (resources_14_1) {
-                resources_14 = resources_14_1;
             },
             function (Animator_1_1) {
                 Animator_1 = Animator_1_1;
@@ -4526,26 +3953,36 @@ System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-
                 MixinService_1 = MixinService_1_1;
             }],
         execute: function() {
-            JustAnimate.inject = inject;
-            JustAnimate.prototype = {
-                _resolver: resources_14.nil,
-                _timeLoop: resources_14.nil,
-                animate: function (options) {
-                    var animator = Animator_1.Animator(this._resolver, this._timeLoop);
-                    animator.animate(options);
-                    return animator;
-                },
-                register: function (preset) {
+            JustAnimate = (function () {
+                function JustAnimate() {
+                    var self = this;
+                    self._resolver = new MixinService_1.MixinService();
+                    self._timeLoop = TimeLoop_1.TimeLoop();
+                    self.plugins = [];
+                }
+                JustAnimate.inject = function (animations) {
+                    var resolver = new MixinService_1.MixinService();
+                    lists_4.each(animations, function (a) { return resolver.registerAnimation(a, true); });
+                };
+                JustAnimate.prototype.animate = function (options) {
+                    return new Animator_1.Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
+                };
+                JustAnimate.prototype.register = function (preset) {
                     this._resolver.registerAnimation(preset, false);
-                },
-                inject: inject
-            };
+                };
+                JustAnimate.prototype.inject = function (animations) {
+                    var resolver = this._resolver;
+                    lists_4.each(animations, function (a) { return resolver.registerAnimation(a, true); });
+                };
+                return JustAnimate;
+            }());
+            exports_94("JustAnimate", JustAnimate);
         }
     }
 });
-System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_97, context_97) {
+System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_95, context_95) {
     "use strict";
-    var __moduleName = context_97 && context_97.id;
+    var __moduleName = context_95 && context_95.id;
     var animations;
     return {
         setters:[
@@ -4553,12 +3990,538 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
                 animations = animations_1;
             },
             function (JustAnimate_1_1) {
-                exports_97({
+                exports_95({
                     "JustAnimate": JustAnimate_1_1["JustAnimate"]
                 });
             }],
         execute: function() {
-            exports_97("animations", animations);
+            exports_95("animations", animations);
+        }
+    }
+});
+System.register("just-animate/plugins/waapi/KeyframeAnimation", ["just-animate/common/resources", "just-animate/plugins/core/Dispatcher"], function(exports_96, context_96) {
+    "use strict";
+    var __moduleName = context_96 && context_96.id;
+    var resources_12, Dispatcher_2;
+    var KeyframeAnimator;
+    return {
+        setters:[
+            function (resources_12_1) {
+                resources_12 = resources_12_1;
+            },
+            function (Dispatcher_2_1) {
+                Dispatcher_2 = Dispatcher_2_1;
+            }],
+        execute: function() {
+            KeyframeAnimator = (function () {
+                function KeyframeAnimator(target, keyframes, timings) {
+                    var delay = timings.delay || 0;
+                    var endDelay = timings.endDelay || 0;
+                    var iterations = timings.iterations || 1;
+                    var duration = timings.duration || 0;
+                    var dispatcher = Dispatcher_2.Dispatcher();
+                    var self = this;
+                    self._totalTime = delay + ((iterations || 1) * duration) + endDelay;
+                    self._dispatcher = dispatcher;
+                    var animator = target[resources_12.animate](keyframes, timings);
+                    // immediately cancel to prevent effects until play is called    
+                    animator.cancel();
+                    animator.onfinish = function () { return dispatcher.trigger(resources_12.finish); };
+                    self._animator = animator;
+                }
+                KeyframeAnimator.prototype.totalDuration = function () {
+                    return this._totalTime;
+                };
+                KeyframeAnimator.prototype.seek = function (value) {
+                    var self = this;
+                    self._animator.currentTime = value;
+                };
+                KeyframeAnimator.prototype.playbackRate = function (value) {
+                    var self = this;
+                    self._animator.playbackRate = value;
+                };
+                KeyframeAnimator.prototype.playState = function () {
+                    return this._animator.playState;
+                };
+                KeyframeAnimator.prototype.off = function (eventName, listener) {
+                    this._dispatcher.off(eventName, listener);
+                };
+                KeyframeAnimator.prototype.on = function (eventName, listener) {
+                    this._dispatcher.on(eventName, listener);
+                };
+                KeyframeAnimator.prototype.cancel = function () {
+                    var self = this;
+                    self._animator.cancel();
+                    self._dispatcher.trigger(resources_12.cancel);
+                };
+                KeyframeAnimator.prototype.reverse = function () {
+                    var self = this;
+                    self._animator.reverse();
+                    self._dispatcher.trigger(resources_12.reverse);
+                };
+                KeyframeAnimator.prototype.pause = function () {
+                    var self = this;
+                    self._animator.pause();
+                    self._dispatcher.trigger(resources_12.pause);
+                };
+                KeyframeAnimator.prototype.play = function () {
+                    var self = this;
+                    self._animator.play();
+                    self._dispatcher.trigger(resources_12.play);
+                };
+                KeyframeAnimator.prototype.finish = function () {
+                    var self = this;
+                    self._animator.finish();
+                };
+                return KeyframeAnimator;
+            }());
+            exports_96("KeyframeAnimator", KeyframeAnimator);
+        }
+    }
+});
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/resources"], function(exports_97, context_97) {
+    "use strict";
+    var __moduleName = context_97 && context_97.id;
+    var type_7, strings_2, errors_5, resources_13, resources_14;
+    var offset;
+    function spaceKeyframes(keyframes) {
+        // don't attempt to fill animation if less than 2 keyframes
+        if (keyframes.length < 2) {
+            return keyframes;
+        }
+        var first = keyframes[0];
+        // ensure first offset    
+        if (first.offset !== 0) {
+            first.offset = 0;
+        }
+        var last = keyframes[keyframes.length - 1];
+        // ensure last offset
+        if (last.offset !== 1) {
+            last.offset = 1;
+        }
+        // explicitly set implicit offsets
+        var len = keyframes.length;
+        var lasti = len - 1;
+        for (var i = 1; i < lasti; i++) {
+            var target = keyframes[i];
+            // skip entries that have an offset        
+            if (type_7.isNumber(target.offset)) {
+                continue;
+            }
+            // search for the next offset with a value        
+            for (var j = i + 1; j < len; j++) {
+                // pass if offset is not set
+                if (!type_7.isNumber(keyframes[j].offset)) {
+                    continue;
+                }
+                // calculate timing/position info
+                var startTime = keyframes[i - 1].offset;
+                var endTime = keyframes[j].offset;
+                var timeDelta = endTime - startTime;
+                var deltaLength = j - i + 1;
+                // set the values of all keyframes between i and j (exclusive)
+                for (var k = 1; k < deltaLength; k++) {
+                    // set to percentage of change over time delta + starting time
+                    keyframes[k - 1 + i].offset = ((k / j) * timeDelta) + startTime;
+                }
+                // move i past this keyframe since all frames between should be processed
+                i = j;
+                break;
+            }
+        }
+        return keyframes;
+    }
+    exports_97("spaceKeyframes", spaceKeyframes);
+    /**
+     * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
+     */
+    function normalizeKeyframes(keyframes) {
+        // don't attempt to fill animation if less than 2 keyframes
+        if (keyframes.length < 2) {
+            return keyframes;
+        }
+        var first = keyframes[0];
+        // ensure first offset    
+        if (first.offset !== 0) {
+            first.offset = 0;
+        }
+        var last = keyframes[keyframes.length - 1];
+        // fill initial keyframe with missing props
+        var len = keyframes.length;
+        for (var i = 1; i < len; i++) {
+            var keyframe = keyframes[i];
+            for (var prop in keyframe) {
+                if (prop !== offset && !type_7.isDefined(first[prop])) {
+                    first[prop] = keyframe[prop];
+                }
+            }
+        }
+        // fill end keyframe with missing props
+        for (var i = len - 2; i > -1; i--) {
+            var keyframe = keyframes[i];
+            for (var prop in keyframe) {
+                if (prop !== offset && !type_7.isDefined(last[prop])) {
+                    last[prop] = keyframe[prop];
+                }
+            }
+        }
+        return keyframes;
+    }
+    exports_97("normalizeKeyframes", normalizeKeyframes);
+    /**
+     * Handles transforming short hand key properties into their native form
+     */
+    function normalizeProperties(keyframe) {
+        var xIndex = 0;
+        var yIndex = 1;
+        var zIndex = 2;
+        // transform properties
+        var scaleArray = [];
+        var skewArray = [];
+        var translateArray = [];
+        var output = {};
+        var transformString = '';
+        for (var prop in keyframe) {
+            var value = keyframe[prop];
+            if (!type_7.isDefined(value)) {
+                continue;
+            }
+            switch (prop) {
+                case resources_14.scale3d:
+                    if (type_7.isArray(value)) {
+                        var arr = value;
+                        if (arr.length !== 3) {
+                            throw errors_5.invalidArg(resources_14.scale3d);
+                        }
+                        scaleArray[xIndex] = arr[xIndex];
+                        scaleArray[yIndex] = arr[yIndex];
+                        scaleArray[zIndex] = arr[zIndex];
+                        continue;
+                    }
+                    if (type_7.isNumber(value)) {
+                        scaleArray[xIndex] = value;
+                        scaleArray[yIndex] = value;
+                        scaleArray[zIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.scale3d);
+                case resources_14.scale:
+                    if (type_7.isArray(value)) {
+                        var arr = value;
+                        if (arr.length !== 2) {
+                            throw errors_5.invalidArg(resources_14.scale);
+                        }
+                        scaleArray[xIndex] = arr[xIndex];
+                        scaleArray[yIndex] = arr[yIndex];
+                        continue;
+                    }
+                    if (type_7.isNumber(value)) {
+                        scaleArray[xIndex] = value;
+                        scaleArray[yIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.scale);
+                case resources_14.scaleX:
+                    if (type_7.isNumber(value)) {
+                        scaleArray[xIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.scaleX);
+                case resources_14.scaleY:
+                    if (type_7.isNumber(value)) {
+                        scaleArray[yIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.scaleY);
+                case resources_14.scaleZ:
+                    if (type_7.isNumber(value)) {
+                        scaleArray[zIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.scaleZ);
+                case resources_14.skew:
+                    if (type_7.isArray(value)) {
+                        var arr = value;
+                        if (arr.length !== 2) {
+                            throw errors_5.invalidArg(resources_14.skew);
+                        }
+                        skewArray[xIndex] = arr[xIndex];
+                        skewArray[yIndex] = arr[yIndex];
+                        continue;
+                    }
+                    if (type_7.isNumber(value)) {
+                        skewArray[xIndex] = value;
+                        skewArray[yIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.skew);
+                case resources_14.skewX:
+                    if (type_7.isString(value)) {
+                        skewArray[xIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.skewX);
+                case resources_14.skewY:
+                    if (type_7.isString(value)) {
+                        skewArray[yIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.skewY);
+                case resources_14.rotate3d:
+                    if (type_7.isArray(value)) {
+                        var arr = value;
+                        if (arr.length !== 4) {
+                            throw errors_5.invalidArg(resources_14.rotate3d);
+                        }
+                        transformString += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.rotate3d);
+                case resources_14.rotateX:
+                    if (type_7.isString(value)) {
+                        transformString += " rotate3d(1, 0, 0, " + value + ")";
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.rotateX);
+                case resources_14.rotateY:
+                    if (type_7.isString(value)) {
+                        transformString += " rotate3d(0, 1, 0, " + value + ")";
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.rotateY);
+                case resources_14.rotate:
+                case resources_14.rotateZ:
+                    if (type_7.isString(value)) {
+                        transformString += " rotate3d(0, 0, 1, " + value + ")";
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.rotateZ);
+                case resources_14.translate3d:
+                    if (type_7.isArray(value)) {
+                        var arr = value;
+                        if (arr.length !== 3) {
+                            throw errors_5.invalidArg(resources_14.translate3d);
+                        }
+                        translateArray[xIndex] = arr[xIndex];
+                        translateArray[yIndex] = arr[yIndex];
+                        translateArray[zIndex] = arr[zIndex];
+                        continue;
+                    }
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
+                        translateArray[xIndex] = value;
+                        translateArray[yIndex] = value;
+                        translateArray[zIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.rotate3d);
+                case resources_14.translate:
+                    if (type_7.isArray(value)) {
+                        var arr = value;
+                        if (arr.length !== 2) {
+                            throw errors_5.invalidArg(resources_14.translate);
+                        }
+                        translateArray[xIndex] = arr[xIndex];
+                        translateArray[yIndex] = arr[yIndex];
+                        continue;
+                    }
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
+                        translateArray[xIndex] = value;
+                        translateArray[yIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.translate);
+                case resources_14.x:
+                case resources_14.translateX:
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
+                        translateArray[xIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.x);
+                case resources_14.y:
+                case resources_14.translateY:
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
+                        translateArray[yIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.y);
+                case resources_14.z:
+                case resources_14.translateZ:
+                    if (type_7.isString(value) || type_7.isNumber(value)) {
+                        translateArray[zIndex] = value;
+                        continue;
+                    }
+                    throw errors_5.invalidArg(resources_14.z);
+                case resources_14.transform:
+                    transformString += ' ' + value;
+                    break;
+                default:
+                    output[strings_2.toCamelCase(prop)] = value;
+                    break;
+            }
+        }
+        // combine scale
+        var isScaleX = scaleArray[xIndex] !== resources_13.nil;
+        var isScaleY = scaleArray[yIndex] !== resources_13.nil;
+        var isScaleZ = scaleArray[zIndex] !== resources_13.nil;
+        if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
+            var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
+            transformString += " scale3d(" + scaleString + ")";
+        }
+        else if (isScaleX && isScaleY) {
+            transformString += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
+        }
+        else if (isScaleX) {
+            transformString += " scaleX(" + scaleArray[xIndex] + ")";
+        }
+        else if (isScaleY) {
+            transformString += " scaleX(" + scaleArray[yIndex] + ")";
+        }
+        else if (isScaleZ) {
+            transformString += " scaleX(" + scaleArray[zIndex] + ")";
+        }
+        else {
+        }
+        // combine skew
+        var isskewX = skewArray[xIndex] !== resources_13.nil;
+        var isskewY = skewArray[yIndex] !== resources_13.nil;
+        if (isskewX && isskewY) {
+            transformString += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
+        }
+        else if (isskewX) {
+            transformString += " skewX(" + skewArray[xIndex] + ")";
+        }
+        else if (isskewY) {
+            transformString += " skewY(" + skewArray[yIndex] + ")";
+        }
+        else {
+        }
+        // combine translate
+        var istranslateX = translateArray[xIndex] !== resources_13.nil;
+        var istranslateY = translateArray[yIndex] !== resources_13.nil;
+        var istranslateZ = translateArray[zIndex] !== resources_13.nil;
+        if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
+            var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
+            transformString += " translate3d(" + translateString + ")";
+        }
+        else if (istranslateX && istranslateY) {
+            transformString += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
+        }
+        else if (istranslateX) {
+            transformString += " translateX(" + translateArray[xIndex] + ")";
+        }
+        else if (istranslateY) {
+            transformString += " translateY(" + translateArray[yIndex] + ")";
+        }
+        else if (istranslateZ) {
+            transformString += " translateZ(" + translateArray[zIndex] + ")";
+        }
+        else {
+        }
+        if (transformString) {
+            output['transform'] = transformString;
+        }
+        return output;
+    }
+    exports_97("normalizeProperties", normalizeProperties);
+    return {
+        setters:[
+            function (type_7_1) {
+                type_7 = type_7_1;
+            },
+            function (strings_2_1) {
+                strings_2 = strings_2_1;
+            },
+            function (errors_5_1) {
+                errors_5 = errors_5_1;
+            },
+            function (resources_13_1) {
+                resources_13 = resources_13_1;
+                resources_14 = resources_13_1;
+            }],
+        execute: function() {
+            offset = 'offset';
+        }
+    }
+});
+System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/resources", "just-animate/common/elements", "just-animate/common/dict", "just-animate/common/type", "just-animate/plugins/waapi/KeyframeTransformers", "just-animate/plugins/waapi/KeyframeAnimation"], function(exports_98, context_98) {
+    "use strict";
+    var __moduleName = context_98 && context_98.id;
+    var lists_5, objects_2, resources_15, elements_2, dict_1, type_8, KeyframeTransformers_1, KeyframeAnimation_1;
+    var KeyframePlugin;
+    return {
+        setters:[
+            function (lists_5_1) {
+                lists_5 = lists_5_1;
+            },
+            function (objects_2_1) {
+                objects_2 = objects_2_1;
+            },
+            function (resources_15_1) {
+                resources_15 = resources_15_1;
+            },
+            function (elements_2_1) {
+                elements_2 = elements_2_1;
+            },
+            function (dict_1_1) {
+                dict_1 = dict_1_1;
+            },
+            function (type_8_1) {
+                type_8 = type_8_1;
+            },
+            function (KeyframeTransformers_1_1) {
+                KeyframeTransformers_1 = KeyframeTransformers_1_1;
+            },
+            function (KeyframeAnimation_1_1) {
+                KeyframeAnimation_1 = KeyframeAnimation_1_1;
+            }],
+        execute: function() {
+            KeyframePlugin = (function () {
+                function KeyframePlugin() {
+                }
+                KeyframePlugin.prototype.canHandle = function (options) {
+                    return !!(options.name || options.css || options.keyframes);
+                };
+                KeyframePlugin.prototype.handle = function (options) {
+                    var targets = elements_2.queryElements(options.targets);
+                    var animations = lists_5.map(targets, function (target) {
+                        var timings = dict_1.createMap();
+                        timings.delay = objects_2.unwrap(options.delay) || 0;
+                        timings.endDelay = 0;
+                        timings.duration = options.to - options.from;
+                        timings.iterations = objects_2.unwrap(options.iterations) || 1;
+                        timings.iterationStart = objects_2.unwrap(options.iterationStart) || 0;
+                        timings.fill = objects_2.unwrap(options.fill) || 'none';
+                        timings.direction = objects_2.unwrap(options.direction) || resources_15.nil;
+                        // note: don't unwrap easings so we don't break this later with custom easings
+                        timings.easing = options.easing || 'linear';
+                        var sourceKeyframes = options.keyframes;
+                        var targetKeyframes = [];
+                        var keyframeLength = sourceKeyframes.length;
+                        for (var i = 0; i < keyframeLength; i++) {
+                            var sourceKeyframe = sourceKeyframes[i];
+                            var targetKeyframe = dict_1.createMap();
+                            for (var propertyName in sourceKeyframe) {
+                                if (!sourceKeyframe.hasOwnProperty(propertyName)) {
+                                    continue;
+                                }
+                                var sourceValue = sourceKeyframe[propertyName];
+                                if (!type_8.isDefined(sourceValue)) {
+                                    continue;
+                                }
+                                targetKeyframe[propertyName] = objects_2.unwrap(sourceValue);
+                            }
+                            // fixme: replace with mutation instead of copy                
+                            targetKeyframe = KeyframeTransformers_1.normalizeProperties(targetKeyframe);
+                            targetKeyframes.push(targetKeyframe);
+                        }
+                        var keyframes = KeyframeTransformers_1.normalizeKeyframes(KeyframeTransformers_1.spaceKeyframes(targetKeyframes));
+                        return new KeyframeAnimation_1.KeyframeAnimator(target, keyframes, timings);
+                    });
+                    return animations;
+                };
+                return KeyframePlugin;
+            }());
+            exports_98("KeyframePlugin", KeyframePlugin);
         }
     }
 });

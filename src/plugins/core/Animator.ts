@@ -1,18 +1,16 @@
 import {each, map, pushAll, maxBy} from '../../common/lists';
-import {expand, inherit} from '../../common/objects';
+import {inherit} from '../../common/objects';
 import {isArray, isDefined} from '../../common/type';
 import {inRange} from '../../common/math';
-import {queryElements} from '../../common/elements';
 import {invalidArg} from '../../common/errors';
-import {pipe} from '../../common/functions';
 import {duration, finish, cancel, pause, nil} from '../../common/resources';
-import {normalizeProperties, normalizeKeyframes, spaceKeyframes} from '../../common/keyframes';
 
 import {Dispatcher, IDispatcher} from './Dispatcher';
 import {MixinService} from './MixinService';
-import {KeyframeAnimation} from './KeyframeAnimation';
 import {ITimeLoop} from './TimeLoop';
 import {easings} from '../../common/easings';
+
+// todo: remove these imports as soon as possible
 
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
@@ -23,13 +21,14 @@ export class Animator implements ja.IAnimator {
     private _currentTime: number;
     private _dispatcher: IDispatcher;
     private _duration: number;
-    private _events: ITimelineEvent[];
+    private _events: ja.ITimelineEvent[];
     private _playState: ja.AnimationPlaybackState;
     private _playbackRate: number;
     private _resolver: MixinService;
     private _timeLoop: ITimeLoop;
+    private _plugins: ja.IPlugin[];
 
-    constructor(resolver: MixinService, timeloop: ITimeLoop) {
+    constructor(resolver: MixinService, timeloop: ITimeLoop, plugins: ja.IPlugin[]) {
         const self = this;
         if (!isDefined(duration)) {
             throw invalidArg(duration);
@@ -42,6 +41,7 @@ export class Animator implements ja.IAnimator {
         self._events = [];
         self._resolver = resolver;
         self._timeLoop = timeloop;
+        self._plugins = plugins;
         self._dispatcher = Dispatcher();
         self._onTick = self._onTick.bind(self);
         self.on(finish, self._onFinish);
@@ -138,12 +138,11 @@ export class Animator implements ja.IAnimator {
     }
     private _recalculate(): void {
         const self = this;
-        const endsAt = maxBy(self._events, (e: ITimelineEvent) => e.startTimeMs + e.animator.totalDuration());
+        const endsAt = maxBy(self._events, (e: ja.ITimelineEvent) => e.startTimeMs + e.animator.totalDuration());
         self._duration = endsAt;
     }
     private _addEvent(event: ja.IAnimationOptions): void {
         const self = this;
-        const targets = queryElements(event.targets);
 
         if (event.name) {
             const def = self._resolver.findAnimation(event.name);
@@ -153,8 +152,8 @@ export class Animator implements ja.IAnimator {
             inherit(event, def);
         }
 
-        event.from = event.from || 0;
-        event.to = event.to || 0;
+        event.from = (event.from || 0) + this._duration;
+        event.to = (event.to || 0) + this._duration;
 
         if (!event.easing) {
             event.easing = 'linear';
@@ -162,37 +161,37 @@ export class Animator implements ja.IAnimator {
             event.easing = easings[event.easing] || event.easing;
         }
 
-        const animators = map(targets, (e: Element) => {
-            const to = event.to + self._duration;
-            const from = event.from + self._duration;
-            const expanded = map(event.keyframes, expand as ja.IMapper<ja.ICssKeyframeOptions, ja.ICssKeyframeOptions>);
-            const normalized = map(expanded, normalizeProperties);
-            const keyframes = pipe(normalized, spaceKeyframes, normalizeKeyframes);
+        each(this._plugins, (plugin: ja.IPlugin) => {
+            if (plugin.canHandle(event)) {
+                const animators = plugin.handle(event);
+                const events = map(animators, (animator: ja.IAnimationController) => {
+                    return {
+                        animator: animator,
+                        endTimeMs: event.from + animator.totalDuration(),
+                        startTimeMs: event.from
+                    } as ja.ITimelineEvent;
+                });
+                pushAll(self._events, events);
+            }
 
-            return {
-                animator: KeyframeAnimation(e, keyframes, event),
-                endTimeMs: to,
-                startTimeMs: from
-            };
         });
-        pushAll(self._events, animators);
     }
     private _onCancel(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'idle';
-        each(self._events, (evt: ITimelineEvent) => { evt.animator.cancel(); });
+        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.cancel(); });
     }
     private _onFinish(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'finished';
-        each(self._events, (evt: ITimelineEvent) => { evt.animator.finish(); });
+        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.finish(); });
     }
     private _onPause(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._playState = 'paused';
-        each(self._events, (evt: ITimelineEvent) => { evt.animator.pause(); });
+        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.pause(); });
     }
     private _onTick(delta: number, runningTime: number): void {
         const self = this;
@@ -262,7 +261,7 @@ interface IAnimationContext {
     _currentTime: number;
     _dispatcher: IDispatcher;
     _duration: number;
-    _events: ITimelineEvent[];
+    _events: ja.ITimelineEvent[];
     _onTick: { (delta: number, runningTime: number): void; };
     _playState: ja.AnimationPlaybackState;
     _playbackRate: number;
@@ -270,8 +269,4 @@ interface IAnimationContext {
     _timeLoop: ITimeLoop;
 }
 
-interface ITimelineEvent {
-    startTimeMs: number;
-    endTimeMs: number;
-    animator: ja.IAnimationController;
-}
+

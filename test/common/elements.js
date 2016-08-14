@@ -1,6 +1,6 @@
 var jsdom = require('mocha-jsdom');
 var chai = require('chai');
-var elements = require('../../dist/helpers/elements');
+var elements = require('../../dist/common/elements');
 
 var assert = chai.assert;
 var expect = chai.expect;
