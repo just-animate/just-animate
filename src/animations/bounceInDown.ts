@@ -1,4 +1,4 @@
-export const bounceInDown: ja.IAnimationPreset = {
+export const bounceInDown: ja.IAnimationMixin = {
   keyframes: [
     {
       offset: 0,

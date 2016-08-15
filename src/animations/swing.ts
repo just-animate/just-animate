@@ -1,4 +1,4 @@
-export const swing: ja.IAnimationPreset = {
+export const swing: ja.IAnimationMixin = {
   keyframes: [
     {
       transform: 'none'

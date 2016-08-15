@@ -1,4 +1,4 @@
-export const wobble: ja.IAnimationPreset = {
+export const wobble: ja.IAnimationMixin = {
   keyframes: [
     {
       offset: 0,

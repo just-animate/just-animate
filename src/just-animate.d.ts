@@ -110,7 +110,7 @@ declare module ja {
         (): ElementSource;
     }
 
-    export interface IAnimationPreset extends IAnimation {
+    export interface IAnimationMixin extends IAnimation {
         name: string;
     }
 
@@ -129,7 +129,7 @@ declare module ja {
     export interface IAnimationOptions extends IAnimation {
         targets?: ElementSource;
         from?: number;        
-        name?: string;
+        mixins?: string|string[];
     }
 
     /**

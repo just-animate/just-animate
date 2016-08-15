@@ -116,12 +116,12 @@
                 return;
             } 
 
-            var name = animations[index];
-            el.innerHTML = name;
+            var mixin = animations[index];
+            el.innerHTML = mixin;
 
             just.animate({
-                name: name, 
-                targets: el, 
+                targets: el,                 
+                mixins: mixin, 
                 fill: 'both'
             })
             .on('finish', callAnimation)

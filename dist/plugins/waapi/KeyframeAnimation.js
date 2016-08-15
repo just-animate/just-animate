@@ -32,21 +32,17 @@ var KeyframeAnimator = (function () {
         if (value === resources_1.nil) {
             return playState;
         }
-        if (value === 'finished') {
+        if (value === resources_1.finished) {
             animator.finish();
-            return;
         }
-        if (value === 'idle') {
+        else if (value === resources_1.idle) {
             animator.cancel();
-            return;
         }
-        if (value === 'paused') {
+        else if (value === resources_1.paused) {
             animator.pause();
-            return;
         }
-        if (value === 'running') {
+        else if (value === resources_1.running) {
             animator.play();
-            return;
         }
     };
     KeyframeAnimator.prototype.onupdate = function (context) { };

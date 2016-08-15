@@ -13,7 +13,7 @@
     "uglify": "^0.1.5"
   },
   "license": "MIT",
-  "version": "0.6.2",
+  "version": "1.0.0a-alpha",
   "main": "./dist/index.js",
   "name": "just-animate",
   "repository": {

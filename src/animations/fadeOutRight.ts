@@ -1,4 +1,4 @@
-export const fadeOutRight: ja.IAnimationPreset = {
+export const fadeOutRight: ja.IAnimationMixin = {
   keyframes: [
     {
       opacity: 1,

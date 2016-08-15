@@ -1,4 +1,4 @@
-export const flash: ja.IAnimationPreset = {
+export const flash: ja.IAnimationMixin = {
   keyframes: [
     {
       opacity: 1

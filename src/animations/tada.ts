@@ -1,4 +1,4 @@
-export const tada: ja.IAnimationPreset = {
+export const tada: ja.IAnimationMixin = {
   keyframes: [
     {
       transform: 'scale3d(1, 1, 1)'

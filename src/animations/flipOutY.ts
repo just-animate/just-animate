@@ -1,4 +1,4 @@
-export const flipOutY: ja.IAnimationPreset = {
+export const flipOutY: ja.IAnimationMixin = {
   keyframes: [
     {
       offset: 0,

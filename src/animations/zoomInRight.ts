@@ -1,4 +1,4 @@
-export const zoomInRight: ja.IAnimationPreset = {
+export const zoomInRight: ja.IAnimationMixin = {
   keyframes: [
     {
       offset: 0,

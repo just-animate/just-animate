@@ -1,4 +1,4 @@
-export const slideInRight: ja.IAnimationPreset = {
+export const slideInRight: ja.IAnimationMixin = {
   keyframes: [
     {
       transform: 'translate3d(100%, 0, 0)',

@@ -1,6 +1,6 @@
 import {each, map, pushAll, maxBy} from '../../common/lists';
 import {inherit} from '../../common/objects';
-import {isArray, isDefined} from '../../common/type';
+import {isArray, isDefined, isString} from '../../common/type';
 import {inRange} from '../../common/math';
 import {invalidArg} from '../../common/errors';
 import {duration, finish, cancel, pause, nil} from '../../common/resources';
@@ -141,25 +141,36 @@ export class Animator implements ja.IAnimator {
         const endsAt = maxBy(self._events, (e: ja.ITimelineEvent) => e.startTimeMs + e.animator.totalDuration());
         self._duration = endsAt;
     }
+
+    private _resolveMixin(mixin: string, event: ja.IAnimationOptions): void {
+        const self = this;
+        const def = self._resolver.findAnimation(mixin);
+        if (!isDefined(def)) {
+            throw invalidArg('mixin');
+        }
+        inherit(event, def);
+    }
+
     private _addEvent(event: ja.IAnimationOptions): void {
         const self = this;
 
-        if (event.name) {
-            const def = self._resolver.findAnimation(event.name);
-            if (!isDefined(def)) {
-                throw invalidArg('name');
+        // resolve mixin properties        
+        if (event.mixins) {
+            if (!isString(event.mixins)) {
+                each(event.mixins as string[], (mixin: string) => {
+                    self._resolveMixin(mixin as string, event);
+                });
+            } else {
+                self._resolveMixin(event.mixins as string, event);                
             }
-            inherit(event, def);
         }
 
+        // set from and to relative to existing duration        
         event.from = (event.from || 0) + this._duration;
         event.to = (event.to || 0) + this._duration;
 
-        if (!event.easing) {
-            event.easing = 'linear';
-        } else {
-            event.easing = easings[event.easing] || event.easing;
-        }
+        // set easing to linear by default      
+        event.easing = event.easing ? (easings[event.easing] || event.easing) : 'linear';
 
         each(this._plugins, (plugin: ja.IPlugin) => {
             if (plugin.canHandle(event)) {
@@ -169,11 +180,10 @@ export class Animator implements ja.IAnimator {
                         animator: animator,
                         endTimeMs: event.from + animator.totalDuration(),
                         startTimeMs: event.from
-                    } as ja.ITimelineEvent;
+                    };
                 });
                 pushAll(self._events, events);
             }
-
         });
     }
     private _onCancel(self: ja.IAnimator & IAnimationContext): void {

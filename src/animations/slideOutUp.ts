@@ -1,4 +1,4 @@
-export const slideOutUp: ja.IAnimationPreset = {
+export const slideOutUp: ja.IAnimationMixin = {
   keyframes: [
     {
       visibility: 'visible',

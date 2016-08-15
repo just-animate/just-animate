@@ -1,4 +1,4 @@
-export const lightSpeedIn: ja.IAnimationPreset = {
+export const lightSpeedIn: ja.IAnimationMixin = {
   keyframes: [
     {
       offset: 0,

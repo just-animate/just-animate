@@ -112,8 +112,8 @@
 
             button.addEventListener('click', function() {
                 just.animate({ 
-                        name: 'bounceIn', 
-                        targets: '.badger', 
+                        targets: '.badger',                     
+                        mixins: 'bounceIn', 
                         to: 1400,
                         fill: 'forwards',
                         delay: function() {
@@ -121,27 +121,27 @@
                         }
                     })
                     .animate({ 
-                        name: 'bounceOut', 
-                        targets: '.badger', 
+                        targets: '.badger',                         
+                        mixins: 'bounceOut', 
                         to: 650,
                         fill: 'both'
                     })
                     .animate([
                         {
-                            name: 'zoomIn',
-                            targets: '.mushroom.one',
+                            targets: '.mushroom.one',                            
+                            mixins: 'zoomIn',
                             from: 0,
                             to: 1800
                         },
                         {
-                            name: 'zoomOut',
-                            targets: '.mushroom.one',
+                            targets: '.mushroom.one',                            
+                            mixins: 'zoomOut',
                             from: 1800,
                             to: 2700
                         },
                         {
-                            name: 'zoomIn',
-                            targets: '.mushroom.two',
+                            targets: '.mushroom.two',                            
+                            mixins: 'zoomIn',
                             from: 900,
                             to: 2700
                         }

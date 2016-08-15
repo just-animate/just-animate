@@ -1,4 +1,4 @@
-export const bounce: ja.IAnimationPreset = {
+export const bounce: ja.IAnimationMixin = {
   name: 'bounce',
   keyframes: [
     {

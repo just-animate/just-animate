@@ -2788,7 +2788,7 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
 System.register("just-animate/common/resources", [], function(exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
-    var nada, nil, animate, call, cancel, cubicBezier, duration, finish, pause, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
+    var nada, nil, animate, call, cancel, cubicBezier, duration, finish, finished, idle, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
     return {
         setters:[],
         execute: function() {
@@ -2800,7 +2800,10 @@ System.register("just-animate/common/resources", [], function(exports_78, contex
             exports_78("cubicBezier", cubicBezier = 'cubic-bezier');
             exports_78("duration", duration = 'duration');
             exports_78("finish", finish = 'finish');
+            exports_78("finished", finished = 'finished');
+            exports_78("idle", idle = 'idle');
             exports_78("pause", pause = 'pause');
+            exports_78("paused", paused = 'paused');
             exports_78("pending", pending = 'pending');
             exports_78("play", play = 'play');
             exports_78("reverse", reverse = 'reverse');
@@ -3847,23 +3850,32 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     var endsAt = lists_3.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
                     self._duration = endsAt;
                 };
+                Animator.prototype._resolveMixin = function (mixin, event) {
+                    var self = this;
+                    var def = self._resolver.findAnimation(mixin);
+                    if (!type_6.isDefined(def)) {
+                        throw errors_4.invalidArg('mixin');
+                    }
+                    objects_1.inherit(event, def);
+                };
                 Animator.prototype._addEvent = function (event) {
                     var self = this;
-                    if (event.name) {
-                        var def = self._resolver.findAnimation(event.name);
-                        if (!type_6.isDefined(def)) {
-                            throw errors_4.invalidArg('name');
+                    // resolve mixin properties        
+                    if (event.mixins) {
+                        if (!type_6.isString(event.mixins)) {
+                            lists_3.each(event.mixins, function (mixin) {
+                                self._resolveMixin(mixin, event);
+                            });
                         }
-                        objects_1.inherit(event, def);
+                        else {
+                            self._resolveMixin(event.mixins, event);
+                        }
                     }
+                    // set from and to relative to existing duration        
                     event.from = (event.from || 0) + this._duration;
                     event.to = (event.to || 0) + this._duration;
-                    if (!event.easing) {
-                        event.easing = 'linear';
-                    }
-                    else {
-                        event.easing = easings_1.easings[event.easing] || event.easing;
-                    }
+                    // set easing to linear by default      
+                    event.easing = event.easing ? (easings_1.easings[event.easing] || event.easing) : 'linear';
                     lists_3.each(this._plugins, function (plugin) {
                         if (plugin.canHandle(event)) {
                             var animators = plugin.handle(event);
@@ -4066,21 +4078,17 @@ System.register("just-animate/plugins/waapi/KeyframeAnimation", ["just-animate/c
                     if (value === resources_12.nil) {
                         return playState;
                     }
-                    if (value === 'finished') {
+                    if (value === resources_12.finished) {
                         animator.finish();
-                        return;
                     }
-                    if (value === 'idle') {
+                    else if (value === resources_12.idle) {
                         animator.cancel();
-                        return;
                     }
-                    if (value === 'paused') {
+                    else if (value === resources_12.paused) {
                         animator.pause();
-                        return;
                     }
-                    if (value === 'running') {
+                    else if (value === resources_12.running) {
                         animator.play();
-                        return;
                     }
                 };
                 KeyframeAnimator.prototype.onupdate = function (context) { };
@@ -4488,7 +4496,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                 function KeyframePlugin() {
                 }
                 KeyframePlugin.prototype.canHandle = function (options) {
-                    return !!(options.name || options.css || options.keyframes);
+                    return !!(options.css || options.keyframes);
                 };
                 KeyframePlugin.prototype.handle = function (options) {
                     var targets = elements_2.queryElements(options.targets);

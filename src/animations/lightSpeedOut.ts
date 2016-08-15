@@ -1,4 +1,4 @@
-export const lightSpeedOut: ja.IAnimationPreset = {
+export const lightSpeedOut: ja.IAnimationMixin = {
   keyframes: [
     {
       transform: 'none',

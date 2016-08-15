@@ -1,4 +1,4 @@
-export const jello: ja.IAnimationPreset = {
+export const jello: ja.IAnimationMixin = {
   keyframes: [
     {
       offset: 0,

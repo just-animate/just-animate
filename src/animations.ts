@@ -75,7 +75,7 @@ import { zoomOutLeft } from './animations/zoomOutLeft';
 import { zoomOutRight } from './animations/zoomOutRight';
 import { zoomOutUp } from './animations/zoomOutUp';
 
-export const ANIMATE_CSS: ja.IAnimationPreset[] = [
+export const ANIMATE_CSS: ja.IAnimationMixin[] = [
     bounce,
     bounceIn,
     bounceInDown,

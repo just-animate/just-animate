@@ -12,7 +12,7 @@ var KeyframePlugin = (function () {
     function KeyframePlugin() {
     }
     KeyframePlugin.prototype.canHandle = function (options) {
-        return !!(options.name || options.css || options.keyframes);
+        return !!(options.css || options.keyframes);
     };
     KeyframePlugin.prototype.handle = function (options) {
         var targets = elements_1.queryElements(options.targets);

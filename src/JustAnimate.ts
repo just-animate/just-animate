@@ -9,9 +9,9 @@ export class JustAnimate {
     private _resolver: MixinService;
     private _timeLoop: ITimeLoop;
 
-    public static inject(animations: ja.IAnimationPreset[]): void {
+    public static inject(animations: ja.IAnimationMixin[]): void {
         const resolver = new MixinService();
-        each(animations, (a: ja.IAnimationPreset) => resolver.registerAnimation(a, true));
+        each(animations, (a: ja.IAnimationMixin) => resolver.registerAnimation(a, true));
     }
 
     constructor() {
@@ -23,11 +23,11 @@ export class JustAnimate {
     public animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator {
         return new Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
     }
-    public register(preset: ja.IAnimationPreset): void {
+    public register(preset: ja.IAnimationMixin): void {
         this._resolver.registerAnimation(preset, false);
     }
-    public inject(animations: ja.IAnimationPreset[]): void {
+    public inject(animations: ja.IAnimationMixin[]): void {
         const resolver = this._resolver;
-        each(animations, (a: ja.IAnimationPreset) => resolver.registerAnimation(a, true));
+        each(animations, (a: ja.IAnimationMixin) => resolver.registerAnimation(a, true));
     }
 }

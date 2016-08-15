@@ -1,4 +1,4 @@
-export const rubberBand: ja.IAnimationPreset = {
+export const rubberBand: ja.IAnimationMixin = {
   keyframes: [
     {
       offset: 0,

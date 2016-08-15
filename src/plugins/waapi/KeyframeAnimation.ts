@@ -1,4 +1,4 @@
-import {animate, nil} from '../../common/resources';
+import {animate, finished, paused, running, idle, nil} from '../../common/resources';
 
 export class KeyframeAnimator implements ja.IAnimationController {
     private _animator: waapi.IAnimation;
@@ -43,21 +43,14 @@ export class KeyframeAnimator implements ja.IAnimationController {
         if (value === nil) {
             return playState;
         }
-        if (value === 'finished') {
+        if (value === finished) {
             animator.finish();
-            return;
-        }
-        if (value === 'idle') {
+        } else if (value === idle) {
             animator.cancel();
-            return;
-        }
-        if (value === 'paused') {
+        } else if (value === paused) {
             animator.pause();
-            return;
-        }
-        if (value === 'running') {
+        } else if (value === running) {
             animator.play();
-            return;
         }
     }
 

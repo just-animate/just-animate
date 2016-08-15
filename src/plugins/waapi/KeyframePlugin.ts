@@ -11,7 +11,7 @@ import {KeyframeAnimator} from '../waapi/KeyframeAnimation';
 
 export class KeyframePlugin implements ja.IPlugin {
     public canHandle(options: ja.IAnimationOptions): boolean {
-        return !!(options.name || options.css || options.keyframes);
+        return !!(options.css || options.keyframes);
     }
     
     public handle(options: ja.IAnimationOptions): ja.IAnimationController[] {

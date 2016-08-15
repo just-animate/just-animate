@@ -1,4 +1,4 @@
-export const shake: ja.IAnimationPreset = {
+export const shake: ja.IAnimationMixin = {
   keyframes: [
     {
       transform: 'translate3d(0, 0, 0)'

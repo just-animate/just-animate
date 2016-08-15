@@ -1,4 +1,4 @@
-export const rotateInDownRight: ja.IAnimationPreset = {
+export const rotateInDownRight: ja.IAnimationMixin = {
   keyframes: [
     {
       transformOrigin: 'right bottom',

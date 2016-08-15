@@ -1,4 +1,4 @@
-export const hinge: ja.IAnimationPreset = {
+export const hinge: ja.IAnimationMixin = {
   keyframes: [
     {
       transform: 'none',

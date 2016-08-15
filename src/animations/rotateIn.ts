@@ -1,4 +1,4 @@
-export const rotateIn: ja.IAnimationPreset = {
+export const rotateIn: ja.IAnimationMixin = {
   keyframes: [
     {
       transformOrigin: 'center',

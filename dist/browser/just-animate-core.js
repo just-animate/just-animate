@@ -8,12 +8,16 @@
     var cubicBezier = 'cubic-bezier';
     var duration = 'duration';
     var finish = 'finish';
+    var finished = 'finished';
+    var idle = 'idle';
     var pause = 'pause';
+    var paused = 'paused';
     var rotate = 'rotate';
     var rotate3d = 'rotate3d';
     var rotateX = 'rotateX';
     var rotateY = 'rotateY';
     var rotateZ = 'rotateZ';
+    var running = 'running';
     var scale = 'scale';
     var scale3d = 'scale3d';
     var scaleX = 'scaleX';
@@ -304,23 +308,29 @@
             var endsAt = maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
             self._duration = endsAt;
         };
+        Animator.prototype._resolveMixin = function (mixin, event) {
+            var self = this;
+            var def = self._resolver.findAnimation(mixin);
+            if (!isDefined(def)) {
+                throw invalidArg('mixin');
+            }
+            inherit(event, def);
+        };
         Animator.prototype._addEvent = function (event) {
             var self = this;
-            if (event.name) {
-                var def = self._resolver.findAnimation(event.name);
-                if (!isDefined(def)) {
-                    throw invalidArg('name');
+            if (event.mixins) {
+                if (!isString(event.mixins)) {
+                    each(event.mixins, function (mixin) {
+                        self._resolveMixin(mixin, event);
+                    });
                 }
-                inherit(event, def);
+                else {
+                    self._resolveMixin(event.mixins, event);
+                }
             }
             event.from = (event.from || 0) + this._duration;
             event.to = (event.to || 0) + this._duration;
-            if (!event.easing) {
-                event.easing = 'linear';
-            }
-            else {
-                event.easing = easings[event.easing] || event.easing;
-            }
+            event.easing = event.easing ? (easings[event.easing] || event.easing) : 'linear';
             each(this._plugins, function (plugin) {
                 if (plugin.canHandle(event)) {
                     var animators = plugin.handle(event);
@@ -947,21 +957,17 @@
             if (value === nil) {
                 return playState;
             }
-            if (value === 'finished') {
+            if (value === finished) {
                 animator.finish();
-                return;
             }
-            if (value === 'idle') {
+            else if (value === idle) {
                 animator.cancel();
-                return;
             }
-            if (value === 'paused') {
+            else if (value === paused) {
                 animator.pause();
-                return;
             }
-            if (value === 'running') {
+            else if (value === running) {
                 animator.play();
-                return;
             }
         };
         KeyframeAnimator.prototype.onupdate = function (context) { };
@@ -972,7 +978,7 @@
         function KeyframePlugin() {
         }
         KeyframePlugin.prototype.canHandle = function (options) {
-            return !!(options.name || options.css || options.keyframes);
+            return !!(options.css || options.keyframes);
         };
         KeyframePlugin.prototype.handle = function (options) {
             var targets = queryElements(options.targets);

@@ -1,4 +1,4 @@
-export const headShake: ja.IAnimationPreset = {
+export const headShake: ja.IAnimationMixin = {
   keyframes: [
     {
       offset: 0,

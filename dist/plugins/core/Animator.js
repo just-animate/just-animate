@@ -117,23 +117,32 @@ var Animator = (function () {
         var endsAt = lists_1.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
         self._duration = endsAt;
     };
+    Animator.prototype._resolveMixin = function (mixin, event) {
+        var self = this;
+        var def = self._resolver.findAnimation(mixin);
+        if (!type_1.isDefined(def)) {
+            throw errors_1.invalidArg('mixin');
+        }
+        objects_1.inherit(event, def);
+    };
     Animator.prototype._addEvent = function (event) {
         var self = this;
-        if (event.name) {
-            var def = self._resolver.findAnimation(event.name);
-            if (!type_1.isDefined(def)) {
-                throw errors_1.invalidArg('name');
+        // resolve mixin properties        
+        if (event.mixins) {
+            if (!type_1.isString(event.mixins)) {
+                lists_1.each(event.mixins, function (mixin) {
+                    self._resolveMixin(mixin, event);
+                });
             }
-            objects_1.inherit(event, def);
+            else {
+                self._resolveMixin(event.mixins, event);
+            }
         }
+        // set from and to relative to existing duration        
         event.from = (event.from || 0) + this._duration;
         event.to = (event.to || 0) + this._duration;
-        if (!event.easing) {
-            event.easing = 'linear';
-        }
-        else {
-            event.easing = easings_1.easings[event.easing] || event.easing;
-        }
+        // set easing to linear by default      
+        event.easing = event.easing ? (easings_1.easings[event.easing] || event.easing) : 'linear';
         lists_1.each(this._plugins, function (plugin) {
             if (plugin.canHandle(event)) {
                 var animators = plugin.handle(event);

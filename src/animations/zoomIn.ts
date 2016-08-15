@@ -1,4 +1,4 @@
-export const zoomIn: ja.IAnimationPreset = {
+export const zoomIn: ja.IAnimationMixin = {
   keyframes: [
     {
       opacity: 0,

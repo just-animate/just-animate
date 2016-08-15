@@ -1,4 +1,4 @@
-export const pulse: ja.IAnimationPreset = {
+export const pulse: ja.IAnimationMixin = {
   keyframes: [
     {
       transform: 'scale3d(1, 1, 1)'

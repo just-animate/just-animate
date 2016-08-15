@@ -1,4 +1,4 @@
-export const rollIn: ja.IAnimationPreset = {
+export const rollIn: ja.IAnimationMixin = {
   keyframes: [
     {
       opacity: 0,
