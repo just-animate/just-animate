@@ -1,15 +1,10 @@
 "use strict";
 exports.fadeIn = {
-    css: [
-        {
-            opacity: 0
-        },
-        {
-            opacity: 1
-        }
-    ],
-    to: 650,
-    fill: 'both',
+    css: {
+        opacity: [0, 1]
+    },
     easing: 'ease-in',
-    name: 'fadeIn'
+    fill: 'both',
+    name: 'fadeIn',
+    to: 650
 };

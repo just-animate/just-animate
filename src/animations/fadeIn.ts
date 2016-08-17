@@ -1,14 +1,9 @@
 export const fadeIn: ja.IAnimationMixin = {
-  css: [
-    {
-      opacity: 0
-    },
-    {
-      opacity: 1
-    }
-  ],
-   to: 650,
-    fill: 'both',
-    easing: 'ease-in',
-  name: 'fadeIn'
+  css: {
+    opacity: [0, 1]
+  },
+  easing: 'ease-in',
+  fill: 'both',
+  name: 'fadeIn',  
+  to: 650
 };
