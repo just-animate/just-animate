@@ -1,6 +1,6 @@
 "use strict";
 exports.lightSpeedIn = {
-    keyframes: [
+    css: [
         {
             offset: 0,
             transform: 'translate3d(100%, 0, 0) skewX(-30deg)',

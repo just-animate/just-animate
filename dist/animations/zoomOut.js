@@ -1,6 +1,6 @@
 "use strict";
 exports.zoomOut = {
-    keyframes: [
+    css: [
         {
             opacity: 1,
             transform: 'none',

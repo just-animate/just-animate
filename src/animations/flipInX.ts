@@ -1,5 +1,5 @@
 export const flipInX: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       offset: 0,
       transform: 'perspective(400px)',

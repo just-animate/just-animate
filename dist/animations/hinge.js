@@ -1,6 +1,6 @@
 "use strict";
 exports.hinge = {
-    keyframes: [
+    css: [
         {
             transform: 'none',
             transformOrigin: 'top left',

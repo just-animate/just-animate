@@ -1,5 +1,5 @@
 export const fadeInLeft: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       opacity: 0,
       transform: 'translate3d(-100%, 0, 0)'

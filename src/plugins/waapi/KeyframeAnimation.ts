@@ -25,10 +25,14 @@ export class KeyframeAnimator implements ja.IAnimationController {
     }
 
     public seek(value: number): void {
-        this._animator.currentTime = value;
+        if (this._animator.currentTime !== value) {
+            this._animator.currentTime = value;
+        }
     }
     public playbackRate(value: number): void {
-        this._animator.playbackRate = value;
+        if (this._animator.playbackRate !== value) {
+            this._animator.playbackRate = value;
+        }
     }
     public reverse(): void {
         this._animator.playbackRate *= -1;

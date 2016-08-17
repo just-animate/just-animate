@@ -1,6 +1,6 @@
 "use strict";
 exports.flipOutX = {
-    keyframes: [
+    css: [
         {
             offset: 0,
             transform: 'perspective(400px)',

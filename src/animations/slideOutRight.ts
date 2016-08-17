@@ -1,5 +1,5 @@
 export const slideOutRight: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       visibility: 'visible',
       transform: 'translate3d(0, 0, 0)'

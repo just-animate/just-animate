@@ -1,6 +1,6 @@
 "use strict";
 exports.swing = {
-    keyframes: [
+    css: [
         {
             transform: 'none'
         },

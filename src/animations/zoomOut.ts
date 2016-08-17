@@ -1,5 +1,5 @@
 export const zoomOut: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       opacity: 1,
       transform: 'none',

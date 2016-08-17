@@ -1,5 +1,5 @@
 export const slideInUp: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       transform: 'translate3d(0, 100%, 0)',
       visibility: 'hidden'

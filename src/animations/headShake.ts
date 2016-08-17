@@ -1,5 +1,5 @@
 export const headShake: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       offset: 0,
       translateX: '0'

@@ -1,6 +1,6 @@
 "use strict";
 exports.fadeOutDownBig = {
-    keyframes: [
+    css: [
         {
             opacity: 1,
             transform: 'none'

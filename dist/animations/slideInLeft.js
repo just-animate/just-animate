@@ -1,6 +1,6 @@
 "use strict";
 exports.slideInLeft = {
-    keyframes: [
+    css: [
         {
             transform: 'translate3d(-100%, 0, 0)',
             visibility: 'hidden'

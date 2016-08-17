@@ -7,7 +7,7 @@ System.register("just-animate/animations/bounce", [], function(exports_1, contex
         execute: function() {
             exports_1("bounce", bounce = {
                 name: 'bounce',
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         y: 0
@@ -61,7 +61,7 @@ System.register("just-animate/animations/bounceIn", [], function(exports_2, cont
         execute: function() {
             exports_2("bounceIn", bounceIn = {
                 name: 'bounceIn',
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         scale: .3
@@ -99,7 +99,7 @@ System.register("just-animate/animations/bounceInDown", [], function(exports_3, 
         setters:[],
         execute: function() {
             exports_3("bounceInDown", bounceInDown = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 0,
@@ -142,7 +142,7 @@ System.register("just-animate/animations/bounceInLeft", [], function(exports_4, 
         setters:[],
         execute: function() {
             exports_4("bounceInLeft", bounceInLeft = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 0,
@@ -185,7 +185,7 @@ System.register("just-animate/animations/bounceInRight", [], function(exports_5,
         setters:[],
         execute: function() {
             exports_5("bounceInRight", bounceInRight = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 0,
@@ -226,7 +226,7 @@ System.register("just-animate/animations/bounceInUp", [], function(exports_6, co
         setters:[],
         execute: function() {
             exports_6("bounceInUp", bounceInUp = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 0,
@@ -269,7 +269,7 @@ System.register("just-animate/animations/bounceOut", [], function(exports_7, con
         setters:[],
         execute: function() {
             exports_7("bounceOut", bounceOut = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -310,7 +310,7 @@ System.register("just-animate/animations/bounceOutDown", [], function(exports_8,
         setters:[],
         execute: function() {
             exports_8("bounceOutDown", bounceOutDown = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -351,7 +351,7 @@ System.register("just-animate/animations/bounceOutLeft", [], function(exports_9,
         setters:[],
         execute: function() {
             exports_9("bounceOutLeft", bounceOutLeft = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -383,7 +383,7 @@ System.register("just-animate/animations/bounceOutRight", [], function(exports_1
         setters:[],
         execute: function() {
             exports_10("bounceOutRight", bounceOutRight = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -415,7 +415,7 @@ System.register("just-animate/animations/bounceOutUp", [], function(exports_11, 
         setters:[],
         execute: function() {
             exports_11("bounceOutUp", bounceOutUp = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -457,7 +457,7 @@ System.register("just-animate/animations/fadeIn", [], function(exports_12, conte
         setters:[],
         execute: function() {
             exports_12("fadeIn", fadeIn = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0
                     },
@@ -481,7 +481,7 @@ System.register("just-animate/animations/fadeInDown", [], function(exports_13, c
         setters:[],
         execute: function() {
             exports_13("fadeInDown", fadeInDown = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         y: '-100%'
@@ -506,7 +506,7 @@ System.register("just-animate/animations/fadeInDownBig", [], function(exports_14
         setters:[],
         execute: function() {
             exports_14("fadeInDownBig", fadeInDownBig = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'translate3d(0, -2000px, 0)'
@@ -532,7 +532,7 @@ System.register("just-animate/animations/fadeInLeft", [], function(exports_15, c
         setters:[],
         execute: function() {
             exports_15("fadeInLeft", fadeInLeft = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'translate3d(-100%, 0, 0)'
@@ -558,7 +558,7 @@ System.register("just-animate/animations/fadeInLeftBig", [], function(exports_16
         setters:[],
         execute: function() {
             exports_16("fadeInLeftBig", fadeInLeftBig = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'translate3d(-2000px, 0, 0)'
@@ -584,7 +584,7 @@ System.register("just-animate/animations/fadeInRight", [], function(exports_17, 
         setters:[],
         execute: function() {
             exports_17("fadeInRight", fadeInRight = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'translate3d(100%, 0, 0)'
@@ -610,7 +610,7 @@ System.register("just-animate/animations/fadeInRightBig", [], function(exports_1
         setters:[],
         execute: function() {
             exports_18("fadeInRightBig", fadeInRightBig = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'translate3d(2000px, 0, 0)'
@@ -636,7 +636,7 @@ System.register("just-animate/animations/fadeInUp", [], function(exports_19, con
         setters:[],
         execute: function() {
             exports_19("fadeInUp", fadeInUp = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'translate3d(0, 100%, 0)'
@@ -662,7 +662,7 @@ System.register("just-animate/animations/fadeInUpBig", [], function(exports_20, 
         setters:[],
         execute: function() {
             exports_20("fadeInUpBig", fadeInUpBig = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'translate3d(0, 2000px, 0)'
@@ -688,7 +688,7 @@ System.register("just-animate/animations/fadeOut", [], function(exports_21, cont
         setters:[],
         execute: function() {
             exports_21("fadeOut", fadeOut = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1
                     },
@@ -711,7 +711,7 @@ System.register("just-animate/animations/fadeOutDown", [], function(exports_22, 
         setters:[],
         execute: function() {
             exports_22("fadeOutDown", fadeOutDown = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -735,7 +735,7 @@ System.register("just-animate/animations/fadeOutDownBig", [], function(exports_2
         setters:[],
         execute: function() {
             exports_23("fadeOutDownBig", fadeOutDownBig = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -759,7 +759,7 @@ System.register("just-animate/animations/fadeOutLeft", [], function(exports_24, 
         setters:[],
         execute: function() {
             exports_24("fadeOutLeft", fadeOutLeft = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -783,7 +783,7 @@ System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_2
         setters:[],
         execute: function() {
             exports_25("fadeOutLeftBig", fadeOutLeftBig = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -807,7 +807,7 @@ System.register("just-animate/animations/fadeOutRight", [], function(exports_26,
         setters:[],
         execute: function() {
             exports_26("fadeOutRight", fadeOutRight = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -831,7 +831,7 @@ System.register("just-animate/animations/fadeOutRightBig", [], function(exports_
         setters:[],
         execute: function() {
             exports_27("fadeOutRightBig", fadeOutRightBig = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -855,7 +855,7 @@ System.register("just-animate/animations/fadeOutUp", [], function(exports_28, co
         setters:[],
         execute: function() {
             exports_28("fadeOutUp", fadeOutUp = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -879,7 +879,7 @@ System.register("just-animate/animations/fadeOutUpBig", [], function(exports_29,
         setters:[],
         execute: function() {
             exports_29("fadeOutUpBig", fadeOutUpBig = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -903,7 +903,7 @@ System.register("just-animate/animations/flash", [], function(exports_30, contex
         setters:[],
         execute: function() {
             exports_30("flash", flash = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1
                     },
@@ -934,7 +934,7 @@ System.register("just-animate/animations/flip", [], function(exports_31, context
         setters:[],
         execute: function() {
             exports_31("flip", flip = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'perspective(400px) rotate3d(0, 1, 0, -360deg)'
@@ -970,7 +970,7 @@ System.register("just-animate/animations/flipInX", [], function(exports_32, cont
         setters:[],
         execute: function() {
             exports_32("flipInX", flipInX = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'perspective(400px)',
@@ -1013,7 +1013,7 @@ System.register("just-animate/animations/flipInY", [], function(exports_33, cont
         setters:[],
         execute: function() {
             exports_33("flipInY", flipInY = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'perspective(400px)',
@@ -1056,7 +1056,7 @@ System.register("just-animate/animations/flipOutX", [], function(exports_34, con
         setters:[],
         execute: function() {
             exports_34("flipOutX", flipOutX = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'perspective(400px)',
@@ -1087,7 +1087,7 @@ System.register("just-animate/animations/flipOutY", [], function(exports_35, con
         setters:[],
         execute: function() {
             exports_35("flipOutY", flipOutY = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'perspective(400px)',
@@ -1118,7 +1118,7 @@ System.register("just-animate/animations/headShake", [], function(exports_36, co
         setters:[],
         execute: function() {
             exports_36("headShake", headShake = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         translateX: '0'
@@ -1167,7 +1167,7 @@ System.register("just-animate/animations/hinge", [], function(exports_37, contex
         setters:[],
         execute: function() {
             exports_37("hinge", hinge = {
-                keyframes: [
+                css: [
                     {
                         transform: 'none',
                         transformOrigin: 'top left',
@@ -1209,7 +1209,7 @@ System.register("just-animate/animations/jello", [], function(exports_38, contex
         setters:[],
         execute: function() {
             exports_38("jello", jello = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'none'
@@ -1267,7 +1267,7 @@ System.register("just-animate/animations/lightSpeedIn", [], function(exports_39,
         setters:[],
         execute: function() {
             exports_39("lightSpeedIn", lightSpeedIn = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'translate3d(100%, 0, 0) skewX(-30deg)',
@@ -1305,7 +1305,7 @@ System.register("just-animate/animations/lightSpeedOut", [], function(exports_40
         setters:[],
         execute: function() {
             exports_40("lightSpeedOut", lightSpeedOut = {
-                keyframes: [
+                css: [
                     {
                         transform: 'none',
                         opacity: 1
@@ -1331,7 +1331,7 @@ System.register("just-animate/animations/pulse", [], function(exports_41, contex
         setters:[],
         execute: function() {
             exports_41("pulse", pulse = {
-                keyframes: [
+                css: [
                     {
                         transform: 'scale3d(1, 1, 1)'
                     },
@@ -1356,7 +1356,7 @@ System.register("just-animate/animations/rollIn", [], function(exports_42, conte
         setters:[],
         execute: function() {
             exports_42("rollIn", rollIn = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'translate3d(-100%, 0, 0) rotate3d(0, 0, 1, -120deg)'
@@ -1380,7 +1380,7 @@ System.register("just-animate/animations/rollOut", [], function(exports_43, cont
         setters:[],
         execute: function() {
             exports_43("rollOut", rollOut = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none'
@@ -1404,7 +1404,7 @@ System.register("just-animate/animations/rotateIn", [], function(exports_44, con
         setters:[],
         execute: function() {
             exports_44("rotateIn", rotateIn = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'center',
                         transform: 'rotate3d(0, 0, 1, -200deg)',
@@ -1430,7 +1430,7 @@ System.register("just-animate/animations/rotateInDownLeft", [], function(exports
         setters:[],
         execute: function() {
             exports_45("rotateInDownLeft", rotateInDownLeft = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'left bottom',
                         transform: 'rotate3d(0, 0, 1, -45deg)',
@@ -1456,7 +1456,7 @@ System.register("just-animate/animations/rotateInDownRight", [], function(export
         setters:[],
         execute: function() {
             exports_46("rotateInDownRight", rotateInDownRight = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'right bottom',
                         transform: 'rotate3d(0, 0, 1, 45deg)',
@@ -1482,7 +1482,7 @@ System.register("just-animate/animations/rotateInUpLeft", [], function(exports_4
         setters:[],
         execute: function() {
             exports_47("rotateInUpLeft", rotateInUpLeft = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'left bottom',
                         transform: 'rotate3d(0, 0, 1, 45deg)',
@@ -1508,7 +1508,7 @@ System.register("just-animate/animations/rotateInUpRight", [], function(exports_
         setters:[],
         execute: function() {
             exports_48("rotateInUpRight", rotateInUpRight = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'right bottom',
                         transform: 'rotate3d(0, 0, 1, -90deg)',
@@ -1534,7 +1534,7 @@ System.register("just-animate/animations/rotateOut", [], function(exports_49, co
         setters:[],
         execute: function() {
             exports_49("rotateOut", rotateOut = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'center',
                         transform: 'none',
@@ -1560,7 +1560,7 @@ System.register("just-animate/animations/rotateOutDownLeft", [], function(export
         setters:[],
         execute: function() {
             exports_50("rotateOutDownLeft", rotateOutDownLeft = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'left bottom',
                         transform: 'none',
@@ -1586,7 +1586,7 @@ System.register("just-animate/animations/rotateOutDownRight", [], function(expor
         setters:[],
         execute: function() {
             exports_51("rotateOutDownRight", rotateOutDownRight = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'right bottom',
                         transform: 'none',
@@ -1612,7 +1612,7 @@ System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_
         setters:[],
         execute: function() {
             exports_52("rotateOutUpLeft", rotateOutUpLeft = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'left bottom',
                         transform: 'none',
@@ -1638,7 +1638,7 @@ System.register("just-animate/animations/rotateOutUpRight", [], function(exports
         setters:[],
         execute: function() {
             exports_53("rotateOutUpRight", rotateOutUpRight = {
-                keyframes: [
+                css: [
                     {
                         transformOrigin: 'right bottom',
                         transform: 'none',
@@ -1664,7 +1664,7 @@ System.register("just-animate/animations/rubberBand", [], function(exports_54, c
         setters:[],
         execute: function() {
             exports_54("rubberBand", rubberBand = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'scale3d(1, 1, 1)'
@@ -1708,7 +1708,7 @@ System.register("just-animate/animations/shake", [], function(exports_55, contex
         setters:[],
         execute: function() {
             exports_55("shake", shake = {
-                keyframes: [
+                css: [
                     {
                         transform: 'translate3d(0, 0, 0)'
                     },
@@ -1757,7 +1757,7 @@ System.register("just-animate/animations/slideInDown", [], function(exports_56, 
         setters:[],
         execute: function() {
             exports_56("slideInDown", slideInDown = {
-                keyframes: [
+                css: [
                     {
                         transform: 'translate3d(0, -100%, 0)',
                         visibility: 'hidden'
@@ -1781,7 +1781,7 @@ System.register("just-animate/animations/slideInLeft", [], function(exports_57, 
         setters:[],
         execute: function() {
             exports_57("slideInLeft", slideInLeft = {
-                keyframes: [
+                css: [
                     {
                         transform: 'translate3d(-100%, 0, 0)',
                         visibility: 'hidden'
@@ -1805,7 +1805,7 @@ System.register("just-animate/animations/slideInRight", [], function(exports_58,
         setters:[],
         execute: function() {
             exports_58("slideInRight", slideInRight = {
-                keyframes: [
+                css: [
                     {
                         transform: 'translate3d(100%, 0, 0)',
                         visibility: 'hidden'
@@ -1829,7 +1829,7 @@ System.register("just-animate/animations/slideInUp", [], function(exports_59, co
         setters:[],
         execute: function() {
             exports_59("slideInUp", slideInUp = {
-                keyframes: [
+                css: [
                     {
                         transform: 'translate3d(0, 100%, 0)',
                         visibility: 'hidden'
@@ -1853,7 +1853,7 @@ System.register("just-animate/animations/slideOutDown", [], function(exports_60,
         setters:[],
         execute: function() {
             exports_60("slideOutDown", slideOutDown = {
-                keyframes: [
+                css: [
                     {
                         transform: 'translate3d(0, 0, 0)',
                         visibility: 'visible'
@@ -1877,7 +1877,7 @@ System.register("just-animate/animations/slideOutLeft", [], function(exports_61,
         setters:[],
         execute: function() {
             exports_61("slideOutLeft", slideOutLeft = {
-                keyframes: [
+                css: [
                     {
                         visibility: 'visible',
                         transform: 'translate3d(0, 0, 0)'
@@ -1901,7 +1901,7 @@ System.register("just-animate/animations/slideOutRight", [], function(exports_62
         setters:[],
         execute: function() {
             exports_62("slideOutRight", slideOutRight = {
-                keyframes: [
+                css: [
                     {
                         visibility: 'visible',
                         transform: 'translate3d(0, 0, 0)'
@@ -1925,7 +1925,7 @@ System.register("just-animate/animations/slideOutUp", [], function(exports_63, c
         setters:[],
         execute: function() {
             exports_63("slideOutUp", slideOutUp = {
-                keyframes: [
+                css: [
                     {
                         visibility: 'visible',
                         transform: 'translate3d(0, 0, 0)'
@@ -1949,7 +1949,7 @@ System.register("just-animate/animations/swing", [], function(exports_64, contex
         setters:[],
         execute: function() {
             exports_64("swing", swing = {
-                keyframes: [
+                css: [
                     {
                         transform: 'none'
                     },
@@ -1983,7 +1983,7 @@ System.register("just-animate/animations/tada", [], function(exports_65, context
         setters:[],
         execute: function() {
             exports_65("tada", tada = {
-                keyframes: [
+                css: [
                     {
                         transform: 'scale3d(1, 1, 1)'
                     },
@@ -2032,7 +2032,7 @@ System.register("just-animate/animations/wobble", [], function(exports_66, conte
         setters:[],
         execute: function() {
             exports_66("wobble", wobble = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         transform: 'none'
@@ -2076,7 +2076,7 @@ System.register("just-animate/animations/zoomIn", [], function(exports_67, conte
         setters:[],
         execute: function() {
             exports_67("zoomIn", zoomIn = {
-                keyframes: [
+                css: [
                     {
                         opacity: 0,
                         transform: 'scale3d(.3, .3, .3)'
@@ -2104,7 +2104,7 @@ System.register("just-animate/animations/zoomInDown", [], function(exports_68, c
         setters:[],
         execute: function() {
             exports_68("zoomInDown", zoomInDown = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 0,
@@ -2136,7 +2136,7 @@ System.register("just-animate/animations/zoomInLeft", [], function(exports_69, c
         setters:[],
         execute: function() {
             exports_69("zoomInLeft", zoomInLeft = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 0,
@@ -2168,7 +2168,7 @@ System.register("just-animate/animations/zoomInRight", [], function(exports_70, 
         setters:[],
         execute: function() {
             exports_70("zoomInRight", zoomInRight = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 0,
@@ -2200,7 +2200,7 @@ System.register("just-animate/animations/zoomInUp", [], function(exports_71, con
         setters:[],
         execute: function() {
             exports_71("zoomInUp", zoomInUp = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 0,
@@ -2232,7 +2232,7 @@ System.register("just-animate/animations/zoomOut", [], function(exports_72, cont
         setters:[],
         execute: function() {
             exports_72("zoomOut", zoomOut = {
-                keyframes: [
+                css: [
                     {
                         opacity: 1,
                         transform: 'none',
@@ -2263,7 +2263,7 @@ System.register("just-animate/animations/zoomOutDown", [], function(exports_73, 
         setters:[],
         execute: function() {
             exports_73("zoomOutDown", zoomOutDown = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -2298,7 +2298,7 @@ System.register("just-animate/animations/zoomOutLeft", [], function(exports_74, 
         setters:[],
         execute: function() {
             exports_74("zoomOutLeft", zoomOutLeft = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -2332,7 +2332,7 @@ System.register("just-animate/animations/zoomOutRight", [], function(exports_75,
         setters:[],
         execute: function() {
             exports_75("zoomOutRight", zoomOutRight = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -2366,7 +2366,7 @@ System.register("just-animate/animations/zoomOutUp", [], function(exports_76, co
         setters:[],
         execute: function() {
             exports_76("zoomOutUp", zoomOutUp = {
-                keyframes: [
+                css: [
                     {
                         offset: 0,
                         opacity: 1,
@@ -3960,6 +3960,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                                 animator.playbackRate(playbackRate);
                                 animator.playState('running');
                             }
+                            animator.playbackRate(playbackRate);
                         }
                     }
                 };
@@ -4063,10 +4064,14 @@ System.register("just-animate/plugins/waapi/KeyframeAnimation", ["just-animate/c
                     return this._totalTime;
                 };
                 KeyframeAnimator.prototype.seek = function (value) {
-                    this._animator.currentTime = value;
+                    if (this._animator.currentTime !== value) {
+                        this._animator.currentTime = value;
+                    }
                 };
                 KeyframeAnimator.prototype.playbackRate = function (value) {
-                    this._animator.playbackRate = value;
+                    if (this._animator.playbackRate !== value) {
+                        this._animator.playbackRate = value;
+                    }
                 };
                 KeyframeAnimator.prototype.reverse = function () {
                     this._animator.playbackRate *= -1;
@@ -4496,7 +4501,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                 function KeyframePlugin() {
                 }
                 KeyframePlugin.prototype.canHandle = function (options) {
-                    return !!(options.css || options.keyframes);
+                    return !!(options.css);
                 };
                 KeyframePlugin.prototype.handle = function (options) {
                     var targets = elements_2.queryElements(options.targets);
@@ -4511,7 +4516,55 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                         timings.direction = objects_2.unwrap(options.direction) || resources_15.nil;
                         // note: don't unwrap easings so we don't break this later with custom easings
                         timings.easing = options.easing || 'linear';
-                        var sourceKeyframes = options.keyframes;
+                        // process css as either keyframes or calculate what those keyframes should be   
+                        var css = options.css;
+                        var sourceKeyframes;
+                        if (type_8.isArray(css)) {
+                            // if an array, no processing has to occur
+                            sourceKeyframes = css;
+                        }
+                        else {
+                            // create a map to capture each keyframe by offset
+                            var keyframesByOffset = dict_1.createMap();
+                            var cssProps = css;
+                            // iterate over each property split it into keyframes            
+                            for (var prop in cssProps) {
+                                if (!cssProps.hasOwnProperty(prop)) {
+                                    continue;
+                                }
+                                // unwrap value (changes function into discrete value or array)                    
+                                var val = objects_2.unwrap(cssProps[prop]);
+                                if (type_8.isArray(val)) {
+                                    // if the value is an array, split up the offset automatically
+                                    var valAsArray = val;
+                                    var valLength = valAsArray.length;
+                                    for (var i = 0; i < valLength; i++) {
+                                        var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                                        var keyframe = keyframesByOffset[offset];
+                                        if (!keyframe) {
+                                            keyframe = dict_1.createMap();
+                                            keyframesByOffset[offset] = keyframe;
+                                        }
+                                        keyframe[prop] = val[i];
+                                    }
+                                }
+                                else {
+                                    // if the value is not an array, place it at offset 0
+                                    var keyframe = keyframesByOffset[0];
+                                    if (!keyframe) {
+                                        keyframe = dict_1.createMap();
+                                        keyframesByOffset[0] = keyframe;
+                                    }
+                                    keyframe[prop] = val;
+                                }
+                            }
+                            sourceKeyframes = [];
+                            for (var offset in keyframesByOffset) {
+                                var keyframe = keyframesByOffset[offset];
+                                keyframe.offset = Number(offset);
+                                sourceKeyframes.push(keyframe);
+                            }
+                        }
                         var targetKeyframes = [];
                         var keyframeLength = sourceKeyframes.length;
                         for (var i = 0; i < keyframeLength; i++) {

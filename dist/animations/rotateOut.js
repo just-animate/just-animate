@@ -1,6 +1,6 @@
 "use strict";
 exports.rotateOut = {
-    keyframes: [
+    css: [
         {
             transformOrigin: 'center',
             transform: 'none',

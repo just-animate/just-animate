@@ -1,5 +1,5 @@
 export const rotateIn: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       transformOrigin: 'center',
       transform: 'rotate3d(0, 0, 1, -200deg)',

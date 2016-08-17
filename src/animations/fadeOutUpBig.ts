@@ -1,5 +1,5 @@
 export const fadeOutUpBig: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       opacity: 1,
       transform: 'none'

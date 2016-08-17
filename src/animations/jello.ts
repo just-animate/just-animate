@@ -1,5 +1,5 @@
 export const jello: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       offset: 0,
       transform: 'none'

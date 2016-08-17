@@ -1,6 +1,6 @@
 "use strict";
 exports.slideOutRight = {
-    keyframes: [
+    css: [
         {
             visibility: 'visible',
             transform: 'translate3d(0, 0, 0)'

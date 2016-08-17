@@ -1,5 +1,5 @@
 export const slideInLeft: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       transform: 'translate3d(-100%, 0, 0)',
       visibility: 'hidden'

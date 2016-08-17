@@ -1,5 +1,5 @@
 export const fadeIn: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       opacity: 0
     },

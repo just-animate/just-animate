@@ -1,5 +1,5 @@
 export const hinge: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       transform: 'none',
       transformOrigin: 'top left',

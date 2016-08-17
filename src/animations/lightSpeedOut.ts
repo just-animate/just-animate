@@ -1,5 +1,5 @@
 export const lightSpeedOut: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       transform: 'none',
       opacity: 1

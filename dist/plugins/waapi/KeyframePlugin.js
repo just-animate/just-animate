@@ -12,7 +12,7 @@ var KeyframePlugin = (function () {
     function KeyframePlugin() {
     }
     KeyframePlugin.prototype.canHandle = function (options) {
-        return !!(options.css || options.keyframes);
+        return !!(options.css);
     };
     KeyframePlugin.prototype.handle = function (options) {
         var targets = elements_1.queryElements(options.targets);
@@ -27,7 +27,55 @@ var KeyframePlugin = (function () {
             timings.direction = objects_1.unwrap(options.direction) || resources_1.nil;
             // note: don't unwrap easings so we don't break this later with custom easings
             timings.easing = options.easing || 'linear';
-            var sourceKeyframes = options.keyframes;
+            // process css as either keyframes or calculate what those keyframes should be   
+            var css = options.css;
+            var sourceKeyframes;
+            if (type_1.isArray(css)) {
+                // if an array, no processing has to occur
+                sourceKeyframes = css;
+            }
+            else {
+                // create a map to capture each keyframe by offset
+                var keyframesByOffset = dict_1.createMap();
+                var cssProps = css;
+                // iterate over each property split it into keyframes            
+                for (var prop in cssProps) {
+                    if (!cssProps.hasOwnProperty(prop)) {
+                        continue;
+                    }
+                    // unwrap value (changes function into discrete value or array)                    
+                    var val = objects_1.unwrap(cssProps[prop]);
+                    if (type_1.isArray(val)) {
+                        // if the value is an array, split up the offset automatically
+                        var valAsArray = val;
+                        var valLength = valAsArray.length;
+                        for (var i = 0; i < valLength; i++) {
+                            var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                            var keyframe = keyframesByOffset[offset];
+                            if (!keyframe) {
+                                keyframe = dict_1.createMap();
+                                keyframesByOffset[offset] = keyframe;
+                            }
+                            keyframe[prop] = val[i];
+                        }
+                    }
+                    else {
+                        // if the value is not an array, place it at offset 0
+                        var keyframe = keyframesByOffset[0];
+                        if (!keyframe) {
+                            keyframe = dict_1.createMap();
+                            keyframesByOffset[0] = keyframe;
+                        }
+                        keyframe[prop] = val;
+                    }
+                }
+                sourceKeyframes = [];
+                for (var offset in keyframesByOffset) {
+                    var keyframe = keyframesByOffset[offset];
+                    keyframe.offset = Number(offset);
+                    sourceKeyframes.push(keyframe);
+                }
+            }
             var targetKeyframes = [];
             var keyframeLength = sourceKeyframes.length;
             for (var i = 0; i < keyframeLength; i++) {

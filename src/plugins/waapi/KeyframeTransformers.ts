@@ -125,6 +125,8 @@ export function normalizeKeyframes(keyframes: waapi.IKeyframe[]): void {
     }
 }
 
+
+
 /**
  * Handles transforming short hand key properties into their native form
  */

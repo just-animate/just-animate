@@ -1,5 +1,5 @@
 export const bounceOut: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       offset: 0,
       opacity: 1,

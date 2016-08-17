@@ -1,6 +1,6 @@
 "use strict";
 exports.flash = {
-    keyframes: [
+    css: [
         {
             opacity: 1
         },

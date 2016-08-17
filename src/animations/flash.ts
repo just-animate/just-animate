@@ -1,5 +1,5 @@
 export const flash: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       opacity: 1
     },

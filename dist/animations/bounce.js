@@ -1,7 +1,7 @@
 "use strict";
 exports.bounce = {
     name: 'bounce',
-    keyframes: [
+    css: [
         {
             offset: 0,
             y: 0

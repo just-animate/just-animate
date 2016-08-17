@@ -1,6 +1,6 @@
 "use strict";
 exports.jello = {
-    keyframes: [
+    css: [
         {
             offset: 0,
             transform: 'none'

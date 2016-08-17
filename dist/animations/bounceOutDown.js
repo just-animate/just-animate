@@ -1,6 +1,6 @@
 "use strict";
 exports.bounceOutDown = {
-    keyframes: [
+    css: [
         {
             offset: 0,
             opacity: 1,

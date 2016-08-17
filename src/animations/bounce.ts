@@ -1,6 +1,6 @@
 export const bounce: ja.IAnimationMixin = {
   name: 'bounce',
-  keyframes: [
+  css: [
     {
       offset: 0,
       y: 0

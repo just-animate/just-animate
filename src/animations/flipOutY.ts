@@ -1,5 +1,5 @@
 export const flipOutY: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       offset: 0,
       transform: 'perspective(400px)',

@@ -1,5 +1,5 @@
 export const rubberBand: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       offset: 0,
       transform: 'scale3d(1, 1, 1)'

@@ -407,6 +407,7 @@
                         animator.playbackRate(playbackRate);
                         animator.playState('running');
                     }
+                    animator.playbackRate(playbackRate);
                 }
             }
         };
@@ -942,10 +943,14 @@
             return this._totalTime;
         };
         KeyframeAnimator.prototype.seek = function (value) {
-            this._animator.currentTime = value;
+            if (this._animator.currentTime !== value) {
+                this._animator.currentTime = value;
+            }
         };
         KeyframeAnimator.prototype.playbackRate = function (value) {
-            this._animator.playbackRate = value;
+            if (this._animator.playbackRate !== value) {
+                this._animator.playbackRate = value;
+            }
         };
         KeyframeAnimator.prototype.reverse = function () {
             this._animator.playbackRate *= -1;
@@ -978,7 +983,7 @@
         function KeyframePlugin() {
         }
         KeyframePlugin.prototype.canHandle = function (options) {
-            return !!(options.css || options.keyframes);
+            return !!(options.css);
         };
         KeyframePlugin.prototype.handle = function (options) {
             var targets = queryElements(options.targets);
@@ -992,7 +997,48 @@
                 timings.fill = unwrap(options.fill) || 'none';
                 timings.direction = unwrap(options.direction) || nil;
                 timings.easing = options.easing || 'linear';
-                var sourceKeyframes = options.keyframes;
+                var css = options.css;
+                var sourceKeyframes;
+                if (isArray(css)) {
+                    sourceKeyframes = css;
+                }
+                else {
+                    var keyframesByOffset = createMap();
+                    var cssProps = css;
+                    for (var prop in cssProps) {
+                        if (!cssProps.hasOwnProperty(prop)) {
+                            continue;
+                        }
+                        var val = unwrap(cssProps[prop]);
+                        if (isArray(val)) {
+                            var valAsArray = val;
+                            var valLength = valAsArray.length;
+                            for (var i = 0; i < valLength; i++) {
+                                var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                                var keyframe = keyframesByOffset[offset];
+                                if (!keyframe) {
+                                    keyframe = createMap();
+                                    keyframesByOffset[offset] = keyframe;
+                                }
+                                keyframe[prop] = val[i];
+                            }
+                        }
+                        else {
+                            var keyframe = keyframesByOffset[0];
+                            if (!keyframe) {
+                                keyframe = createMap();
+                                keyframesByOffset[0] = keyframe;
+                            }
+                            keyframe[prop] = val;
+                        }
+                    }
+                    sourceKeyframes = [];
+                    for (var offset in keyframesByOffset) {
+                        var keyframe = keyframesByOffset[offset];
+                        keyframe.offset = Number(offset);
+                        sourceKeyframes.push(keyframe);
+                    }
+                }
                 var targetKeyframes = [];
                 var keyframeLength = sourceKeyframes.length;
                 for (var i = 0; i < keyframeLength; i++) {

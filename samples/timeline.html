@@ -100,7 +100,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
-    <script src="../dist/browser/just-animate-core.min.js"></script>
+    <script src="../dist/browser/just-animate-core.js"></script>
     <script src="../dist/browser/just-animate-animations.min.js"></script>
     <script>
         var player = just.animate([
@@ -110,10 +110,9 @@
                 to: 4200,
                 fill: 'both',
                 easing: 'ease-in',
-                keyframes: [
-                    { x: 0 },
-                    { x: '700px' }
-                ]
+                css: {
+                    x: [0, '700px']
+                }
             },
             {
                 targets: '.car-2', 
@@ -121,10 +120,9 @@
                 to: 5000,
                 fill: 'both',
                 easing: 'linear',
-                keyframes: [
-                    { x: 0 },
-                    { x: '700px' }
-                ]
+                css: {
+                    x: [0, '700px']
+                }
             },
             {
                 targets: '.red.car', 

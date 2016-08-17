@@ -227,6 +227,7 @@ var Animator = (function () {
                     animator.playbackRate(playbackRate);
                     animator.playState('running');
                 }
+                animator.playbackRate(playbackRate);
             }
         }
     };

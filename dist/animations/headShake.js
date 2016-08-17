@@ -1,6 +1,6 @@
 "use strict";
 exports.headShake = {
-    keyframes: [
+    css: [
         {
             offset: 0,
             translateX: '0'

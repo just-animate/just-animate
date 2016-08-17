@@ -1,6 +1,6 @@
 "use strict";
 exports.rotateOutDownLeft = {
-    keyframes: [
+    css: [
         {
             transformOrigin: 'left bottom',
             transform: 'none',

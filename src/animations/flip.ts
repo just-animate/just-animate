@@ -1,5 +1,5 @@
 export const flip: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       offset: 0,
       transform: 'perspective(400px) rotate3d(0, 1, 0, -360deg)'

@@ -1,6 +1,6 @@
 "use strict";
 exports.wobble = {
-    keyframes: [
+    css: [
         {
             offset: 0,
             transform: 'none'

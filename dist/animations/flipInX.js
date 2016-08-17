@@ -1,6 +1,6 @@
 "use strict";
 exports.flipInX = {
-    keyframes: [
+    css: [
         {
             offset: 0,
             transform: 'perspective(400px)',

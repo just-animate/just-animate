@@ -3,7 +3,7 @@
 
     var bounce = {
         name: 'bounce',
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 y: 0
@@ -48,7 +48,7 @@
 
     var bounceIn = {
         name: 'bounceIn',
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 scale: .3
@@ -77,7 +77,7 @@
     };
 
     var bounceInDown = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 0,
@@ -111,7 +111,7 @@
     };
 
     var bounceInLeft = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 0,
@@ -145,7 +145,7 @@
     };
 
     var bounceInRight = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 0,
@@ -177,7 +177,7 @@
     };
 
     var bounceInUp = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 0,
@@ -211,7 +211,7 @@
     };
 
     var bounceOut = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,
@@ -243,7 +243,7 @@
     };
 
     var bounceOutDown = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,
@@ -275,7 +275,7 @@
     };
 
     var bounceOutLeft = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,
@@ -298,7 +298,7 @@
     };
 
     var bounceOutRight = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,
@@ -321,7 +321,7 @@
     };
 
     var bounceOutUp = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,
@@ -354,7 +354,7 @@
     };
 
     var fadeIn = {
-        keyframes: [
+        css: [
             {
                 opacity: 0
             },
@@ -369,7 +369,7 @@
     };
 
     var fadeInDown = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 y: '-100%'
@@ -385,7 +385,7 @@
     };
 
     var fadeInDownBig = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'translate3d(0, -2000px, 0)'
@@ -402,7 +402,7 @@
     };
 
     var fadeInLeft = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'translate3d(-100%, 0, 0)'
@@ -419,7 +419,7 @@
     };
 
     var fadeInLeftBig = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'translate3d(-2000px, 0, 0)'
@@ -436,7 +436,7 @@
     };
 
     var fadeInRight = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'translate3d(100%, 0, 0)'
@@ -453,7 +453,7 @@
     };
 
     var fadeInRightBig = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'translate3d(2000px, 0, 0)'
@@ -470,7 +470,7 @@
     };
 
     var fadeInUp = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'translate3d(0, 100%, 0)'
@@ -487,7 +487,7 @@
     };
 
     var fadeInUpBig = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'translate3d(0, 2000px, 0)'
@@ -504,7 +504,7 @@
     };
 
     var fadeOut = {
-        keyframes: [
+        css: [
             {
                 opacity: 1
             },
@@ -518,7 +518,7 @@
     };
 
     var fadeOutDown = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -533,7 +533,7 @@
     };
 
     var fadeOutDownBig = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -548,7 +548,7 @@
     };
 
     var fadeOutLeft = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -563,7 +563,7 @@
     };
 
     var fadeOutLeftBig = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -578,7 +578,7 @@
     };
 
     var fadeOutRight = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -593,7 +593,7 @@
     };
 
     var fadeOutRightBig = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -608,7 +608,7 @@
     };
 
     var fadeOutUp = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -623,7 +623,7 @@
     };
 
     var fadeOutUpBig = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -638,7 +638,7 @@
     };
 
     var flash = {
-        keyframes: [
+        css: [
             {
                 opacity: 1
             },
@@ -660,7 +660,7 @@
     };
 
     var flip = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'perspective(400px) rotate3d(0, 1, 0, -360deg)'
@@ -687,7 +687,7 @@
     };
 
     var flipInX = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'perspective(400px)',
@@ -721,7 +721,7 @@
     };
 
     var flipInY = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'perspective(400px)',
@@ -755,7 +755,7 @@
     };
 
     var flipOutX = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'perspective(400px)',
@@ -777,7 +777,7 @@
     };
 
     var flipOutY = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'perspective(400px)',
@@ -799,7 +799,7 @@
     };
 
     var headShake = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 translateX: '0'
@@ -839,7 +839,7 @@
     };
 
     var hinge = {
-        keyframes: [
+        css: [
             {
                 transform: 'none',
                 transformOrigin: 'top left',
@@ -872,7 +872,7 @@
     };
 
     var jello = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'none'
@@ -921,7 +921,7 @@
     };
 
     var lightSpeedIn = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'translate3d(100%, 0, 0) skewX(-30deg)',
@@ -950,7 +950,7 @@
     };
 
     var lightSpeedOut = {
-        keyframes: [
+        css: [
             {
                 transform: 'none',
                 opacity: 1
@@ -967,7 +967,7 @@
     };
 
     var pulse = {
-        keyframes: [
+        css: [
             {
                 transform: 'scale3d(1, 1, 1)'
             },
@@ -983,7 +983,7 @@
     };
 
     var rollIn = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'translate3d(-100%, 0, 0) rotate3d(0, 0, 1, -120deg)'
@@ -998,7 +998,7 @@
     };
 
     var rollOut = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none'
@@ -1013,7 +1013,7 @@
     };
 
     var rotateIn = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'center',
                 transform: 'rotate3d(0, 0, 1, -200deg)',
@@ -1030,7 +1030,7 @@
     };
 
     var rotateInDownLeft = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'left bottom',
                 transform: 'rotate3d(0, 0, 1, -45deg)',
@@ -1047,7 +1047,7 @@
     };
 
     var rotateInDownRight = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'right bottom',
                 transform: 'rotate3d(0, 0, 1, 45deg)',
@@ -1064,7 +1064,7 @@
     };
 
     var rotateInUpLeft = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'left bottom',
                 transform: 'rotate3d(0, 0, 1, 45deg)',
@@ -1081,7 +1081,7 @@
     };
 
     var rotateInUpRight = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'right bottom',
                 transform: 'rotate3d(0, 0, 1, -90deg)',
@@ -1098,7 +1098,7 @@
     };
 
     var rotateOut = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'center',
                 transform: 'none',
@@ -1115,7 +1115,7 @@
     };
 
     var rotateOutDownLeft = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'left bottom',
                 transform: 'none',
@@ -1132,7 +1132,7 @@
     };
 
     var rotateOutDownRight = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'right bottom',
                 transform: 'none',
@@ -1149,7 +1149,7 @@
     };
 
     var rotateOutUpLeft = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'left bottom',
                 transform: 'none',
@@ -1166,7 +1166,7 @@
     };
 
     var rotateOutUpRight = {
-        keyframes: [
+        css: [
             {
                 transformOrigin: 'right bottom',
                 transform: 'none',
@@ -1183,7 +1183,7 @@
     };
 
     var rubberBand = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'scale3d(1, 1, 1)'
@@ -1218,7 +1218,7 @@
     };
 
     var shake = {
-        keyframes: [
+        css: [
             {
                 transform: 'translate3d(0, 0, 0)'
             },
@@ -1258,7 +1258,7 @@
     };
 
     var slideInDown = {
-        keyframes: [
+        css: [
             {
                 transform: 'translate3d(0, -100%, 0)',
                 visibility: 'hidden'
@@ -1273,7 +1273,7 @@
     };
 
     var slideInLeft = {
-        keyframes: [
+        css: [
             {
                 transform: 'translate3d(-100%, 0, 0)',
                 visibility: 'hidden'
@@ -1288,7 +1288,7 @@
     };
 
     var slideInRight = {
-        keyframes: [
+        css: [
             {
                 transform: 'translate3d(100%, 0, 0)',
                 visibility: 'hidden'
@@ -1303,7 +1303,7 @@
     };
 
     var slideInUp = {
-        keyframes: [
+        css: [
             {
                 transform: 'translate3d(0, 100%, 0)',
                 visibility: 'hidden'
@@ -1318,7 +1318,7 @@
     };
 
     var slideOutDown = {
-        keyframes: [
+        css: [
             {
                 transform: 'translate3d(0, 0, 0)',
                 visibility: 'visible'
@@ -1333,7 +1333,7 @@
     };
 
     var slideOutLeft = {
-        keyframes: [
+        css: [
             {
                 visibility: 'visible',
                 transform: 'translate3d(0, 0, 0)'
@@ -1348,7 +1348,7 @@
     };
 
     var slideOutRight = {
-        keyframes: [
+        css: [
             {
                 visibility: 'visible',
                 transform: 'translate3d(0, 0, 0)'
@@ -1363,7 +1363,7 @@
     };
 
     var slideOutUp = {
-        keyframes: [
+        css: [
             {
                 visibility: 'visible',
                 transform: 'translate3d(0, 0, 0)'
@@ -1378,7 +1378,7 @@
     };
 
     var swing = {
-        keyframes: [
+        css: [
             {
                 transform: 'none'
             },
@@ -1403,7 +1403,7 @@
     };
 
     var tada = {
-        keyframes: [
+        css: [
             {
                 transform: 'scale3d(1, 1, 1)'
             },
@@ -1443,7 +1443,7 @@
     };
 
     var wobble = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 transform: 'none'
@@ -1478,7 +1478,7 @@
     };
 
     var zoomIn = {
-        keyframes: [
+        css: [
             {
                 opacity: 0,
                 transform: 'scale3d(.3, .3, .3)'
@@ -1497,7 +1497,7 @@
     };
 
     var zoomInDown = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 0,
@@ -1520,7 +1520,7 @@
     };
 
     var zoomInLeft = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 0,
@@ -1543,7 +1543,7 @@
     };
 
     var zoomInRight = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 0,
@@ -1566,7 +1566,7 @@
     };
 
     var zoomInUp = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 0,
@@ -1589,7 +1589,7 @@
     };
 
     var zoomOut = {
-        keyframes: [
+        css: [
             {
                 opacity: 1,
                 transform: 'none',
@@ -1611,7 +1611,7 @@
     };
 
     var zoomOutDown = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,
@@ -1637,7 +1637,7 @@
     };
 
     var zoomOutLeft = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,
@@ -1662,7 +1662,7 @@
     };
 
     var zoomOutRight = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,
@@ -1687,7 +1687,7 @@
     };
 
     var zoomOutUp = {
-        keyframes: [
+        css: [
             {
                 offset: 0,
                 opacity: 1,

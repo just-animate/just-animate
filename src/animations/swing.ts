@@ -1,5 +1,5 @@
 export const swing: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       transform: 'none'
     },

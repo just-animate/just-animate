@@ -1,6 +1,6 @@
 "use strict";
 exports.tada = {
-    keyframes: [
+    css: [
         {
             transform: 'scale3d(1, 1, 1)'
         },

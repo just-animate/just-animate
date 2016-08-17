@@ -17,10 +17,14 @@ var KeyframeAnimator = (function () {
         return this._totalTime;
     };
     KeyframeAnimator.prototype.seek = function (value) {
-        this._animator.currentTime = value;
+        if (this._animator.currentTime !== value) {
+            this._animator.currentTime = value;
+        }
     };
     KeyframeAnimator.prototype.playbackRate = function (value) {
-        this._animator.playbackRate = value;
+        if (this._animator.playbackRate !== value) {
+            this._animator.playbackRate = value;
+        }
     };
     KeyframeAnimator.prototype.reverse = function () {
         this._animator.playbackRate *= -1;

@@ -1,5 +1,5 @@
 export const zoomInDown: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       offset: 0,
       opacity: 0,

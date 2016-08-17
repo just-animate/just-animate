@@ -1,6 +1,6 @@
 "use strict";
 exports.slideInDown = {
-    keyframes: [
+    css: [
         {
             transform: 'translate3d(0, -100%, 0)',
             visibility: 'hidden'

@@ -1,5 +1,5 @@
 export const rotateOutDownRight: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       transformOrigin: 'right bottom',
       transform: 'none',

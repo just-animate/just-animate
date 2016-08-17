@@ -7,6 +7,7 @@ declare module ja {
     export type Angle = string | number;
     export type Color = string;
     export type Distance = string | number;
+    export type Provider<T> = T | IProvider<T>;
 
     export type Easing = "ease"
         
@@ -115,14 +116,13 @@ declare module ja {
     }
 
     export interface IAnimation {
-        css?: ICssPropertyOptions;
-        keyframes?: ICssKeyframeOptions[];
+        css?: ICssPropertyOptions|ICssKeyframeOptions[];
         easing?: Easing;
-        fill?: FillMode;
-        iterations?: number;
-        direction?: string;
-        iterationStart?: number;
-        delay?: number | IProvider<number>;
+        fill?: Provider<FillMode>;
+        iterations?: Provider<number>;
+        direction?: Provider<string>;
+        iterationStart?: Provider<number>;
+        delay?: Provider<number>;
         to: number;
     }
 

@@ -1,5 +1,5 @@
 export const rollOut: ja.IAnimationMixin = {
-  keyframes: [
+  css: [
     {
       opacity: 1,
       transform: 'none'

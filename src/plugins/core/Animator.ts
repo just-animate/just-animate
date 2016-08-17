@@ -263,6 +263,7 @@ export class Animator implements ja.IAnimator {
                     animator.playbackRate(playbackRate);
                     animator.playState('running');
                 }
+                animator.playbackRate(playbackRate);
             }
         }
     }

@@ -1,6 +1,6 @@
 "use strict";
 exports.lightSpeedOut = {
-    keyframes: [
+    css: [
         {
             transform: 'none',
             opacity: 1

@@ -1,6 +1,6 @@
 "use strict";
 exports.fadeOut = {
-    keyframes: [
+    css: [
         {
             opacity: 1
         },

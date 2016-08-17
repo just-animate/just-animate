@@ -1,6 +1,6 @@
 "use strict";
 exports.rotateIn = {
-    keyframes: [
+    css: [
         {
             transformOrigin: 'center',
             transform: 'rotate3d(0, 0, 1, -200deg)',

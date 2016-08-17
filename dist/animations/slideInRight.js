@@ -1,6 +1,6 @@
 "use strict";
 exports.slideInRight = {
-    keyframes: [
+    css: [
         {
             transform: 'translate3d(100%, 0, 0)',
             visibility: 'hidden'
