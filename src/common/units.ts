@@ -1,6 +1,6 @@
-import {isDefined, isNumber} from './type';
-import {distanceExpression, percentageExpression, timeExpression, nil} from './resources';
-import {invalidArg} from './errors';
+import { isDefined, isNumber } from './type';
+import { distanceExpression, percentageExpression, timeExpression, nil } from './resources';
+import { invalidArg } from './errors';
 
 export const stepNone: string = '=';
 export const stepForward: string = '+=';
@@ -24,7 +24,7 @@ export const pica: string = 'pc';
 export const percent: string = '%';
 export const millisecond: string = 'ms';
 export const second: string = 's';
-    
+
 export function fromDistance(val: string | number): IUnit {
     if (!isDefined(val)) {
         return nil;

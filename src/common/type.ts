@@ -1,4 +1,4 @@
-import {nil, nada, functionTypeString, numberString, objectString, stringString} from './resources';
+import { nil, nada, functionTypeString, numberString, objectString, stringString } from './resources';
 
 /**
  * Tests if object is a list

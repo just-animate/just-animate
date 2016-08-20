@@ -1,16 +1,16 @@
 export const rollIn: ja.IAnimationMixin = {
-  css: [
-    {
-      opacity: 0,
-      transform: 'translate3d(-100%, 0, 0) rotate3d(0, 0, 1, -120deg)'
-    },
-    {
-      opacity: 1,
-      transform: 'none'
-    }
-  ],
-  
+    css: [
+        {
+            opacity: 0,
+            transform: 'translate3d(-100%, 0, 0) rotate3d(0, 0, 1, -120deg)'
+        },
+        {
+            opacity: 1,
+            transform: 'none'
+        }
+    ],
+
     to: 1000
-  ,
-  name: 'rollIn'
+    ,
+    name: 'rollIn'
 };

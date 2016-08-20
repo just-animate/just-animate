@@ -1,23 +1,23 @@
 export const zoomOut: ja.IAnimationMixin = {
-  css: [
-    {
-      opacity: 1,
-      transform: 'none',
-      transformOrigin: 'center middle'
-    },
-    {
-      opacity: 0,
-      transform: 'scale3d(.3, .3, .3)'
-    },
-    {
-      opacity: 0,
-      transform: 'none',
-      transformOrigin: 'center middle'
-    }
-  ],
-  
+    css: [
+        {
+            opacity: 1,
+            transform: 'none',
+            transformOrigin: 'center middle'
+        },
+        {
+            opacity: 0,
+            transform: 'scale3d(.3, .3, .3)'
+        },
+        {
+            opacity: 0,
+            transform: 'none',
+            transformOrigin: 'center middle'
+        }
+    ],
+
     to: 1000,
     easing: 'elegantSlowStartEnd'
-  ,
-  name: 'zoomOut'
+    ,
+    name: 'zoomOut'
 };

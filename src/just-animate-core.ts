@@ -1,6 +1,6 @@
 /// <reference path="./just-animate.d.ts" />
-import {JustAnimate} from './JustAnimate';
-import {KeyframePlugin} from './plugins/waapi/KeyframePlugin';
+import { JustAnimate } from './JustAnimate';
+import { KeyframePlugin } from './plugins/waapi/KeyframePlugin';
 
 
 declare var window: Window & { just: ja.IJustAnimate };
@@ -15,4 +15,3 @@ const just = new JustAnimate();
 just.plugins.push(new KeyframePlugin());
 
 window.just = just;
-

@@ -1,5 +1,5 @@
-import {cssFunction} from './strings';
-import {cubicBezier} from './resources';
+import { cssFunction } from './strings';
+import { cubicBezier } from './resources';
 
 export const easings: ja.IMap<string> = {
     easeInBack: cssFunction(cubicBezier, 0.6, -0.28, 0.735, 0.045),
@@ -18,7 +18,7 @@ export const easings: ja.IMap<string> = {
     easeInQuart: cssFunction(cubicBezier, 0.895, 0.03, 0.685, 0.22),
     easeInQuint: cssFunction(cubicBezier, 0.755, 0.05, 0.855, 0.06),
     easeInSine: cssFunction(cubicBezier, 0.47, 0, 0.745, 0.715),
-    easeOutBack: cssFunction(cubicBezier, 0.175,  0.885, 0.32, 1.275),
+    easeOutBack: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275),
     easeOutCirc: cssFunction(cubicBezier, 0.075, 0.82, 0.165, 1),
     easeOutCubic: cssFunction(cubicBezier, 0.215, 0.61, 0.355, 1),
     easeOutExpo: cssFunction(cubicBezier, 0.19, 1, 0.22, 1),

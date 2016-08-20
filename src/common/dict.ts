@@ -1,4 +1,4 @@
-import {nil} from './resources';
+import { nil } from './resources';
 
 declare const Map: IMapConstructor;
 const isMappedSupported = !!Map;

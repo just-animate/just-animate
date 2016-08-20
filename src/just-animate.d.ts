@@ -10,8 +10,8 @@ declare module ja {
     export type Provider<T> = T | IProvider<T>;
 
     export type Easing = "ease"
-        
-        
+
+
         | "linear"
         | "initial"
         | "ease-in"
@@ -44,7 +44,7 @@ declare module ja {
         | "elegantSlowStartEnd"
         | string;
 
-    
+
     export interface IJustAnimate {
         animate(options: ja.IAnimationOptions | ja.IAnimationOptions): ja.IAnimator;
         inject(animationOptionList: ja.IAnimationOptions[]): void;
@@ -52,7 +52,7 @@ declare module ja {
     }
 
     export interface IPlugin {
-        handle(options: ja.IAnimationOptions): ja.IAnimationController[]; 
+        handle(options: ja.IAnimationOptions): ja.IAnimationController[];
         canHandle(options: ja.IAnimationOptions): boolean;
     }
 
@@ -116,7 +116,7 @@ declare module ja {
     }
 
     export interface IAnimation {
-        css?: ICssPropertyOptions|ICssKeyframeOptions[];
+        css?: ICssPropertyOptions | ICssKeyframeOptions[];
         easing?: Easing;
         fill?: Provider<FillMode>;
         iterations?: Provider<number>;
@@ -128,8 +128,8 @@ declare module ja {
 
     export interface IAnimationOptions extends IAnimation {
         targets?: ElementSource;
-        from?: number;        
-        mixins?: string|string[];
+        from?: number;
+        mixins?: string | string[];
     }
 
     /**

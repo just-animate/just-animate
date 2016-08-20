@@ -1,11 +1,11 @@
-import {nil} from './resources';
+import { nil } from './resources';
 
 const slice = Array.prototype.slice;
 const push = Array.prototype.push;
 
-export interface IList<T> { 
-    [key: number]: T; 
-    length: number; 
+export interface IList<T> {
+    [key: number]: T;
+    length: number;
 };
 
 /**
@@ -53,7 +53,7 @@ export function toArray<T>(indexed: IList<T>, index?: number): T[] {
  * @param {T[]} items list of objects
  * @param {ja.IConsumer<T1>} fn function to execute for each object
  */
-export function each<T1>(items: T1[], fn: {(c: T1): any}): void {
+export function each<T1>(items: T1[], fn: { (c: T1): any }): void {
     for (let i = 0, len = items.length; i < len; i++) {
         fn(items[i]);
     }
@@ -132,5 +132,5 @@ export function map<T1, T2>(items: IList<T1>, fn: ja.IMapper<T1, T2>): T2[] {
  * @param {T[]} target
  */
 export function pushAll<T>(source: T[], target: T[]): void {
-    push.apply(source, target);  
+    push.apply(source, target);
 }

@@ -1,7 +1,7 @@
-import {each} from './common/lists';
-import {Animator} from './plugins/core/Animator';
-import {TimeLoop, ITimeLoop} from './plugins/core/TimeLoop';
-import {MixinService} from './plugins/core/MixinService';
+import { each } from './common/lists';
+import { Animator } from './plugins/core/Animator';
+import { TimeLoop, ITimeLoop } from './plugins/core/TimeLoop';
+import { MixinService } from './plugins/core/MixinService';
 
 export class JustAnimate {
     public plugins: ja.IPlugin[];

@@ -1,16 +1,16 @@
 export const fadeOutRightBig: ja.IAnimationMixin = {
-  css: [
-    {
-      opacity: 1,
-      transform: 'none'
-    },
-    {
-      opacity: 0,
-      transform: 'translate3d(2000px, 0, 0)'
-    }
-  ],
-  
+    css: [
+        {
+            opacity: 1,
+            transform: 'none'
+        },
+        {
+            opacity: 0,
+            transform: 'translate3d(2000px, 0, 0)'
+        }
+    ],
+
     to: 1300
-  ,
-  name: 'fadeOutRightBig'
+    ,
+    name: 'fadeOutRightBig'
 };

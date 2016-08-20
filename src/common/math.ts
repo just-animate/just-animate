@@ -1,4 +1,4 @@
-import {nil} from './resources';
+import { nil } from './resources';
 
 const linearCubicBezier: ja.IFunc<number> = (x: number) => x;
 const SUBDIVISION_EPSILON = 0.0001;
@@ -18,7 +18,7 @@ export function clamp(val: number, min: number, max: number): number {
 }
 
 export function inRange(val: number, min: number, max: number): boolean {
-    return min < max ? min <= val && val <= max : max <= val && val <= min ;
+    return min < max ? min <= val && val <= max : max <= val && val <= min;
 }
 
 function bezier(n1: number, n2: number, t: number): number {
@@ -30,7 +30,7 @@ export function cubicBezier(p0: number, p1: number, p2: number, p3: number): ja.
         return linearCubicBezier;
     }
 
-    return function (x: number): number {
+    return function(x: number): number {
         if (x === 0 || x === 1) {
             return x;
         }

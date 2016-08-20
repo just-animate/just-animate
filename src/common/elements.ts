@@ -1,6 +1,6 @@
-import {each, toArray} from './lists';
-import {isArray, isFunction, isString} from './type';
-import {invalidArg} from './errors';
+import { each, toArray } from './lists';
+import { isArray, isFunction, isString } from './type';
+import { invalidArg } from './errors';
 
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources

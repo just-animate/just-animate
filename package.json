@@ -10,6 +10,7 @@
     "rollup-plugin-typescript": "^0.7.7",
     "tslint": "^3.10.2",
     "typescript": "2.1.0-dev.20160715",
+    "typescript-formatter": "^2.3.0",
     "uglify": "^0.1.5"
   },
   "license": "MIT",
@@ -28,6 +29,7 @@
     "build-systemjs": "tsc -p tsconfig-systemjs.json && node ./scripts/systemjs-fix-namespaces",
     "debug": "tsc -p tsconfig.json",
     "clean": "del -f ./dist",
+    "format": "cd ./src && tsfmt -r **/*.ts",
     "minify-core": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/browser/just-animate-core.min.js dist/browser/just-animate-core.js",
     "minify-systemjs": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/browser/just-animate-systemjs.min.js dist/browser/just-animate-systemjs.js",
     "minify-animations": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/browser/just-animate-animations.min.js dist/browser/just-animate-animations.js",

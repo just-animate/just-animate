@@ -1,6 +1,6 @@
-import {isString} from './type';
-import {toArray} from './lists';
-import {nil, camelCaseRegex} from './resources';
+import { isString } from './type';
+import { toArray } from './lists';
+import { nil, camelCaseRegex } from './resources';
 
 const ostring = Object.prototype.toString;
 
@@ -12,7 +12,7 @@ export function toCamelCase(value: string): string {
     return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : nil;
 }
 
-export const cssFunction: Function = function (): string {
+export const cssFunction: Function = function(): string {
     const args = arguments;
     return `${args[0]}(${toArray(args, 1).join(',')})`;
 };

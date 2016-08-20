@@ -10,6 +10,5 @@ export const raf = (requestAnimationFrame)
         requestAnimationFrame(() => { fn(ctx); });
     }
     : (ctx: any, fn: Function) => {
-        setTimeout(() => { fn(ctx); }, 16.66);    
+        setTimeout(() => { fn(ctx); }, 16.66);
     };
-
