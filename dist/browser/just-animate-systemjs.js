@@ -6,48 +6,31 @@ System.register("just-animate/animations/bounce", [], function(exports_1, contex
         setters:[],
         execute: function() {
             exports_1("bounce", bounce = {
-                name: 'bounce',
                 css: [
                     {
-                        offset: 0,
+                        easing: 'easeOutCubic',
+                        offset: [0, .2, .53, .80, 1],
+                        transformOrigin: 'center bottom',
                         y: 0
                     },
                     {
-                        offset: 0.2,
-                        y: 0
-                    },
-                    {
-                        offset: 0.4,
-                        y: '30px'
-                    },
-                    {
-                        offset: 0.43,
+                        easing: 'easeInQuint',
+                        offset: [.4, .43],
                         y: '-30px'
                     },
                     {
-                        offset: 0.53,
-                        y: 0
-                    },
-                    {
-                        offset: 0.7,
+                        easing: 'easeInQuint',
+                        offset: .7,
                         y: '-15px'
                     },
                     {
-                        offset: 0.8,
-                        y: 0
-                    },
-                    {
-                        offset: 0.9,
+                        offset: .9,
                         y: '-4px'
-                    },
-                    {
-                        offset: 1,
-                        y: 0
                     }
                 ],
-                to: 900,
-                easing: 'easeOutCubic',
-                fill: 'both'
+                fill: 'both',
+                name: 'bounce',
+                to: 1000
             });
         }
     }
@@ -295,9 +278,9 @@ System.register("just-animate/animations/bounceOut", [], function(exports_7, con
                         transform: 'scale3d(.3, .3, .3)'
                     }
                 ],
-                to: 900,
                 fill: 'both',
-                name: 'bounceOut'
+                name: 'bounceOut',
+                to: 900
             });
         }
     }
@@ -476,19 +459,13 @@ System.register("just-animate/animations/fadeInDown", [], function(exports_13, c
         setters:[],
         execute: function() {
             exports_13("fadeInDown", fadeInDown = {
-                css: [
-                    {
-                        opacity: 0,
-                        y: '-100%'
-                    },
-                    {
-                        opacity: 1,
-                        transform: 'none'
-                    }
-                ],
-                to: 650,
+                css: {
+                    opacity: [0, 1],
+                    y: ['-100%', 0]
+                },
                 fill: 'both',
-                name: 'fadeInDown'
+                name: 'fadeInDown',
+                to: 650
             });
         }
     }
@@ -501,20 +478,14 @@ System.register("just-animate/animations/fadeInDownBig", [], function(exports_14
         setters:[],
         execute: function() {
             exports_14("fadeInDownBig", fadeInDownBig = {
-                css: [
-                    {
-                        opacity: 0,
-                        transform: 'translate3d(0, -2000px, 0)'
-                    },
-                    {
-                        opacity: 1,
-                        transform: 'none'
-                    }
-                ],
-                to: 1300,
-                fill: 'both',
+                css: {
+                    opacity: [0, 1],
+                    y: ['-2000px', 0]
+                },
                 easing: 'ease-out',
-                name: 'fadeInDownBig'
+                fill: 'both',
+                name: 'fadeInDownBig',
+                to: 1300
             });
         }
     }
@@ -2783,13 +2754,14 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
 System.register("just-animate/common/resources", [], function(exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
-    var nada, nil, animate, call, cancel, cubicBezier, duration, finish, finished, idle, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
+    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
     return {
         setters:[],
         execute: function() {
             exports_78("nada", nada = null);
             exports_78("nil", nil = undefined);
             exports_78("animate", animate = 'animate');
+            exports_78("easingString", easingString = 'easing');
             exports_78("call", call = 'call');
             exports_78("cancel", cancel = 'cancel');
             exports_78("cubicBezier", cubicBezier = 'cubic-bezier');
@@ -2797,6 +2769,7 @@ System.register("just-animate/common/resources", [], function(exports_78, contex
             exports_78("finish", finish = 'finish');
             exports_78("finished", finished = 'finished');
             exports_78("idle", idle = 'idle');
+            exports_78("offsetString", offsetString = 'offset');
             exports_78("pause", pause = 'pause');
             exports_78("paused", paused = 'paused');
             exports_78("pending", pending = 'pending');
@@ -2889,7 +2862,7 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
      * @returns {boolean} true if is not a string and length property is a number
      */
     function isArray(a) {
-        return !isString(a) && isNumber(a.length);
+        return isDefined(a) && !isString(a) && isNumber(a.length);
     }
     exports_80("isArray", isArray);
     function isDefined(a) {
@@ -4098,11 +4071,42 @@ System.register("just-animate/plugins/waapi/KeyframeAnimation", ["just-animate/c
         }
     }
 });
-System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/resources"], function(exports_97, context_97) {
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/resources", "just-animate/common/dict", "just-animate/common/easings"], function(exports_97, context_97) {
     "use strict";
     var __moduleName = context_97 && context_97.id;
-    var type_7, strings_2, errors_5, resources_13, resources_14;
-    var offset;
+    var type_7, strings_2, errors_5, resources_13, dict_1, easings_2, resources_14;
+    function keyframeOffsetComparer(a, b) {
+        return a.offset - b.offset;
+    }
+    /**
+     * copies keyframs with an offset array to separate keyframes
+     *
+     * @export
+     * @param {waapi.IKeyframe[]} keyframes
+     */
+    function expandOffsets(keyframes) {
+        var len = keyframes.length;
+        for (var i = len - 1; i > -1; --i) {
+            var keyframe = keyframes[i];
+            if (type_7.isArray(keyframe.offset)) {
+                keyframes.splice(i, 1);
+                var offsets = keyframe.offset;
+                var offsetLen = offsets.length;
+                for (var j = offsetLen - 1; j > -1; --j) {
+                    var offsetAmount = offsets[j];
+                    var newKeyframe = dict_1.createMap();
+                    for (var prop in keyframe) {
+                        if (prop !== resources_14.offsetString) {
+                            newKeyframe[prop] = keyframe[prop];
+                        }
+                    }
+                    newKeyframe.offset = offsetAmount;
+                    keyframes.splice(i, 0, newKeyframe);
+                }
+            }
+        }
+    }
+    exports_97("expandOffsets", expandOffsets);
     function spaceKeyframes(keyframes) {
         // don't attempt to fill animation if less than 2 keyframes
         if (keyframes.length < 2) {
@@ -4169,7 +4173,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop !== offset && !type_7.isDefined(first[prop])) {
+                if (prop !== resources_14.offsetString && !type_7.isDefined(first[prop])) {
                     first[prop] = keyframe[prop];
                 }
             }
@@ -4178,11 +4182,13 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         for (var i = len - 2; i > -1; i--) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop !== offset && !type_7.isDefined(last[prop])) {
+                if (prop !== resources_14.offsetString && !type_7.isDefined(last[prop])) {
                     last[prop] = keyframe[prop];
                 }
             }
         }
+        // sort by offset (should have all offsets assigned)
+        keyframes.sort(keyframeOffsetComparer);
     }
     exports_97("normalizeKeyframes", normalizeKeyframes);
     /**
@@ -4201,6 +4207,10 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             var value = keyframe[prop];
             if (!type_7.isDefined(value)) {
                 keyframe.delete(prop);
+                continue;
+            }
+            if (prop === resources_14.easingString) {
+                keyframe.easing = easings_2.easings[keyframe.easing] || keyframe.easing || undefined;
                 continue;
             }
             switch (prop) {
@@ -4454,16 +4464,21 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             function (resources_13_1) {
                 resources_13 = resources_13_1;
                 resources_14 = resources_13_1;
+            },
+            function (dict_1_1) {
+                dict_1 = dict_1_1;
+            },
+            function (easings_2_1) {
+                easings_2 = easings_2_1;
             }],
         execute: function() {
-            offset = 'offset';
         }
     }
 });
 System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/resources", "just-animate/common/elements", "just-animate/common/dict", "just-animate/common/type", "just-animate/plugins/waapi/KeyframeTransformers", "just-animate/plugins/waapi/KeyframeAnimation"], function(exports_98, context_98) {
     "use strict";
     var __moduleName = context_98 && context_98.id;
-    var lists_5, objects_2, resources_15, elements_2, dict_1, type_8, KeyframeTransformers_1, KeyframeAnimation_1;
+    var lists_5, objects_2, resources_15, elements_2, dict_2, type_8, KeyframeTransformers_1, KeyframeAnimation_1;
     var KeyframePlugin;
     return {
         setters:[
@@ -4479,8 +4494,8 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
             function (elements_2_1) {
                 elements_2 = elements_2_1;
             },
-            function (dict_1_1) {
-                dict_1 = dict_1_1;
+            function (dict_2_1) {
+                dict_2 = dict_2_1;
             },
             function (type_8_1) {
                 type_8 = type_8_1;
@@ -4501,7 +4516,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                 KeyframePlugin.prototype.handle = function (options) {
                     var targets = elements_2.queryElements(options.targets);
                     var animations = lists_5.map(targets, function (target) {
-                        var timings = dict_1.createMap();
+                        var timings = dict_2.createMap();
                         timings.delay = objects_2.unwrap(options.delay) || 0;
                         timings.endDelay = 0;
                         timings.duration = options.to - options.from;
@@ -4517,10 +4532,11 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                         if (type_8.isArray(css)) {
                             // if an array, no processing has to occur
                             sourceKeyframes = css;
+                            KeyframeTransformers_1.expandOffsets(sourceKeyframes);
                         }
                         else {
                             // create a map to capture each keyframe by offset
-                            var keyframesByOffset = dict_1.createMap();
+                            var keyframesByOffset = dict_2.createMap();
                             var cssProps = css;
                             // iterate over each property split it into keyframes            
                             for (var prop in cssProps) {
@@ -4537,7 +4553,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                                         var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
                                         var keyframe = keyframesByOffset[offset];
                                         if (!keyframe) {
-                                            keyframe = dict_1.createMap();
+                                            keyframe = dict_2.createMap();
                                             keyframesByOffset[offset] = keyframe;
                                         }
                                         keyframe[prop] = val[i];
@@ -4547,7 +4563,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                                     // if the value is not an array, place it at offset 0
                                     var keyframe = keyframesByOffset[0];
                                     if (!keyframe) {
-                                        keyframe = dict_1.createMap();
+                                        keyframe = dict_2.createMap();
                                         keyframesByOffset[0] = keyframe;
                                     }
                                     keyframe[prop] = val;
@@ -4564,7 +4580,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                         var keyframeLength = sourceKeyframes.length;
                         for (var i = 0; i < keyframeLength; i++) {
                             var sourceKeyframe = sourceKeyframes[i];
-                            var targetKeyframe = dict_1.createMap();
+                            var targetKeyframe = dict_2.createMap();
                             for (var propertyName in sourceKeyframe) {
                                 if (!sourceKeyframe.hasOwnProperty(propertyName)) {
                                     continue;

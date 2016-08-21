@@ -3,8 +3,41 @@ var type_1 = require('../../common/type');
 var strings_1 = require('../../common/strings');
 var errors_1 = require('../../common/errors');
 var resources_1 = require('../../common/resources');
+var dict_1 = require('../../common/dict');
+var easings_1 = require('../../common/easings');
 var resources_2 = require('../../common/resources');
-var offset = 'offset';
+function keyframeOffsetComparer(a, b) {
+    return a.offset - b.offset;
+}
+/**
+ * copies keyframs with an offset array to separate keyframes
+ *
+ * @export
+ * @param {waapi.IKeyframe[]} keyframes
+ */
+function expandOffsets(keyframes) {
+    var len = keyframes.length;
+    for (var i = len - 1; i > -1; --i) {
+        var keyframe = keyframes[i];
+        if (type_1.isArray(keyframe.offset)) {
+            keyframes.splice(i, 1);
+            var offsets = keyframe.offset;
+            var offsetLen = offsets.length;
+            for (var j = offsetLen - 1; j > -1; --j) {
+                var offsetAmount = offsets[j];
+                var newKeyframe = dict_1.createMap();
+                for (var prop in keyframe) {
+                    if (prop !== resources_2.offsetString) {
+                        newKeyframe[prop] = keyframe[prop];
+                    }
+                }
+                newKeyframe.offset = offsetAmount;
+                keyframes.splice(i, 0, newKeyframe);
+            }
+        }
+    }
+}
+exports.expandOffsets = expandOffsets;
 function spaceKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
@@ -71,7 +104,7 @@ function normalizeKeyframes(keyframes) {
     for (var i = 1; i < len; i++) {
         var keyframe = keyframes[i];
         for (var prop in keyframe) {
-            if (prop !== offset && !type_1.isDefined(first[prop])) {
+            if (prop !== resources_2.offsetString && !type_1.isDefined(first[prop])) {
                 first[prop] = keyframe[prop];
             }
         }
@@ -80,11 +113,13 @@ function normalizeKeyframes(keyframes) {
     for (var i = len - 2; i > -1; i--) {
         var keyframe = keyframes[i];
         for (var prop in keyframe) {
-            if (prop !== offset && !type_1.isDefined(last[prop])) {
+            if (prop !== resources_2.offsetString && !type_1.isDefined(last[prop])) {
                 last[prop] = keyframe[prop];
             }
         }
     }
+    // sort by offset (should have all offsets assigned)
+    keyframes.sort(keyframeOffsetComparer);
 }
 exports.normalizeKeyframes = normalizeKeyframes;
 /**
@@ -103,6 +138,10 @@ function normalizeProperties(keyframe) {
         var value = keyframe[prop];
         if (!type_1.isDefined(value)) {
             keyframe.delete(prop);
+            continue;
+        }
+        if (prop === resources_2.easingString) {
+            keyframe.easing = easings_1.easings[keyframe.easing] || keyframe.easing || undefined;
             continue;
         }
         switch (prop) {

@@ -2,6 +2,7 @@
 exports.nada = null;
 exports.nil = undefined;
 exports.animate = 'animate';
+exports.easingString = 'easing';
 exports.call = 'call';
 exports.cancel = 'cancel';
 exports.cubicBezier = 'cubic-bezier';
@@ -9,6 +10,7 @@ exports.duration = 'duration';
 exports.finish = 'finish';
 exports.finished = 'finished';
 exports.idle = 'idle';
+exports.offsetString = 'offset';
 exports.pause = 'pause';
 exports.paused = 'paused';
 exports.pending = 'pending';

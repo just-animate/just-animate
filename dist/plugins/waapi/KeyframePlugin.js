@@ -33,6 +33,7 @@ var KeyframePlugin = (function () {
             if (type_1.isArray(css)) {
                 // if an array, no processing has to occur
                 sourceKeyframes = css;
+                KeyframeTransformers_1.expandOffsets(sourceKeyframes);
             }
             else {
                 // create a map to capture each keyframe by offset

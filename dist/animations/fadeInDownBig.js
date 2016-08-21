@@ -1,17 +1,11 @@
 "use strict";
 exports.fadeInDownBig = {
-    css: [
-        {
-            opacity: 0,
-            transform: 'translate3d(0, -2000px, 0)'
-        },
-        {
-            opacity: 1,
-            transform: 'none'
-        }
-    ],
-    to: 1300,
-    fill: 'both',
+    css: {
+        opacity: [0, 1],
+        y: ['-2000px', 0]
+    },
     easing: 'ease-out',
-    name: 'fadeInDownBig'
+    fill: 'both',
+    name: 'fadeInDownBig',
+    to: 1300
 };

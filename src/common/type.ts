@@ -8,7 +8,7 @@ import { nil, nada, functionTypeString, numberString, objectString, stringString
  * @returns {boolean} true if is not a string and length property is a number
  */
 export function isArray(a: any): boolean {
-    return !isString(a) && isNumber(a.length);
+    return isDefined(a) && !isString(a) && isNumber(a.length);
 }
 
 export function isDefined(a: any): boolean {

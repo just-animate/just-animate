@@ -4,12 +4,14 @@
     var nada = null;
     var nil = undefined;
     var animate = 'animate';
+    var easingString = 'easing';
     var cancel = 'cancel';
     var cubicBezier = 'cubic-bezier';
     var duration = 'duration';
     var finish = 'finish';
     var finished = 'finished';
     var idle = 'idle';
+    var offsetString = 'offset';
     var pause = 'pause';
     var paused = 'paused';
     var rotate = 'rotate';
@@ -77,7 +79,7 @@
     }
 
     function isArray(a) {
-        return !isString(a) && isNumber(a.length);
+        return isDefined(a) && !isString(a) && isNumber(a.length);
     }
     function isDefined(a) {
         return a !== nil && a !== nada && a !== '';
@@ -616,7 +618,31 @@
         return (isMappedSupported ? new Map() : Object.create(CustomMap.prototype));
     }
 
-    var offset = 'offset';
+    function keyframeOffsetComparer(a, b) {
+        return a.offset - b.offset;
+    }
+    function expandOffsets(keyframes) {
+        var len = keyframes.length;
+        for (var i = len - 1; i > -1; --i) {
+            var keyframe = keyframes[i];
+            if (isArray(keyframe.offset)) {
+                keyframes.splice(i, 1);
+                var offsets = keyframe.offset;
+                var offsetLen = offsets.length;
+                for (var j = offsetLen - 1; j > -1; --j) {
+                    var offsetAmount = offsets[j];
+                    var newKeyframe = createMap();
+                    for (var prop in keyframe) {
+                        if (prop !== offsetString) {
+                            newKeyframe[prop] = keyframe[prop];
+                        }
+                    }
+                    newKeyframe.offset = offsetAmount;
+                    keyframes.splice(i, 0, newKeyframe);
+                }
+            }
+        }
+    }
     function spaceKeyframes(keyframes) {
         if (keyframes.length < 2) {
             return;
@@ -665,7 +691,7 @@
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop !== offset && !isDefined(first[prop])) {
+                if (prop !== offsetString && !isDefined(first[prop])) {
                     first[prop] = keyframe[prop];
                 }
             }
@@ -673,11 +699,12 @@
         for (var i = len - 2; i > -1; i--) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop !== offset && !isDefined(last[prop])) {
+                if (prop !== offsetString && !isDefined(last[prop])) {
                     last[prop] = keyframe[prop];
                 }
             }
         }
+        keyframes.sort(keyframeOffsetComparer);
     }
     function normalizeProperties(keyframe) {
         var xIndex = 0;
@@ -691,6 +718,10 @@
             var value = keyframe[prop];
             if (!isDefined(value)) {
                 keyframe.delete(prop);
+                continue;
+            }
+            if (prop === easingString) {
+                keyframe.easing = easings[keyframe.easing] || keyframe.easing || undefined;
                 continue;
             }
             switch (prop) {
@@ -1001,6 +1032,7 @@
                 var sourceKeyframes;
                 if (isArray(css)) {
                     sourceKeyframes = css;
+                    expandOffsets(sourceKeyframes);
                 }
                 else {
                     var keyframesByOffset = createMap();

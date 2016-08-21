@@ -2,9 +2,13 @@ import {isDefined, isNumber, isString, isArray} from '../../common/type';
 import {toCamelCase} from '../../common/strings';
 import {invalidArg} from '../../common/errors';
 import {nil} from '../../common/resources';
-import {IMap} from '../../common/dict';
+import {IMap, createMap} from '../../common/dict';
+import {easings} from '../../common/easings';
 
-import {scale3d,
+import {
+    easingString,
+    offsetString,
+    scale3d,
     scale,
     scaleX,
     scaleY,
@@ -22,14 +26,48 @@ import {scale3d,
     x,
     y,
     z,
-    translateX,
     translateY,
+    translateX,
     translateZ,
     transform
 } from '../../common/resources';
 
 
-const offset = 'offset';
+function keyframeOffsetComparer(a: waapi.IKeyframe, b: waapi.IKeyframe): number {
+    return (a.offset as number) - (b.offset as number);
+}
+
+
+/**
+ * copies keyframs with an offset array to separate keyframes
+ * 
+ * @export
+ * @param {waapi.IKeyframe[]} keyframes
+ */
+export function expandOffsets(keyframes: waapi.IKeyframe[]): void {
+    const len = keyframes.length;
+    for (let i = len - 1; i > -1; --i) {
+        const keyframe = keyframes[i];
+
+        if (isArray(keyframe.offset)) {
+            keyframes.splice(i, 1);            
+            
+            const offsets = keyframe.offset as number[];
+            const offsetLen = offsets.length;
+            for (let j = offsetLen - 1; j > -1; --j) {
+                const offsetAmount = offsets[j];
+                const newKeyframe = createMap<waapi.IKeyframe>();
+                for (let prop in keyframe) {
+                    if (prop !== offsetString) {
+                        newKeyframe[prop] = keyframe[prop];
+                    }
+                }
+                newKeyframe.offset = offsetAmount;
+                keyframes.splice(i, 0, newKeyframe);                
+            }
+        }
+    }
+}
 
 export function spaceKeyframes(keyframes: waapi.IKeyframe[]): void {
     // don't attempt to fill animation if less than 2 keyframes
@@ -68,8 +106,8 @@ export function spaceKeyframes(keyframes: waapi.IKeyframe[]): void {
             }
 
             // calculate timing/position info
-            const startTime = keyframes[i - 1].offset;
-            const endTime = keyframes[j].offset;
+            const startTime = keyframes[i - 1].offset as number;
+            const endTime = keyframes[j].offset as number;
             const timeDelta = endTime - startTime;
             const deltaLength = j - i + 1;
 
@@ -108,7 +146,7 @@ export function normalizeKeyframes(keyframes: waapi.IKeyframe[]): void {
     for (let i = 1; i < len; i++) {
         const keyframe = keyframes[i];
         for (let prop in keyframe) {
-            if (prop !== offset && !isDefined(first[prop])) {
+            if (prop !== offsetString && !isDefined(first[prop])) {
                 first[prop] = keyframe[prop];
             }
         }
@@ -118,11 +156,14 @@ export function normalizeKeyframes(keyframes: waapi.IKeyframe[]): void {
     for (let i = len - 2; i > -1; i--) {
         const keyframe = keyframes[i];
         for (let prop in keyframe) {
-            if (prop !== offset && !isDefined(last[prop])) {
+            if (prop !== offsetString && !isDefined(last[prop])) {
                 last[prop] = keyframe[prop];
             }
         }
     }
+
+    // sort by offset (should have all offsets assigned)
+    keyframes.sort(keyframeOffsetComparer);    
 }
 
 
@@ -146,6 +187,11 @@ export function normalizeProperties(keyframe: waapi.IKeyframe & IMap): void {
 
         if (!isDefined(value)) {
             keyframe.delete(prop);
+            continue;
+        }
+
+        if (prop === easingString) {
+            keyframe.easing = easings[keyframe.easing] || keyframe.easing || undefined;
             continue;
         }
 

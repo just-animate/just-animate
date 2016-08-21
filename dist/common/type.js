@@ -8,7 +8,7 @@ var resources_1 = require('./resources');
  * @returns {boolean} true if is not a string and length property is a number
  */
 function isArray(a) {
-    return !isString(a) && isNumber(a.length);
+    return isDefined(a) && !isString(a) && isNumber(a.length);
 }
 exports.isArray = isArray;
 function isDefined(a) {

@@ -26,7 +26,7 @@ exports.bounceOut = {
             transform: 'scale3d(.3, .3, .3)'
         }
     ],
-    to: 900,
     fill: 'both',
-    name: 'bounceOut'
+    name: 'bounceOut',
+    to: 900
 };

@@ -869,7 +869,7 @@ declare module ja {
          * 
          * @type {number}
          */
-        offset?: number;
+        offset?: number | number[];
         /**
          * Transform function to use on this keyframe
          * 

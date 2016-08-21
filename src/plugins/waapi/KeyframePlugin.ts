@@ -3,10 +3,10 @@ import {unwrap} from '../../common/objects';
 import {nil} from '../../common/resources';
 import {queryElements} from '../../common/elements';
 import {createMap} from '../../common/dict';
-import {isArray, isDefined, isNumber} from '../../common/type';
+import {isArray, isDefined} from '../../common/type';
  
 // todo: remove these imports as soon as possible
-import {normalizeProperties, normalizeKeyframes, spaceKeyframes} from './KeyframeTransformers';
+import {expandOffsets, normalizeProperties, normalizeKeyframes, spaceKeyframes} from './KeyframeTransformers';
 import {KeyframeAnimator} from '../waapi/KeyframeAnimation';
 
 
@@ -38,6 +38,7 @@ export class KeyframePlugin implements ja.IPlugin {
             if (isArray(css)) {
                 // if an array, no processing has to occur
                 sourceKeyframes = css as ja.ICssKeyframeOptions[];
+                expandOffsets(sourceKeyframes);
             } else {
                 // create a map to capture each keyframe by offset
                 const keyframesByOffset = createMap<{ [key: number]: ja.ICssKeyframeOptions }>();

@@ -2,48 +2,31 @@
     'use strict';
 
     var bounce = {
-        name: 'bounce',
         css: [
             {
-                offset: 0,
+                easing: 'easeOutCubic',
+                offset: [0, .2, .53, .80, 1],
+                transformOrigin: 'center bottom',
                 y: 0
             },
             {
-                offset: 0.2,
-                y: 0
-            },
-            {
-                offset: 0.4,
-                y: '30px'
-            },
-            {
-                offset: 0.43,
+                easing: 'easeInQuint',
+                offset: [.4, .43],
                 y: '-30px'
             },
             {
-                offset: 0.53,
-                y: 0
-            },
-            {
-                offset: 0.7,
+                easing: 'easeInQuint',
+                offset: .7,
                 y: '-15px'
             },
             {
-                offset: 0.8,
-                y: 0
-            },
-            {
-                offset: 0.9,
+                offset: .9,
                 y: '-4px'
-            },
-            {
-                offset: 1,
-                y: 0
             }
         ],
-        to: 900,
-        easing: 'easeOutCubic',
-        fill: 'both'
+        fill: 'both',
+        name: 'bounce',
+        to: 1000
     };
 
     var bounceIn = {
@@ -237,9 +220,9 @@
                 transform: 'scale3d(.3, .3, .3)'
             }
         ],
-        to: 900,
         fill: 'both',
-        name: 'bounceOut'
+        name: 'bounceOut',
+        to: 900
     };
 
     var bounceOutDown = {
@@ -364,36 +347,24 @@
     };
 
     var fadeInDown = {
-        css: [
-            {
-                opacity: 0,
-                y: '-100%'
-            },
-            {
-                opacity: 1,
-                transform: 'none'
-            }
-        ],
-        to: 650,
+        css: {
+            opacity: [0, 1],
+            y: ['-100%', 0]
+        },
         fill: 'both',
-        name: 'fadeInDown'
+        name: 'fadeInDown',
+        to: 650
     };
 
     var fadeInDownBig = {
-        css: [
-            {
-                opacity: 0,
-                transform: 'translate3d(0, -2000px, 0)'
-            },
-            {
-                opacity: 1,
-                transform: 'none'
-            }
-        ],
-        to: 1300,
-        fill: 'both',
+        css: {
+            opacity: [0, 1],
+            y: ['-2000px', 0]
+        },
         easing: 'ease-out',
-        name: 'fadeInDownBig'
+        fill: 'both',
+        name: 'fadeInDownBig',
+        to: 1300
     };
 
     var fadeInLeft = {

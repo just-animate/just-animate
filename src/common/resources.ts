@@ -2,6 +2,7 @@ export const nada = null as any;
 export const nil = undefined as any;
 
 export const animate = 'animate';
+export const easingString = 'easing';
 export const call = 'call';
 export const cancel = 'cancel';
 export const cubicBezier = 'cubic-bezier';
@@ -9,6 +10,7 @@ export const duration = 'duration';
 export const finish = 'finish';
 export const finished = 'finished';
 export const idle = 'idle';
+export const offsetString = 'offset';
 export const pause = 'pause';
 export const paused = 'paused';
 export const pending = 'pending';
