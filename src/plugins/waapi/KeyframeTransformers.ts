@@ -44,7 +44,7 @@ function keyframeOffsetComparer(a: waapi.IKeyframe, b: waapi.IKeyframe): number 
  * @export
  * @param {waapi.IKeyframe[]} keyframes
  */
-export function expandOffsets(keyframes: waapi.IKeyframe[]): void {
+export function expandOffsets(keyframes: ja.ICssKeyframeOptions[]): void {
     const len = keyframes.length;
     for (let i = len - 1; i > -1; --i) {
         const keyframe = keyframes[i];

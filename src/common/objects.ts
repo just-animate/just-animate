@@ -48,9 +48,9 @@ export const expand: Function = function(expandable: any): any {
     return result;
 };
 
-export function unwrap<T>(value: T | ja.IProvider<T>): T {
+export function unwrap<T>(value: T | ja.IResolver<T>): T {
     if (isFunction(value)) {
-        return (value as ja.IProvider<T>)();
+        return (value as ja.IResolver<T>)();
     }
     return value as T;
 }

@@ -8,7 +8,7 @@ import { invalidArg } from './errors';
  * @param {ja.ElementSource} source from which to locate elements
  * @returns {Element[]} array of elements found
  */
-export function queryElements(source: ja.ElementSource): Element[] {
+export function queryElements(source: ja.AnimationTarget): Element[] {
     if (!source) {
         throw invalidArg('source');
     }
@@ -23,7 +23,7 @@ export function queryElements(source: ja.ElementSource): Element[] {
     }
     if (isFunction(source)) {
         // if function, call it and call this function
-        const provider = source as ja.IElementProvider;
+        const provider = source as { (): ja.AnimationTarget; };
         const result = provider();
         return queryElements(result);
     }

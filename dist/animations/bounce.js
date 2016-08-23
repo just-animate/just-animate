@@ -3,7 +3,7 @@ exports.bounce = {
     css: [
         {
             easing: 'easeOutCubic',
-            offset: [0, .2, .53, .8, 1],
+            offset: [0, .2, .53, .80, 1],
             transformOrigin: 'center bottom',
             y: 0
         },
