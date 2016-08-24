@@ -23,7 +23,7 @@ export function head<T>(indexed: IList<T>, predicate: { (t: T): boolean; }): T {
     if (predicate === nil) {
         return indexed[0];
     }
-    
+
     const len = indexed.length;
     for (let i = 0; i < len; i++) {
         const item = indexed[i];
@@ -32,7 +32,7 @@ export function head<T>(indexed: IList<T>, predicate: { (t: T): boolean; }): T {
             return item;
         }
     }
-    
+
     return nil;
 }
 /**
