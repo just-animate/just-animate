@@ -53,3 +53,17 @@ function unwrap(value) {
     return value;
 }
 exports.unwrap = unwrap;
+function listProps(indexed) {
+    var props = [];
+    var len = indexed.length;
+    for (var i = 0; i < len; i++) {
+        var item = indexed[i];
+        for (var property in item) {
+            if (props.indexOf(property) === -1) {
+                props.push(property);
+            }
+        }
+    }
+    return props;
+}
+exports.listProps = listProps;

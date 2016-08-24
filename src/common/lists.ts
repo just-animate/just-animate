@@ -16,8 +16,24 @@ export interface IList<T> {
  * @param {T[]} indexed list of objects
  * @returns {T} first object in the list or undefined
  */
-export function head<T>(indexed: IList<T>): T {
-    return (!indexed || indexed.length < 1) ? nil : indexed[0];
+export function head<T>(indexed: IList<T>, predicate: { (t: T): boolean; }): T {
+    if (!indexed || indexed.length < 1) {
+        return nil;
+    }
+    if (predicate === nil) {
+        return indexed[0];
+    }
+    
+    const len = indexed.length;
+    for (let i = 0; i < len; i++) {
+        const item = indexed[i];
+        const result = predicate(item);
+        if (result === true) {
+            return item;
+        }
+    }
+    
+    return nil;
 }
 /**
  * Returns the last object in the list or undefined

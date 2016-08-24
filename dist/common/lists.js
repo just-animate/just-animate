@@ -11,8 +11,22 @@ var push = Array.prototype.push;
  * @param {T[]} indexed list of objects
  * @returns {T} first object in the list or undefined
  */
-function head(indexed) {
-    return (!indexed || indexed.length < 1) ? resources_1.nil : indexed[0];
+function head(indexed, predicate) {
+    if (!indexed || indexed.length < 1) {
+        return resources_1.nil;
+    }
+    if (predicate === resources_1.nil) {
+        return indexed[0];
+    }
+    var len = indexed.length;
+    for (var i = 0; i < len; i++) {
+        var item = indexed[i];
+        var result = predicate(item);
+        if (result === true) {
+            return item;
+        }
+    }
+    return resources_1.nil;
 }
 exports.head = head;
 /**

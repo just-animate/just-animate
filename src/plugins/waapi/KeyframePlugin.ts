@@ -1,6 +1,6 @@
-import {map} from '../../common/lists';
-import {unwrap} from '../../common/objects';
-import {nil} from '../../common/resources';
+import {each, head, map} from '../../common/lists';
+import {listProps, unwrap} from '../../common/objects';
+import {nil, offsetString} from '../../common/resources';
 import {queryElements} from '../../common/elements';
 import {createMap} from '../../common/dict';
 import {isArray, isDefined} from '../../common/type';
@@ -9,6 +9,7 @@ import {isArray, isDefined} from '../../common/type';
 import {expandOffsets, normalizeProperties, normalizeKeyframes, spaceKeyframes} from './KeyframeTransformers';
 import {KeyframeAnimator} from '../waapi/KeyframeAnimation';
 
+const global = window;
 
 export class KeyframePlugin implements ja.IPlugin {
     public canHandle(options: ja.IAnimationOptions): boolean {
@@ -19,7 +20,7 @@ export class KeyframePlugin implements ja.IPlugin {
 
         const targets = queryElements(options.targets);
 
-        const animations = map(targets, (target: Element) => {
+        const animations = map(targets, (target: HTMLElement) => {
             const timings = createMap<waapi.IEffectTiming>();
             timings.delay = unwrap(options.delay) || 0;
             timings.endDelay = 0;
@@ -68,11 +69,11 @@ export class KeyframePlugin implements ja.IPlugin {
                             keyframe[prop] = val[i];
                         }
                     } else {
-                        // if the value is not an array, place it at offset 0
-                        let keyframe = keyframesByOffset[0];
+                        // if the value is not an array, place it at offset 1
+                        let keyframe = keyframesByOffset[1];
                         if (!keyframe) {
                             keyframe = createMap<ja.ICssKeyframeOptions>();
-                            keyframesByOffset[0] = keyframe;
+                            keyframesByOffset[1] = keyframe;
                         }
                         keyframe[prop] = val;
                     }
@@ -111,6 +112,34 @@ export class KeyframePlugin implements ja.IPlugin {
 
             spaceKeyframes(targetKeyframes);            
             normalizeKeyframes(targetKeyframes);
+
+            if (options.isTransition === true) {
+                // detect properties to transition
+                const properties = listProps(targetKeyframes);
+
+                // get or create the first frame
+                let firstFrame = head(targetKeyframes, (t: ja.ICssKeyframeOptions) => t.offset === 0) as waapi.IKeyframe;
+                if (!firstFrame) {
+                    firstFrame = createMap<waapi.IKeyframe>();
+                    firstFrame.offset = 0;
+                    targetKeyframes.splice(0, 0, firstFrame);
+                }
+                
+                // copy properties from the dom to the animation
+                // todo: check how to do this in IE8, or not?
+                const style = global.getComputedStyle(target);
+
+                each(properties, (property: string) => {
+                    // skip offset property
+                    if (property === offsetString) {
+                        return;
+                    }
+                    const val = style[property];
+                    if (isDefined(val)) {
+                        firstFrame[property] = val;
+                    }
+                });
+            }
             
             return new KeyframeAnimator(target, targetKeyframes, timings);
         });

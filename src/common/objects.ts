@@ -54,3 +54,20 @@ export function unwrap<T>(value: T | ja.IResolver<T>): T {
     }
     return value as T;
 }
+
+
+export function listProps<T>(indexed: T[]): string[] {
+    const props: string[] = [];
+
+    const len = indexed.length;
+    for (let i = 0; i < len; i++) {
+        const item = indexed[i];
+        for (let property in item) {
+            if (props.indexOf(property) === -1) {
+                props.push(property);
+            }
+        }
+    }
+
+    return props;
+}

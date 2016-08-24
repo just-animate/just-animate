@@ -90,18 +90,19 @@ declare module ja {
     }
     export interface IAnimation {
         css?: ICssPropertyOptions | ICssKeyframeOptions[];
+        delay?: Resolver<number>;  
+        direction?: Resolver<string>;        
         easing?: Easing;
         fill?: Resolver<FillMode>;
         iterations?: Resolver<number>;
-        direction?: Resolver<string>;
         iterationStart?: Resolver<number>;
-        delay?: Resolver<number>;
         to: number;
     }
     export interface IAnimationOptions extends IAnimation {
         targets?: AnimationTarget;
         from?: number;
         mixins?: string | string[];
+        isTransition: boolean;        
     }
     export interface ICssPropertyOptions {
         backdropFilter?: Resolver<string | (string)[]>;

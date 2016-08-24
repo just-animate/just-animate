@@ -45,6 +45,23 @@
     var slice = Array.prototype.slice;
     var push = Array.prototype.push;
     ;
+    function head(indexed, predicate) {
+        if (!indexed || indexed.length < 1) {
+            return nil;
+        }
+        if (predicate === nil) {
+            return indexed[0];
+        }
+        var len = indexed.length;
+        for (var i = 0; i < len; i++) {
+            var item = indexed[i];
+            var result = predicate(item);
+            if (result === true) {
+                return item;
+            }
+        }
+        return nil;
+    }
     function toArray(indexed, index) {
         return slice.call(indexed, index || 0);
     }
@@ -112,6 +129,19 @@
             return value();
         }
         return value;
+    }
+    function listProps(indexed) {
+        var props = [];
+        var len = indexed.length;
+        for (var i = 0; i < len; i++) {
+            var item = indexed[i];
+            for (var property in item) {
+                if (props.indexOf(property) === -1) {
+                    props.push(property);
+                }
+            }
+        }
+        return props;
     }
 
     function inRange(val, min, max) {
@@ -1010,6 +1040,7 @@
         return KeyframeAnimator;
     }());
 
+    var global$1 = window;
     var KeyframePlugin = (function () {
         function KeyframePlugin() {
         }
@@ -1056,10 +1087,10 @@
                             }
                         }
                         else {
-                            var keyframe = keyframesByOffset[0];
+                            var keyframe = keyframesByOffset[1];
                             if (!keyframe) {
                                 keyframe = createMap();
-                                keyframesByOffset[0] = keyframe;
+                                keyframesByOffset[1] = keyframe;
                             }
                             keyframe[prop] = val;
                         }
@@ -1091,6 +1122,25 @@
                 }
                 spaceKeyframes(targetKeyframes);
                 normalizeKeyframes(targetKeyframes);
+                if (options.isTransition === true) {
+                    var properties = listProps(targetKeyframes);
+                    var firstFrame_1 = head(targetKeyframes, function (t) { return t.offset === 0; });
+                    if (!firstFrame_1) {
+                        firstFrame_1 = createMap();
+                        firstFrame_1.offset = 0;
+                        targetKeyframes.splice(0, 0, firstFrame_1);
+                    }
+                    var style_1 = global$1.getComputedStyle(target);
+                    each(properties, function (property) {
+                        if (property === offsetString) {
+                            return;
+                        }
+                        var val = style_1[property];
+                        if (isDefined(val)) {
+                            firstFrame_1[property] = val;
+                        }
+                    });
+                }
                 return new KeyframeAnimator(target, targetKeyframes, timings);
             });
             return animations;

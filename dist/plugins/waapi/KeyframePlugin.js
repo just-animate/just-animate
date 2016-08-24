@@ -8,6 +8,7 @@ var type_1 = require('../../common/type');
 // todo: remove these imports as soon as possible
 var KeyframeTransformers_1 = require('./KeyframeTransformers');
 var KeyframeAnimation_1 = require('../waapi/KeyframeAnimation');
+var global = window;
 var KeyframePlugin = (function () {
     function KeyframePlugin() {
     }
@@ -61,11 +62,11 @@ var KeyframePlugin = (function () {
                         }
                     }
                     else {
-                        // if the value is not an array, place it at offset 0
-                        var keyframe = keyframesByOffset[0];
+                        // if the value is not an array, place it at offset 1
+                        var keyframe = keyframesByOffset[1];
                         if (!keyframe) {
                             keyframe = dict_1.createMap();
-                            keyframesByOffset[0] = keyframe;
+                            keyframesByOffset[1] = keyframe;
                         }
                         keyframe[prop] = val;
                     }
@@ -98,6 +99,30 @@ var KeyframePlugin = (function () {
             }
             KeyframeTransformers_1.spaceKeyframes(targetKeyframes);
             KeyframeTransformers_1.normalizeKeyframes(targetKeyframes);
+            if (options.isTransition === true) {
+                // detect properties to transition
+                var properties = objects_1.listProps(targetKeyframes);
+                // get or create the first frame
+                var firstFrame_1 = lists_1.head(targetKeyframes, function (t) { return t.offset === 0; });
+                if (!firstFrame_1) {
+                    firstFrame_1 = dict_1.createMap();
+                    firstFrame_1.offset = 0;
+                    targetKeyframes.splice(0, 0, firstFrame_1);
+                }
+                // copy properties from the dom to the animation
+                // todo: check how to do this in IE8, or not?
+                var style_1 = global.getComputedStyle(target);
+                lists_1.each(properties, function (property) {
+                    // skip offset property
+                    if (property === resources_1.offsetString) {
+                        return;
+                    }
+                    var val = style_1[property];
+                    if (type_1.isDefined(val)) {
+                        firstFrame_1[property] = val;
+                    }
+                });
+            }
             return new KeyframeAnimation_1.KeyframeAnimator(target, targetKeyframes, timings);
         });
         return animations;

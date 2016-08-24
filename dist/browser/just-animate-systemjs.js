@@ -2928,8 +2928,22 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
      * @param {T[]} indexed list of objects
      * @returns {T} first object in the list or undefined
      */
-    function head(indexed) {
-        return (!indexed || indexed.length < 1) ? resources_3.nil : indexed[0];
+    function head(indexed, predicate) {
+        if (!indexed || indexed.length < 1) {
+            return resources_3.nil;
+        }
+        if (predicate === resources_3.nil) {
+            return indexed[0];
+        }
+        var len = indexed.length;
+        for (var i = 0; i < len; i++) {
+            var item = indexed[i];
+            var result = predicate(item);
+            if (result === true) {
+                return item;
+            }
+        }
+        return resources_3.nil;
     }
     exports_81("head", head);
     /**
@@ -3287,6 +3301,20 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
         return value;
     }
     exports_87("unwrap", unwrap);
+    function listProps(indexed) {
+        var props = [];
+        var len = indexed.length;
+        for (var i = 0; i < len; i++) {
+            var item = indexed[i];
+            for (var property in item) {
+                if (props.indexOf(property) === -1) {
+                    props.push(property);
+                }
+            }
+        }
+        return props;
+    }
+    exports_87("listProps", listProps);
     return {
         setters:[
             function (type_3_1) {
@@ -4479,7 +4507,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
     "use strict";
     var __moduleName = context_98 && context_98.id;
     var lists_5, objects_2, resources_15, elements_2, dict_2, type_8, KeyframeTransformers_1, KeyframeAnimation_1;
-    var KeyframePlugin;
+    var global, KeyframePlugin;
     return {
         setters:[
             function (lists_5_1) {
@@ -4507,6 +4535,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                 KeyframeAnimation_1 = KeyframeAnimation_1_1;
             }],
         execute: function() {
+            global = window;
             KeyframePlugin = (function () {
                 function KeyframePlugin() {
                 }
@@ -4560,11 +4589,11 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                                     }
                                 }
                                 else {
-                                    // if the value is not an array, place it at offset 0
-                                    var keyframe = keyframesByOffset[0];
+                                    // if the value is not an array, place it at offset 1
+                                    var keyframe = keyframesByOffset[1];
                                     if (!keyframe) {
                                         keyframe = dict_2.createMap();
-                                        keyframesByOffset[0] = keyframe;
+                                        keyframesByOffset[1] = keyframe;
                                     }
                                     keyframe[prop] = val;
                                 }
@@ -4597,6 +4626,30 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                         }
                         KeyframeTransformers_1.spaceKeyframes(targetKeyframes);
                         KeyframeTransformers_1.normalizeKeyframes(targetKeyframes);
+                        if (options.isTransition === true) {
+                            // detect properties to transition
+                            var properties = objects_2.listProps(targetKeyframes);
+                            // get or create the first frame
+                            var firstFrame_1 = lists_5.head(targetKeyframes, function (t) { return t.offset === 0; });
+                            if (!firstFrame_1) {
+                                firstFrame_1 = dict_2.createMap();
+                                firstFrame_1.offset = 0;
+                                targetKeyframes.splice(0, 0, firstFrame_1);
+                            }
+                            // copy properties from the dom to the animation
+                            // todo: check how to do this in IE8, or not?
+                            var style_1 = global.getComputedStyle(target);
+                            lists_5.each(properties, function (property) {
+                                // skip offset property
+                                if (property === resources_15.offsetString) {
+                                    return;
+                                }
+                                var val = style_1[property];
+                                if (type_8.isDefined(val)) {
+                                    firstFrame_1[property] = val;
+                                }
+                            });
+                        }
                         return new KeyframeAnimation_1.KeyframeAnimator(target, targetKeyframes, timings);
                     });
                     return animations;
