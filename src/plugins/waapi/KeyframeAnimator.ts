@@ -1,40 +1,29 @@
 import {animate, finished, paused, running, idle, nil} from '../../common/resources';
 
 export class KeyframeAnimator implements ja.IAnimationController {
+    public totalDuration: number;
+    
+    private _init: ja.Resolver<waapi.IAnimation>;
     private _animator: waapi.IAnimation;
-    private _totalTime: number;
 
-    constructor(target: Element, keyframes: waapi.IKeyframe[], timings: waapi.IEffectTiming) {
-        const delay = timings.delay || 0;
-        const endDelay = timings.endDelay || 0;
-        const iterations = timings.iterations || 1;
-        const duration = timings.duration || 0;
-
-        const self = this;        
-        self._totalTime = delay + ((iterations || 1) * duration) + endDelay;
-
-        const animator = target[animate](keyframes, timings);
-
-        // immediately cancel to prevent effects until play is called    
-        animator.cancel();
-        self._animator = animator;
-    }
-
-    public totalDuration(): number {
-        return this._totalTime;
+    constructor(init: ja.Resolver<waapi.IAnimation>) {
+        this._init = init;
     }
 
     public seek(value: number): void {
+        this._ensureInit();
         if (this._animator.currentTime !== value) {
             this._animator.currentTime = value;
         }
     }
     public playbackRate(value: number): void {
+        this._ensureInit();
         if (this._animator.playbackRate !== value) {
             this._animator.playbackRate = value;
         }
     }
     public reverse(): void {
+        this._ensureInit();
         this._animator.playbackRate *= -1;
     }
 
@@ -42,6 +31,8 @@ export class KeyframeAnimator implements ja.IAnimationController {
     public playState(value: ja.AnimationPlaybackState): void;
     public playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState | void {
         const self = this;
+        self._ensureInit();        
+
         const animator = self._animator;
         const playState = animator.playState;
         if (value === nil) {
@@ -59,5 +50,12 @@ export class KeyframeAnimator implements ja.IAnimationController {
     }
 
     public onupdate(context: ja.IAnimationTimeContext): void { /* do nothing */ }
+
+    private _ensureInit(): void {
+        if (this._init) {
+            this._animator = (this._init as ja.IResolver<waapi.IAnimation>)();
+            this._init = nil;
+        }
+    }
 }
 

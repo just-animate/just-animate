@@ -18,7 +18,8 @@ Dispatcher.prototype = {
         }
         const len = listeners.length;
         for (let i = 0; i < len; i++) {
-            listeners[i].apply(nil, args);
+            const listener = listeners[i];
+            listener.apply(nil, args);
         }
     },
     on(eventName: string, listener: Function): void {

@@ -64,6 +64,11 @@ export class Animator implements ja.IAnimator {
         self._recalculate();
         return self;
     }
+    public cancel(): ja.IAnimator {
+        const self = this;
+        self._dispatcher.trigger(cancel, [self]);
+        return self;
+    }
     public duration(): number {
         return this._duration;
     }
@@ -75,6 +80,11 @@ export class Animator implements ja.IAnimator {
             return self._currentTime;
         }
         self._currentTime = value;
+        return self;
+    }
+    public finish(): ja.IAnimator {
+        const self = this;
+        self._dispatcher.trigger(finish, [self]);
         return self;
     }
     public playbackRate(): number;
@@ -98,19 +108,19 @@ export class Animator implements ja.IAnimator {
         self._dispatcher.trigger('set', ['playbackState', value]);
         return self;
     }
-    public on(eventName: string, listener: Function): ja.IAnimator {
-        const self = this;
-        self._dispatcher.on(eventName, listener);
-        return self;
-    }
     public off(eventName: string, listener: Function): ja.IAnimator {
         const self = this;
         self._dispatcher.off(eventName, listener);
         return self;
     }
-    public finish(): ja.IAnimator {
+    public on(eventName: string, listener: Function): ja.IAnimator {
         const self = this;
-        self._dispatcher.trigger(finish, [self]);
+        self._dispatcher.on(eventName, listener);
+        return self;
+    }
+    public pause(): ja.IAnimator {
+        const self = this;
+        self._dispatcher.trigger(pause, [self]);
         return self;
     }
     public play(): ja.IAnimator {
@@ -121,24 +131,15 @@ export class Animator implements ja.IAnimator {
         }
         return self;
     }
-    public pause(): ja.IAnimator {
-        const self = this;
-        self._dispatcher.trigger(pause, [self]);
-        return self;
-    }
     public reverse(): ja.IAnimator {
         const self = this;
         self._playbackRate *= -1;
         return self;
     }
-    public cancel(): ja.IAnimator {
-        const self = this;
-        self._dispatcher.trigger(cancel, [self]);
-        return self;
-    }
+
     private _recalculate(): void {
         const self = this;
-        const endsAt = maxBy(self._events, (e: ja.ITimelineEvent) => e.startTimeMs + e.animator.totalDuration());
+        const endsAt = maxBy(self._events, (e: ja.ITimelineEvent) => e.startTimeMs + e.animator.totalDuration);
         self._duration = endsAt;
     }
 
@@ -178,7 +179,7 @@ export class Animator implements ja.IAnimator {
                 const events = map(animators, (animator: ja.IAnimationController) => {
                     return {
                         animator: animator,
-                        endTimeMs: event.from + animator.totalDuration(),
+                        endTimeMs: event.from + animator.totalDuration,
                         startTimeMs: event.from
                     };
                 });

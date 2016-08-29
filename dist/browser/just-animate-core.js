@@ -46,14 +46,37 @@
     var push = Array.prototype.push;
     ;
     function head(indexed, predicate) {
-        if (!indexed || indexed.length < 1) {
+        if (!indexed) {
+            return nil;
+        }
+        var len = indexed.length;
+        if (len < 1) {
             return nil;
         }
         if (predicate === nil) {
             return indexed[0];
         }
-        var len = indexed.length;
         for (var i = 0; i < len; i++) {
+            var item = indexed[i];
+            var result = predicate(item);
+            if (result === true) {
+                return item;
+            }
+        }
+        return nil;
+    }
+    function tail(indexed, predicate) {
+        if (!indexed) {
+            return nil;
+        }
+        var len = indexed.length;
+        if (len < 1) {
+            return nil;
+        }
+        if (predicate === nil) {
+            return indexed[len - 1];
+        }
+        for (var i = len - 1; i > -1; --i) {
             var item = indexed[i];
             var result = predicate(item);
             if (result === true) {
@@ -167,7 +190,8 @@
             }
             var len = listeners.length;
             for (var i = 0; i < len; i++) {
-                listeners[i].apply(nil, args);
+                var listener = listeners[i];
+                listener.apply(nil, args);
             }
         },
         on: function (eventName, listener) {
@@ -269,6 +293,11 @@
             self._recalculate();
             return self;
         };
+        Animator.prototype.cancel = function () {
+            var self = this;
+            self._dispatcher.trigger(cancel, [self]);
+            return self;
+        };
         Animator.prototype.duration = function () {
             return this._duration;
         };
@@ -278,6 +307,11 @@
                 return self._currentTime;
             }
             self._currentTime = value;
+            return self;
+        };
+        Animator.prototype.finish = function () {
+            var self = this;
+            self._dispatcher.trigger(finish, [self]);
             return self;
         };
         Animator.prototype.playbackRate = function (value) {
@@ -297,19 +331,19 @@
             self._dispatcher.trigger('set', ['playbackState', value]);
             return self;
         };
-        Animator.prototype.on = function (eventName, listener) {
-            var self = this;
-            self._dispatcher.on(eventName, listener);
-            return self;
-        };
         Animator.prototype.off = function (eventName, listener) {
             var self = this;
             self._dispatcher.off(eventName, listener);
             return self;
         };
-        Animator.prototype.finish = function () {
+        Animator.prototype.on = function (eventName, listener) {
             var self = this;
-            self._dispatcher.trigger(finish, [self]);
+            self._dispatcher.on(eventName, listener);
+            return self;
+        };
+        Animator.prototype.pause = function () {
+            var self = this;
+            self._dispatcher.trigger(pause, [self]);
             return self;
         };
         Animator.prototype.play = function () {
@@ -320,24 +354,14 @@
             }
             return self;
         };
-        Animator.prototype.pause = function () {
-            var self = this;
-            self._dispatcher.trigger(pause, [self]);
-            return self;
-        };
         Animator.prototype.reverse = function () {
             var self = this;
             self._playbackRate *= -1;
             return self;
         };
-        Animator.prototype.cancel = function () {
-            var self = this;
-            self._dispatcher.trigger(cancel, [self]);
-            return self;
-        };
         Animator.prototype._recalculate = function () {
             var self = this;
-            var endsAt = maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
+            var endsAt = maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration; });
             self._duration = endsAt;
         };
         Animator.prototype._resolveMixin = function (mixin, event) {
@@ -369,7 +393,7 @@
                     var events = map(animators, function (animator) {
                         return {
                             animator: animator,
-                            endTimeMs: event.from + animator.totalDuration(),
+                            endTimeMs: event.from + animator.totalDuration,
                             startTimeMs: event.from
                         };
                     });
@@ -621,35 +645,147 @@
         return [];
     }
 
-    var isMappedSupported = !!Map;
-    var CustomMap = (function () {
-        function CustomMap() {
+    var KeyframeAnimator = (function () {
+        function KeyframeAnimator(init) {
+            this._init = init;
         }
-        CustomMap.prototype.has = function (key) {
-            return this[key] === nil;
-        };
-        CustomMap.prototype.delete = function (key) {
-            var self = this;
-            var hasKey = self.has(key);
-            if (hasKey) {
-                self[key] = nil;
-            }
-            return hasKey;
-        };
-        CustomMap.prototype.clear = function () {
-            var self = this;
-            for (var key in self) {
-                self[key] = nil;
+        KeyframeAnimator.prototype.seek = function (value) {
+            this._ensureInit();
+            if (this._animator.currentTime !== value) {
+                this._animator.currentTime = value;
             }
         };
-        return CustomMap;
+        KeyframeAnimator.prototype.playbackRate = function (value) {
+            this._ensureInit();
+            if (this._animator.playbackRate !== value) {
+                this._animator.playbackRate = value;
+            }
+        };
+        KeyframeAnimator.prototype.reverse = function () {
+            this._ensureInit();
+            this._animator.playbackRate *= -1;
+        };
+        KeyframeAnimator.prototype.playState = function (value) {
+            var self = this;
+            self._ensureInit();
+            var animator = self._animator;
+            var playState = animator.playState;
+            if (value === nil) {
+                return playState;
+            }
+            if (value === finished) {
+                animator.finish();
+            }
+            else if (value === idle) {
+                animator.cancel();
+            }
+            else if (value === paused) {
+                animator.pause();
+            }
+            else if (value === running) {
+                animator.play();
+            }
+        };
+        KeyframeAnimator.prototype.onupdate = function (context) { };
+        KeyframeAnimator.prototype._ensureInit = function () {
+            if (this._init) {
+                this._animator = this._init();
+                this._init = nil;
+            }
+        };
+        return KeyframeAnimator;
     }());
-    function createMap() {
-        return (isMappedSupported ? new Map() : Object.create(CustomMap.prototype));
-    }
 
-    function keyframeOffsetComparer(a, b) {
-        return a.offset - b.offset;
+    var global$1 = window;
+    var transitionAliases = {
+        rotate: transform,
+        rotate3d: transform,
+        rotateX: transform,
+        rotateY: transform,
+        rotateZ: transform,
+        scale: transform,
+        scale3d: transform,
+        scaleX: transform,
+        scaleY: transform,
+        scaleZ: transform,
+        skew: transform,
+        skewX: transform,
+        skewY: transform,
+        translate: transform,
+        translate3d: transform,
+        translateX: transform,
+        translateY: transform,
+        translateZ: transform,
+        x: transform,
+        y: transform,
+        z: transform
+    };
+    function createAnimator(target, options) {
+        var delay = unwrap(options.delay) || 0;
+        var endDelay = unwrap(options.endDelay) || 0;
+        var iterations = unwrap(options.iterations) || 1;
+        var iterationStart = unwrap(options.iterationStart) || 0;
+        var direction = unwrap(options.direction) || nil;
+        var duration = options.to - options.from;
+        var fill = unwrap(options.fill) || 'none';
+        var totalTime = delay + ((iterations || 1) * duration) + endDelay;
+        var easing = options.easing || 'linear';
+        var timings = {
+            delay: delay,
+            endDelay: endDelay,
+            duration: duration,
+            iterations: iterations,
+            iterationStart: iterationStart,
+            fill: fill,
+            direction: direction,
+            easing: easing
+        };
+        var animator = new KeyframeAnimator(initAnimator.bind(nada, target, timings, options));
+        animator.totalDuration = totalTime;
+        return animator;
+    }
+    function initAnimator(target, timings, options) {
+        var css = options.css;
+        var sourceKeyframes;
+        if (isArray(css)) {
+            sourceKeyframes = css;
+            expandOffsets(sourceKeyframes);
+        }
+        else {
+            sourceKeyframes = [];
+            propsToKeyframes(css, sourceKeyframes);
+        }
+        var targetKeyframes = [];
+        unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes);
+        spaceKeyframes(targetKeyframes);
+        if (options.isTransition === true) {
+            addTransition(targetKeyframes, target);
+        }
+        else {
+            fixPartialKeyframes(targetKeyframes);
+        }
+        var animator = target[animate](targetKeyframes, timings);
+        animator.cancel();
+        return animator;
+    }
+    function addTransition(keyframes, target) {
+        var properties = listProps(keyframes);
+        var firstFrame = head(keyframes, function (t) { return t.offset === 0; });
+        if (!firstFrame) {
+            firstFrame = { offset: 0 };
+            keyframes.splice(0, 0, firstFrame);
+        }
+        var style = global$1.getComputedStyle(target);
+        each(properties, function (property) {
+            if (property === offsetString) {
+                return;
+            }
+            var alias = transitionAliases[property] || property;
+            var val = style[alias];
+            if (isDefined(val)) {
+                firstFrame[alias] = val;
+            }
+        });
     }
     function expandOffsets(keyframes) {
         var len = keyframes.length;
@@ -661,7 +797,7 @@
                 var offsetLen = offsets.length;
                 for (var j = offsetLen - 1; j > -1; --j) {
                     var offsetAmount = offsets[j];
-                    var newKeyframe = createMap();
+                    var newKeyframe = {};
                     for (var prop in keyframe) {
                         if (prop !== offsetString) {
                             newKeyframe[prop] = keyframe[prop];
@@ -671,6 +807,61 @@
                     keyframes.splice(i, 0, newKeyframe);
                 }
             }
+        }
+    }
+    function unwrapPropertiesInKeyframes(source, target) {
+        var len = source.length;
+        for (var i = 0; i < len; i++) {
+            var sourceKeyframe = source[i];
+            var targetKeyframe = {};
+            for (var propertyName in sourceKeyframe) {
+                if (!sourceKeyframe.hasOwnProperty(propertyName)) {
+                    continue;
+                }
+                var sourceValue = sourceKeyframe[propertyName];
+                if (!isDefined(sourceValue)) {
+                    continue;
+                }
+                targetKeyframe[propertyName] = unwrap(sourceValue);
+            }
+            normalizeProperties(targetKeyframe);
+            target.push(targetKeyframe);
+        }
+    }
+    function propsToKeyframes(css, keyframes) {
+        var keyframesByOffset = {};
+        var cssProps = css;
+        for (var prop in cssProps) {
+            if (!cssProps.hasOwnProperty(prop)) {
+                continue;
+            }
+            var val = unwrap(cssProps[prop]);
+            if (isArray(val)) {
+                var valAsArray = val;
+                var valLength = valAsArray.length;
+                for (var i = 0; i < valLength; i++) {
+                    var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                    var keyframe = keyframesByOffset[offset];
+                    if (!keyframe) {
+                        keyframe = {};
+                        keyframesByOffset[offset] = keyframe;
+                    }
+                    keyframe[prop] = val[i];
+                }
+            }
+            else {
+                var keyframe = keyframesByOffset[1];
+                if (!keyframe) {
+                    keyframe = {};
+                    keyframesByOffset[1] = keyframe;
+                }
+                keyframe[prop] = val;
+            }
+        }
+        for (var offset in keyframesByOffset) {
+            var keyframe = keyframesByOffset[offset];
+            keyframe.offset = Number(offset);
+            keyframes.push(keyframe);
         }
     }
     function spaceKeyframes(keyframes) {
@@ -708,15 +899,28 @@
             }
         }
     }
-    function normalizeKeyframes(keyframes) {
-        if (keyframes.length < 2) {
+    function fixPartialKeyframes(keyframes) {
+        if (keyframes.length < 1) {
             return;
         }
-        var first = keyframes[0];
-        if (first.offset !== 0) {
+        var first = head(keyframes, function (k) { return k.offset === 0; })
+            || head(keyframes, function (k) { return k.offset === nil; });
+        if (first === nil) {
+            first = {};
+            keyframes.splice(0, 0, first);
+        }
+        if (first.offset === nil) {
             first.offset = 0;
         }
-        var last = keyframes[keyframes.length - 1];
+        var last = tail(keyframes, function (k) { return k.offset === 1; })
+            || tail(keyframes, function (k) { return k.offset === nil; });
+        if (last === nil) {
+            last = {};
+            keyframes.push(last);
+        }
+        if (last.offset === nil) {
+            last.offset = 0;
+        }
         var len = keyframes.length;
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
@@ -736,6 +940,9 @@
         }
         keyframes.sort(keyframeOffsetComparer);
     }
+    function keyframeOffsetComparer(a, b) {
+        return a.offset - b.offset;
+    }
     function normalizeProperties(keyframe) {
         var xIndex = 0;
         var yIndex = 1;
@@ -743,17 +950,19 @@
         var scaleArray = [];
         var skewArray = [];
         var translateArray = [];
-        var transformString = '';
+        var cssTransform = '';
         for (var prop in keyframe) {
             var value = keyframe[prop];
             if (!isDefined(value)) {
-                keyframe.delete(prop);
+                keyframe[prop] = nil;
                 continue;
             }
             if (prop === easingString) {
-                keyframe.easing = easings[keyframe.easing] || keyframe.easing || undefined;
+                var easing = keyframe[easingString];
+                keyframe[easingString] = easings[easing] || easing || nil;
                 continue;
             }
+            keyframe[prop] = nil;
             switch (prop) {
                 case scale3d:
                     if (isArray(value)) {
@@ -841,26 +1050,26 @@
                         if (arr.length !== 4) {
                             throw invalidArg(rotate3d);
                         }
-                        transformString += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
+                        cssTransform += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
                         continue;
                     }
                     throw invalidArg(rotate3d);
                 case rotateX:
                     if (isString(value)) {
-                        transformString += " rotate3d(1, 0, 0, " + value + ")";
+                        cssTransform += " rotate3d(1, 0, 0, " + value + ")";
                         continue;
                     }
                     throw invalidArg(rotateX);
                 case rotateY:
                     if (isString(value)) {
-                        transformString += " rotate3d(0, 1, 0, " + value + ")";
+                        cssTransform += " rotate3d(0, 1, 0, " + value + ")";
                         continue;
                     }
                     throw invalidArg(rotateY);
                 case rotate:
                 case rotateZ:
                     if (isString(value)) {
-                        transformString += " rotate3d(0, 0, 1, " + value + ")";
+                        cssTransform += " rotate3d(0, 0, 1, " + value + ")";
                         continue;
                     }
                     throw invalidArg(rotateZ);
@@ -920,10 +1129,9 @@
                     }
                     throw invalidArg(z);
                 case transform:
-                    transformString += ' ' + value;
+                    cssTransform += ' ' + value;
                     break;
                 default:
-                    keyframe.delete(prop);
                     keyframe[toCamelCase(prop)] = value;
                     break;
             }
@@ -933,32 +1141,32 @@
         var isScaleZ = scaleArray[zIndex] !== nil;
         if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
             var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
-            transformString += " scale3d(" + scaleString + ")";
+            cssTransform += " scale3d(" + scaleString + ")";
         }
         else if (isScaleX && isScaleY) {
-            transformString += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
+            cssTransform += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
         }
         else if (isScaleX) {
-            transformString += " scaleX(" + scaleArray[xIndex] + ")";
+            cssTransform += " scaleX(" + scaleArray[xIndex] + ")";
         }
         else if (isScaleY) {
-            transformString += " scaleX(" + scaleArray[yIndex] + ")";
+            cssTransform += " scaleX(" + scaleArray[yIndex] + ")";
         }
         else if (isScaleZ) {
-            transformString += " scaleX(" + scaleArray[zIndex] + ")";
+            cssTransform += " scaleX(" + scaleArray[zIndex] + ")";
         }
         else {
         }
         var isskewX = skewArray[xIndex] !== nil;
         var isskewY = skewArray[yIndex] !== nil;
         if (isskewX && isskewY) {
-            transformString += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
+            cssTransform += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
         }
         else if (isskewX) {
-            transformString += " skewX(" + skewArray[xIndex] + ")";
+            cssTransform += " skewX(" + skewArray[xIndex] + ")";
         }
         else if (isskewY) {
-            transformString += " skewY(" + skewArray[yIndex] + ")";
+            cssTransform += " skewY(" + skewArray[yIndex] + ")";
         }
         else {
         }
@@ -967,80 +1175,27 @@
         var istranslateZ = translateArray[zIndex] !== nil;
         if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
             var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
-            transformString += " translate3d(" + translateString + ")";
+            cssTransform += " translate3d(" + translateString + ")";
         }
         else if (istranslateX && istranslateY) {
-            transformString += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
+            cssTransform += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
         }
         else if (istranslateX) {
-            transformString += " translateX(" + translateArray[xIndex] + ")";
+            cssTransform += " translateX(" + translateArray[xIndex] + ")";
         }
         else if (istranslateY) {
-            transformString += " translateY(" + translateArray[yIndex] + ")";
+            cssTransform += " translateY(" + translateArray[yIndex] + ")";
         }
         else if (istranslateZ) {
-            transformString += " translateZ(" + translateArray[zIndex] + ")";
+            cssTransform += " translateZ(" + translateArray[zIndex] + ")";
         }
         else {
         }
-        if (transformString) {
-            keyframe['transform'] = transformString;
+        if (cssTransform) {
+            keyframe[transform] = cssTransform;
         }
     }
 
-    var KeyframeAnimator = (function () {
-        function KeyframeAnimator(target, keyframes, timings) {
-            var delay = timings.delay || 0;
-            var endDelay = timings.endDelay || 0;
-            var iterations = timings.iterations || 1;
-            var duration = timings.duration || 0;
-            var self = this;
-            self._totalTime = delay + ((iterations || 1) * duration) + endDelay;
-            var animator = target[animate](keyframes, timings);
-            animator.cancel();
-            self._animator = animator;
-        }
-        KeyframeAnimator.prototype.totalDuration = function () {
-            return this._totalTime;
-        };
-        KeyframeAnimator.prototype.seek = function (value) {
-            if (this._animator.currentTime !== value) {
-                this._animator.currentTime = value;
-            }
-        };
-        KeyframeAnimator.prototype.playbackRate = function (value) {
-            if (this._animator.playbackRate !== value) {
-                this._animator.playbackRate = value;
-            }
-        };
-        KeyframeAnimator.prototype.reverse = function () {
-            this._animator.playbackRate *= -1;
-        };
-        KeyframeAnimator.prototype.playState = function (value) {
-            var self = this;
-            var animator = self._animator;
-            var playState = animator.playState;
-            if (value === nil) {
-                return playState;
-            }
-            if (value === finished) {
-                animator.finish();
-            }
-            else if (value === idle) {
-                animator.cancel();
-            }
-            else if (value === paused) {
-                animator.pause();
-            }
-            else if (value === running) {
-                animator.play();
-            }
-        };
-        KeyframeAnimator.prototype.onupdate = function (context) { };
-        return KeyframeAnimator;
-    }());
-
-    var global$1 = window;
     var KeyframePlugin = (function () {
         function KeyframePlugin() {
         }
@@ -1048,102 +1203,8 @@
             return !!(options.css);
         };
         KeyframePlugin.prototype.handle = function (options) {
-            var targets = queryElements(options.targets);
-            var animations = map(targets, function (target) {
-                var timings = createMap();
-                timings.delay = unwrap(options.delay) || 0;
-                timings.endDelay = 0;
-                timings.duration = options.to - options.from;
-                timings.iterations = unwrap(options.iterations) || 1;
-                timings.iterationStart = unwrap(options.iterationStart) || 0;
-                timings.fill = unwrap(options.fill) || 'none';
-                timings.direction = unwrap(options.direction) || nil;
-                timings.easing = options.easing || 'linear';
-                var css = options.css;
-                var sourceKeyframes;
-                if (isArray(css)) {
-                    sourceKeyframes = css;
-                    expandOffsets(sourceKeyframes);
-                }
-                else {
-                    var keyframesByOffset = createMap();
-                    var cssProps = css;
-                    for (var prop in cssProps) {
-                        if (!cssProps.hasOwnProperty(prop)) {
-                            continue;
-                        }
-                        var val = unwrap(cssProps[prop]);
-                        if (isArray(val)) {
-                            var valAsArray = val;
-                            var valLength = valAsArray.length;
-                            for (var i = 0; i < valLength; i++) {
-                                var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
-                                var keyframe = keyframesByOffset[offset];
-                                if (!keyframe) {
-                                    keyframe = createMap();
-                                    keyframesByOffset[offset] = keyframe;
-                                }
-                                keyframe[prop] = val[i];
-                            }
-                        }
-                        else {
-                            var keyframe = keyframesByOffset[1];
-                            if (!keyframe) {
-                                keyframe = createMap();
-                                keyframesByOffset[1] = keyframe;
-                            }
-                            keyframe[prop] = val;
-                        }
-                    }
-                    sourceKeyframes = [];
-                    for (var offset in keyframesByOffset) {
-                        var keyframe = keyframesByOffset[offset];
-                        keyframe.offset = Number(offset);
-                        sourceKeyframes.push(keyframe);
-                    }
-                }
-                var targetKeyframes = [];
-                var keyframeLength = sourceKeyframes.length;
-                for (var i = 0; i < keyframeLength; i++) {
-                    var sourceKeyframe = sourceKeyframes[i];
-                    var targetKeyframe = createMap();
-                    for (var propertyName in sourceKeyframe) {
-                        if (!sourceKeyframe.hasOwnProperty(propertyName)) {
-                            continue;
-                        }
-                        var sourceValue = sourceKeyframe[propertyName];
-                        if (!isDefined(sourceValue)) {
-                            continue;
-                        }
-                        targetKeyframe[propertyName] = unwrap(sourceValue);
-                    }
-                    normalizeProperties(targetKeyframe);
-                    targetKeyframes.push(targetKeyframe);
-                }
-                spaceKeyframes(targetKeyframes);
-                normalizeKeyframes(targetKeyframes);
-                if (options.isTransition === true) {
-                    var properties = listProps(targetKeyframes);
-                    var firstFrame_1 = head(targetKeyframes, function (t) { return t.offset === 0; });
-                    if (!firstFrame_1) {
-                        firstFrame_1 = createMap();
-                        firstFrame_1.offset = 0;
-                        targetKeyframes.splice(0, 0, firstFrame_1);
-                    }
-                    var style_1 = global$1.getComputedStyle(target);
-                    each(properties, function (property) {
-                        if (property === offsetString) {
-                            return;
-                        }
-                        var val = style_1[property];
-                        if (isDefined(val)) {
-                            firstFrame_1[property] = val;
-                        }
-                    });
-                }
-                return new KeyframeAnimator(target, targetKeyframes, timings);
-            });
-            return animations;
+            return queryElements(options.targets)
+                .map(function (target) { return createAnimator(target, options); });
         };
         return KeyframePlugin;
     }());

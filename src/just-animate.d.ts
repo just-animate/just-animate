@@ -56,11 +56,11 @@ declare module ja {
     }
     export interface IAnimationController {
         seek(value: number): void;
+        totalDuration: number;
         playbackRate(value: number): void;
         playState(): AnimationPlaybackState;
         playState(value: AnimationPlaybackState): void;
         reverse(): void;
-        totalDuration(): number;
         onupdate(context: IAnimationTimeContext): void;
     }
     export interface IAnimationTimeContext {
@@ -93,6 +93,7 @@ declare module ja {
         delay?: Resolver<number>;  
         direction?: Resolver<string>;        
         easing?: Easing;
+        endDelay?: Resolver<number>;
         fill?: Resolver<FillMode>;
         iterations?: Resolver<number>;
         iterationStart?: Resolver<number>;

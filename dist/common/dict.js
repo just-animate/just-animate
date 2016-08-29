@@ -1,9 +1,11 @@
 "use strict";
 var resources_1 = require('./resources');
-var isMappedSupported = !!Map;
 var CustomMap = (function () {
     function CustomMap() {
     }
+    CustomMap.prototype.set = function (key, value) {
+        this[key] = value;
+    };
     CustomMap.prototype.has = function (key) {
         return this[key] === resources_1.nil;
     };
@@ -24,6 +26,6 @@ var CustomMap = (function () {
     return CustomMap;
 }());
 function createMap() {
-    return (isMappedSupported ? new Map() : Object.create(CustomMap.prototype));
+    return Object.create(CustomMap.prototype);
 }
 exports.createMap = createMap;

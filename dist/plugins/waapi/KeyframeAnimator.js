@@ -1,28 +1,28 @@
 "use strict";
 var resources_1 = require('../../common/resources');
 var KeyframeAnimator = (function () {
-    function KeyframeAnimator(target, keyframes, timings) {
-        var self = this;
-        var animator = target[resources_1.animate](keyframes, timings);
-        // immediately cancel to prevent effects until play is called    
-        animator.cancel();
-        self._animator = animator;
+    function KeyframeAnimator(init) {
+        this._init = init;
     }
     KeyframeAnimator.prototype.seek = function (value) {
+        this._ensureInit();
         if (this._animator.currentTime !== value) {
             this._animator.currentTime = value;
         }
     };
     KeyframeAnimator.prototype.playbackRate = function (value) {
+        this._ensureInit();
         if (this._animator.playbackRate !== value) {
             this._animator.playbackRate = value;
         }
     };
     KeyframeAnimator.prototype.reverse = function () {
+        this._ensureInit();
         this._animator.playbackRate *= -1;
     };
     KeyframeAnimator.prototype.playState = function (value) {
         var self = this;
+        self._ensureInit();
         var animator = self._animator;
         var playState = animator.playState;
         if (value === resources_1.nil) {
@@ -42,6 +42,12 @@ var KeyframeAnimator = (function () {
         }
     };
     KeyframeAnimator.prototype.onupdate = function (context) { };
+    KeyframeAnimator.prototype._ensureInit = function () {
+        if (this._init) {
+            this._animator = this._init();
+            this._init = resources_1.nil;
+        }
+    };
     return KeyframeAnimator;
 }());
 exports.KeyframeAnimator = KeyframeAnimator;

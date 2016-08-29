@@ -2,12 +2,110 @@
 var type_1 = require('../../common/type');
 var strings_1 = require('../../common/strings');
 var errors_1 = require('../../common/errors');
-var resources_1 = require('../../common/resources');
-var dict_1 = require('../../common/dict');
 var easings_1 = require('../../common/easings');
-var resources_2 = require('../../common/resources');
-function keyframeOffsetComparer(a, b) {
-    return a.offset - b.offset;
+var lists_1 = require('../../common/lists');
+var objects_1 = require('../../common/objects');
+var KeyframeAnimator_1 = require('../waapi/KeyframeAnimator');
+var resources_1 = require('../../common/resources');
+var global = window;
+var transitionAliases = {
+    rotate: resources_1.transform,
+    rotate3d: resources_1.transform,
+    rotateX: resources_1.transform,
+    rotateY: resources_1.transform,
+    rotateZ: resources_1.transform,
+    scale: resources_1.transform,
+    scale3d: resources_1.transform,
+    scaleX: resources_1.transform,
+    scaleY: resources_1.transform,
+    scaleZ: resources_1.transform,
+    skew: resources_1.transform,
+    skewX: resources_1.transform,
+    skewY: resources_1.transform,
+    translate: resources_1.transform,
+    translate3d: resources_1.transform,
+    translateX: resources_1.transform,
+    translateY: resources_1.transform,
+    translateZ: resources_1.transform,
+    x: resources_1.transform,
+    y: resources_1.transform,
+    z: resources_1.transform
+};
+function createAnimator(target, options) {
+    var delay = objects_1.unwrap(options.delay) || 0;
+    var endDelay = objects_1.unwrap(options.endDelay) || 0;
+    var iterations = objects_1.unwrap(options.iterations) || 1;
+    var iterationStart = objects_1.unwrap(options.iterationStart) || 0;
+    var direction = objects_1.unwrap(options.direction) || resources_1.nil;
+    var duration = options.to - options.from;
+    var fill = objects_1.unwrap(options.fill) || 'none';
+    var totalTime = delay + ((iterations || 1) * duration) + endDelay;
+    // note: don't unwrap easings so we don't break this later with custom easings
+    var easing = options.easing || 'linear';
+    var timings = {
+        delay: delay,
+        endDelay: endDelay,
+        duration: duration,
+        iterations: iterations,
+        iterationStart: iterationStart,
+        fill: fill,
+        direction: direction,
+        easing: easing
+    };
+    var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_1.nada, target, timings, options));
+    animator.totalDuration = totalTime;
+    return animator;
+}
+exports.createAnimator = createAnimator;
+function initAnimator(target, timings, options) {
+    // process css as either keyframes or calculate what those keyframes should be   
+    var css = options.css;
+    var sourceKeyframes;
+    if (type_1.isArray(css)) {
+        // if an array, no processing has to occur
+        sourceKeyframes = css;
+        expandOffsets(sourceKeyframes);
+    }
+    else {
+        sourceKeyframes = [];
+        propsToKeyframes(css, sourceKeyframes);
+    }
+    var targetKeyframes = [];
+    unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes);
+    spaceKeyframes(targetKeyframes);
+    if (options.isTransition === true) {
+        addTransition(targetKeyframes, target);
+    }
+    else {
+        fixPartialKeyframes(targetKeyframes);
+    }
+    var animator = target[resources_1.animate](targetKeyframes, timings);
+    animator.cancel();
+    return animator;
+}
+function addTransition(keyframes, target) {
+    // detect properties to transition
+    var properties = objects_1.listProps(keyframes);
+    // get or create the first frame
+    var firstFrame = lists_1.head(keyframes, function (t) { return t.offset === 0; });
+    if (!firstFrame) {
+        firstFrame = { offset: 0 };
+        keyframes.splice(0, 0, firstFrame);
+    }
+    // copy properties from the dom to the animation
+    // todo: check how to do this in IE8, or not?
+    var style = global.getComputedStyle(target);
+    lists_1.each(properties, function (property) {
+        // skip offset property
+        if (property === resources_1.offsetString) {
+            return;
+        }
+        var alias = transitionAliases[property] || property;
+        var val = style[alias];
+        if (type_1.isDefined(val)) {
+            firstFrame[alias] = val;
+        }
+    });
 }
 /**
  * copies keyframs with an offset array to separate keyframes
@@ -25,9 +123,9 @@ function expandOffsets(keyframes) {
             var offsetLen = offsets.length;
             for (var j = offsetLen - 1; j > -1; --j) {
                 var offsetAmount = offsets[j];
-                var newKeyframe = dict_1.createMap();
+                var newKeyframe = {};
                 for (var prop in keyframe) {
-                    if (prop !== resources_2.offsetString) {
+                    if (prop !== resources_1.offsetString) {
                         newKeyframe[prop] = keyframe[prop];
                     }
                 }
@@ -37,7 +135,66 @@ function expandOffsets(keyframes) {
         }
     }
 }
-exports.expandOffsets = expandOffsets;
+function unwrapPropertiesInKeyframes(source, target) {
+    var len = source.length;
+    for (var i = 0; i < len; i++) {
+        var sourceKeyframe = source[i];
+        var targetKeyframe = {};
+        for (var propertyName in sourceKeyframe) {
+            if (!sourceKeyframe.hasOwnProperty(propertyName)) {
+                continue;
+            }
+            var sourceValue = sourceKeyframe[propertyName];
+            if (!type_1.isDefined(sourceValue)) {
+                continue;
+            }
+            targetKeyframe[propertyName] = objects_1.unwrap(sourceValue);
+        }
+        normalizeProperties(targetKeyframe);
+        target.push(targetKeyframe);
+    }
+}
+function propsToKeyframes(css, keyframes) {
+    // create a map to capture each keyframe by offset
+    var keyframesByOffset = {};
+    var cssProps = css;
+    // iterate over each property split it into keyframes            
+    for (var prop in cssProps) {
+        if (!cssProps.hasOwnProperty(prop)) {
+            continue;
+        }
+        // unwrap value (changes function into discrete value or array)                    
+        var val = objects_1.unwrap(cssProps[prop]);
+        if (type_1.isArray(val)) {
+            // if the value is an array, split up the offset automatically
+            var valAsArray = val;
+            var valLength = valAsArray.length;
+            for (var i = 0; i < valLength; i++) {
+                var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                var keyframe = keyframesByOffset[offset];
+                if (!keyframe) {
+                    keyframe = {};
+                    keyframesByOffset[offset] = keyframe;
+                }
+                keyframe[prop] = val[i];
+            }
+        }
+        else {
+            // if the value is not an array, place it at offset 1
+            var keyframe = keyframesByOffset[1];
+            if (!keyframe) {
+                keyframe = {};
+                keyframesByOffset[1] = keyframe;
+            }
+            keyframe[prop] = val;
+        }
+    }
+    for (var offset in keyframesByOffset) {
+        var keyframe = keyframesByOffset[offset];
+        keyframe.offset = Number(offset);
+        keyframes.push(keyframe);
+    }
+}
 function spaceKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
@@ -84,27 +241,38 @@ function spaceKeyframes(keyframes) {
         }
     }
 }
-exports.spaceKeyframes = spaceKeyframes;
 /**
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
-function normalizeKeyframes(keyframes) {
-    // don't attempt to fill animation if less than 2 keyframes
-    if (keyframes.length < 2) {
+function fixPartialKeyframes(keyframes) {
+    // don't attempt to fill animation if less than 1 keyframes
+    if (keyframes.length < 1) {
         return;
     }
-    var first = keyframes[0];
-    // ensure first offset    
-    if (first.offset !== 0) {
+    var first = lists_1.head(keyframes, function (k) { return k.offset === 0; })
+        || lists_1.head(keyframes, function (k) { return k.offset === resources_1.nil; });
+    if (first === resources_1.nil) {
+        first = {};
+        keyframes.splice(0, 0, first);
+    }
+    if (first.offset === resources_1.nil) {
         first.offset = 0;
     }
-    var last = keyframes[keyframes.length - 1];
+    var last = lists_1.tail(keyframes, function (k) { return k.offset === 1; })
+        || lists_1.tail(keyframes, function (k) { return k.offset === resources_1.nil; });
+    if (last === resources_1.nil) {
+        last = {};
+        keyframes.push(last);
+    }
+    if (last.offset === resources_1.nil) {
+        last.offset = 0;
+    }
     // fill initial keyframe with missing props
     var len = keyframes.length;
     for (var i = 1; i < len; i++) {
         var keyframe = keyframes[i];
         for (var prop in keyframe) {
-            if (prop !== resources_2.offsetString && !type_1.isDefined(first[prop])) {
+            if (prop !== resources_1.offsetString && !type_1.isDefined(first[prop])) {
                 first[prop] = keyframe[prop];
             }
         }
@@ -113,7 +281,7 @@ function normalizeKeyframes(keyframes) {
     for (var i = len - 2; i > -1; i--) {
         var keyframe = keyframes[i];
         for (var prop in keyframe) {
-            if (prop !== resources_2.offsetString && !type_1.isDefined(last[prop])) {
+            if (prop !== resources_1.offsetString && !type_1.isDefined(last[prop])) {
                 last[prop] = keyframe[prop];
             }
         }
@@ -121,7 +289,9 @@ function normalizeKeyframes(keyframes) {
     // sort by offset (should have all offsets assigned)
     keyframes.sort(keyframeOffsetComparer);
 }
-exports.normalizeKeyframes = normalizeKeyframes;
+function keyframeOffsetComparer(a, b) {
+    return a.offset - b.offset;
+}
 /**
  * Handles transforming short hand key properties into their native form
  */
@@ -133,23 +303,26 @@ function normalizeProperties(keyframe) {
     var scaleArray = [];
     var skewArray = [];
     var translateArray = [];
-    var transformString = '';
+    var cssTransform = '';
     for (var prop in keyframe) {
         var value = keyframe[prop];
         if (!type_1.isDefined(value)) {
-            keyframe.delete(prop);
+            keyframe[prop] = resources_1.nil;
             continue;
         }
-        if (prop === resources_2.easingString) {
-            keyframe.easing = easings_1.easings[keyframe.easing] || keyframe.easing || undefined;
+        if (prop === resources_1.easingString) {
+            var easing = keyframe[resources_1.easingString];
+            keyframe[resources_1.easingString] = easings_1.easings[easing] || easing || resources_1.nil;
             continue;
         }
+        // nullify properties (will get added back if it is supposed to be here)
+        keyframe[prop] = resources_1.nil;
         switch (prop) {
-            case resources_2.scale3d:
+            case resources_1.scale3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 3) {
-                        throw errors_1.invalidArg(resources_2.scale3d);
+                        throw errors_1.invalidArg(resources_1.scale3d);
                     }
                     scaleArray[xIndex] = arr[xIndex];
                     scaleArray[yIndex] = arr[yIndex];
@@ -162,12 +335,12 @@ function normalizeProperties(keyframe) {
                     scaleArray[zIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.scale3d);
-            case resources_2.scale:
+                throw errors_1.invalidArg(resources_1.scale3d);
+            case resources_1.scale:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw errors_1.invalidArg(resources_2.scale);
+                        throw errors_1.invalidArg(resources_1.scale);
                     }
                     scaleArray[xIndex] = arr[xIndex];
                     scaleArray[yIndex] = arr[yIndex];
@@ -178,30 +351,30 @@ function normalizeProperties(keyframe) {
                     scaleArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.scale);
-            case resources_2.scaleX:
+                throw errors_1.invalidArg(resources_1.scale);
+            case resources_1.scaleX:
                 if (type_1.isNumber(value)) {
                     scaleArray[xIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.scaleX);
-            case resources_2.scaleY:
+                throw errors_1.invalidArg(resources_1.scaleX);
+            case resources_1.scaleY:
                 if (type_1.isNumber(value)) {
                     scaleArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.scaleY);
-            case resources_2.scaleZ:
+                throw errors_1.invalidArg(resources_1.scaleY);
+            case resources_1.scaleZ:
                 if (type_1.isNumber(value)) {
                     scaleArray[zIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.scaleZ);
-            case resources_2.skew:
+                throw errors_1.invalidArg(resources_1.scaleZ);
+            case resources_1.skew:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw errors_1.invalidArg(resources_2.skew);
+                        throw errors_1.invalidArg(resources_1.skew);
                     }
                     skewArray[xIndex] = arr[xIndex];
                     skewArray[yIndex] = arr[yIndex];
@@ -212,53 +385,53 @@ function normalizeProperties(keyframe) {
                     skewArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.skew);
-            case resources_2.skewX:
+                throw errors_1.invalidArg(resources_1.skew);
+            case resources_1.skewX:
                 if (type_1.isString(value)) {
                     skewArray[xIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.skewX);
-            case resources_2.skewY:
+                throw errors_1.invalidArg(resources_1.skewX);
+            case resources_1.skewY:
                 if (type_1.isString(value)) {
                     skewArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.skewY);
-            case resources_2.rotate3d:
+                throw errors_1.invalidArg(resources_1.skewY);
+            case resources_1.rotate3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 4) {
-                        throw errors_1.invalidArg(resources_2.rotate3d);
+                        throw errors_1.invalidArg(resources_1.rotate3d);
                     }
-                    transformString += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
+                    cssTransform += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.rotate3d);
-            case resources_2.rotateX:
+                throw errors_1.invalidArg(resources_1.rotate3d);
+            case resources_1.rotateX:
                 if (type_1.isString(value)) {
-                    transformString += " rotate3d(1, 0, 0, " + value + ")";
+                    cssTransform += " rotate3d(1, 0, 0, " + value + ")";
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.rotateX);
-            case resources_2.rotateY:
+                throw errors_1.invalidArg(resources_1.rotateX);
+            case resources_1.rotateY:
                 if (type_1.isString(value)) {
-                    transformString += " rotate3d(0, 1, 0, " + value + ")";
+                    cssTransform += " rotate3d(0, 1, 0, " + value + ")";
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.rotateY);
-            case resources_2.rotate:
-            case resources_2.rotateZ:
+                throw errors_1.invalidArg(resources_1.rotateY);
+            case resources_1.rotate:
+            case resources_1.rotateZ:
                 if (type_1.isString(value)) {
-                    transformString += " rotate3d(0, 0, 1, " + value + ")";
+                    cssTransform += " rotate3d(0, 0, 1, " + value + ")";
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.rotateZ);
-            case resources_2.translate3d:
+                throw errors_1.invalidArg(resources_1.rotateZ);
+            case resources_1.translate3d:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 3) {
-                        throw errors_1.invalidArg(resources_2.translate3d);
+                        throw errors_1.invalidArg(resources_1.translate3d);
                     }
                     translateArray[xIndex] = arr[xIndex];
                     translateArray[yIndex] = arr[yIndex];
@@ -271,12 +444,12 @@ function normalizeProperties(keyframe) {
                     translateArray[zIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.rotate3d);
-            case resources_2.translate:
+                throw errors_1.invalidArg(resources_1.rotate3d);
+            case resources_1.translate:
                 if (type_1.isArray(value)) {
                     var arr = value;
                     if (arr.length !== 2) {
-                        throw errors_1.invalidArg(resources_2.translate);
+                        throw errors_1.invalidArg(resources_1.translate);
                     }
                     translateArray[xIndex] = arr[xIndex];
                     translateArray[yIndex] = arr[yIndex];
@@ -287,33 +460,32 @@ function normalizeProperties(keyframe) {
                     translateArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.translate);
-            case resources_2.x:
-            case resources_2.translateX:
+                throw errors_1.invalidArg(resources_1.translate);
+            case resources_1.x:
+            case resources_1.translateX:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translateArray[xIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.x);
-            case resources_2.y:
-            case resources_2.translateY:
+                throw errors_1.invalidArg(resources_1.x);
+            case resources_1.y:
+            case resources_1.translateY:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translateArray[yIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.y);
-            case resources_2.z:
-            case resources_2.translateZ:
+                throw errors_1.invalidArg(resources_1.y);
+            case resources_1.z:
+            case resources_1.translateZ:
                 if (type_1.isString(value) || type_1.isNumber(value)) {
                     translateArray[zIndex] = value;
                     continue;
                 }
-                throw errors_1.invalidArg(resources_2.z);
-            case resources_2.transform:
-                transformString += ' ' + value;
+                throw errors_1.invalidArg(resources_1.z);
+            case resources_1.transform:
+                cssTransform += ' ' + value;
                 break;
             default:
-                keyframe.delete(prop);
                 keyframe[strings_1.toCamelCase(prop)] = value;
                 break;
         }
@@ -324,19 +496,19 @@ function normalizeProperties(keyframe) {
     var isScaleZ = scaleArray[zIndex] !== resources_1.nil;
     if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
         var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
-        transformString += " scale3d(" + scaleString + ")";
+        cssTransform += " scale3d(" + scaleString + ")";
     }
     else if (isScaleX && isScaleY) {
-        transformString += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
+        cssTransform += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
     }
     else if (isScaleX) {
-        transformString += " scaleX(" + scaleArray[xIndex] + ")";
+        cssTransform += " scaleX(" + scaleArray[xIndex] + ")";
     }
     else if (isScaleY) {
-        transformString += " scaleX(" + scaleArray[yIndex] + ")";
+        cssTransform += " scaleX(" + scaleArray[yIndex] + ")";
     }
     else if (isScaleZ) {
-        transformString += " scaleX(" + scaleArray[zIndex] + ")";
+        cssTransform += " scaleX(" + scaleArray[zIndex] + ")";
     }
     else {
     }
@@ -344,13 +516,13 @@ function normalizeProperties(keyframe) {
     var isskewX = skewArray[xIndex] !== resources_1.nil;
     var isskewY = skewArray[yIndex] !== resources_1.nil;
     if (isskewX && isskewY) {
-        transformString += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
+        cssTransform += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
     }
     else if (isskewX) {
-        transformString += " skewX(" + skewArray[xIndex] + ")";
+        cssTransform += " skewX(" + skewArray[xIndex] + ")";
     }
     else if (isskewY) {
-        transformString += " skewY(" + skewArray[yIndex] + ")";
+        cssTransform += " skewY(" + skewArray[yIndex] + ")";
     }
     else {
     }
@@ -360,24 +532,23 @@ function normalizeProperties(keyframe) {
     var istranslateZ = translateArray[zIndex] !== resources_1.nil;
     if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
         var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
-        transformString += " translate3d(" + translateString + ")";
+        cssTransform += " translate3d(" + translateString + ")";
     }
     else if (istranslateX && istranslateY) {
-        transformString += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
+        cssTransform += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
     }
     else if (istranslateX) {
-        transformString += " translateX(" + translateArray[xIndex] + ")";
+        cssTransform += " translateX(" + translateArray[xIndex] + ")";
     }
     else if (istranslateY) {
-        transformString += " translateY(" + translateArray[yIndex] + ")";
+        cssTransform += " translateY(" + translateArray[yIndex] + ")";
     }
     else if (istranslateZ) {
-        transformString += " translateZ(" + translateArray[zIndex] + ")";
+        cssTransform += " translateZ(" + translateArray[zIndex] + ")";
     }
     else {
     }
-    if (transformString) {
-        keyframe['transform'] = transformString;
+    if (cssTransform) {
+        keyframe[resources_1.transform] = cssTransform;
     }
 }
-exports.normalizeProperties = normalizeProperties;

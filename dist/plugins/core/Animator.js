@@ -46,6 +46,11 @@ var Animator = (function () {
         self._recalculate();
         return self;
     };
+    Animator.prototype.cancel = function () {
+        var self = this;
+        self._dispatcher.trigger(resources_1.cancel, [self]);
+        return self;
+    };
     Animator.prototype.duration = function () {
         return this._duration;
     };
@@ -55,6 +60,11 @@ var Animator = (function () {
             return self._currentTime;
         }
         self._currentTime = value;
+        return self;
+    };
+    Animator.prototype.finish = function () {
+        var self = this;
+        self._dispatcher.trigger(resources_1.finish, [self]);
         return self;
     };
     Animator.prototype.playbackRate = function (value) {
@@ -74,19 +84,19 @@ var Animator = (function () {
         self._dispatcher.trigger('set', ['playbackState', value]);
         return self;
     };
-    Animator.prototype.on = function (eventName, listener) {
-        var self = this;
-        self._dispatcher.on(eventName, listener);
-        return self;
-    };
     Animator.prototype.off = function (eventName, listener) {
         var self = this;
         self._dispatcher.off(eventName, listener);
         return self;
     };
-    Animator.prototype.finish = function () {
+    Animator.prototype.on = function (eventName, listener) {
         var self = this;
-        self._dispatcher.trigger(resources_1.finish, [self]);
+        self._dispatcher.on(eventName, listener);
+        return self;
+    };
+    Animator.prototype.pause = function () {
+        var self = this;
+        self._dispatcher.trigger(resources_1.pause, [self]);
         return self;
     };
     Animator.prototype.play = function () {
@@ -97,24 +107,14 @@ var Animator = (function () {
         }
         return self;
     };
-    Animator.prototype.pause = function () {
-        var self = this;
-        self._dispatcher.trigger(resources_1.pause, [self]);
-        return self;
-    };
     Animator.prototype.reverse = function () {
         var self = this;
         self._playbackRate *= -1;
         return self;
     };
-    Animator.prototype.cancel = function () {
-        var self = this;
-        self._dispatcher.trigger(resources_1.cancel, [self]);
-        return self;
-    };
     Animator.prototype._recalculate = function () {
         var self = this;
-        var endsAt = lists_1.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration(); });
+        var endsAt = lists_1.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration; });
         self._duration = endsAt;
     };
     Animator.prototype._resolveMixin = function (mixin, event) {
@@ -149,7 +149,7 @@ var Animator = (function () {
                 var events = lists_1.map(animators, function (animator) {
                     return {
                         animator: animator,
-                        endTimeMs: event.from + animator.totalDuration(),
+                        endTimeMs: event.from + animator.totalDuration,
                         startTimeMs: event.from
                     };
                 });

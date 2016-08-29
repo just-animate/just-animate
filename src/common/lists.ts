@@ -10,21 +10,19 @@ export interface IList<T> {
 
 /**
  * Returns the first object in the list or undefined
- * 
- * @export
- * @template T
- * @param {T[]} indexed list of objects
- * @returns {T} first object in the list or undefined
  */
 export function head<T>(indexed: IList<T>, predicate: { (t: T): boolean; }): T {
-    if (!indexed || indexed.length < 1) {
+    if (!indexed) {
+        return nil;
+    }
+
+    const len = indexed.length;
+    if (len < 1) {
         return nil;
     }
     if (predicate === nil) {
         return indexed[0];
     }
-
-    const len = indexed.length;
     for (let i = 0; i < len; i++) {
         const item = indexed[i];
         const result = predicate(item);
@@ -37,16 +35,29 @@ export function head<T>(indexed: IList<T>, predicate: { (t: T): boolean; }): T {
 }
 /**
  * Returns the last object in the list or undefined
- * 
- * @export
- * @template T
- * @param {T[]} indexed list of objects
- * @returns {T} last object in the list or undefined
  */
-export function tail<T>(indexed: IList<T>): T {
-    return (!indexed || indexed.length < 1) ? nil : indexed[indexed.length - 1];
-}
+export function tail<T>(indexed: IList<T>, predicate: { (t: T): boolean; }): T {
+    if (!indexed) {
+        return nil;
+    }
 
+    const len = indexed.length;
+    if (len < 1) {
+        return nil;
+    }
+    if (predicate === nil) {
+        return indexed[len - 1];
+    }
+    for (let i = len - 1; i > -1; --i) {
+        const item = indexed[i];
+        const result = predicate(item);
+        if (result === true) {
+            return item;
+        }
+    }
+
+    return nil;
+}
 
 /**
  * Converts list to an Array.

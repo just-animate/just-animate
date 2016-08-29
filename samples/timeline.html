@@ -99,7 +99,7 @@
         <button id="cancel">.cancel()</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
+    <script src="./web-animations.min.js"></script>
     <script src="../dist/browser/just-animate-core.js"></script>
     <script src="../dist/browser/just-animate-animations.min.js"></script>
     <script>
@@ -110,9 +110,10 @@
                 to: 4200,
                 fill: 'both',
                 easing: 'ease-in',
-                css: {
-                    x: [0, '700px']
-                }
+                css: [
+                    { x: 0 },
+                    { offset: [ .84, 1 ], x: '700px ' }
+                ]
             },
             {
                 targets: '.car-2', 
