@@ -1,4 +1,4 @@
-import {isDefined, isNumber, isString, isArray} from '../../common/type';
+import {isDefined, isFunction, isNumber, isString, isArray} from '../../common/type';
 import {toCamelCase} from '../../common/strings';
 import {invalidArg} from '../../common/errors';
 import {easings} from '../../common/easings';
@@ -88,6 +88,11 @@ export function createAnimator(target: HTMLElement, options: ja.IAnimationOption
 
     const animator = new KeyframeAnimator(initAnimator.bind(nada, target, timings, options));
     animator.totalDuration = totalTime;
+    
+    if (isFunction(options.update)) {
+        animator.onupdate = options.update;
+    }
+
     return animator;
 }
 

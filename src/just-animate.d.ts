@@ -64,10 +64,11 @@ declare module ja {
         onupdate(context: IAnimationTimeContext): void;
     }
     export interface IAnimationTimeContext {
-        offset(): number;
-        relativeOffset(): number;
-        delta(): number;
-        totalDuration(): number;
+        currentTime: number;
+        delta: number;
+        duration: number;
+        offset: number;
+        playbackRate: number;
     }
     export interface IAnimator {
         animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator;
@@ -103,7 +104,8 @@ declare module ja {
         targets?: AnimationTarget;
         from?: number;
         mixins?: string | string[];
-        isTransition: boolean;        
+        isTransition: boolean;
+        update?: { (): void|any };
     }
     export interface ICssPropertyOptions {
         backdropFilter?: Resolver<string | (string)[]>;

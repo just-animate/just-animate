@@ -36,6 +36,7 @@ export const translate3d = 'translate3d';
 export const translateX = 'translateX';
 export const translateY = 'translateY';
 export const translateZ = 'translateZ';
+export const update = 'update';
 export const x = 'x';
 export const y = 'y';
 export const z = 'z';

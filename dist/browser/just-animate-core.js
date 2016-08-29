@@ -266,6 +266,7 @@
             if (!isDefined(duration)) {
                 throw invalidArg(duration);
             }
+            self._context = {};
             self._duration = 0;
             self._currentTime = nil;
             self._playState = 'idle';
@@ -422,6 +423,7 @@
             var self = this;
             var dispatcher = self._dispatcher;
             var playState = self._playState;
+            var context = self._context;
             if (playState === 'idle') {
                 dispatcher.trigger(cancel, [self]);
                 return;
@@ -456,7 +458,7 @@
                 var evt = events[i];
                 var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
                 var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-                var shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
+                var shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
                 if (shouldBeActive) {
                     var animator = evt.animator;
                     if (animator.playState() !== 'running') {
@@ -464,6 +466,17 @@
                         animator.playState('running');
                     }
                     animator.playbackRate(playbackRate);
+                    if (animator.onupdate) {
+                        var relativeDuration = evt.endTimeMs - evt.startTimeMs;
+                        var relativeCurrentTime = currentTime - evt.startTimeMs;
+                        var offset = relativeCurrentTime / relativeDuration;
+                        context.currentTime = relativeCurrentTime;
+                        context.delta = delta;
+                        context.duration = relativeDuration;
+                        context.offset = offset;
+                        context.playbackRate = playbackRate;
+                        animator.onupdate(context);
+                    }
                 }
             }
         };
@@ -507,7 +520,7 @@
             }
             if (!self.isActive) {
                 self.isActive = true;
-                raf(self, update);
+                raf(self, update$1);
             }
         },
         off: function (fn) {
@@ -523,11 +536,11 @@
             }
             if (!self.isActive) {
                 self.isActive = true;
-                raf(self, update);
+                raf(self, update$1);
             }
         }
     };
-    function update(self) {
+    function update$1(self) {
         updateOffs(self);
         updateOns(self);
         var callbacks = self.active;
@@ -543,7 +556,7 @@
         }
         self.isActive = true;
         self.lastTime = thisTime;
-        raf(self, update);
+        raf(self, update$1);
         for (var i = 0; i < len; i++) {
             var existingElapsed = elapses[i];
             var updatedElapsed = existingElapsed + delta;
@@ -686,7 +699,6 @@
                 animator.play();
             }
         };
-        KeyframeAnimator.prototype.onupdate = function (context) { };
         KeyframeAnimator.prototype._ensureInit = function () {
             if (this._init) {
                 this._animator = this._init();
@@ -742,6 +754,9 @@
         };
         var animator = new KeyframeAnimator(initAnimator.bind(nada, target, timings, options));
         animator.totalDuration = totalTime;
+        if (isFunction(options.update)) {
+            animator.onupdate = options.update;
+        }
         return animator;
     }
     function initAnimator(target, timings, options) {

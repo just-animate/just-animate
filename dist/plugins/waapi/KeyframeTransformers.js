@@ -54,6 +54,9 @@ function createAnimator(target, options) {
     };
     var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_1.nada, target, timings, options));
     animator.totalDuration = totalTime;
+    if (type_1.isFunction(options.update)) {
+        animator.onupdate = options.update;
+    }
     return animator;
 }
 exports.createAnimator = createAnimator;

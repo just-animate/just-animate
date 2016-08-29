@@ -1,7 +1,8 @@
-import {animate, finished, paused, running, idle, nil} from '../../common/resources';
+import {finished, paused, running, idle, nil} from '../../common/resources';
 
 export class KeyframeAnimator implements ja.IAnimationController {
     public totalDuration: number;
+    public onupdate: { (context: ja.IAnimationTimeContext): void };
     
     private _init: ja.Resolver<waapi.IAnimation>;
     private _animator: waapi.IAnimation;
@@ -48,8 +49,6 @@ export class KeyframeAnimator implements ja.IAnimationController {
             animator.play();
         }
     }
-
-    public onupdate(context: ja.IAnimationTimeContext): void { /* do nothing */ }
 
     private _ensureInit(): void {
         if (this._init) {

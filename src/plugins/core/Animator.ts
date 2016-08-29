@@ -3,7 +3,7 @@ import {inherit} from '../../common/objects';
 import {isArray, isDefined, isString} from '../../common/type';
 import {inRange} from '../../common/math';
 import {invalidArg} from '../../common/errors';
-import {duration, finish, cancel, pause, nil} from '../../common/resources';
+import {duration, finish, cancel, pause, nil, update} from '../../common/resources';
 
 import {Dispatcher, IDispatcher} from './Dispatcher';
 import {MixinService} from './MixinService';
@@ -19,6 +19,7 @@ const animationPadding = 1.0 / 30;
 
 export class Animator implements ja.IAnimator {
     private _currentTime: number;
+    private _context: ja.IAnimationTimeContext;
     private _dispatcher: IDispatcher;
     private _duration: number;
     private _events: ja.ITimelineEvent[];
@@ -34,6 +35,7 @@ export class Animator implements ja.IAnimator {
             throw invalidArg(duration);
         }
 
+        self._context = {} as ja.IAnimationTimeContext;        
         self._duration = 0;
         self._currentTime = nil;
         self._playState = 'idle';
@@ -208,6 +210,7 @@ export class Animator implements ja.IAnimator {
         const self = this;
         const dispatcher = self._dispatcher;
         const playState = self._playState;
+        const context = self._context;
 
         // canceled
         if (playState === 'idle') {
@@ -256,7 +259,7 @@ export class Animator implements ja.IAnimator {
             const evt = events[i];
             const startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             const endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-            const shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
+            const shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
 
             if (shouldBeActive) {
                 const animator = evt.animator;
@@ -265,6 +268,20 @@ export class Animator implements ja.IAnimator {
                     animator.playState('running');
                 }
                 animator.playbackRate(playbackRate);
+                if (animator.onupdate) {
+                    // calculate relative timing properties
+                    const relativeDuration = evt.endTimeMs - evt.startTimeMs;
+                    const relativeCurrentTime = currentTime - evt.startTimeMs;
+                    const offset = relativeCurrentTime / relativeDuration;
+
+                    // set context object values for this update cycle            
+                    context.currentTime = relativeCurrentTime;
+                    context.delta = delta;
+                    context.duration = relativeDuration;
+                    context.offset = offset;
+                    context.playbackRate = playbackRate;
+                    animator.onupdate(context);
+                }
             }
         }
     }

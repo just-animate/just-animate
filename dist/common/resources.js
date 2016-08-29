@@ -36,6 +36,7 @@ exports.translate3d = 'translate3d';
 exports.translateX = 'translateX';
 exports.translateY = 'translateY';
 exports.translateZ = 'translateZ';
+exports.update = 'update';
 exports.x = 'x';
 exports.y = 'y';
 exports.z = 'z';

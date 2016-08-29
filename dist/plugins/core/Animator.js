@@ -18,6 +18,7 @@ var Animator = (function () {
         if (!type_1.isDefined(resources_1.duration)) {
             throw errors_1.invalidArg(resources_1.duration);
         }
+        self._context = {};
         self._duration = 0;
         self._currentTime = resources_1.nil;
         self._playState = 'idle';
@@ -178,6 +179,7 @@ var Animator = (function () {
         var self = this;
         var dispatcher = self._dispatcher;
         var playState = self._playState;
+        var context = self._context;
         // canceled
         if (playState === 'idle') {
             dispatcher.trigger(resources_1.cancel, [self]);
@@ -220,7 +222,7 @@ var Animator = (function () {
             var evt = events[i];
             var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-            var shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
+            var shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
             if (shouldBeActive) {
                 var animator = evt.animator;
                 if (animator.playState() !== 'running') {
@@ -228,6 +230,19 @@ var Animator = (function () {
                     animator.playState('running');
                 }
                 animator.playbackRate(playbackRate);
+                if (animator.onupdate) {
+                    // calculate relative timing properties
+                    var relativeDuration = evt.endTimeMs - evt.startTimeMs;
+                    var relativeCurrentTime = currentTime - evt.startTimeMs;
+                    var offset = relativeCurrentTime / relativeDuration;
+                    // set context object values for this update cycle            
+                    context.currentTime = relativeCurrentTime;
+                    context.delta = delta;
+                    context.duration = relativeDuration;
+                    context.offset = offset;
+                    context.playbackRate = playbackRate;
+                    animator.onupdate(context);
+                }
             }
         }
     };

@@ -41,7 +41,6 @@ var KeyframeAnimator = (function () {
             animator.play();
         }
     };
-    KeyframeAnimator.prototype.onupdate = function (context) { };
     KeyframeAnimator.prototype._ensureInit = function () {
         if (this._init) {
             this._animator = this._init();

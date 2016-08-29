@@ -2754,7 +2754,7 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
 System.register("just-animate/common/resources", [], function(exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
-    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
+    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, update, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
     return {
         setters:[],
         execute: function() {
@@ -2795,6 +2795,7 @@ System.register("just-animate/common/resources", [], function(exports_78, contex
             exports_78("translateX", translateX = 'translateX');
             exports_78("translateY", translateY = 'translateY');
             exports_78("translateZ", translateZ = 'translateZ');
+            exports_78("update", update = 'update');
             exports_78("x", x = 'x');
             exports_78("y", y = 'y');
             exports_78("z", z = 'z');
@@ -3717,6 +3718,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     if (!type_6.isDefined(resources_10.duration)) {
                         throw errors_4.invalidArg(resources_10.duration);
                     }
+                    self._context = {};
                     self._duration = 0;
                     self._currentTime = resources_10.nil;
                     self._playState = 'idle';
@@ -3877,6 +3879,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     var self = this;
                     var dispatcher = self._dispatcher;
                     var playState = self._playState;
+                    var context = self._context;
                     // canceled
                     if (playState === 'idle') {
                         dispatcher.trigger(resources_10.cancel, [self]);
@@ -3919,7 +3922,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                         var evt = events[i];
                         var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
                         var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-                        var shouldBeActive = startTimeMs <= currentTime && currentTime < endTimeMs;
+                        var shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
                         if (shouldBeActive) {
                             var animator = evt.animator;
                             if (animator.playState() !== 'running') {
@@ -3927,6 +3930,19 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                                 animator.playState('running');
                             }
                             animator.playbackRate(playbackRate);
+                            if (animator.onupdate) {
+                                // calculate relative timing properties
+                                var relativeDuration = evt.endTimeMs - evt.startTimeMs;
+                                var relativeCurrentTime = currentTime - evt.startTimeMs;
+                                var offset = relativeCurrentTime / relativeDuration;
+                                // set context object values for this update cycle            
+                                context.currentTime = relativeCurrentTime;
+                                context.delta = delta;
+                                context.duration = relativeDuration;
+                                context.offset = offset;
+                                context.playbackRate = playbackRate;
+                                animator.onupdate(context);
+                            }
                         }
                     }
                 };
@@ -4054,7 +4070,6 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
                         animator.play();
                     }
                 };
-                KeyframeAnimator.prototype.onupdate = function (context) { };
                 KeyframeAnimator.prototype._ensureInit = function () {
                     if (this._init) {
                         this._animator = this._init();
@@ -4095,6 +4110,9 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         };
         var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_12.nada, target, timings, options));
         animator.totalDuration = totalTime;
+        if (type_7.isFunction(options.update)) {
+            animator.onupdate = options.update;
+        }
         return animator;
     }
     exports_96("createAnimator", createAnimator);
