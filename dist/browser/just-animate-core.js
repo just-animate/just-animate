@@ -41,6 +41,7 @@
     var numberString = 'number';
     var stringString = 'string';
     var camelCaseRegex = /([a-z])[- ]([a-z])/ig;
+    var timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
 
     var slice = Array.prototype.slice;
     var push = Array.prototype.push;
@@ -259,7 +260,52 @@
         elegantSlowStartEnd: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275)
     };
 
+    var stepNone = '=';
+    var millisecond = 'ms';
+    var second = 's';
+    function fromTime(val, unit) {
+        var returnUnit = unit || Unit();
+        if (isNumber(val)) {
+            return returnUnit.values(Number(val), millisecond, stepNone);
+        }
+        var match = timeExpression.exec(val);
+        var step = match[1] || stepNone;
+        var unitType = match[3];
+        var value = parseFloat(match[2]);
+        var valueMs;
+        if (unitType === nil || unitType === millisecond) {
+            valueMs = value;
+        }
+        else if (unitType === second) {
+            valueMs = value * 1000;
+        }
+        else {
+            throw invalidArg('format');
+        }
+        return returnUnit.values(valueMs, millisecond, step);
+    }
+    function Unit() {
+        var self = this instanceof Unit ? this : Object.create(Unit.prototype);
+        return self;
+    }
+    Unit.prototype = {
+        step: nil,
+        unit: nil,
+        value: nil,
+        values: function (value, unit, step) {
+            var self = this;
+            self.value = value;
+            self.unit = unit;
+            self.step = step;
+            return self;
+        },
+        toString: function () {
+            return String(this.value) + this.unit;
+        }
+    };
+
     var animationPadding = 1.0 / 30;
+    var unitOut = Unit();
     var Animator = (function () {
         function Animator(resolver, timeloop, plugins) {
             var self = this;
@@ -385,8 +431,10 @@
                     self._resolveMixin(event.mixins, event);
                 }
             }
-            event.from = (event.from || 0) + this._duration;
-            event.to = (event.to || 0) + this._duration;
+            fromTime(event.from || 0, unitOut);
+            event.from = unitOut.value + this._duration;
+            fromTime(event.to || 0, unitOut);
+            event.to = unitOut.value + this._duration;
             event.easing = event.easing ? (easings[event.easing] || event.easing) : 'linear';
             each(this._plugins, function (plugin) {
                 if (plugin.canHandle(event)) {

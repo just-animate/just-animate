@@ -182,7 +182,7 @@
                 just.animate({ 
                         targets: '.badger',                     
                         mixins: 'bounceIn', 
-                        to: 1400,
+                        to: '1.4s',
                         fill: 'forwards',
                         delay: function() {
                             return Math.random() * 1000;
@@ -191,7 +191,7 @@
                     .animate({ 
                         targets: '.badger',                         
                         mixins: 'bounceOut', 
-                        to: 650,
+                        to: '560ms',
                         fill: 'both'
                     })
                     .animate([
@@ -199,19 +199,19 @@
                             targets: '.mushroom.one',                            
                             mixins: 'zoomIn',
                             from: 0,
-                            to: 1800
+                            to: '1.8s'
                         },
                         {
                             targets: '.mushroom.one',                            
                             mixins: 'zoomOut',
-                            from: 1800,
-                            to: 2700
+                            from: '1.8s',
+                            to: '2.7s'
                         },
                         {
                             targets: '.mushroom.two',                            
                             mixins: 'zoomIn',
                             from: 900,
-                            to: 2700
+                            to: '2.7s'
                         }
                     ]);
             });

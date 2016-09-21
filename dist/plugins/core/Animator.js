@@ -7,11 +7,13 @@ var errors_1 = require('../../common/errors');
 var resources_1 = require('../../common/resources');
 var Dispatcher_1 = require('./Dispatcher');
 var easings_1 = require('../../common/easings');
+var units_1 = require('../../common/units');
 // todo: remove these imports as soon as possible
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 var animationPadding = 1.0 / 30;
+var unitOut = units_1.Unit();
 var Animator = (function () {
     function Animator(resolver, timeloop, plugins) {
         var self = this;
@@ -139,9 +141,11 @@ var Animator = (function () {
                 self._resolveMixin(event.mixins, event);
             }
         }
-        // set from and to relative to existing duration        
-        event.from = (event.from || 0) + this._duration;
-        event.to = (event.to || 0) + this._duration;
+        // set from and to relative to existing duration    
+        units_1.fromTime(event.from || 0, unitOut);
+        event.from = unitOut.value + this._duration;
+        units_1.fromTime(event.to || 0, unitOut);
+        event.to = unitOut.value + this._duration;
         // set easing to linear by default      
         event.easing = event.easing ? (easings_1.easings[event.easing] || event.easing) : 'linear';
         lists_1.each(this._plugins, function (plugin) {

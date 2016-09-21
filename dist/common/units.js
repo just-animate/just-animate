@@ -23,57 +23,57 @@ exports.pica = 'pc';
 exports.percent = '%';
 exports.millisecond = 'ms';
 exports.second = 's';
-function fromDistance(val) {
+function fromDistance(val, unit) {
     if (!type_1.isDefined(val)) {
         return resources_1.nil;
     }
+    var returnUnit = unit || Unit();
     if (type_1.isNumber(val)) {
-        return Unit(Number(val), exports.px, exports.stepNone);
+        return returnUnit.values(Number(val), exports.px, exports.stepNone);
     }
     var match = resources_1.distanceExpression.exec(val);
-    var unit = match[2];
+    var unitType = match[2];
     var value = parseFloat(match[1]);
-    return Unit(value, unit, exports.stepNone);
+    return returnUnit.values(value, unitType, exports.stepNone);
 }
 exports.fromDistance = fromDistance;
-function fromPercentage(val) {
+function fromPercentage(val, unit) {
     if (!type_1.isDefined(val)) {
         return resources_1.nil;
     }
+    var returnUnit = unit || Unit();
     if (type_1.isNumber(val)) {
-        return Unit(Number(val), exports.percent, exports.stepNone);
+        return returnUnit.values(Number(val), exports.percent, exports.stepNone);
     }
     var match = resources_1.percentageExpression.exec(val);
     var value = parseFloat(match[1]);
-    return Unit(value, exports.percent, exports.stepNone);
+    return returnUnit.values(value, exports.percent, exports.stepNone);
 }
 exports.fromPercentage = fromPercentage;
-function fromTime(val) {
+function fromTime(val, unit) {
+    var returnUnit = unit || Unit();
     if (type_1.isNumber(val)) {
-        return Unit(Number(val), exports.millisecond, exports.stepNone);
+        return returnUnit.values(Number(val), exports.millisecond, exports.stepNone);
     }
     var match = resources_1.timeExpression.exec(val);
     var step = match[1] || exports.stepNone;
-    var unit = match[3];
+    var unitType = match[3];
     var value = parseFloat(match[2]);
     var valueMs;
-    if (unit === resources_1.nil || unit === exports.millisecond) {
+    if (unitType === resources_1.nil || unitType === exports.millisecond) {
         valueMs = value;
     }
-    else if (unit === exports.second) {
+    else if (unitType === exports.second) {
         valueMs = value * 1000;
     }
     else {
         throw errors_1.invalidArg('format');
     }
-    return Unit(valueMs, exports.millisecond, step);
+    return returnUnit.values(valueMs, exports.millisecond, step);
 }
 exports.fromTime = fromTime;
-function Unit(value, unit, step) {
+function Unit() {
     var self = this instanceof Unit ? this : Object.create(Unit.prototype);
-    self.value = value;
-    self.unit = unit;
-    self.step = step;
     return self;
 }
 exports.Unit = Unit;
@@ -81,6 +81,13 @@ Unit.prototype = {
     step: resources_1.nil,
     unit: resources_1.nil,
     value: resources_1.nil,
+    values: function (value, unit, step) {
+        var self = this;
+        self.value = value;
+        self.unit = unit;
+        self.step = step;
+        return self;
+    },
     toString: function () {
         return String(this.value) + this.unit;
     }

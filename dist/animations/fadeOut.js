@@ -1,14 +1,9 @@
 "use strict";
 exports.fadeOut = {
-    css: [
-        {
-            opacity: 1
-        },
-        {
-            opacity: 0
-        }
-    ],
-    to: 650,
+    css: {
+        opacity: [1, 0]
+    },
     fill: 'both',
-    name: 'fadeOut'
+    name: 'fadeOut',
+    to: 650
 };

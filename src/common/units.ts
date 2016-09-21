@@ -25,62 +25,64 @@ export const percent: string = '%';
 export const millisecond: string = 'ms';
 export const second: string = 's';
 
-export function fromDistance(val: string | number): IUnit {
+export function fromDistance(val: string | number, unit?: IUnit): IUnit {
     if (!isDefined(val)) {
         return nil;
     }
+
+    const returnUnit = unit || Unit();    
     if (isNumber(val)) {
-        return Unit(Number(val), px, stepNone);
+        return returnUnit.values(Number(val), px, stepNone);
     }
 
     const match = distanceExpression.exec(val as string);
-    const unit = match[2];
+    const unitType = match[2];
     const value = parseFloat(match[1]);
 
-    return Unit(value, unit, stepNone);
+    return returnUnit.values(value, unitType, stepNone);
 }
 
-export function fromPercentage(val: string | number): IUnit {
+export function fromPercentage(val: string | number, unit?: IUnit): IUnit {
     if (!isDefined(val)) {
         return nil;
     }
+
+    const returnUnit = unit || Unit();
     if (isNumber(val)) {
-        return Unit(Number(val), percent, stepNone);
+        return returnUnit.values(Number(val), percent, stepNone);
     }
 
     const match = percentageExpression.exec(val as string);
     const value = parseFloat(match[1]);
 
-    return Unit(value, percent, stepNone);
+    return returnUnit.values(value, percent, stepNone);
 }
 
 
-export function fromTime(val: string | number): IUnit {
+export function fromTime(val: string | number, unit?: IUnit): IUnit {
+    const returnUnit = unit || Unit();
     if (isNumber(val)) {
-        return Unit(Number(val), millisecond, stepNone);
+        return returnUnit.values(Number(val), millisecond, stepNone);
     }
 
     const match = timeExpression.exec(val as string);
     const step = match[1] || stepNone;
-    const unit = match[3];
+    const unitType = match[3];
     const value = parseFloat(match[2]);
 
     let valueMs: number;
-    if (unit === nil || unit === millisecond) {
+    if (unitType === nil || unitType === millisecond) {
         valueMs = value;
-    } else if (unit === second) {
+    } else if (unitType === second) {
         valueMs = value * 1000;
     } else {
         throw invalidArg('format');
     }
-    return Unit(valueMs, millisecond, step);
+    return returnUnit.values(valueMs, millisecond, step);
 }
 
-export function Unit(value: number, unit: string, step: string): IUnit {
+export function Unit(): IUnit {
     const self = this instanceof Unit ? this : Object.create(Unit.prototype);
-    self.value = value;
-    self.unit = unit;
-    self.step = step;
     return self;
 }
 
@@ -88,7 +90,13 @@ Unit.prototype = {
     step: nil as string,
     unit: nil as string,
     value: nil as number,
-
+    values(value: number, unit: string, step: string): IUnit {
+        const self = this;
+        self.value = value;
+        self.unit = unit;
+        self.step = step;
+        return self;
+    },
     toString(): string {
         return String(this.value) + this.unit;
     }
@@ -98,5 +106,6 @@ export interface IUnit {
     step: string;
     unit: string;
     value: number;
+    values(value: number, unit: string, step: string): IUnit;
     toString(): string;
 }

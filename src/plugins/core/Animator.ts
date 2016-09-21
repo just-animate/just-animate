@@ -3,12 +3,13 @@ import {inherit} from '../../common/objects';
 import {isArray, isDefined, isString} from '../../common/type';
 import {inRange} from '../../common/math';
 import {invalidArg} from '../../common/errors';
-import {duration, finish, cancel, pause, nil, update} from '../../common/resources';
+import {duration, finish, cancel, pause, nil} from '../../common/resources';
 
 import {Dispatcher, IDispatcher} from './Dispatcher';
 import {MixinService} from './MixinService';
 import {ITimeLoop} from './TimeLoop';
 import {easings} from '../../common/easings';
+import {fromTime, Unit} from '../../common/units';
 
 // todo: remove these imports as soon as possible
 
@@ -16,6 +17,7 @@ import {easings} from '../../common/easings';
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 const animationPadding = 1.0 / 30;
+const unitOut = Unit();
 
 export class Animator implements ja.IAnimator {
     private _currentTime: number;
@@ -168,9 +170,12 @@ export class Animator implements ja.IAnimator {
             }
         }
 
-        // set from and to relative to existing duration        
-        event.from = (event.from || 0) + this._duration;
-        event.to = (event.to || 0) + this._duration;
+        // set from and to relative to existing duration    
+        fromTime(event.from || 0, unitOut);
+        event.from = unitOut.value + this._duration;
+
+        fromTime(event.to || 0, unitOut);
+        event.to = unitOut.value + this._duration;
 
         // set easing to linear by default      
         event.easing = event.easing ? (easings[event.easing] || event.easing) : 'linear';
