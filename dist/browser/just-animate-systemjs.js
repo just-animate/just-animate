@@ -4129,7 +4129,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             direction: direction,
             easing: easing
         };
-        var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_12.nada, timings, ctx.options));
+        var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_12.nada, timings, ctx));
         animator.totalDuration = totalTime;
         if (type_7.isFunction(options.update)) {
             animator.onupdate = options.update;
@@ -4137,9 +4137,10 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         return animator;
     }
     exports_96("createAnimator", createAnimator);
-    function initAnimator(target, timings, ctx) {
+    function initAnimator(timings, ctx) {
         // process css as either keyframes or calculate what those keyframes should be   
         var options = ctx.options;
+        var target = ctx.target;
         var css = options.css;
         var sourceKeyframes;
         if (type_7.isArray(css)) {
@@ -4715,9 +4716,9 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                     var animators = [];
                     for (var i = 0, len = targets.length; i < len; i++) {
                         animators.push(KeyframeTransformers_1.createAnimator({
+                            index: i,
                             options: options,
                             target: targets[i],
-                            index: i,
                             targets: targets
                         }));
                     }
