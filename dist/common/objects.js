@@ -46,11 +46,11 @@ exports.expand = function (expandable) {
     }
     return result;
 };
-function unwrap(value) {
-    if (type_1.isFunction(value)) {
-        return value();
+function unwrap(value, ctx) {
+    if (!type_1.isFunction(value)) {
+        return value;
     }
-    return value;
+    return value(ctx.target, ctx.index, ctx.targets);
 }
 exports.unwrap = unwrap;
 function listProps(indexed) {

@@ -1,6 +1,5 @@
 "use strict";
 var elements_1 = require('../../common/elements');
-// todo: remove these imports as soon as possible
 var KeyframeTransformers_1 = require('./KeyframeTransformers');
 var KeyframePlugin = (function () {
     function KeyframePlugin() {
@@ -9,8 +8,17 @@ var KeyframePlugin = (function () {
         return !!(options.css);
     };
     KeyframePlugin.prototype.handle = function (options) {
-        return elements_1.queryElements(options.targets)
-            .map(function (target) { return KeyframeTransformers_1.createAnimator(target, options); });
+        var targets = elements_1.queryElements(options.targets);
+        var animators = [];
+        for (var i = 0, len = targets.length; i < len; i++) {
+            animators.push(KeyframeTransformers_1.createAnimator({
+                index: i,
+                options: options,
+                target: targets[i],
+                targets: targets
+            }));
+        }
+        return animators;
     };
     return KeyframePlugin;
 }());

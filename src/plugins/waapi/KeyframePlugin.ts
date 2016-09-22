@@ -1,7 +1,5 @@
 import {queryElements} from '../../common/elements';
-
-// todo: remove these imports as soon as possible
-import { createAnimator } from './KeyframeTransformers';
+import {createAnimator} from './KeyframeTransformers';
 
 export class KeyframePlugin implements ja.IPlugin {
     public canHandle(options: ja.IAnimationOptions): boolean {
@@ -9,7 +7,16 @@ export class KeyframePlugin implements ja.IPlugin {
     }
 
     public handle(options: ja.IAnimationOptions): ja.IAnimationController[] {
-        return queryElements(options.targets)
-            .map((target: HTMLElement) => createAnimator(target, options));
+        const targets = queryElements(options.targets) as HTMLElement[];
+        const animators: ja.IAnimationController[] = [];
+        for (let i = 0, len = targets.length; i < len; i++) {
+            animators.push(createAnimator({
+                index: i,                
+                options: options,
+                target: targets[i],
+                targets: targets
+            }));
+        }
+        return animators;
     }
 }

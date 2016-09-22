@@ -148,11 +148,11 @@
         }
         return target;
     };
-    function unwrap(value) {
-        if (isFunction(value)) {
-            return value();
+    function unwrap(value, ctx) {
+        if (!isFunction(value)) {
+            return value;
         }
-        return value;
+        return value(ctx.target, ctx.index, ctx.targets);
     }
     function listProps(indexed) {
         var props = [];
@@ -261,8 +261,30 @@
     };
 
     var stepNone = '=';
+    var stepForward = '+=';
+    var stepBackward = '-=';
     var millisecond = 'ms';
     var second = 's';
+    function Unit() {
+        var self = this instanceof Unit ? this : Object.create(Unit.prototype);
+        return self;
+    }
+    Unit.prototype = {
+        step: nil,
+        unit: nil,
+        value: nil,
+        values: function (value, unit, step) {
+            var self = this;
+            self.value = value;
+            self.unit = unit;
+            self.step = step;
+            return self;
+        },
+        toString: function () {
+            return String(this.value) + this.unit;
+        }
+    };
+    var sharedUnit = Unit();
     function fromTime(val, unit) {
         var returnUnit = unit || Unit();
         if (isNumber(val)) {
@@ -284,25 +306,16 @@
         }
         return returnUnit.values(valueMs, millisecond, step);
     }
-    function Unit() {
-        var self = this instanceof Unit ? this : Object.create(Unit.prototype);
-        return self;
-    }
-    Unit.prototype = {
-        step: nil,
-        unit: nil,
-        value: nil,
-        values: function (value, unit, step) {
-            var self = this;
-            self.value = value;
-            self.unit = unit;
-            self.step = step;
-            return self;
-        },
-        toString: function () {
-            return String(this.value) + this.unit;
+    function resolveTimeExpression(val, index) {
+        fromTime(val, sharedUnit);
+        if (sharedUnit.step === stepForward) {
+            return sharedUnit.value * index;
         }
-    };
+        if (sharedUnit.step === stepBackward) {
+            return sharedUnit.value * index * -1;
+        }
+        return sharedUnit.value;
+    }
 
     var animationPadding = 1.0 / 30;
     var unitOut = Unit();
@@ -780,14 +793,15 @@
         y: transform,
         z: transform
     };
-    function createAnimator(target, options) {
-        var delay = unwrap(options.delay) || 0;
-        var endDelay = unwrap(options.endDelay) || 0;
-        var iterations = unwrap(options.iterations) || 1;
-        var iterationStart = unwrap(options.iterationStart) || 0;
-        var direction = unwrap(options.direction) || nil;
+    function createAnimator(ctx) {
+        var options = ctx.options;
+        var delay = resolveTimeExpression(unwrap(options.delay, ctx) || 0, ctx.index);
+        var endDelay = resolveTimeExpression(unwrap(options.endDelay, ctx) || 0, ctx.index);
+        var iterations = unwrap(options.iterations, ctx) || 1;
+        var iterationStart = unwrap(options.iterationStart, ctx) || 0;
+        var direction = unwrap(options.direction, ctx) || nil;
         var duration = options.to - options.from;
-        var fill = unwrap(options.fill) || 'none';
+        var fill = unwrap(options.fill, ctx) || 'none';
         var totalTime = delay + ((iterations || 1) * duration) + endDelay;
         var easing = options.easing || 'linear';
         var timings = {
@@ -800,14 +814,16 @@
             direction: direction,
             easing: easing
         };
-        var animator = new KeyframeAnimator(initAnimator.bind(nada, target, timings, options));
+        var animator = new KeyframeAnimator(initAnimator.bind(nada, timings, ctx));
         animator.totalDuration = totalTime;
         if (isFunction(options.update)) {
             animator.onupdate = options.update;
         }
         return animator;
     }
-    function initAnimator(target, timings, options) {
+    function initAnimator(timings, ctx) {
+        var options = ctx.options;
+        var target = ctx.target;
         var css = options.css;
         var sourceKeyframes;
         if (isArray(css)) {
@@ -816,10 +832,10 @@
         }
         else {
             sourceKeyframes = [];
-            propsToKeyframes(css, sourceKeyframes);
+            propsToKeyframes(css, sourceKeyframes, ctx);
         }
         var targetKeyframes = [];
-        unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes);
+        unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
         spaceKeyframes(targetKeyframes);
         if (options.isTransition === true) {
             addTransition(targetKeyframes, target);
@@ -872,7 +888,7 @@
             }
         }
     }
-    function unwrapPropertiesInKeyframes(source, target) {
+    function unwrapPropertiesInKeyframes(source, target, ctx) {
         var len = source.length;
         for (var i = 0; i < len; i++) {
             var sourceKeyframe = source[i];
@@ -885,20 +901,20 @@
                 if (!isDefined(sourceValue)) {
                     continue;
                 }
-                targetKeyframe[propertyName] = unwrap(sourceValue);
+                targetKeyframe[propertyName] = unwrap(sourceValue, ctx);
             }
             normalizeProperties(targetKeyframe);
             target.push(targetKeyframe);
         }
     }
-    function propsToKeyframes(css, keyframes) {
+    function propsToKeyframes(css, keyframes, ctx) {
         var keyframesByOffset = {};
         var cssProps = css;
         for (var prop in cssProps) {
             if (!cssProps.hasOwnProperty(prop)) {
                 continue;
             }
-            var val = unwrap(cssProps[prop]);
+            var val = unwrap(cssProps[prop], ctx);
             if (isArray(val)) {
                 var valAsArray = val;
                 var valLength = valAsArray.length;
@@ -1266,8 +1282,17 @@
             return !!(options.css);
         };
         KeyframePlugin.prototype.handle = function (options) {
-            return queryElements(options.targets)
-                .map(function (target) { return createAnimator(target, options); });
+            var targets = queryElements(options.targets);
+            var animators = [];
+            for (var i = 0, len = targets.length; i < len; i++) {
+                animators.push(createAnimator({
+                    index: i,
+                    options: options,
+                    target: targets[i],
+                    targets: targets
+                }));
+            }
+            return animators;
         };
         return KeyframePlugin;
     }());

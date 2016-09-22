@@ -3259,11 +3259,11 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
     var __moduleName = context_86 && context_86.id;
     var type_3;
     var extend, inherit, expand;
-    function unwrap(value) {
-        if (type_3.isFunction(value)) {
-            return value();
+    function unwrap(value, ctx) {
+        if (!type_3.isFunction(value)) {
+            return value;
         }
-        return value;
+        return value(ctx.target, ctx.index, ctx.targets);
     }
     exports_86("unwrap", unwrap);
     function listProps(indexed) {
@@ -3339,7 +3339,12 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
     "use strict";
     var __moduleName = context_87 && context_87.id;
     var type_4, resources_6, errors_2;
-    var stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second;
+    var stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
+    function Unit() {
+        var self = this instanceof Unit ? this : Object.create(Unit.prototype);
+        return self;
+    }
+    exports_87("Unit", Unit);
     function fromDistance(val, unit) {
         if (!type_4.isDefined(val)) {
             return resources_6.nil;
@@ -3389,11 +3394,17 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         return returnUnit.values(valueMs, millisecond, step);
     }
     exports_87("fromTime", fromTime);
-    function Unit() {
-        var self = this instanceof Unit ? this : Object.create(Unit.prototype);
-        return self;
+    function resolveTimeExpression(val, index) {
+        fromTime(val, sharedUnit);
+        if (sharedUnit.step === stepForward) {
+            return sharedUnit.value * index;
+        }
+        if (sharedUnit.step === stepBackward) {
+            return sharedUnit.value * index * -1;
+        }
+        return sharedUnit.value;
     }
-    exports_87("Unit", Unit);
+    exports_87("resolveTimeExpression", resolveTimeExpression);
     return {
         setters:[
             function (type_4_1) {
@@ -3442,6 +3453,7 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
                     return String(this.value) + this.unit;
                 }
             };
+            sharedUnit = Unit();
         }
     }
 });
@@ -4090,19 +4102,20 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
         }
     }
 });
-System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/resources"], function(exports_96, context_96) {
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/resources"], function(exports_96, context_96) {
     "use strict";
     var __moduleName = context_96 && context_96.id;
-    var type_7, strings_2, errors_5, easings_2, lists_5, objects_2, KeyframeAnimator_1, resources_12;
+    var type_7, strings_2, errors_5, easings_2, lists_5, objects_2, KeyframeAnimator_1, units_2, resources_12;
     var global, transitionAliases;
-    function createAnimator(target, options) {
-        var delay = objects_2.unwrap(options.delay) || 0;
-        var endDelay = objects_2.unwrap(options.endDelay) || 0;
-        var iterations = objects_2.unwrap(options.iterations) || 1;
-        var iterationStart = objects_2.unwrap(options.iterationStart) || 0;
-        var direction = objects_2.unwrap(options.direction) || resources_12.nil;
+    function createAnimator(ctx) {
+        var options = ctx.options;
+        var delay = units_2.resolveTimeExpression(objects_2.unwrap(options.delay, ctx) || 0, ctx.index);
+        var endDelay = units_2.resolveTimeExpression(objects_2.unwrap(options.endDelay, ctx) || 0, ctx.index);
+        var iterations = objects_2.unwrap(options.iterations, ctx) || 1;
+        var iterationStart = objects_2.unwrap(options.iterationStart, ctx) || 0;
+        var direction = objects_2.unwrap(options.direction, ctx) || resources_12.nil;
         var duration = options.to - options.from;
-        var fill = objects_2.unwrap(options.fill) || 'none';
+        var fill = objects_2.unwrap(options.fill, ctx) || 'none';
         var totalTime = delay + ((iterations || 1) * duration) + endDelay;
         // note: don't unwrap easings so we don't break this later with custom easings
         var easing = options.easing || 'linear';
@@ -4116,7 +4129,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             direction: direction,
             easing: easing
         };
-        var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_12.nada, target, timings, options));
+        var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_12.nada, timings, ctx.options));
         animator.totalDuration = totalTime;
         if (type_7.isFunction(options.update)) {
             animator.onupdate = options.update;
@@ -4124,8 +4137,9 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         return animator;
     }
     exports_96("createAnimator", createAnimator);
-    function initAnimator(target, timings, options) {
+    function initAnimator(target, timings, ctx) {
         // process css as either keyframes or calculate what those keyframes should be   
+        var options = ctx.options;
         var css = options.css;
         var sourceKeyframes;
         if (type_7.isArray(css)) {
@@ -4135,10 +4149,10 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         }
         else {
             sourceKeyframes = [];
-            propsToKeyframes(css, sourceKeyframes);
+            propsToKeyframes(css, sourceKeyframes, ctx);
         }
         var targetKeyframes = [];
-        unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes);
+        unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
         spaceKeyframes(targetKeyframes);
         if (options.isTransition === true) {
             addTransition(targetKeyframes, target);
@@ -4202,7 +4216,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             }
         }
     }
-    function unwrapPropertiesInKeyframes(source, target) {
+    function unwrapPropertiesInKeyframes(source, target, ctx) {
         var len = source.length;
         for (var i = 0; i < len; i++) {
             var sourceKeyframe = source[i];
@@ -4215,13 +4229,13 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 if (!type_7.isDefined(sourceValue)) {
                     continue;
                 }
-                targetKeyframe[propertyName] = objects_2.unwrap(sourceValue);
+                targetKeyframe[propertyName] = objects_2.unwrap(sourceValue, ctx);
             }
             normalizeProperties(targetKeyframe);
             target.push(targetKeyframe);
         }
     }
-    function propsToKeyframes(css, keyframes) {
+    function propsToKeyframes(css, keyframes, ctx) {
         // create a map to capture each keyframe by offset
         var keyframesByOffset = {};
         var cssProps = css;
@@ -4231,7 +4245,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 continue;
             }
             // unwrap value (changes function into discrete value or array)                    
-            var val = objects_2.unwrap(cssProps[prop]);
+            var val = objects_2.unwrap(cssProps[prop], ctx);
             if (type_7.isArray(val)) {
                 // if the value is an array, split up the offset automatically
                 var valAsArray = val;
@@ -4642,6 +4656,9 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             function (KeyframeAnimator_1_1) {
                 KeyframeAnimator_1 = KeyframeAnimator_1_1;
             },
+            function (units_2_1) {
+                units_2 = units_2_1;
+            },
             function (resources_12_1) {
                 resources_12 = resources_12_1;
             }],
@@ -4694,8 +4711,17 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                     return !!(options.css);
                 };
                 KeyframePlugin.prototype.handle = function (options) {
-                    return elements_2.queryElements(options.targets)
-                        .map(function (target) { return KeyframeTransformers_1.createAnimator(target, options); });
+                    var targets = elements_2.queryElements(options.targets);
+                    var animators = [];
+                    for (var i = 0, len = targets.length; i < len; i++) {
+                        animators.push(KeyframeTransformers_1.createAnimator({
+                            options: options,
+                            target: targets[i],
+                            index: i,
+                            targets: targets
+                        }));
+                    }
+                    return animators;
                 };
                 return KeyframePlugin;
             }());

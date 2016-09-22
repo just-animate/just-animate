@@ -25,6 +25,38 @@ export const percent: string = '%';
 export const millisecond: string = 'ms';
 export const second: string = 's';
 
+export interface IUnit {
+    step: string;
+    unit: string;
+    value: number;
+    values(value: number, unit: string, step: string): IUnit;
+    toString(): string;
+}
+
+export function Unit(): IUnit {
+    const self = this instanceof Unit ? this : Object.create(Unit.prototype);
+    return self;
+}
+
+Unit.prototype = {
+    step: nil as string,
+    unit: nil as string,
+    value: nil as number,
+    values(value: number, unit: string, step: string): IUnit {
+        const self = this;
+        self.value = value;
+        self.unit = unit;
+        self.step = step;
+        return self;
+    },
+    toString(): string {
+        return String(this.value) + this.unit;
+    }
+};
+
+const sharedUnit = Unit();
+
+
 export function fromDistance(val: string | number, unit?: IUnit): IUnit {
     if (!isDefined(val)) {
         return nil;
@@ -81,31 +113,14 @@ export function fromTime(val: string | number, unit?: IUnit): IUnit {
     return returnUnit.values(valueMs, millisecond, step);
 }
 
-export function Unit(): IUnit {
-    const self = this instanceof Unit ? this : Object.create(Unit.prototype);
-    return self;
-}
-
-Unit.prototype = {
-    step: nil as string,
-    unit: nil as string,
-    value: nil as number,
-    values(value: number, unit: string, step: string): IUnit {
-        const self = this;
-        self.value = value;
-        self.unit = unit;
-        self.step = step;
-        return self;
-    },
-    toString(): string {
-        return String(this.value) + this.unit;
+export function resolveTimeExpression(val: string | number, index: number): number {
+    fromTime(val, sharedUnit);
+    if (sharedUnit.step === stepForward) {
+        return sharedUnit.value * index;
     }
-};
-
-export interface IUnit {
-    step: string;
-    unit: string;
-    value: number;
-    values(value: number, unit: string, step: string): IUnit;
-    toString(): string;
+    if (sharedUnit.step === stepBackward) {
+        return sharedUnit.value * index * -1;
+    }
+    return sharedUnit.value;
 }
+

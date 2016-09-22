@@ -6,6 +6,7 @@ var easings_1 = require('../../common/easings');
 var lists_1 = require('../../common/lists');
 var objects_1 = require('../../common/objects');
 var KeyframeAnimator_1 = require('../waapi/KeyframeAnimator');
+var units_1 = require('../../common/units');
 var resources_1 = require('../../common/resources');
 var global = window;
 var transitionAliases = {
@@ -31,14 +32,15 @@ var transitionAliases = {
     y: resources_1.transform,
     z: resources_1.transform
 };
-function createAnimator(target, options) {
-    var delay = objects_1.unwrap(options.delay) || 0;
-    var endDelay = objects_1.unwrap(options.endDelay) || 0;
-    var iterations = objects_1.unwrap(options.iterations) || 1;
-    var iterationStart = objects_1.unwrap(options.iterationStart) || 0;
-    var direction = objects_1.unwrap(options.direction) || resources_1.nil;
+function createAnimator(ctx) {
+    var options = ctx.options;
+    var delay = units_1.resolveTimeExpression(objects_1.unwrap(options.delay, ctx) || 0, ctx.index);
+    var endDelay = units_1.resolveTimeExpression(objects_1.unwrap(options.endDelay, ctx) || 0, ctx.index);
+    var iterations = objects_1.unwrap(options.iterations, ctx) || 1;
+    var iterationStart = objects_1.unwrap(options.iterationStart, ctx) || 0;
+    var direction = objects_1.unwrap(options.direction, ctx) || resources_1.nil;
     var duration = options.to - options.from;
-    var fill = objects_1.unwrap(options.fill) || 'none';
+    var fill = objects_1.unwrap(options.fill, ctx) || 'none';
     var totalTime = delay + ((iterations || 1) * duration) + endDelay;
     // note: don't unwrap easings so we don't break this later with custom easings
     var easing = options.easing || 'linear';
@@ -52,7 +54,7 @@ function createAnimator(target, options) {
         direction: direction,
         easing: easing
     };
-    var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_1.nada, target, timings, options));
+    var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_1.nada, timings, ctx));
     animator.totalDuration = totalTime;
     if (type_1.isFunction(options.update)) {
         animator.onupdate = options.update;
@@ -60,8 +62,10 @@ function createAnimator(target, options) {
     return animator;
 }
 exports.createAnimator = createAnimator;
-function initAnimator(target, timings, options) {
+function initAnimator(timings, ctx) {
     // process css as either keyframes or calculate what those keyframes should be   
+    var options = ctx.options;
+    var target = ctx.target;
     var css = options.css;
     var sourceKeyframes;
     if (type_1.isArray(css)) {
@@ -71,10 +75,10 @@ function initAnimator(target, timings, options) {
     }
     else {
         sourceKeyframes = [];
-        propsToKeyframes(css, sourceKeyframes);
+        propsToKeyframes(css, sourceKeyframes, ctx);
     }
     var targetKeyframes = [];
-    unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes);
+    unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
     spaceKeyframes(targetKeyframes);
     if (options.isTransition === true) {
         addTransition(targetKeyframes, target);
@@ -138,7 +142,7 @@ function expandOffsets(keyframes) {
         }
     }
 }
-function unwrapPropertiesInKeyframes(source, target) {
+function unwrapPropertiesInKeyframes(source, target, ctx) {
     var len = source.length;
     for (var i = 0; i < len; i++) {
         var sourceKeyframe = source[i];
@@ -151,13 +155,13 @@ function unwrapPropertiesInKeyframes(source, target) {
             if (!type_1.isDefined(sourceValue)) {
                 continue;
             }
-            targetKeyframe[propertyName] = objects_1.unwrap(sourceValue);
+            targetKeyframe[propertyName] = objects_1.unwrap(sourceValue, ctx);
         }
         normalizeProperties(targetKeyframe);
         target.push(targetKeyframe);
     }
 }
-function propsToKeyframes(css, keyframes) {
+function propsToKeyframes(css, keyframes, ctx) {
     // create a map to capture each keyframe by offset
     var keyframesByOffset = {};
     var cssProps = css;
@@ -167,7 +171,7 @@ function propsToKeyframes(css, keyframes) {
             continue;
         }
         // unwrap value (changes function into discrete value or array)                    
-        var val = objects_1.unwrap(cssProps[prop]);
+        var val = objects_1.unwrap(cssProps[prop], ctx);
         if (type_1.isArray(val)) {
             // if the value is an array, split up the offset automatically
             var valAsArray = val;

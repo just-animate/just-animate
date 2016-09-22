@@ -373,6 +373,13 @@ declare module ja {
         zIndex?: Resolver<number>;
     }
 
+    export type CreateAnimationContext<T> = {
+        options?: ja.IAnimationOptions;
+        target?: T;
+        index?: number;
+        targets?: T[]
+    }
+
     export interface IMap<T> {
         [name: string]: T;
     }
@@ -385,6 +392,6 @@ declare module ja {
         (mapable: T1): T1;
     }
     export interface IResolver<T> {
-        (): T;
+        (target?: any, index?: number, targets?: any[]): T;
     }
 }

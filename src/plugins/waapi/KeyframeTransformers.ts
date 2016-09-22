@@ -5,6 +5,7 @@ import {easings} from '../../common/easings';
 import {each, head, tail} from '../../common/lists';
 import {listProps, unwrap} from '../../common/objects';
 import {KeyframeAnimator} from '../waapi/KeyframeAnimator';
+import {resolveTimeExpression} from '../../common/units';
 
 import {
     animate,
@@ -62,14 +63,15 @@ const transitionAliases = {
     z: transform
 };
 
-export function createAnimator(target: HTMLElement, options: ja.IAnimationOptions): ja.IAnimationController {
-    const delay = unwrap(options.delay) || 0;
-    const endDelay = unwrap(options.endDelay) || 0;
-    const iterations = unwrap(options.iterations) || 1;
-    const iterationStart = unwrap(options.iterationStart) || 0;
-    const direction = unwrap(options.direction) || nil;
+export function createAnimator(ctx: ja.CreateAnimationContext<HTMLElement>): ja.IAnimationController {
+    const options = ctx.options;
+    const delay = resolveTimeExpression(unwrap(options.delay, ctx) || 0, ctx.index);
+    const endDelay = resolveTimeExpression(unwrap(options.endDelay, ctx) || 0, ctx.index);
+    const iterations = unwrap(options.iterations, ctx) || 1;
+    const iterationStart = unwrap(options.iterationStart, ctx) || 0;
+    const direction = unwrap(options.direction, ctx) || nil;
     const duration = options.to - options.from;
-    const fill = unwrap(options.fill) || 'none';
+    const fill = unwrap(options.fill, ctx) || 'none';
     const totalTime = delay + ((iterations || 1) * duration) + endDelay;
 
     // note: don't unwrap easings so we don't break this later with custom easings
@@ -86,7 +88,7 @@ export function createAnimator(target: HTMLElement, options: ja.IAnimationOption
         easing
     };
 
-    const animator = new KeyframeAnimator(initAnimator.bind(nada, target, timings, options));
+    const animator = new KeyframeAnimator(initAnimator.bind(nada, timings, ctx));
     animator.totalDuration = totalTime;
     
     if (isFunction(options.update)) {
@@ -96,10 +98,12 @@ export function createAnimator(target: HTMLElement, options: ja.IAnimationOption
     return animator;
 }
 
-function initAnimator(target: HTMLElement, timings: waapi.IEffectTiming, options: ja.IAnimationOptions): waapi.IAnimation {
-
+function initAnimator(timings: waapi.IEffectTiming, ctx: ja.CreateAnimationContext<HTMLElement>): waapi.IAnimation {
     // process css as either keyframes or calculate what those keyframes should be   
+    const options = ctx.options;
+    const target = ctx.target;
     const css = options.css;
+
     let sourceKeyframes: ja.ICssKeyframeOptions[];
     if (isArray(css)) {
         // if an array, no processing has to occur
@@ -107,12 +111,12 @@ function initAnimator(target: HTMLElement, timings: waapi.IEffectTiming, options
         expandOffsets(sourceKeyframes);
     } else {
         sourceKeyframes = [];
-        propsToKeyframes(css as ja.ICssPropertyOptions, sourceKeyframes);
+        propsToKeyframes(css as ja.ICssPropertyOptions, sourceKeyframes, ctx);
     }
 
     const targetKeyframes: waapi.IKeyframe[] = [];
     
-    unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes);
+    unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
     spaceKeyframes(targetKeyframes);
     
     if (options.isTransition === true) {
@@ -188,7 +192,7 @@ function expandOffsets(keyframes: ja.ICssKeyframeOptions[]): void {
 }
 
 
-function unwrapPropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: ja.ICssKeyframeOptions[]): void {
+function unwrapPropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: ja.ICssKeyframeOptions[], ctx: ja.CreateAnimationContext<HTMLElement>): void {
     const len = source.length;
     for (let i = 0; i < len; i++) {
         const sourceKeyframe = source[i];
@@ -202,7 +206,7 @@ function unwrapPropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: j
             if (!isDefined(sourceValue)) {
                 continue;
             }
-            targetKeyframe[propertyName] = unwrap(sourceValue);
+            targetKeyframe[propertyName] = unwrap(sourceValue, ctx);
         }
             
         normalizeProperties(targetKeyframe);
@@ -210,7 +214,7 @@ function unwrapPropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: j
     }
 }
 
-function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICssKeyframeOptions[]): void {
+function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICssKeyframeOptions[], ctx: ja.CreateAnimationContext<HTMLElement>): void {
     // create a map to capture each keyframe by offset
     const keyframesByOffset: { [key: number]: ja.ICssKeyframeOptions } = {};
     const cssProps = css as ja.ICssPropertyOptions;
@@ -222,7 +226,7 @@ function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICssKeyfram
         }
 
         // unwrap value (changes function into discrete value or array)                    
-        const val = unwrap(cssProps[prop]);
+        const val = unwrap(cssProps[prop], ctx);
 
         if (isArray(val)) {
             // if the value is an array, split up the offset automatically

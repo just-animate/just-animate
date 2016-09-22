@@ -1,0 +1,77 @@
+<html>
+
+<head>
+    <title>Just Animate Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <style>
+        .container {
+            margin-top: 1em;
+        }
+        .element {
+            display: inline-block;
+            height: 100px;
+            width: 140px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center">
+        <div class="well">
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>
+            <span class="element">Element</span>            
+        </div>
+        <button class="btn btn-primary" id="animate-button">
+            Animate In
+        </button>
+    </div>
+
+    <script src="./web-animations.min.js"></script>
+    <script src="../dist/browser/just-animate-core.js"></script>
+    <script src="../dist/browser/just-animate-animations.min.js"></script>
+    <script>
+        (function() {
+            var button = document.getElementById('animate-button');
+
+            var player = just.animate({ 
+                    targets: '.element',                     
+                    css: {
+                        backgroundColor: ['white', 'black'],
+                        color: ['black', 'white']
+                    },
+                    to: '900ms',
+                    fill: 'both',
+                    delay: '+=120ms',
+                    easing: 'ease-in'
+                })
+                .pause()
+                .reverse();
+
+            button.addEventListener('click', function() {
+                player.reverse().play();
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

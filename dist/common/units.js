@@ -23,6 +23,27 @@ exports.pica = 'pc';
 exports.percent = '%';
 exports.millisecond = 'ms';
 exports.second = 's';
+function Unit() {
+    var self = this instanceof Unit ? this : Object.create(Unit.prototype);
+    return self;
+}
+exports.Unit = Unit;
+Unit.prototype = {
+    step: resources_1.nil,
+    unit: resources_1.nil,
+    value: resources_1.nil,
+    values: function (value, unit, step) {
+        var self = this;
+        self.value = value;
+        self.unit = unit;
+        self.step = step;
+        return self;
+    },
+    toString: function () {
+        return String(this.value) + this.unit;
+    }
+};
+var sharedUnit = Unit();
 function fromDistance(val, unit) {
     if (!type_1.isDefined(val)) {
         return resources_1.nil;
@@ -72,23 +93,14 @@ function fromTime(val, unit) {
     return returnUnit.values(valueMs, exports.millisecond, step);
 }
 exports.fromTime = fromTime;
-function Unit() {
-    var self = this instanceof Unit ? this : Object.create(Unit.prototype);
-    return self;
-}
-exports.Unit = Unit;
-Unit.prototype = {
-    step: resources_1.nil,
-    unit: resources_1.nil,
-    value: resources_1.nil,
-    values: function (value, unit, step) {
-        var self = this;
-        self.value = value;
-        self.unit = unit;
-        self.step = step;
-        return self;
-    },
-    toString: function () {
-        return String(this.value) + this.unit;
+function resolveTimeExpression(val, index) {
+    fromTime(val, sharedUnit);
+    if (sharedUnit.step === exports.stepForward) {
+        return sharedUnit.value * index;
     }
-};
+    if (sharedUnit.step === exports.stepBackward) {
+        return sharedUnit.value * index * -1;
+    }
+    return sharedUnit.value;
+}
+exports.resolveTimeExpression = resolveTimeExpression;

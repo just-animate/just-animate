@@ -8,7 +8,7 @@ import { isDefined, isFunction, isObject } from './type';
  * @param {...any[]} sources sources from which to inherit properties
  * @returns {*} first object
  */
-export const extend: Function = function(): any {
+export const extend: Function = function (): any {
     const args = arguments;
     const target = args[0];
     for (let i = 1, len = args.length; i < len; i++) {
@@ -20,7 +20,7 @@ export const extend: Function = function(): any {
     return target;
 };
 
-export const inherit: Function = function(): any {
+export const inherit: Function = function (): any {
     const args = arguments;
     const target = args[0];
     for (let i = 1, len = args.length; i < len; i++) {
@@ -34,7 +34,7 @@ export const inherit: Function = function(): any {
     return target;
 };
 
-export const expand: Function = function(expandable: any): any {
+export const expand: Function = function (expandable: any): any {
     const result = {};
     for (let prop in expandable) {
         let propVal = expandable[prop];
@@ -48,11 +48,11 @@ export const expand: Function = function(expandable: any): any {
     return result;
 };
 
-export function unwrap<T>(value: T | ja.IResolver<T>): T {
-    if (isFunction(value)) {
-        return (value as ja.IResolver<T>)();
+export function unwrap<T1, T2>(value: T1 | ja.IResolver<T1>, ctx: ja.CreateAnimationContext<T2>): T1 {
+    if (!isFunction(value)) {
+        return value as T1;
     }
-    return value as T;
+    return (value as ja.IResolver<T1>)(ctx.target, ctx.index, ctx.targets);
 }
 
 
