@@ -11,6 +11,8 @@
             display: inline-block;
             height: 100px;
             width: 140px;
+            font-weight: bolder;
+            font-size: 15px;
         }
     </style>
 </head>
@@ -53,11 +55,21 @@
             var button = document.getElementById('animate-button');
 
             var player = just.animate({ 
-                    targets: '.element',                     
-                    css: {
-                        backgroundColor: ['white', 'black'],
-                        color: ['black', 'white']
-                    },
+                    targets: '.element',     
+                    css: [
+                        {
+                            backgroundColor: 'white',
+                            color: function(target, index, targets) {
+                                return 'hsl(' + (360 * (index / targets.length)) + ', 50%, 30%)'
+                            }
+                        },
+                        {
+                            backgroundColor: function(target, index, targets) {
+                                return 'hsl(' + (360 * (index / targets.length)) + ', 35%, 55%)'
+                            },                  
+                            color: 'white'
+                        },
+                    ],
                     to: '900ms',
                     fill: 'both',
                     delay: '+=120ms',
