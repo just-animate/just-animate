@@ -72,10 +72,10 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
 ## Usage
  - Call just.animate()
    - targets: the animation targets.  Can be a html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.
-   - keyframes: the same as CSS keyframes
+   - css: an array of keyframes like in CSS Keyframes
    - to: number of miliseconds until the end of the animation
    - from: number of milliseconds until the animation starts
-   - name: adds preset values into the animation (e.g. fadeIn, hinge, zoomOutLeft)
+   - mixins: a preset or a list of presets to add to the animation(e.g. fadeIn, hinge, zoomOutLeft, etc.)
  ```javascript
   just.animate({
     targets: '#animate-me'
@@ -84,10 +84,15 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
     // targets: $('animate-me),
     // targets: ['#animate-me'],
     // targets: () => document.getElementById('animate-me'),
-    keyframes: [
+    // mixins: 'fadeIn',
+    // mixins: ['fadeIn'],
+    css: [
       { opacity: 0 },
       { opacity: 1 }
     ],
+    //css: {
+    //  opacity: [0, 1]
+    //},
     to: '1s'
   })
  ```
@@ -98,7 +103,7 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
  var player = just
    // animate multiple elements simultaneously
   .animate({
-    name: 'fadeIn',
+    mixins: 'fadeIn',
     targets: ['#first', '#second'],
     to: '1s'
   })
@@ -106,7 +111,7 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
   // animate on a timeline
   .animate([
     {
-      name: 'fadeOutLeft',
+      mixins: 'fadeOutLeft',
       targets: '#first',
       to: '2s',
       delay: function() {
@@ -115,7 +120,7 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
       }
     },
     {
-      name: 'fadeOutRight',
+      mixins: 'fadeOutRight',
       targets: '#second',
       to: '1.5s',
       delay: 0
@@ -125,8 +130,8 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
   .on('finish', () => console.log("I'm finished!"))
   .on('cancel', () => console.log("I'm canceled!"))
   .on('pause', () => console.log("I'm paused!"))
-  .on('update', function(delta, runningTime) {
-    console.log(delta + 'ms since last update');
+  .on('update', function(ctx) {
+    console.log(ctx.delta + 'ms since last update');
   });
 
 player
