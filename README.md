@@ -23,8 +23,8 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
 
  - Include the core script and (optionally) the animations script for ready to use animation presets.
   ```html
-  <script src="just-animate-core.min.js"></script>
-  <script src="just-animate-animations.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.0-beta.20160922a/just-animate-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.0-beta.20160922a/just-animate-animations.min.js"></script>
   ```
  - That's it!
 
@@ -47,7 +47,7 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
  - For debugging, include this script after systemjs instead of the core and animation scripts above
 
   ```html
-  <script src="browser/just-animate-systemjs.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.0-beta.20160922a/just-animate-systemjs.min.js"></script>
   ```
  - Import the JustAnimate module into your application and inject the Animate.css animations
   ```typescript
@@ -71,7 +71,8 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
   
 ## Usage
  - Call just.animate()
-   - targets: the animation targets.  Can be a html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.
+
+   - targets: the things to be animated.  Can be a html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.
    - css: an array of keyframes like in CSS Keyframes
    - to: number of miliseconds until the end of the animation
    - from: number of milliseconds until the animation starts
@@ -114,7 +115,7 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
       mixins: 'fadeOutLeft',
       targets: '#first',
       to: '2s',
-      delay: function() {
+      delay() {
         // delay animation for a random # of ms between 0 and 1000
         return Math.random() * 1000;
       }
@@ -122,8 +123,7 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
     {
       mixins: 'fadeOutRight',
       targets: '#second',
-      to: '1.5s',
-      delay: 0
+      to: '1.5s'
     }
   ])
   // sequence animation after existing animation
