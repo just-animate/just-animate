@@ -128,6 +128,7 @@ function pushAll(source, target) {
     push.apply(source, target);
 }
 
+var ostring = Object.prototype.toString;
 function isArray(a) {
     return isDefined(a) && !isString(a) && isNumber(a.length);
 }
@@ -135,7 +136,7 @@ function isDefined(a) {
     return a !== nil && a !== nada && a !== '';
 }
 function isFunction(a) {
-    return toString.call(a) === functionTypeString;
+    return getTypeString(a) === functionTypeString;
 }
 function isNumber(a) {
     return typeof a === numberString;
@@ -145,6 +146,9 @@ function isObject(a) {
 }
 function isString(a) {
     return typeof a === stringString;
+}
+function getTypeString(val) {
+    return ostring.call(val);
 }
 
 var inherit = function () {
@@ -252,7 +256,6 @@ Dispatcher.prototype = {
     }
 };
 
-var ostring = Object.prototype.toString;
 function camelCaseReplacer(match, p1, p2) {
     return p1 + p2.toUpperCase();
 }

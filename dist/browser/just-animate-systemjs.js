@@ -2829,7 +2829,7 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
      * @returns {boolean} true if object.toString reports it as a Function
      */
     function isFunction(a) {
-        return toString.call(a) === resources_1.functionTypeString;
+        return getTypeString(a) === resources_1.functionTypeString;
     }
     /**
      * Tests if object is a number
@@ -2854,7 +2854,10 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
     function isString(a) {
         return typeof a === resources_1.stringString;
     }
-    var resources_1;
+    function getTypeString(val) {
+        return ostring.call(val);
+    }
+    var resources_1, ostring;
     exports_79("isArray", isArray);
     exports_79("isDefined", isDefined);
     exports_79("isFunction", isFunction);
@@ -2868,6 +2871,7 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
             }
         ],
         execute: function () {
+            ostring = Object.prototype.toString;
         }
     };
 });
@@ -3048,12 +3052,8 @@ System.register("just-animate/common/strings", ["just-animate/common/type", "jus
     function toCamelCase(value) {
         return type_1.isString(value) ? value.replace(resources_3.camelCaseRegex, camelCaseReplacer) : resources_3.nil;
     }
-    function toString(val) {
-        return ostring.call(val);
-    }
-    var type_1, lists_1, resources_3, ostring, cssFunction;
+    var type_1, lists_1, resources_3, cssFunction;
     exports_81("toCamelCase", toCamelCase);
-    exports_81("toString", toString);
     return {
         setters: [
             function (type_1_1) {
@@ -3067,7 +3067,6 @@ System.register("just-animate/common/strings", ["just-animate/common/type", "jus
             }
         ],
         execute: function () {
-            ostring = Object.prototype.toString;
             exports_81("cssFunction", cssFunction = function () {
                 var args = arguments;
                 return args[0] + "(" + lists_1.toArray(args, 1).join(',') + ")";

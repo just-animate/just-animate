@@ -1,5 +1,8 @@
 import { nil, nada, functionTypeString, numberString, objectString, stringString } from './resources';
 
+const ostring = Object.prototype.toString;
+
+
 /**
  * Tests if object is a list
  * 
@@ -23,7 +26,7 @@ export function isDefined(a: any): boolean {
  * @returns {boolean} true if object.toString reports it as a Function
  */
 export function isFunction(a: any): boolean {
-    return toString.call(a) === functionTypeString;
+    return getTypeString(a) === functionTypeString;
 }
 
 /**
@@ -50,4 +53,9 @@ export function isObject(a: any): boolean {
  */
 export function isString(a: any): boolean {
     return typeof a === stringString;
+}
+
+
+function getTypeString(val: any): string {
+    return ostring.call(val);
 }

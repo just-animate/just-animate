@@ -1,5 +1,6 @@
 "use strict";
 var resources_1 = require("./resources");
+var ostring = Object.prototype.toString;
 /**
  * Tests if object is a list
  *
@@ -23,7 +24,7 @@ exports.isDefined = isDefined;
  * @returns {boolean} true if object.toString reports it as a Function
  */
 function isFunction(a) {
-    return toString.call(a) === resources_1.functionTypeString;
+    return getTypeString(a) === resources_1.functionTypeString;
 }
 exports.isFunction = isFunction;
 /**
@@ -52,3 +53,6 @@ function isString(a) {
     return typeof a === resources_1.stringString;
 }
 exports.isString = isString;
+function getTypeString(val) {
+    return ostring.call(val);
+}
