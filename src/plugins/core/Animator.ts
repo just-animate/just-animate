@@ -129,7 +129,7 @@ export class Animator implements ja.IAnimator {
     }
     public play(): ja.IAnimator {
         const self = this;
-        if (self._playState !== 'running' || self._playState !== 'pending') {
+        if (!(self._playState === 'running' || self._playState === 'pending')) {
             self._playState = 'pending';
             self._timeLoop.on(self._onTick);
         }

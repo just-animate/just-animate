@@ -1,10 +1,10 @@
-System.register("just-animate/animations/bounce", [], function(exports_1, context_1) {
+System.register("just-animate/animations/bounce", [], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var bounce;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_1("bounce", bounce = {
                 css: [
                     {
@@ -33,15 +33,15 @@ System.register("just-animate/animations/bounce", [], function(exports_1, contex
                 to: 1000
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceIn", [], function(exports_2, context_2) {
+System.register("just-animate/animations/bounceIn", [], function (exports_2, context_2) {
     "use strict";
     var __moduleName = context_2 && context_2.id;
     var bounceIn;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_2("bounceIn", bounceIn = {
                 name: 'bounceIn',
                 css: [
@@ -72,15 +72,15 @@ System.register("just-animate/animations/bounceIn", [], function(exports_2, cont
                 easing: 'easeOutCubic'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceInDown", [], function(exports_3, context_3) {
+System.register("just-animate/animations/bounceInDown", [], function (exports_3, context_3) {
     "use strict";
     var __moduleName = context_3 && context_3.id;
     var bounceInDown;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_3("bounceInDown", bounceInDown = {
                 css: [
                     {
@@ -115,15 +115,15 @@ System.register("just-animate/animations/bounceInDown", [], function(exports_3, 
                 name: 'bounceInDown'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceInLeft", [], function(exports_4, context_4) {
+System.register("just-animate/animations/bounceInLeft", [], function (exports_4, context_4) {
     "use strict";
     var __moduleName = context_4 && context_4.id;
     var bounceInLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_4("bounceInLeft", bounceInLeft = {
                 css: [
                     {
@@ -158,15 +158,15 @@ System.register("just-animate/animations/bounceInLeft", [], function(exports_4, 
                 name: 'bounceInLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceInRight", [], function(exports_5, context_5) {
+System.register("just-animate/animations/bounceInRight", [], function (exports_5, context_5) {
     "use strict";
     var __moduleName = context_5 && context_5.id;
     var bounceInRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_5("bounceInRight", bounceInRight = {
                 css: [
                     {
@@ -199,15 +199,15 @@ System.register("just-animate/animations/bounceInRight", [], function(exports_5,
                 name: 'bounceInRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceInUp", [], function(exports_6, context_6) {
+System.register("just-animate/animations/bounceInUp", [], function (exports_6, context_6) {
     "use strict";
     var __moduleName = context_6 && context_6.id;
     var bounceInUp;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_6("bounceInUp", bounceInUp = {
                 css: [
                     {
@@ -242,15 +242,15 @@ System.register("just-animate/animations/bounceInUp", [], function(exports_6, co
                 name: 'bounceInUp'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceOut", [], function(exports_7, context_7) {
+System.register("just-animate/animations/bounceOut", [], function (exports_7, context_7) {
     "use strict";
     var __moduleName = context_7 && context_7.id;
     var bounceOut;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_7("bounceOut", bounceOut = {
                 css: [
                     {
@@ -283,15 +283,15 @@ System.register("just-animate/animations/bounceOut", [], function(exports_7, con
                 to: 900
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceOutDown", [], function(exports_8, context_8) {
+System.register("just-animate/animations/bounceOutDown", [], function (exports_8, context_8) {
     "use strict";
     var __moduleName = context_8 && context_8.id;
     var bounceOutDown;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_8("bounceOutDown", bounceOutDown = {
                 css: [
                     {
@@ -324,15 +324,15 @@ System.register("just-animate/animations/bounceOutDown", [], function(exports_8,
                 name: 'bounceOutDown'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceOutLeft", [], function(exports_9, context_9) {
+System.register("just-animate/animations/bounceOutLeft", [], function (exports_9, context_9) {
     "use strict";
     var __moduleName = context_9 && context_9.id;
     var bounceOutLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_9("bounceOutLeft", bounceOutLeft = {
                 css: [
                     {
@@ -356,15 +356,15 @@ System.register("just-animate/animations/bounceOutLeft", [], function(exports_9,
                 name: 'bounceOutLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceOutRight", [], function(exports_10, context_10) {
+System.register("just-animate/animations/bounceOutRight", [], function (exports_10, context_10) {
     "use strict";
     var __moduleName = context_10 && context_10.id;
     var bounceOutRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_10("bounceOutRight", bounceOutRight = {
                 css: [
                     {
@@ -388,15 +388,15 @@ System.register("just-animate/animations/bounceOutRight", [], function(exports_1
                 name: 'bounceOutRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/bounceOutUp", [], function(exports_11, context_11) {
+System.register("just-animate/animations/bounceOutUp", [], function (exports_11, context_11) {
     "use strict";
     var __moduleName = context_11 && context_11.id;
     var bounceOutUp;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_11("bounceOutUp", bounceOutUp = {
                 css: [
                     {
@@ -430,15 +430,15 @@ System.register("just-animate/animations/bounceOutUp", [], function(exports_11, 
                 name: 'bounceOutUp'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeIn", [], function(exports_12, context_12) {
+System.register("just-animate/animations/fadeIn", [], function (exports_12, context_12) {
     "use strict";
     var __moduleName = context_12 && context_12.id;
     var fadeIn;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_12("fadeIn", fadeIn = {
                 css: {
                     opacity: [0, 1]
@@ -449,15 +449,15 @@ System.register("just-animate/animations/fadeIn", [], function(exports_12, conte
                 to: 650
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeInDown", [], function(exports_13, context_13) {
+System.register("just-animate/animations/fadeInDown", [], function (exports_13, context_13) {
     "use strict";
     var __moduleName = context_13 && context_13.id;
     var fadeInDown;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_13("fadeInDown", fadeInDown = {
                 css: {
                     opacity: [0, 1],
@@ -468,15 +468,15 @@ System.register("just-animate/animations/fadeInDown", [], function(exports_13, c
                 to: 650
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeInDownBig", [], function(exports_14, context_14) {
+System.register("just-animate/animations/fadeInDownBig", [], function (exports_14, context_14) {
     "use strict";
     var __moduleName = context_14 && context_14.id;
     var fadeInDownBig;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_14("fadeInDownBig", fadeInDownBig = {
                 css: {
                     opacity: [0, 1],
@@ -488,15 +488,15 @@ System.register("just-animate/animations/fadeInDownBig", [], function(exports_14
                 to: 1300
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeInLeft", [], function(exports_15, context_15) {
+System.register("just-animate/animations/fadeInLeft", [], function (exports_15, context_15) {
     "use strict";
     var __moduleName = context_15 && context_15.id;
     var fadeInLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_15("fadeInLeft", fadeInLeft = {
                 css: [
                     {
@@ -514,15 +514,15 @@ System.register("just-animate/animations/fadeInLeft", [], function(exports_15, c
                 name: 'fadeInLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeInLeftBig", [], function(exports_16, context_16) {
+System.register("just-animate/animations/fadeInLeftBig", [], function (exports_16, context_16) {
     "use strict";
     var __moduleName = context_16 && context_16.id;
     var fadeInLeftBig;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_16("fadeInLeftBig", fadeInLeftBig = {
                 css: [
                     {
@@ -540,15 +540,15 @@ System.register("just-animate/animations/fadeInLeftBig", [], function(exports_16
                 name: 'fadeInLeftBig'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeInRight", [], function(exports_17, context_17) {
+System.register("just-animate/animations/fadeInRight", [], function (exports_17, context_17) {
     "use strict";
     var __moduleName = context_17 && context_17.id;
     var fadeInRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_17("fadeInRight", fadeInRight = {
                 css: [
                     {
@@ -566,15 +566,15 @@ System.register("just-animate/animations/fadeInRight", [], function(exports_17, 
                 name: 'fadeInRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeInRightBig", [], function(exports_18, context_18) {
+System.register("just-animate/animations/fadeInRightBig", [], function (exports_18, context_18) {
     "use strict";
     var __moduleName = context_18 && context_18.id;
     var fadeInRightBig;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_18("fadeInRightBig", fadeInRightBig = {
                 css: [
                     {
@@ -592,15 +592,15 @@ System.register("just-animate/animations/fadeInRightBig", [], function(exports_1
                 name: 'fadeInRightBig'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeInUp", [], function(exports_19, context_19) {
+System.register("just-animate/animations/fadeInUp", [], function (exports_19, context_19) {
     "use strict";
     var __moduleName = context_19 && context_19.id;
     var fadeInUp;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_19("fadeInUp", fadeInUp = {
                 css: [
                     {
@@ -618,15 +618,15 @@ System.register("just-animate/animations/fadeInUp", [], function(exports_19, con
                 name: 'fadeInUp'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeInUpBig", [], function(exports_20, context_20) {
+System.register("just-animate/animations/fadeInUpBig", [], function (exports_20, context_20) {
     "use strict";
     var __moduleName = context_20 && context_20.id;
     var fadeInUpBig;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_20("fadeInUpBig", fadeInUpBig = {
                 css: [
                     {
@@ -644,15 +644,15 @@ System.register("just-animate/animations/fadeInUpBig", [], function(exports_20, 
                 name: 'fadeInUpBig'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOut", [], function(exports_21, context_21) {
+System.register("just-animate/animations/fadeOut", [], function (exports_21, context_21) {
     "use strict";
     var __moduleName = context_21 && context_21.id;
     var fadeOut;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_21("fadeOut", fadeOut = {
                 css: {
                     opacity: [1, 0]
@@ -662,15 +662,15 @@ System.register("just-animate/animations/fadeOut", [], function(exports_21, cont
                 to: 650
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOutDown", [], function(exports_22, context_22) {
+System.register("just-animate/animations/fadeOutDown", [], function (exports_22, context_22) {
     "use strict";
     var __moduleName = context_22 && context_22.id;
     var fadeOutDown;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_22("fadeOutDown", fadeOutDown = {
                 css: [
                     {
@@ -686,15 +686,15 @@ System.register("just-animate/animations/fadeOutDown", [], function(exports_22, 
                 name: 'fadeOutDown'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOutDownBig", [], function(exports_23, context_23) {
+System.register("just-animate/animations/fadeOutDownBig", [], function (exports_23, context_23) {
     "use strict";
     var __moduleName = context_23 && context_23.id;
     var fadeOutDownBig;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_23("fadeOutDownBig", fadeOutDownBig = {
                 css: [
                     {
@@ -710,15 +710,15 @@ System.register("just-animate/animations/fadeOutDownBig", [], function(exports_2
                 name: 'fadeOutDownBig'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOutLeft", [], function(exports_24, context_24) {
+System.register("just-animate/animations/fadeOutLeft", [], function (exports_24, context_24) {
     "use strict";
     var __moduleName = context_24 && context_24.id;
     var fadeOutLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_24("fadeOutLeft", fadeOutLeft = {
                 css: [
                     {
@@ -734,15 +734,15 @@ System.register("just-animate/animations/fadeOutLeft", [], function(exports_24, 
                 name: 'fadeOutLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_25, context_25) {
+System.register("just-animate/animations/fadeOutLeftBig", [], function (exports_25, context_25) {
     "use strict";
     var __moduleName = context_25 && context_25.id;
     var fadeOutLeftBig;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_25("fadeOutLeftBig", fadeOutLeftBig = {
                 css: [
                     {
@@ -758,15 +758,15 @@ System.register("just-animate/animations/fadeOutLeftBig", [], function(exports_2
                 name: 'fadeOutLeftBig'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOutRight", [], function(exports_26, context_26) {
+System.register("just-animate/animations/fadeOutRight", [], function (exports_26, context_26) {
     "use strict";
     var __moduleName = context_26 && context_26.id;
     var fadeOutRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_26("fadeOutRight", fadeOutRight = {
                 css: [
                     {
@@ -782,15 +782,15 @@ System.register("just-animate/animations/fadeOutRight", [], function(exports_26,
                 name: 'fadeOutRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOutRightBig", [], function(exports_27, context_27) {
+System.register("just-animate/animations/fadeOutRightBig", [], function (exports_27, context_27) {
     "use strict";
     var __moduleName = context_27 && context_27.id;
     var fadeOutRightBig;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_27("fadeOutRightBig", fadeOutRightBig = {
                 css: [
                     {
@@ -806,15 +806,15 @@ System.register("just-animate/animations/fadeOutRightBig", [], function(exports_
                 name: 'fadeOutRightBig'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOutUp", [], function(exports_28, context_28) {
+System.register("just-animate/animations/fadeOutUp", [], function (exports_28, context_28) {
     "use strict";
     var __moduleName = context_28 && context_28.id;
     var fadeOutUp;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_28("fadeOutUp", fadeOutUp = {
                 css: [
                     {
@@ -830,15 +830,15 @@ System.register("just-animate/animations/fadeOutUp", [], function(exports_28, co
                 name: 'fadeOutUp'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/fadeOutUpBig", [], function(exports_29, context_29) {
+System.register("just-animate/animations/fadeOutUpBig", [], function (exports_29, context_29) {
     "use strict";
     var __moduleName = context_29 && context_29.id;
     var fadeOutUpBig;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_29("fadeOutUpBig", fadeOutUpBig = {
                 css: [
                     {
@@ -854,15 +854,15 @@ System.register("just-animate/animations/fadeOutUpBig", [], function(exports_29,
                 name: 'fadeOutUpBig'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/flash", [], function(exports_30, context_30) {
+System.register("just-animate/animations/flash", [], function (exports_30, context_30) {
     "use strict";
     var __moduleName = context_30 && context_30.id;
     var flash;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_30("flash", flash = {
                 css: [
                     {
@@ -885,15 +885,15 @@ System.register("just-animate/animations/flash", [], function(exports_30, contex
                 name: 'flash'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/flip", [], function(exports_31, context_31) {
+System.register("just-animate/animations/flip", [], function (exports_31, context_31) {
     "use strict";
     var __moduleName = context_31 && context_31.id;
     var flip;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_31("flip", flip = {
                 css: [
                     {
@@ -921,15 +921,15 @@ System.register("just-animate/animations/flip", [], function(exports_31, context
                 name: 'flip'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/flipInX", [], function(exports_32, context_32) {
+System.register("just-animate/animations/flipInX", [], function (exports_32, context_32) {
     "use strict";
     var __moduleName = context_32 && context_32.id;
     var flipInX;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_32("flipInX", flipInX = {
                 css: [
                     {
@@ -964,15 +964,15 @@ System.register("just-animate/animations/flipInX", [], function(exports_32, cont
                 name: 'flipInX'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/flipInY", [], function(exports_33, context_33) {
+System.register("just-animate/animations/flipInY", [], function (exports_33, context_33) {
     "use strict";
     var __moduleName = context_33 && context_33.id;
     var flipInY;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_33("flipInY", flipInY = {
                 css: [
                     {
@@ -1007,15 +1007,15 @@ System.register("just-animate/animations/flipInY", [], function(exports_33, cont
                 name: 'flipInY'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/flipOutX", [], function(exports_34, context_34) {
+System.register("just-animate/animations/flipOutX", [], function (exports_34, context_34) {
     "use strict";
     var __moduleName = context_34 && context_34.id;
     var flipOutX;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_34("flipOutX", flipOutX = {
                 css: [
                     {
@@ -1038,15 +1038,15 @@ System.register("just-animate/animations/flipOutX", [], function(exports_34, con
                 name: 'flipOutX'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/flipOutY", [], function(exports_35, context_35) {
+System.register("just-animate/animations/flipOutY", [], function (exports_35, context_35) {
     "use strict";
     var __moduleName = context_35 && context_35.id;
     var flipOutY;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_35("flipOutY", flipOutY = {
                 css: [
                     {
@@ -1069,15 +1069,15 @@ System.register("just-animate/animations/flipOutY", [], function(exports_35, con
                 name: 'flipOutY'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/headShake", [], function(exports_36, context_36) {
+System.register("just-animate/animations/headShake", [], function (exports_36, context_36) {
     "use strict";
     var __moduleName = context_36 && context_36.id;
     var headShake;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_36("headShake", headShake = {
                 css: [
                     {
@@ -1118,15 +1118,15 @@ System.register("just-animate/animations/headShake", [], function(exports_36, co
                 name: 'headShake'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/hinge", [], function(exports_37, context_37) {
+System.register("just-animate/animations/hinge", [], function (exports_37, context_37) {
     "use strict";
     var __moduleName = context_37 && context_37.id;
     var hinge;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_37("hinge", hinge = {
                 css: [
                     {
@@ -1160,15 +1160,15 @@ System.register("just-animate/animations/hinge", [], function(exports_37, contex
                 name: 'hinge'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/jello", [], function(exports_38, context_38) {
+System.register("just-animate/animations/jello", [], function (exports_38, context_38) {
     "use strict";
     var __moduleName = context_38 && context_38.id;
     var jello;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_38("jello", jello = {
                 css: [
                     {
@@ -1218,15 +1218,15 @@ System.register("just-animate/animations/jello", [], function(exports_38, contex
                 name: 'jello'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/lightSpeedIn", [], function(exports_39, context_39) {
+System.register("just-animate/animations/lightSpeedIn", [], function (exports_39, context_39) {
     "use strict";
     var __moduleName = context_39 && context_39.id;
     var lightSpeedIn;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_39("lightSpeedIn", lightSpeedIn = {
                 css: [
                     {
@@ -1256,15 +1256,15 @@ System.register("just-animate/animations/lightSpeedIn", [], function(exports_39,
                 name: 'lightSpeedIn'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/lightSpeedOut", [], function(exports_40, context_40) {
+System.register("just-animate/animations/lightSpeedOut", [], function (exports_40, context_40) {
     "use strict";
     var __moduleName = context_40 && context_40.id;
     var lightSpeedOut;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_40("lightSpeedOut", lightSpeedOut = {
                 css: [
                     {
@@ -1282,15 +1282,15 @@ System.register("just-animate/animations/lightSpeedOut", [], function(exports_40
                 name: 'lightSpeedOut'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/pulse", [], function(exports_41, context_41) {
+System.register("just-animate/animations/pulse", [], function (exports_41, context_41) {
     "use strict";
     var __moduleName = context_41 && context_41.id;
     var pulse;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_41("pulse", pulse = {
                 css: [
                     {
@@ -1307,15 +1307,15 @@ System.register("just-animate/animations/pulse", [], function(exports_41, contex
                 name: 'pulse'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rollIn", [], function(exports_42, context_42) {
+System.register("just-animate/animations/rollIn", [], function (exports_42, context_42) {
     "use strict";
     var __moduleName = context_42 && context_42.id;
     var rollIn;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_42("rollIn", rollIn = {
                 css: [
                     {
@@ -1331,15 +1331,15 @@ System.register("just-animate/animations/rollIn", [], function(exports_42, conte
                 name: 'rollIn'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rollOut", [], function(exports_43, context_43) {
+System.register("just-animate/animations/rollOut", [], function (exports_43, context_43) {
     "use strict";
     var __moduleName = context_43 && context_43.id;
     var rollOut;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_43("rollOut", rollOut = {
                 css: [
                     {
@@ -1355,15 +1355,15 @@ System.register("just-animate/animations/rollOut", [], function(exports_43, cont
                 name: 'rollOut'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateIn", [], function(exports_44, context_44) {
+System.register("just-animate/animations/rotateIn", [], function (exports_44, context_44) {
     "use strict";
     var __moduleName = context_44 && context_44.id;
     var rotateIn;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_44("rotateIn", rotateIn = {
                 css: [
                     {
@@ -1381,15 +1381,15 @@ System.register("just-animate/animations/rotateIn", [], function(exports_44, con
                 name: 'rotateIn'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateInDownLeft", [], function(exports_45, context_45) {
+System.register("just-animate/animations/rotateInDownLeft", [], function (exports_45, context_45) {
     "use strict";
     var __moduleName = context_45 && context_45.id;
     var rotateInDownLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_45("rotateInDownLeft", rotateInDownLeft = {
                 css: [
                     {
@@ -1407,15 +1407,15 @@ System.register("just-animate/animations/rotateInDownLeft", [], function(exports
                 name: 'rotateInDownLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateInDownRight", [], function(exports_46, context_46) {
+System.register("just-animate/animations/rotateInDownRight", [], function (exports_46, context_46) {
     "use strict";
     var __moduleName = context_46 && context_46.id;
     var rotateInDownRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_46("rotateInDownRight", rotateInDownRight = {
                 css: [
                     {
@@ -1433,15 +1433,15 @@ System.register("just-animate/animations/rotateInDownRight", [], function(export
                 name: 'rotateInDownRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateInUpLeft", [], function(exports_47, context_47) {
+System.register("just-animate/animations/rotateInUpLeft", [], function (exports_47, context_47) {
     "use strict";
     var __moduleName = context_47 && context_47.id;
     var rotateInUpLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_47("rotateInUpLeft", rotateInUpLeft = {
                 css: [
                     {
@@ -1459,15 +1459,15 @@ System.register("just-animate/animations/rotateInUpLeft", [], function(exports_4
                 name: 'rotateInUpLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateInUpRight", [], function(exports_48, context_48) {
+System.register("just-animate/animations/rotateInUpRight", [], function (exports_48, context_48) {
     "use strict";
     var __moduleName = context_48 && context_48.id;
     var rotateInUpRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_48("rotateInUpRight", rotateInUpRight = {
                 css: [
                     {
@@ -1485,15 +1485,15 @@ System.register("just-animate/animations/rotateInUpRight", [], function(exports_
                 name: 'rotateInUpRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateOut", [], function(exports_49, context_49) {
+System.register("just-animate/animations/rotateOut", [], function (exports_49, context_49) {
     "use strict";
     var __moduleName = context_49 && context_49.id;
     var rotateOut;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_49("rotateOut", rotateOut = {
                 css: [
                     {
@@ -1511,15 +1511,15 @@ System.register("just-animate/animations/rotateOut", [], function(exports_49, co
                 name: 'rotateOut'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateOutDownLeft", [], function(exports_50, context_50) {
+System.register("just-animate/animations/rotateOutDownLeft", [], function (exports_50, context_50) {
     "use strict";
     var __moduleName = context_50 && context_50.id;
     var rotateOutDownLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_50("rotateOutDownLeft", rotateOutDownLeft = {
                 css: [
                     {
@@ -1537,15 +1537,15 @@ System.register("just-animate/animations/rotateOutDownLeft", [], function(export
                 name: 'rotateOutDownLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateOutDownRight", [], function(exports_51, context_51) {
+System.register("just-animate/animations/rotateOutDownRight", [], function (exports_51, context_51) {
     "use strict";
     var __moduleName = context_51 && context_51.id;
     var rotateOutDownRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_51("rotateOutDownRight", rotateOutDownRight = {
                 css: [
                     {
@@ -1563,15 +1563,15 @@ System.register("just-animate/animations/rotateOutDownRight", [], function(expor
                 name: 'rotateOutDownRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_52, context_52) {
+System.register("just-animate/animations/rotateOutUpLeft", [], function (exports_52, context_52) {
     "use strict";
     var __moduleName = context_52 && context_52.id;
     var rotateOutUpLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_52("rotateOutUpLeft", rotateOutUpLeft = {
                 css: [
                     {
@@ -1589,15 +1589,15 @@ System.register("just-animate/animations/rotateOutUpLeft", [], function(exports_
                 name: 'rotateOutUpLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rotateOutUpRight", [], function(exports_53, context_53) {
+System.register("just-animate/animations/rotateOutUpRight", [], function (exports_53, context_53) {
     "use strict";
     var __moduleName = context_53 && context_53.id;
     var rotateOutUpRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_53("rotateOutUpRight", rotateOutUpRight = {
                 css: [
                     {
@@ -1615,15 +1615,15 @@ System.register("just-animate/animations/rotateOutUpRight", [], function(exports
                 name: 'rotateOutUpRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/rubberBand", [], function(exports_54, context_54) {
+System.register("just-animate/animations/rubberBand", [], function (exports_54, context_54) {
     "use strict";
     var __moduleName = context_54 && context_54.id;
     var rubberBand;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_54("rubberBand", rubberBand = {
                 css: [
                     {
@@ -1659,15 +1659,15 @@ System.register("just-animate/animations/rubberBand", [], function(exports_54, c
                 to: 1000
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/shake", [], function(exports_55, context_55) {
+System.register("just-animate/animations/shake", [], function (exports_55, context_55) {
     "use strict";
     var __moduleName = context_55 && context_55.id;
     var shake;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_55("shake", shake = {
                 css: [
                     {
@@ -1708,15 +1708,15 @@ System.register("just-animate/animations/shake", [], function(exports_55, contex
                 name: 'shake'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/slideInDown", [], function(exports_56, context_56) {
+System.register("just-animate/animations/slideInDown", [], function (exports_56, context_56) {
     "use strict";
     var __moduleName = context_56 && context_56.id;
     var slideInDown;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_56("slideInDown", slideInDown = {
                 css: [
                     {
@@ -1732,15 +1732,15 @@ System.register("just-animate/animations/slideInDown", [], function(exports_56, 
                 name: 'slideInDown'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/slideInLeft", [], function(exports_57, context_57) {
+System.register("just-animate/animations/slideInLeft", [], function (exports_57, context_57) {
     "use strict";
     var __moduleName = context_57 && context_57.id;
     var slideInLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_57("slideInLeft", slideInLeft = {
                 css: [
                     {
@@ -1756,15 +1756,15 @@ System.register("just-animate/animations/slideInLeft", [], function(exports_57, 
                 name: 'slideInLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/slideInRight", [], function(exports_58, context_58) {
+System.register("just-animate/animations/slideInRight", [], function (exports_58, context_58) {
     "use strict";
     var __moduleName = context_58 && context_58.id;
     var slideInRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_58("slideInRight", slideInRight = {
                 css: [
                     {
@@ -1780,15 +1780,15 @@ System.register("just-animate/animations/slideInRight", [], function(exports_58,
                 name: 'slideInRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/slideInUp", [], function(exports_59, context_59) {
+System.register("just-animate/animations/slideInUp", [], function (exports_59, context_59) {
     "use strict";
     var __moduleName = context_59 && context_59.id;
     var slideInUp;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_59("slideInUp", slideInUp = {
                 css: [
                     {
@@ -1804,15 +1804,15 @@ System.register("just-animate/animations/slideInUp", [], function(exports_59, co
                 name: 'slideInUp'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/slideOutDown", [], function(exports_60, context_60) {
+System.register("just-animate/animations/slideOutDown", [], function (exports_60, context_60) {
     "use strict";
     var __moduleName = context_60 && context_60.id;
     var slideOutDown;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_60("slideOutDown", slideOutDown = {
                 css: [
                     {
@@ -1828,15 +1828,15 @@ System.register("just-animate/animations/slideOutDown", [], function(exports_60,
                 name: 'slideOutDown'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/slideOutLeft", [], function(exports_61, context_61) {
+System.register("just-animate/animations/slideOutLeft", [], function (exports_61, context_61) {
     "use strict";
     var __moduleName = context_61 && context_61.id;
     var slideOutLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_61("slideOutLeft", slideOutLeft = {
                 css: [
                     {
@@ -1852,15 +1852,15 @@ System.register("just-animate/animations/slideOutLeft", [], function(exports_61,
                 name: 'slideOutLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/slideOutRight", [], function(exports_62, context_62) {
+System.register("just-animate/animations/slideOutRight", [], function (exports_62, context_62) {
     "use strict";
     var __moduleName = context_62 && context_62.id;
     var slideOutRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_62("slideOutRight", slideOutRight = {
                 css: [
                     {
@@ -1876,15 +1876,15 @@ System.register("just-animate/animations/slideOutRight", [], function(exports_62
                 name: 'slideOutRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/slideOutUp", [], function(exports_63, context_63) {
+System.register("just-animate/animations/slideOutUp", [], function (exports_63, context_63) {
     "use strict";
     var __moduleName = context_63 && context_63.id;
     var slideOutUp;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_63("slideOutUp", slideOutUp = {
                 css: [
                     {
@@ -1900,15 +1900,15 @@ System.register("just-animate/animations/slideOutUp", [], function(exports_63, c
                 name: 'slideOutUp'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/swing", [], function(exports_64, context_64) {
+System.register("just-animate/animations/swing", [], function (exports_64, context_64) {
     "use strict";
     var __moduleName = context_64 && context_64.id;
     var swing;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_64("swing", swing = {
                 css: [
                     {
@@ -1934,15 +1934,15 @@ System.register("just-animate/animations/swing", [], function(exports_64, contex
                 name: 'swing'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/tada", [], function(exports_65, context_65) {
+System.register("just-animate/animations/tada", [], function (exports_65, context_65) {
     "use strict";
     var __moduleName = context_65 && context_65.id;
     var tada;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_65("tada", tada = {
                 css: [
                     {
@@ -1983,15 +1983,15 @@ System.register("just-animate/animations/tada", [], function(exports_65, context
                 name: 'tada'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/wobble", [], function(exports_66, context_66) {
+System.register("just-animate/animations/wobble", [], function (exports_66, context_66) {
     "use strict";
     var __moduleName = context_66 && context_66.id;
     var wobble;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_66("wobble", wobble = {
                 css: [
                     {
@@ -2027,15 +2027,15 @@ System.register("just-animate/animations/wobble", [], function(exports_66, conte
                 name: 'wobble'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomIn", [], function(exports_67, context_67) {
+System.register("just-animate/animations/zoomIn", [], function (exports_67, context_67) {
     "use strict";
     var __moduleName = context_67 && context_67.id;
     var zoomIn;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_67("zoomIn", zoomIn = {
                 css: [
                     {
@@ -2055,15 +2055,15 @@ System.register("just-animate/animations/zoomIn", [], function(exports_67, conte
                 name: 'zoomIn'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomInDown", [], function(exports_68, context_68) {
+System.register("just-animate/animations/zoomInDown", [], function (exports_68, context_68) {
     "use strict";
     var __moduleName = context_68 && context_68.id;
     var zoomInDown;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_68("zoomInDown", zoomInDown = {
                 css: [
                     {
@@ -2087,15 +2087,15 @@ System.register("just-animate/animations/zoomInDown", [], function(exports_68, c
                 name: 'zoomInDown'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomInLeft", [], function(exports_69, context_69) {
+System.register("just-animate/animations/zoomInLeft", [], function (exports_69, context_69) {
     "use strict";
     var __moduleName = context_69 && context_69.id;
     var zoomInLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_69("zoomInLeft", zoomInLeft = {
                 css: [
                     {
@@ -2119,15 +2119,15 @@ System.register("just-animate/animations/zoomInLeft", [], function(exports_69, c
                 name: 'zoomInLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomInRight", [], function(exports_70, context_70) {
+System.register("just-animate/animations/zoomInRight", [], function (exports_70, context_70) {
     "use strict";
     var __moduleName = context_70 && context_70.id;
     var zoomInRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_70("zoomInRight", zoomInRight = {
                 css: [
                     {
@@ -2151,15 +2151,15 @@ System.register("just-animate/animations/zoomInRight", [], function(exports_70, 
                 name: 'zoomInRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomInUp", [], function(exports_71, context_71) {
+System.register("just-animate/animations/zoomInUp", [], function (exports_71, context_71) {
     "use strict";
     var __moduleName = context_71 && context_71.id;
     var zoomInUp;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_71("zoomInUp", zoomInUp = {
                 css: [
                     {
@@ -2183,15 +2183,15 @@ System.register("just-animate/animations/zoomInUp", [], function(exports_71, con
                 name: 'zoomInUp'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomOut", [], function(exports_72, context_72) {
+System.register("just-animate/animations/zoomOut", [], function (exports_72, context_72) {
     "use strict";
     var __moduleName = context_72 && context_72.id;
     var zoomOut;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_72("zoomOut", zoomOut = {
                 css: [
                     {
@@ -2214,15 +2214,15 @@ System.register("just-animate/animations/zoomOut", [], function(exports_72, cont
                 name: 'zoomOut'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomOutDown", [], function(exports_73, context_73) {
+System.register("just-animate/animations/zoomOutDown", [], function (exports_73, context_73) {
     "use strict";
     var __moduleName = context_73 && context_73.id;
     var zoomOutDown;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_73("zoomOutDown", zoomOutDown = {
                 css: [
                     {
@@ -2249,15 +2249,15 @@ System.register("just-animate/animations/zoomOutDown", [], function(exports_73, 
                 name: 'zoomOutDown'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomOutLeft", [], function(exports_74, context_74) {
+System.register("just-animate/animations/zoomOutLeft", [], function (exports_74, context_74) {
     "use strict";
     var __moduleName = context_74 && context_74.id;
     var zoomOutLeft;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_74("zoomOutLeft", zoomOutLeft = {
                 css: [
                     {
@@ -2283,15 +2283,15 @@ System.register("just-animate/animations/zoomOutLeft", [], function(exports_74, 
                 name: 'zoomOutLeft'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomOutRight", [], function(exports_75, context_75) {
+System.register("just-animate/animations/zoomOutRight", [], function (exports_75, context_75) {
     "use strict";
     var __moduleName = context_75 && context_75.id;
     var zoomOutRight;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_75("zoomOutRight", zoomOutRight = {
                 css: [
                     {
@@ -2317,15 +2317,15 @@ System.register("just-animate/animations/zoomOutRight", [], function(exports_75,
                 name: 'zoomOutRight'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations/zoomOutUp", [], function(exports_76, context_76) {
+System.register("just-animate/animations/zoomOutUp", [], function (exports_76, context_76) {
     "use strict";
     var __moduleName = context_76 && context_76.id;
     var zoomOutUp;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_76("zoomOutUp", zoomOutUp = {
                 css: [
                     {
@@ -2351,15 +2351,14 @@ System.register("just-animate/animations/zoomOutUp", [], function(exports_76, co
                 name: 'zoomOutUp'
             });
         }
-    }
+    };
 });
-System.register("just-animate/animations", ["just-animate/animations/bounce", "just-animate/animations/bounceIn", "just-animate/animations/bounceInDown", "just-animate/animations/bounceInLeft", "just-animate/animations/bounceInRight", "just-animate/animations/bounceInUp", "just-animate/animations/bounceOut", "just-animate/animations/bounceOutDown", "just-animate/animations/bounceOutLeft", "just-animate/animations/bounceOutRight", "just-animate/animations/bounceOutUp", "just-animate/animations/fadeIn", "just-animate/animations/fadeInDown", "just-animate/animations/fadeInDownBig", "just-animate/animations/fadeInLeft", "just-animate/animations/fadeInLeftBig", "just-animate/animations/fadeInRight", "just-animate/animations/fadeInRightBig", "just-animate/animations/fadeInUp", "just-animate/animations/fadeInUpBig", "just-animate/animations/fadeOut", "just-animate/animations/fadeOutDown", "just-animate/animations/fadeOutDownBig", "just-animate/animations/fadeOutLeft", "just-animate/animations/fadeOutLeftBig", "just-animate/animations/fadeOutRight", "just-animate/animations/fadeOutRightBig", "just-animate/animations/fadeOutUp", "just-animate/animations/fadeOutUpBig", "just-animate/animations/flash", "just-animate/animations/flip", "just-animate/animations/flipInX", "just-animate/animations/flipInY", "just-animate/animations/flipOutX", "just-animate/animations/flipOutY", "just-animate/animations/headShake", "just-animate/animations/hinge", "just-animate/animations/jello", "just-animate/animations/lightSpeedIn", "just-animate/animations/lightSpeedOut", "just-animate/animations/pulse", "just-animate/animations/rollIn", "just-animate/animations/rollOut", "just-animate/animations/rotateIn", "just-animate/animations/rotateInDownLeft", "just-animate/animations/rotateInDownRight", "just-animate/animations/rotateInUpLeft", "just-animate/animations/rotateInUpRight", "just-animate/animations/rotateOut", "just-animate/animations/rotateOutDownLeft", "just-animate/animations/rotateOutDownRight", "just-animate/animations/rotateOutUpLeft", "just-animate/animations/rotateOutUpRight", "just-animate/animations/rubberBand", "just-animate/animations/shake", "just-animate/animations/slideInDown", "just-animate/animations/slideInLeft", "just-animate/animations/slideInRight", "just-animate/animations/slideInUp", "just-animate/animations/slideOutDown", "just-animate/animations/slideOutLeft", "just-animate/animations/slideOutRight", "just-animate/animations/slideOutUp", "just-animate/animations/swing", "just-animate/animations/tada", "just-animate/animations/wobble", "just-animate/animations/zoomIn", "just-animate/animations/zoomInDown", "just-animate/animations/zoomInLeft", "just-animate/animations/zoomInRight", "just-animate/animations/zoomInUp", "just-animate/animations/zoomOut", "just-animate/animations/zoomOutDown", "just-animate/animations/zoomOutLeft", "just-animate/animations/zoomOutRight", "just-animate/animations/zoomOutUp"], function(exports_77, context_77) {
+System.register("just-animate/animations", ["just-animate/animations/bounce", "just-animate/animations/bounceIn", "just-animate/animations/bounceInDown", "just-animate/animations/bounceInLeft", "just-animate/animations/bounceInRight", "just-animate/animations/bounceInUp", "just-animate/animations/bounceOut", "just-animate/animations/bounceOutDown", "just-animate/animations/bounceOutLeft", "just-animate/animations/bounceOutRight", "just-animate/animations/bounceOutUp", "just-animate/animations/fadeIn", "just-animate/animations/fadeInDown", "just-animate/animations/fadeInDownBig", "just-animate/animations/fadeInLeft", "just-animate/animations/fadeInLeftBig", "just-animate/animations/fadeInRight", "just-animate/animations/fadeInRightBig", "just-animate/animations/fadeInUp", "just-animate/animations/fadeInUpBig", "just-animate/animations/fadeOut", "just-animate/animations/fadeOutDown", "just-animate/animations/fadeOutDownBig", "just-animate/animations/fadeOutLeft", "just-animate/animations/fadeOutLeftBig", "just-animate/animations/fadeOutRight", "just-animate/animations/fadeOutRightBig", "just-animate/animations/fadeOutUp", "just-animate/animations/fadeOutUpBig", "just-animate/animations/flash", "just-animate/animations/flip", "just-animate/animations/flipInX", "just-animate/animations/flipInY", "just-animate/animations/flipOutX", "just-animate/animations/flipOutY", "just-animate/animations/headShake", "just-animate/animations/hinge", "just-animate/animations/jello", "just-animate/animations/lightSpeedIn", "just-animate/animations/lightSpeedOut", "just-animate/animations/pulse", "just-animate/animations/rollIn", "just-animate/animations/rollOut", "just-animate/animations/rotateIn", "just-animate/animations/rotateInDownLeft", "just-animate/animations/rotateInDownRight", "just-animate/animations/rotateInUpLeft", "just-animate/animations/rotateInUpRight", "just-animate/animations/rotateOut", "just-animate/animations/rotateOutDownLeft", "just-animate/animations/rotateOutDownRight", "just-animate/animations/rotateOutUpLeft", "just-animate/animations/rotateOutUpRight", "just-animate/animations/rubberBand", "just-animate/animations/shake", "just-animate/animations/slideInDown", "just-animate/animations/slideInLeft", "just-animate/animations/slideInRight", "just-animate/animations/slideInUp", "just-animate/animations/slideOutDown", "just-animate/animations/slideOutLeft", "just-animate/animations/slideOutRight", "just-animate/animations/slideOutUp", "just-animate/animations/swing", "just-animate/animations/tada", "just-animate/animations/wobble", "just-animate/animations/zoomIn", "just-animate/animations/zoomInDown", "just-animate/animations/zoomInLeft", "just-animate/animations/zoomInRight", "just-animate/animations/zoomInUp", "just-animate/animations/zoomOut", "just-animate/animations/zoomOutDown", "just-animate/animations/zoomOutLeft", "just-animate/animations/zoomOutRight", "just-animate/animations/zoomOutUp"], function (exports_77, context_77) {
     "use strict";
     var __moduleName = context_77 && context_77.id;
-    var bounce_1, bounceIn_1, bounceInDown_1, bounceInLeft_1, bounceInRight_1, bounceInUp_1, bounceOut_1, bounceOutDown_1, bounceOutLeft_1, bounceOutRight_1, bounceOutUp_1, fadeIn_1, fadeInDown_1, fadeInDownBig_1, fadeInLeft_1, fadeInLeftBig_1, fadeInRight_1, fadeInRightBig_1, fadeInUp_1, fadeInUpBig_1, fadeOut_1, fadeOutDown_1, fadeOutDownBig_1, fadeOutLeft_1, fadeOutLeftBig_1, fadeOutRight_1, fadeOutRightBig_1, fadeOutUp_1, fadeOutUpBig_1, flash_1, flip_1, flipInX_1, flipInY_1, flipOutX_1, flipOutY_1, headShake_1, hinge_1, jello_1, lightSpeedIn_1, lightSpeedOut_1, pulse_1, rollIn_1, rollOut_1, rotateIn_1, rotateInDownLeft_1, rotateInDownRight_1, rotateInUpLeft_1, rotateInUpRight_1, rotateOut_1, rotateOutDownLeft_1, rotateOutDownRight_1, rotateOutUpLeft_1, rotateOutUpRight_1, rubberBand_1, shake_1, slideInDown_1, slideInLeft_1, slideInRight_1, slideInUp_1, slideOutDown_1, slideOutLeft_1, slideOutRight_1, slideOutUp_1, swing_1, tada_1, wobble_1, zoomIn_1, zoomInDown_1, zoomInLeft_1, zoomInRight_1, zoomInUp_1, zoomOut_1, zoomOutDown_1, zoomOutLeft_1, zoomOutRight_1, zoomOutUp_1;
-    var ANIMATE_CSS;
+    var bounce_1, bounceIn_1, bounceInDown_1, bounceInLeft_1, bounceInRight_1, bounceInUp_1, bounceOut_1, bounceOutDown_1, bounceOutLeft_1, bounceOutRight_1, bounceOutUp_1, fadeIn_1, fadeInDown_1, fadeInDownBig_1, fadeInLeft_1, fadeInLeftBig_1, fadeInRight_1, fadeInRightBig_1, fadeInUp_1, fadeInUpBig_1, fadeOut_1, fadeOutDown_1, fadeOutDownBig_1, fadeOutLeft_1, fadeOutLeftBig_1, fadeOutRight_1, fadeOutRightBig_1, fadeOutUp_1, fadeOutUpBig_1, flash_1, flip_1, flipInX_1, flipInY_1, flipOutX_1, flipOutY_1, headShake_1, hinge_1, jello_1, lightSpeedIn_1, lightSpeedOut_1, pulse_1, rollIn_1, rollOut_1, rotateIn_1, rotateInDownLeft_1, rotateInDownRight_1, rotateInUpLeft_1, rotateInUpRight_1, rotateOut_1, rotateOutDownLeft_1, rotateOutDownRight_1, rotateOutUpLeft_1, rotateOutUpRight_1, rubberBand_1, shake_1, slideInDown_1, slideInLeft_1, slideInRight_1, slideInUp_1, slideOutDown_1, slideOutLeft_1, slideOutRight_1, slideOutUp_1, swing_1, tada_1, wobble_1, zoomIn_1, zoomInDown_1, zoomInLeft_1, zoomInRight_1, zoomInUp_1, zoomOut_1, zoomOutDown_1, zoomOutLeft_1, zoomOutRight_1, zoomOutUp_1, ANIMATE_CSS;
     return {
-        setters:[
+        setters: [
             function (bounce_1_1) {
                 bounce_1 = bounce_1_1;
             },
@@ -2587,8 +2586,9 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
             },
             function (zoomOutUp_1_1) {
                 zoomOutUp_1 = zoomOutUp_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             exports_77("ANIMATE_CSS", ANIMATE_CSS = [
                 bounce_1.bounce,
                 bounceIn_1.bounceIn,
@@ -2744,15 +2744,15 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
             exports_77("zoomOutRight", zoomOutRight_1.zoomOutRight);
             exports_77("zoomOutUp", zoomOutUp_1.zoomOutUp);
         }
-    }
+    };
 });
-System.register("just-animate/common/resources", [], function(exports_78, context_78) {
+System.register("just-animate/common/resources", [], function (exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
     var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, update, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             exports_78("nada", nada = null);
             exports_78("nil", nil = undefined);
             exports_78("animate", animate = 'animate');
@@ -2803,12 +2803,11 @@ System.register("just-animate/common/resources", [], function(exports_78, contex
             exports_78("percentageExpression", percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/);
             exports_78("timeExpression", timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/);
         }
-    }
+    };
 });
-System.register("just-animate/common/type", ["just-animate/common/resources"], function(exports_79, context_79) {
+System.register("just-animate/common/type", ["just-animate/common/resources"], function (exports_79, context_79) {
     "use strict";
     var __moduleName = context_79 && context_79.id;
-    var resources_1;
     /**
      * Tests if object is a list
      *
@@ -2819,11 +2818,9 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
     function isArray(a) {
         return isDefined(a) && !isString(a) && isNumber(a.length);
     }
-    exports_79("isArray", isArray);
     function isDefined(a) {
         return a !== resources_1.nil && a !== resources_1.nada && a !== '';
     }
-    exports_79("isDefined", isDefined);
     /**
      * Tests if object is a function
      *
@@ -2834,7 +2831,6 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
     function isFunction(a) {
         return toString.call(a) === resources_1.functionTypeString;
     }
-    exports_79("isFunction", isFunction);
     /**
      * Tests if object is a number
      *
@@ -2845,11 +2841,9 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
     function isNumber(a) {
         return typeof a === resources_1.numberString;
     }
-    exports_79("isNumber", isNumber);
     function isObject(a) {
         return typeof a === resources_1.objectString && a !== resources_1.nada;
     }
-    exports_79("isObject", isObject);
     /**
      * Tests if object is a string
      *
@@ -2860,21 +2854,26 @@ System.register("just-animate/common/type", ["just-animate/common/resources"], f
     function isString(a) {
         return typeof a === resources_1.stringString;
     }
+    var resources_1;
+    exports_79("isArray", isArray);
+    exports_79("isDefined", isDefined);
+    exports_79("isFunction", isFunction);
+    exports_79("isNumber", isNumber);
+    exports_79("isObject", isObject);
     exports_79("isString", isString);
     return {
-        setters:[
+        setters: [
             function (resources_1_1) {
                 resources_1 = resources_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
         }
-    }
+    };
 });
-System.register("just-animate/common/lists", ["just-animate/common/resources"], function(exports_80, context_80) {
+System.register("just-animate/common/lists", ["just-animate/common/resources"], function (exports_80, context_80) {
     "use strict";
     var __moduleName = context_80 && context_80.id;
-    var resources_2;
-    var slice, push;
     /**
      * Returns the first object in the list or undefined
      */
@@ -2898,7 +2897,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
         return resources_2.nil;
     }
-    exports_80("head", head);
     /**
      * Returns the last object in the list or undefined
      */
@@ -2922,7 +2920,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
         return resources_2.nil;
     }
-    exports_80("tail", tail);
     /**
      * Converts list to an Array.
      * Useful for converting NodeList and arguments to []
@@ -2935,7 +2932,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
     function toArray(indexed, index) {
         return slice.call(indexed, index || 0);
     }
-    exports_80("toArray", toArray);
     /**
      * Performs the function against all objects in the list
      *
@@ -2949,7 +2945,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
             fn(items[i]);
         }
     }
-    exports_80("each", each);
     /**
      * Returns the max value of a given property in a list
      *
@@ -2970,7 +2965,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
         return max;
     }
-    exports_80("max", max);
     /**
      * Returns the max value of a given property in a list
      *
@@ -2991,7 +2985,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
         return max;
     }
-    exports_80("maxBy", maxBy);
     /**
      * Maps one list of objects to another.
      * Returning undefined skips the item (effectively filtering it)
@@ -3013,7 +3006,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
         return results;
     }
-    exports_80("map", map);
     /**
      * Pushes each item in target into source and returns source
      *
@@ -3025,37 +3017,45 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
     function pushAll(source, target) {
         push.apply(source, target);
     }
+    var resources_2, slice, push;
+    exports_80("head", head);
+    exports_80("tail", tail);
+    exports_80("toArray", toArray);
+    exports_80("each", each);
+    exports_80("max", max);
+    exports_80("maxBy", maxBy);
+    exports_80("map", map);
     exports_80("pushAll", pushAll);
     return {
-        setters:[
+        setters: [
             function (resources_2_1) {
                 resources_2 = resources_2_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             slice = Array.prototype.slice;
             push = Array.prototype.push;
             ;
         }
-    }
+    };
 });
-System.register("just-animate/common/strings", ["just-animate/common/type", "just-animate/common/lists", "just-animate/common/resources"], function(exports_81, context_81) {
+System.register("just-animate/common/strings", ["just-animate/common/type", "just-animate/common/lists", "just-animate/common/resources"], function (exports_81, context_81) {
     "use strict";
     var __moduleName = context_81 && context_81.id;
-    var type_1, lists_1, resources_3;
-    var ostring, cssFunction;
     function camelCaseReplacer(match, p1, p2) {
         return p1 + p2.toUpperCase();
     }
     function toCamelCase(value) {
         return type_1.isString(value) ? value.replace(resources_3.camelCaseRegex, camelCaseReplacer) : resources_3.nil;
     }
-    exports_81("toCamelCase", toCamelCase);
     function toString(val) {
         return ostring.call(val);
     }
+    var type_1, lists_1, resources_3, ostring, cssFunction;
+    exports_81("toCamelCase", toCamelCase);
     exports_81("toString", toString);
     return {
-        setters:[
+        setters: [
             function (type_1_1) {
                 type_1 = type_1_1;
             },
@@ -3064,30 +3064,31 @@ System.register("just-animate/common/strings", ["just-animate/common/type", "jus
             },
             function (resources_3_1) {
                 resources_3 = resources_3_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             ostring = Object.prototype.toString;
             exports_81("cssFunction", cssFunction = function () {
                 var args = arguments;
                 return args[0] + "(" + lists_1.toArray(args, 1).join(',') + ")";
             });
         }
-    }
+    };
 });
-System.register("just-animate/common/easings", ["just-animate/common/strings", "just-animate/common/resources"], function(exports_82, context_82) {
+System.register("just-animate/common/easings", ["just-animate/common/strings", "just-animate/common/resources"], function (exports_82, context_82) {
     "use strict";
     var __moduleName = context_82 && context_82.id;
-    var strings_1, resources_4;
-    var easings;
+    var strings_1, resources_4, easings;
     return {
-        setters:[
+        setters: [
             function (strings_1_1) {
                 strings_1 = strings_1_1;
             },
             function (resources_4_1) {
                 resources_4 = resources_4_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             exports_82("easings", easings = {
                 easeInBack: strings_1.cssFunction(resources_4.cubicBezier, 0.6, -0.28, 0.735, 0.045),
                 easeInCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.6, 0.04, 0.98, 0.335),
@@ -3116,9 +3117,9 @@ System.register("just-animate/common/easings", ["just-animate/common/strings", "
                 elegantSlowStartEnd: strings_1.cssFunction(resources_4.cubicBezier, 0.175, 0.885, 0.32, 1.275)
             });
         }
-    }
+    };
 });
-System.register("just-animate/common/errors", [], function(exports_83, context_83) {
+System.register("just-animate/common/errors", [], function (exports_83, context_83) {
     "use strict";
     var __moduleName = context_83 && context_83.id;
     function invalidArg(name) {
@@ -3126,15 +3127,14 @@ System.register("just-animate/common/errors", [], function(exports_83, context_8
     }
     exports_83("invalidArg", invalidArg);
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
         }
-    }
+    };
 });
-System.register("just-animate/common/elements", ["just-animate/common/lists", "just-animate/common/type", "just-animate/common/errors"], function(exports_84, context_84) {
+System.register("just-animate/common/elements", ["just-animate/common/lists", "just-animate/common/type", "just-animate/common/errors"], function (exports_84, context_84) {
     "use strict";
     var __moduleName = context_84 && context_84.id;
-    var lists_2, type_2, errors_1;
     /**
      * Recursively resolves the element source from dom, selector, jquery, array, and function sources
      *
@@ -3173,9 +3173,10 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         // otherwise return empty    
         return [];
     }
+    var lists_2, type_2, errors_1;
     exports_84("queryElements", queryElements);
     return {
-        setters:[
+        setters: [
             function (lists_2_1) {
                 lists_2 = lists_2_1;
             },
@@ -3184,16 +3185,15 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
             },
             function (errors_1_1) {
                 errors_1 = errors_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
         }
-    }
+    };
 });
-System.register("just-animate/common/math", ["just-animate/common/resources"], function(exports_85, context_85) {
+System.register("just-animate/common/math", ["just-animate/common/resources"], function (exports_85, context_85) {
     "use strict";
     var __moduleName = context_85 && context_85.id;
-    var resources_5;
-    var linearCubicBezier, SUBDIVISION_EPSILON;
     /**
      * Clamps a number between the min and max
      *
@@ -3206,11 +3206,9 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
     function clamp(val, min, max) {
         return val === resources_5.nil ? resources_5.nil : val < min ? min : val > max ? max : val;
     }
-    exports_85("clamp", clamp);
     function inRange(val, min, max) {
         return min < max ? min <= val && val <= max : max <= val && val <= min;
     }
-    exports_85("inRange", inRange);
     function bezier(n1, n2, t) {
         return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
     }
@@ -3242,30 +3240,31 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
             return x;
         };
     }
+    var resources_5, linearCubicBezier, SUBDIVISION_EPSILON;
+    exports_85("clamp", clamp);
+    exports_85("inRange", inRange);
     exports_85("cubicBezier", cubicBezier);
     return {
-        setters:[
+        setters: [
             function (resources_5_1) {
                 resources_5 = resources_5_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             linearCubicBezier = function (x) { return x; };
             SUBDIVISION_EPSILON = 0.0001;
         }
-    }
+    };
 });
-System.register("just-animate/common/objects", ["just-animate/common/type"], function(exports_86, context_86) {
+System.register("just-animate/common/objects", ["just-animate/common/type"], function (exports_86, context_86) {
     "use strict";
     var __moduleName = context_86 && context_86.id;
-    var type_3;
-    var extend, inherit, expand;
     function unwrap(value, ctx) {
         if (!type_3.isFunction(value)) {
             return value;
         }
         return value(ctx.target, ctx.index, ctx.targets);
     }
-    exports_86("unwrap", unwrap);
     function listProps(indexed) {
         var props = [];
         var len = indexed.length;
@@ -3279,13 +3278,16 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
         }
         return props;
     }
+    var type_3, extend, inherit, expand;
+    exports_86("unwrap", unwrap);
     exports_86("listProps", listProps);
     return {
-        setters:[
+        setters: [
             function (type_3_1) {
                 type_3 = type_3_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             /**
              * Extends the first object with the properties of each subsequent object
              *
@@ -3333,18 +3335,15 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
                 return result;
             });
         }
-    }
+    };
 });
-System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function(exports_87, context_87) {
+System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function (exports_87, context_87) {
     "use strict";
     var __moduleName = context_87 && context_87.id;
-    var type_4, resources_6, errors_2;
-    var stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
     function Unit() {
         var self = this instanceof Unit ? this : Object.create(Unit.prototype);
         return self;
     }
-    exports_87("Unit", Unit);
     function fromDistance(val, unit) {
         if (!type_4.isDefined(val)) {
             return resources_6.nil;
@@ -3358,7 +3357,6 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         var value = parseFloat(match[1]);
         return returnUnit.values(value, unitType, stepNone);
     }
-    exports_87("fromDistance", fromDistance);
     function fromPercentage(val, unit) {
         if (!type_4.isDefined(val)) {
             return resources_6.nil;
@@ -3371,7 +3369,6 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         var value = parseFloat(match[1]);
         return returnUnit.values(value, percent, stepNone);
     }
-    exports_87("fromPercentage", fromPercentage);
     function fromTime(val, unit) {
         var returnUnit = unit || Unit();
         if (type_4.isNumber(val)) {
@@ -3393,7 +3390,6 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         }
         return returnUnit.values(valueMs, millisecond, step);
     }
-    exports_87("fromTime", fromTime);
     function resolveTimeExpression(val, index) {
         fromTime(val, sharedUnit);
         if (sharedUnit.step === stepForward) {
@@ -3404,9 +3400,14 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         }
         return sharedUnit.value;
     }
+    var type_4, resources_6, errors_2, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
+    exports_87("Unit", Unit);
+    exports_87("fromDistance", fromDistance);
+    exports_87("fromPercentage", fromPercentage);
+    exports_87("fromTime", fromTime);
     exports_87("resolveTimeExpression", resolveTimeExpression);
     return {
-        setters:[
+        setters: [
             function (type_4_1) {
                 type_4 = type_4_1;
             },
@@ -3415,8 +3416,9 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
             },
             function (errors_2_1) {
                 errors_2 = errors_2_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             exports_87("stepNone", stepNone = '=');
             exports_87("stepForward", stepForward = '+=');
             exports_87("stepBackward", stepBackward = '-=');
@@ -3455,15 +3457,15 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
             };
             sharedUnit = Unit();
         }
-    }
+    };
 });
-System.register("just-animate/common/utils", [], function(exports_88, context_88) {
+System.register("just-animate/common/utils", [], function (exports_88, context_88) {
     "use strict";
     var __moduleName = context_88 && context_88.id;
     var global, requestAnimationFrame, now, raf;
     return {
-        setters:[],
-        execute: function() {
+        setters: [],
+        execute: function () {
             global = window;
             requestAnimationFrame = global.requestAnimationFrame;
             exports_88("now", now = (performance && performance.now)
@@ -3477,21 +3479,21 @@ System.register("just-animate/common/utils", [], function(exports_88, context_88
                     setTimeout(function () { fn(ctx); }, 16.66);
                 });
         }
-    }
+    };
 });
-System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/type", "just-animate/common/errors", "just-animate/common/resources"], function(exports_89, context_89) {
+System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/type", "just-animate/common/errors", "just-animate/common/resources"], function (exports_89, context_89) {
     "use strict";
     var __moduleName = context_89 && context_89.id;
-    var type_5, errors_3, resources_7;
     function Dispatcher() {
         var self = this;
         self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);
         self._fn = {};
         return self;
     }
+    var type_5, errors_3, resources_7;
     exports_89("Dispatcher", Dispatcher);
     return {
-        setters:[
+        setters: [
             function (type_5_1) {
                 type_5 = type_5_1;
             },
@@ -3500,8 +3502,9 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
             },
             function (resources_7_1) {
                 resources_7 = resources_7_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             Dispatcher.prototype = {
                 _fn: resources_7.nil,
                 trigger: function (eventName, args) {
@@ -3541,19 +3544,19 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
                 }
             };
         }
-    }
+    };
 });
-System.register("just-animate/plugins/core/MixinService", ["just-animate/common/resources"], function(exports_90, context_90) {
+System.register("just-animate/plugins/core/MixinService", ["just-animate/common/resources"], function (exports_90, context_90) {
     "use strict";
     var __moduleName = context_90 && context_90.id;
-    var resources_8;
-    var presets, MixinService;
+    var resources_8, presets, MixinService;
     return {
-        setters:[
+        setters: [
             function (resources_8_1) {
                 resources_8 = resources_8_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             presets = {};
             MixinService = (function () {
                 function MixinService() {
@@ -3574,12 +3577,11 @@ System.register("just-animate/plugins/core/MixinService", ["just-animate/common/
             }());
             exports_90("MixinService", MixinService);
         }
-    }
+    };
 });
-System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/resources", "just-animate/common/utils"], function(exports_91, context_91) {
+System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/resources", "just-animate/common/utils"], function (exports_91, context_91) {
     "use strict";
     var __moduleName = context_91 && context_91.id;
-    var resources_9, utils_1;
     function TimeLoop() {
         var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
         self.active = [];
@@ -3590,7 +3592,6 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
         self.ons = [];
         return self;
     }
-    exports_91("TimeLoop", TimeLoop);
     function update(self) {
         updateOffs(self);
         updateOns(self);
@@ -3643,15 +3644,18 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
             }
         }
     }
+    var resources_9, utils_1;
+    exports_91("TimeLoop", TimeLoop);
     return {
-        setters:[
+        setters: [
             function (resources_9_1) {
                 resources_9 = resources_9_1;
             },
             function (utils_1_1) {
                 utils_1 = utils_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             TimeLoop.prototype = {
                 on: function (fn) {
                     var self = this;
@@ -3687,15 +3691,14 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
                 }
             };
         }
-    }
+    };
 });
-System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/common/easings", "just-animate/common/units"], function(exports_92, context_92) {
+System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/common/easings", "just-animate/common/units"], function (exports_92, context_92) {
     "use strict";
     var __moduleName = context_92 && context_92.id;
-    var lists_3, objects_1, type_6, math_1, errors_4, resources_10, Dispatcher_1, easings_1, units_1;
-    var animationPadding, unitOut, Animator;
+    var lists_3, objects_1, type_6, math_1, errors_4, resources_10, Dispatcher_1, easings_1, units_1, animationPadding, unitOut, Animator;
     return {
-        setters:[
+        setters: [
             function (lists_3_1) {
                 lists_3 = lists_3_1;
             },
@@ -3722,8 +3725,9 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
             },
             function (units_1_1) {
                 units_1 = units_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             // todo: remove these imports as soon as possible
             // fixme!: this controls the amount of time left before the timeline gives up 
             // on individual animation and calls finish.  If an animation plays after its time, it looks
@@ -3820,7 +3824,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                 };
                 Animator.prototype.play = function () {
                     var self = this;
-                    if (self._playState !== 'running' || self._playState !== 'pending') {
+                    if (!(self._playState === 'running' || self._playState === 'pending')) {
                         self._playState = 'pending';
                         self._timeLoop.on(self._onTick);
                     }
@@ -3970,15 +3974,14 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
             }());
             exports_92("Animator", Animator);
         }
-    }
+    };
 });
-System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function(exports_93, context_93) {
+System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function (exports_93, context_93) {
     "use strict";
     var __moduleName = context_93 && context_93.id;
-    var lists_4, Animator_1, TimeLoop_1, MixinService_1;
-    var JustAnimate;
+    var lists_4, Animator_1, TimeLoop_1, MixinService_1, JustAnimate;
     return {
-        setters:[
+        setters: [
             function (lists_4_1) {
                 lists_4 = lists_4_1;
             },
@@ -3990,8 +3993,9 @@ System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-
             },
             function (MixinService_1_1) {
                 MixinService_1 = MixinService_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             JustAnimate = (function () {
                 function JustAnimate() {
                     var self = this;
@@ -4017,14 +4021,14 @@ System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-
             }());
             exports_93("JustAnimate", JustAnimate);
         }
-    }
+    };
 });
-System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function(exports_94, context_94) {
+System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function (exports_94, context_94) {
     "use strict";
     var __moduleName = context_94 && context_94.id;
     var animations;
     return {
-        setters:[
+        setters: [
             function (animations_1) {
                 animations = animations_1;
             },
@@ -4032,23 +4036,24 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
                 exports_94({
                     "JustAnimate": JustAnimate_1_1["JustAnimate"]
                 });
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             exports_94("animations", animations);
         }
-    }
+    };
 });
-System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/common/resources"], function(exports_95, context_95) {
+System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/common/resources"], function (exports_95, context_95) {
     "use strict";
     var __moduleName = context_95 && context_95.id;
-    var resources_11;
-    var KeyframeAnimator;
+    var resources_11, KeyframeAnimator;
     return {
-        setters:[
+        setters: [
             function (resources_11_1) {
                 resources_11 = resources_11_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             KeyframeAnimator = (function () {
                 function KeyframeAnimator(init) {
                     this._init = init;
@@ -4100,13 +4105,11 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
             }());
             exports_95("KeyframeAnimator", KeyframeAnimator);
         }
-    }
+    };
 });
-System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/resources"], function(exports_96, context_96) {
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/resources"], function (exports_96, context_96) {
     "use strict";
     var __moduleName = context_96 && context_96.id;
-    var type_7, strings_2, errors_5, easings_2, lists_5, objects_2, KeyframeAnimator_1, units_2, resources_12;
-    var global, transitionAliases;
     function createAnimator(ctx) {
         var options = ctx.options;
         var delay = units_2.resolveTimeExpression(objects_2.unwrap(options.delay, ctx) || 0, ctx.index);
@@ -4136,7 +4139,6 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         }
         return animator;
     }
-    exports_96("createAnimator", createAnimator);
     function initAnimator(timings, ctx) {
         // process css as either keyframes or calculate what those keyframes should be   
         var options = ctx.options;
@@ -4634,8 +4636,10 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             keyframe[resources_12.transform] = cssTransform;
         }
     }
+    var type_7, strings_2, errors_5, easings_2, lists_5, objects_2, KeyframeAnimator_1, units_2, resources_12, global, transitionAliases;
+    exports_96("createAnimator", createAnimator);
     return {
-        setters:[
+        setters: [
             function (type_7_1) {
                 type_7 = type_7_1;
             },
@@ -4662,8 +4666,9 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             },
             function (resources_12_1) {
                 resources_12 = resources_12_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             global = window;
             transitionAliases = {
                 rotate: resources_12.transform,
@@ -4689,22 +4694,22 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 z: resources_12.transform
             };
         }
-    }
+    };
 });
-System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/common/elements", "just-animate/plugins/waapi/KeyframeTransformers"], function(exports_97, context_97) {
+System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/common/elements", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_97, context_97) {
     "use strict";
     var __moduleName = context_97 && context_97.id;
-    var elements_2, KeyframeTransformers_1;
-    var KeyframePlugin;
+    var elements_2, KeyframeTransformers_1, KeyframePlugin;
     return {
-        setters:[
+        setters: [
             function (elements_2_1) {
                 elements_2 = elements_2_1;
             },
             function (KeyframeTransformers_1_1) {
                 KeyframeTransformers_1 = KeyframeTransformers_1_1;
-            }],
-        execute: function() {
+            }
+        ],
+        execute: function () {
             KeyframePlugin = (function () {
                 function KeyframePlugin() {
                 }
@@ -4728,5 +4733,5 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
             }());
             exports_97("KeyframePlugin", KeyframePlugin);
         }
-    }
+    };
 });

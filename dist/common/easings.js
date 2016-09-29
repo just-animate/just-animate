@@ -1,6 +1,6 @@
 "use strict";
-var strings_1 = require('./strings');
-var resources_1 = require('./resources');
+var strings_1 = require("./strings");
+var resources_1 = require("./resources");
 exports.easings = {
     easeInBack: strings_1.cssFunction(resources_1.cubicBezier, 0.6, -0.28, 0.735, 0.045),
     easeInCirc: strings_1.cssFunction(resources_1.cubicBezier, 0.6, 0.04, 0.98, 0.335),

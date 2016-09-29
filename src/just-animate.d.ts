@@ -42,8 +42,8 @@ declare module ja {
     
     export interface IJustAnimate {
         animate(options: ja.IAnimationOptions | ja.IAnimationOptions): ja.IAnimator;
-        inject(animationOptionList: ja.IAnimationOptions[]): void;
-        register(animationOptions: ja.IAnimationOptions): void;
+        inject(animations: ja.IAnimationMixin[]): void;
+        register(preset: ja.IAnimationMixin): void;
     }
     export interface IPlugin {
         handle(options: ja.IAnimationOptions): ja.IAnimationController[];

@@ -1,7 +1,7 @@
 "use strict";
-var type_1 = require('./type');
-var lists_1 = require('./lists');
-var resources_1 = require('./resources');
+var type_1 = require("./type");
+var lists_1 = require("./lists");
+var resources_1 = require("./resources");
 var ostring = Object.prototype.toString;
 function camelCaseReplacer(match, p1, p2) {
     return p1 + p2.toUpperCase();

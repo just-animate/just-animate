@@ -1,5 +1,5 @@
 "use strict";
-var resources_1 = require('./resources');
+var resources_1 = require("./resources");
 var linearCubicBezier = function (x) { return x; };
 var SUBDIVISION_EPSILON = 0.0001;
 /**

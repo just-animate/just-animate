@@ -1,5 +1,5 @@
 "use strict";
-var resources_1 = require('./resources');
+var resources_1 = require("./resources");
 /**
  * Tests if object is a list
  *

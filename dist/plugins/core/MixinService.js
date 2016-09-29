@@ -1,5 +1,5 @@
 "use strict";
-var resources_1 = require('../../common/resources');
+var resources_1 = require("../../common/resources");
 var presets = {};
 var MixinService = (function () {
     function MixinService() {

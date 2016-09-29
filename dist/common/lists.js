@@ -1,5 +1,5 @@
 "use strict";
-var resources_1 = require('./resources');
+var resources_1 = require("./resources");
 var slice = Array.prototype.slice;
 var push = Array.prototype.push;
 ;

@@ -1,6 +1,6 @@
 "use strict";
-var elements_1 = require('../../common/elements');
-var KeyframeTransformers_1 = require('./KeyframeTransformers');
+var elements_1 = require("../../common/elements");
+var KeyframeTransformers_1 = require("./KeyframeTransformers");
 var KeyframePlugin = (function () {
     function KeyframePlugin() {
     }

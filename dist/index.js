@@ -1,5 +1,5 @@
 "use strict";
-var animations = require('./animations');
+var animations = require("./animations");
 exports.animations = animations;
-var JustAnimate_1 = require('./JustAnimate');
+var JustAnimate_1 = require("./JustAnimate");
 exports.JustAnimate = JustAnimate_1.JustAnimate;

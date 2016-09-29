@@ -3,7 +3,7 @@ import { Animator } from './plugins/core/Animator';
 import { TimeLoop, ITimeLoop } from './plugins/core/TimeLoop';
 import { MixinService } from './plugins/core/MixinService';
 
-export class JustAnimate {
+export class JustAnimate implements ja.IJustAnimate {
     public plugins: ja.IPlugin[];
 
     private _resolver: MixinService;

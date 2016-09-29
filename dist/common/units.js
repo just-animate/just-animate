@@ -1,7 +1,7 @@
 "use strict";
-var type_1 = require('./type');
-var resources_1 = require('./resources');
-var errors_1 = require('./errors');
+var type_1 = require("./type");
+var resources_1 = require("./resources");
+var errors_1 = require("./errors");
 exports.stepNone = '=';
 exports.stepForward = '+=';
 exports.stepBackward = '-=';

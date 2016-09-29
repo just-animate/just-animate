@@ -1,6 +1,6 @@
 "use strict";
-var resources_1 = require('../../common/resources');
-var utils_1 = require('../../common/utils');
+var resources_1 = require("../../common/resources");
+var utils_1 = require("../../common/utils");
 function TimeLoop() {
     var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
     self.active = [];

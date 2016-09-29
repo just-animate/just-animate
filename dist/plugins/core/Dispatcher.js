@@ -1,7 +1,7 @@
 "use strict";
-var type_1 = require('../../common/type');
-var errors_1 = require('../../common/errors');
-var resources_1 = require('../../common/resources');
+var type_1 = require("../../common/type");
+var errors_1 = require("../../common/errors");
+var resources_1 = require("../../common/resources");
 function Dispatcher() {
     var self = this;
     self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);

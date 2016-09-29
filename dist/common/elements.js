@@ -1,7 +1,7 @@
 "use strict";
-var lists_1 = require('./lists');
-var type_1 = require('./type');
-var errors_1 = require('./errors');
+var lists_1 = require("./lists");
+var type_1 = require("./type");
+var errors_1 = require("./errors");
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources
  *

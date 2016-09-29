@@ -1,8 +1,8 @@
 "use strict";
-var lists_1 = require('./common/lists');
-var Animator_1 = require('./plugins/core/Animator');
-var TimeLoop_1 = require('./plugins/core/TimeLoop');
-var MixinService_1 = require('./plugins/core/MixinService');
+var lists_1 = require("./common/lists");
+var Animator_1 = require("./plugins/core/Animator");
+var TimeLoop_1 = require("./plugins/core/TimeLoop");
+var MixinService_1 = require("./plugins/core/MixinService");
 var JustAnimate = (function () {
     function JustAnimate() {
         var self = this;

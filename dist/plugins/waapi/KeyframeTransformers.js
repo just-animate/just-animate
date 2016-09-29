@@ -1,13 +1,13 @@
 "use strict";
-var type_1 = require('../../common/type');
-var strings_1 = require('../../common/strings');
-var errors_1 = require('../../common/errors');
-var easings_1 = require('../../common/easings');
-var lists_1 = require('../../common/lists');
-var objects_1 = require('../../common/objects');
-var KeyframeAnimator_1 = require('../waapi/KeyframeAnimator');
-var units_1 = require('../../common/units');
-var resources_1 = require('../../common/resources');
+var type_1 = require("../../common/type");
+var strings_1 = require("../../common/strings");
+var errors_1 = require("../../common/errors");
+var easings_1 = require("../../common/easings");
+var lists_1 = require("../../common/lists");
+var objects_1 = require("../../common/objects");
+var KeyframeAnimator_1 = require("../waapi/KeyframeAnimator");
+var units_1 = require("../../common/units");
+var resources_1 = require("../../common/resources");
 var global = window;
 var transitionAliases = {
     rotate: resources_1.transform,

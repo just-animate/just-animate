@@ -1,13 +1,13 @@
 "use strict";
-var lists_1 = require('../../common/lists');
-var objects_1 = require('../../common/objects');
-var type_1 = require('../../common/type');
-var math_1 = require('../../common/math');
-var errors_1 = require('../../common/errors');
-var resources_1 = require('../../common/resources');
-var Dispatcher_1 = require('./Dispatcher');
-var easings_1 = require('../../common/easings');
-var units_1 = require('../../common/units');
+var lists_1 = require("../../common/lists");
+var objects_1 = require("../../common/objects");
+var type_1 = require("../../common/type");
+var math_1 = require("../../common/math");
+var errors_1 = require("../../common/errors");
+var resources_1 = require("../../common/resources");
+var Dispatcher_1 = require("./Dispatcher");
+var easings_1 = require("../../common/easings");
+var units_1 = require("../../common/units");
 // todo: remove these imports as soon as possible
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
@@ -104,7 +104,7 @@ var Animator = (function () {
     };
     Animator.prototype.play = function () {
         var self = this;
-        if (self._playState !== 'running' || self._playState !== 'pending') {
+        if (!(self._playState === 'running' || self._playState === 'pending')) {
             self._playState = 'pending';
             self._timeLoop.on(self._onTick);
         }

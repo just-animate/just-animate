@@ -1,5 +1,5 @@
 "use strict";
-var type_1 = require('./type');
+var type_1 = require("./type");
 /**
  * Extends the first object with the properties of each subsequent object
  *
