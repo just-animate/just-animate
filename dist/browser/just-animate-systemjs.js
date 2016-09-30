@@ -4106,7 +4106,7 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/errors", "just-animate/common/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/resources"], function (exports_96, context_96) {
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/resources"], function (exports_96, context_96) {
     "use strict";
     var __moduleName = context_96 && context_96.id;
     function createAnimator(ctx) {
@@ -4183,7 +4183,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             if (property === resources_12.offsetString) {
                 return;
             }
-            var alias = transitionAliases[property] || property;
+            var alias = transforms.indexOf(property) !== -1 ? resources_12.transform : property;
             var val = style[alias];
             if (type_7.isDefined(val)) {
                 firstFrame[alias] = val;
@@ -4375,267 +4375,44 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
     function keyframeOffsetComparer(a, b) {
         return a.offset - b.offset;
     }
+    function transformPropertyComparer(a, b) {
+        return transforms.indexOf(a[0]) - transforms.indexOf(b[0]);
+    }
     /**
      * Handles transforming short hand key properties into their native form
      */
     function normalizeProperties(keyframe) {
-        var xIndex = 0;
-        var yIndex = 1;
-        var zIndex = 2;
-        // transform properties
-        var scaleArray = [];
-        var skewArray = [];
-        var translateArray = [];
-        var cssTransform = '';
+        var cssTransforms = [];
         for (var prop in keyframe) {
             var value = keyframe[prop];
             if (!type_7.isDefined(value)) {
                 keyframe[prop] = resources_12.nil;
                 continue;
             }
-            if (prop === resources_12.easingString) {
+            // nullify properties
+            keyframe[prop] = resources_12.nil;
+            var propAlias = strings_2.toCamelCase(propertyAliases[prop] || prop);
+            if (propAlias === resources_12.easingString) {
                 var easing = keyframe[resources_12.easingString];
                 keyframe[resources_12.easingString] = easings_2.easings[easing] || easing || resources_12.nil;
                 continue;
             }
-            // nullify properties (will get added back if it is supposed to be here)
-            keyframe[prop] = resources_12.nil;
-            switch (prop) {
-                case resources_12.scale3d:
-                    if (type_7.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 3) {
-                            throw errors_5.invalidArg(resources_12.scale3d);
-                        }
-                        scaleArray[xIndex] = arr[xIndex];
-                        scaleArray[yIndex] = arr[yIndex];
-                        scaleArray[zIndex] = arr[zIndex];
-                        continue;
-                    }
-                    if (type_7.isNumber(value)) {
-                        scaleArray[xIndex] = value;
-                        scaleArray[yIndex] = value;
-                        scaleArray[zIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.scale3d);
-                case resources_12.scale:
-                    if (type_7.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 2) {
-                            throw errors_5.invalidArg(resources_12.scale);
-                        }
-                        scaleArray[xIndex] = arr[xIndex];
-                        scaleArray[yIndex] = arr[yIndex];
-                        continue;
-                    }
-                    if (type_7.isNumber(value)) {
-                        scaleArray[xIndex] = value;
-                        scaleArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.scale);
-                case resources_12.scaleX:
-                    if (type_7.isNumber(value)) {
-                        scaleArray[xIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.scaleX);
-                case resources_12.scaleY:
-                    if (type_7.isNumber(value)) {
-                        scaleArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.scaleY);
-                case resources_12.scaleZ:
-                    if (type_7.isNumber(value)) {
-                        scaleArray[zIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.scaleZ);
-                case resources_12.skew:
-                    if (type_7.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 2) {
-                            throw errors_5.invalidArg(resources_12.skew);
-                        }
-                        skewArray[xIndex] = arr[xIndex];
-                        skewArray[yIndex] = arr[yIndex];
-                        continue;
-                    }
-                    if (type_7.isNumber(value)) {
-                        skewArray[xIndex] = value;
-                        skewArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.skew);
-                case resources_12.skewX:
-                    if (type_7.isString(value)) {
-                        skewArray[xIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.skewX);
-                case resources_12.skewY:
-                    if (type_7.isString(value)) {
-                        skewArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.skewY);
-                case resources_12.rotate3d:
-                    if (type_7.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 4) {
-                            throw errors_5.invalidArg(resources_12.rotate3d);
-                        }
-                        cssTransform += " rotate3d(" + arr[0] + "," + arr[1] + "," + arr[2] + "," + arr[3] + ")";
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.rotate3d);
-                case resources_12.rotateX:
-                    if (type_7.isString(value)) {
-                        cssTransform += " rotate3d(1, 0, 0, " + value + ")";
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.rotateX);
-                case resources_12.rotateY:
-                    if (type_7.isString(value)) {
-                        cssTransform += " rotate3d(0, 1, 0, " + value + ")";
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.rotateY);
-                case resources_12.rotate:
-                case resources_12.rotateZ:
-                    if (type_7.isString(value)) {
-                        cssTransform += " rotate3d(0, 0, 1, " + value + ")";
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.rotateZ);
-                case resources_12.translate3d:
-                    if (type_7.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 3) {
-                            throw errors_5.invalidArg(resources_12.translate3d);
-                        }
-                        translateArray[xIndex] = arr[xIndex];
-                        translateArray[yIndex] = arr[yIndex];
-                        translateArray[zIndex] = arr[zIndex];
-                        continue;
-                    }
-                    if (type_7.isString(value) || type_7.isNumber(value)) {
-                        translateArray[xIndex] = value;
-                        translateArray[yIndex] = value;
-                        translateArray[zIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.rotate3d);
-                case resources_12.translate:
-                    if (type_7.isArray(value)) {
-                        var arr = value;
-                        if (arr.length !== 2) {
-                            throw errors_5.invalidArg(resources_12.translate);
-                        }
-                        translateArray[xIndex] = arr[xIndex];
-                        translateArray[yIndex] = arr[yIndex];
-                        continue;
-                    }
-                    if (type_7.isString(value) || type_7.isNumber(value)) {
-                        translateArray[xIndex] = value;
-                        translateArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.translate);
-                case resources_12.x:
-                case resources_12.translateX:
-                    if (type_7.isString(value) || type_7.isNumber(value)) {
-                        translateArray[xIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.x);
-                case resources_12.y:
-                case resources_12.translateY:
-                    if (type_7.isString(value) || type_7.isNumber(value)) {
-                        translateArray[yIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.y);
-                case resources_12.z:
-                case resources_12.translateZ:
-                    if (type_7.isString(value) || type_7.isNumber(value)) {
-                        translateArray[zIndex] = value;
-                        continue;
-                    }
-                    throw errors_5.invalidArg(resources_12.z);
-                case resources_12.transform:
-                    cssTransform += ' ' + value;
-                    break;
-                default:
-                    keyframe[strings_2.toCamelCase(prop)] = value;
-                    break;
+            var transformIndex = transforms.indexOf(prop);
+            if (transformIndex === -1) {
+                keyframe[propAlias] = value;
+            }
+            else {
+                debugger;
+                cssTransforms.push([propAlias, value]);
             }
         }
-        // combine scale
-        var isScaleX = scaleArray[xIndex] !== resources_12.nil;
-        var isScaleY = scaleArray[yIndex] !== resources_12.nil;
-        var isScaleZ = scaleArray[zIndex] !== resources_12.nil;
-        if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
-            var scaleString = scaleArray.map(function (s) { return s || '1'; }).join(',');
-            cssTransform += " scale3d(" + scaleString + ")";
-        }
-        else if (isScaleX && isScaleY) {
-            cssTransform += " scale(" + (scaleArray[xIndex] || 1) + ", " + (scaleArray[yIndex] || 1) + ")";
-        }
-        else if (isScaleX) {
-            cssTransform += " scaleX(" + scaleArray[xIndex] + ")";
-        }
-        else if (isScaleY) {
-            cssTransform += " scaleX(" + scaleArray[yIndex] + ")";
-        }
-        else if (isScaleZ) {
-            cssTransform += " scaleX(" + scaleArray[zIndex] + ")";
-        }
-        else {
-        }
-        // combine skew
-        var isskewX = skewArray[xIndex] !== resources_12.nil;
-        var isskewY = skewArray[yIndex] !== resources_12.nil;
-        if (isskewX && isskewY) {
-            cssTransform += " skew(" + (skewArray[xIndex] || 1) + ", " + (skewArray[yIndex] || 1) + ")";
-        }
-        else if (isskewX) {
-            cssTransform += " skewX(" + skewArray[xIndex] + ")";
-        }
-        else if (isskewY) {
-            cssTransform += " skewY(" + skewArray[yIndex] + ")";
-        }
-        else {
-        }
-        // combine translate
-        var istranslateX = translateArray[xIndex] !== resources_12.nil;
-        var istranslateY = translateArray[yIndex] !== resources_12.nil;
-        var istranslateZ = translateArray[zIndex] !== resources_12.nil;
-        if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
-            var translateString = translateArray.map(function (s) { return s || '1'; }).join(',');
-            cssTransform += " translate3d(" + translateString + ")";
-        }
-        else if (istranslateX && istranslateY) {
-            cssTransform += " translate(" + (translateArray[xIndex] || 1) + ", " + (translateArray[yIndex] || 1) + ")";
-        }
-        else if (istranslateX) {
-            cssTransform += " translateX(" + translateArray[xIndex] + ")";
-        }
-        else if (istranslateY) {
-            cssTransform += " translateY(" + translateArray[yIndex] + ")";
-        }
-        else if (istranslateZ) {
-            cssTransform += " translateZ(" + translateArray[zIndex] + ")";
-        }
-        else {
-        }
-        if (cssTransform) {
-            keyframe[resources_12.transform] = cssTransform;
+        if (cssTransforms.length) {
+            keyframe[resources_12.transform] = cssTransforms
+                .sort(transformPropertyComparer)
+                .reduce(function (c, n) { return c + (" " + n[0] + "(n[1])"); }, '');
         }
     }
-    var type_7, strings_2, errors_5, easings_2, lists_5, objects_2, KeyframeAnimator_1, units_2, resources_12, global, transitionAliases;
+    var type_7, strings_2, easings_2, lists_5, objects_2, KeyframeAnimator_1, units_2, resources_12, global, propertyAliases, transforms;
     exports_96("createAnimator", createAnimator);
     return {
         setters: [
@@ -4644,9 +4421,6 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             },
             function (strings_2_1) {
                 strings_2 = strings_2_1;
-            },
-            function (errors_5_1) {
-                errors_5 = errors_5_1;
             },
             function (easings_2_1) {
                 easings_2 = easings_2_1;
@@ -4669,29 +4443,36 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         ],
         execute: function () {
             global = window;
-            transitionAliases = {
-                rotate: resources_12.transform,
-                rotate3d: resources_12.transform,
-                rotateX: resources_12.transform,
-                rotateY: resources_12.transform,
-                rotateZ: resources_12.transform,
-                scale: resources_12.transform,
-                scale3d: resources_12.transform,
-                scaleX: resources_12.transform,
-                scaleY: resources_12.transform,
-                scaleZ: resources_12.transform,
-                skew: resources_12.transform,
-                skewX: resources_12.transform,
-                skewY: resources_12.transform,
-                translate: resources_12.transform,
-                translate3d: resources_12.transform,
-                translateX: resources_12.transform,
-                translateY: resources_12.transform,
-                translateZ: resources_12.transform,
-                x: resources_12.transform,
-                y: resources_12.transform,
-                z: resources_12.transform
+            propertyAliases = {
+                x: resources_12.translateX,
+                y: resources_12.translateY,
+                Z: resources_12.translateZ
             };
+            transforms = [
+                'perspective',
+                'matrix',
+                resources_12.translate,
+                resources_12.translate3d,
+                resources_12.translateX,
+                resources_12.translateY,
+                resources_12.translateZ,
+                resources_12.x,
+                resources_12.y,
+                resources_12.z,
+                resources_12.skew,
+                resources_12.skewX,
+                resources_12.skewY,
+                resources_12.scale,
+                resources_12.scale3d,
+                resources_12.scaleX,
+                resources_12.scaleY,
+                resources_12.scaleZ,
+                resources_12.rotate,
+                resources_12.rotate3d,
+                resources_12.rotateX,
+                resources_12.rotateY,
+                resources_12.rotateZ
+            ];
         }
     };
 });

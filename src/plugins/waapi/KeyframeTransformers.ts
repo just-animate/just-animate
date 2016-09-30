@@ -39,29 +39,37 @@ import {
 
 const global = window;
 
-const transitionAliases = {
-    rotate: transform,
-    rotate3d: transform,    
-    rotateX: transform,
-    rotateY: transform,
-    rotateZ: transform,
-    scale: transform,    
-    scale3d: transform,
-    scaleX: transform,
-    scaleY: transform,
-    scaleZ: transform,
-    skew: transform,
-    skewX: transform,
-    skewY: transform,
-    translate: transform,
-    translate3d: transform,
-    translateX: transform,
-    translateY: transform,    
-    translateZ: transform,
-    x: transform,
-    y: transform,
-    z: transform
-};
+const propertyAliases = {
+    x: translateX,
+    y: translateY,
+    Z: translateZ
+}
+
+const transforms = [
+    'perspective',
+    'matrix',
+    translate,
+    translate3d,
+    translateX,
+    translateY,    
+    translateZ,
+    x,
+    y,
+    z,
+    skew,
+    skewX,
+    skewY,
+    scale,    
+    scale3d,
+    scaleX,
+    scaleY,
+    scaleZ,
+    rotate,
+    rotate3d,    
+    rotateX,
+    rotateY,
+    rotateZ
+];
 
 export function createAnimator(ctx: ja.CreateAnimationContext<HTMLElement>): ja.IAnimationController {
     const options = ctx.options;
@@ -152,7 +160,7 @@ function addTransition(keyframes: waapi.IKeyframe[], target: HTMLElement): void 
             return;
         }
     
-        const alias = transitionAliases[property] || property;
+        const alias = transforms.indexOf(property) !== -1 ? transform : property;
         const val = style[alias];
         if (isDefined(val)) {
             firstFrame[alias] = val;
@@ -378,264 +386,47 @@ function keyframeOffsetComparer(a: waapi.IKeyframe, b: waapi.IKeyframe): number 
     return (a.offset as number) - (b.offset as number);
 }
 
+function transformPropertyComparer(a: string[], b: string[]) {
+    return transforms.indexOf(a[0]) - transforms.indexOf(b[0]);
+}
+
 /**
  * Handles transforming short hand key properties into their native form
  */
 function normalizeProperties(keyframe: waapi.IKeyframe): void {
-    const xIndex = 0;
-    const yIndex = 1;
-    const zIndex = 2;
-
-    // transform properties
-    const scaleArray: number[] = [];
-    const skewArray: (number | string)[] = [];
-    const translateArray: (number | string)[] = [];
-    let cssTransform = '';
+    let cssTransforms: string[][] = [];
 
     for (let prop in keyframe) {
         const value = keyframe[prop];
-
         if (!isDefined(value)) {
             keyframe[prop] = nil;
             continue;
         }
 
-        if (prop === easingString) {
-            const easing = keyframe[easingString];
-            keyframe[easingString] = easings[easing] || easing || nil;
-            continue;
-        }
+        // nullify properties so shorthand and handled properties don't end up in the result
+        keyframe[prop] = nil;
 
-        // nullify properties (will get added back if it is supposed to be here)
-        keyframe[prop] = nil;  
-        
-        switch (prop) {
-            case scale3d:
-                if (isArray(value)) {
-                    const arr = value as number[];
-                    if (arr.length !== 3) {
-                        throw invalidArg(scale3d);
-                    }
-                    scaleArray[xIndex] = arr[xIndex];
-                    scaleArray[yIndex] = arr[yIndex];
-                    scaleArray[zIndex] = arr[zIndex];
-                    continue;
-                }
-                if (isNumber(value)) {
-                    scaleArray[xIndex] = value;
-                    scaleArray[yIndex] = value;
-                    scaleArray[zIndex] = value;
-                    continue;
-                }
-                throw invalidArg(scale3d);
-            case scale:
-                if (isArray(value)) {
-                    const arr = value as number[];
-                    if (arr.length !== 2) {
-                        throw invalidArg(scale);
-                    }
-                    scaleArray[xIndex] = arr[xIndex];
-                    scaleArray[yIndex] = arr[yIndex];
-                    continue;
-                }
-                if (isNumber(value)) {
-                    scaleArray[xIndex] = value;
-                    scaleArray[yIndex] = value;
-                    continue;
-                }
-                throw invalidArg(scale);
-            case scaleX:
-                if (isNumber(value)) {
-                    scaleArray[xIndex] = value;
-                    continue;
-                }
-                throw invalidArg(scaleX);
-            case scaleY:
-                if (isNumber(value)) {
-                    scaleArray[yIndex] = value;
-                    continue;
-                }
-                throw invalidArg(scaleY);
-            case scaleZ:
-                if (isNumber(value)) {
-                    scaleArray[zIndex] = value;
-                    continue;
-                }
-                throw invalidArg(scaleZ);
-            case skew:
-                if (isArray(value)) {
-                    const arr = value as number[];
-                    if (arr.length !== 2) {
-                        throw invalidArg(skew);
-                    }
-                    skewArray[xIndex] = arr[xIndex];
-                    skewArray[yIndex] = arr[yIndex];
-                    continue;
-                }
-                if (isNumber(value)) {
-                    skewArray[xIndex] = value;
-                    skewArray[yIndex] = value;
-                    continue;
-                }
-                throw invalidArg(skew);
-            case skewX:
-                if (isString(value)) {
-                    skewArray[xIndex] = value;
-                    continue;
-                }
-                throw invalidArg(skewX);
-            case skewY:
-                if (isString(value)) {
-                    skewArray[yIndex] = value;
-                    continue;
-                }
-                throw invalidArg(skewY);
-            case rotate3d:
-                if (isArray(value)) {
-                    const arr = value as number[];
-                    if (arr.length !== 4) {
-                        throw invalidArg(rotate3d);
-                    }
-                    cssTransform += ` rotate3d(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`;
-                    continue;
-                }
-                throw invalidArg(rotate3d);
-            case rotateX:
-                if (isString(value)) {
-                    cssTransform += ` rotate3d(1, 0, 0, ${value})`;
-                    continue;
-                }
-                throw invalidArg(rotateX);
-            case rotateY:
-                if (isString(value)) {
-                    cssTransform += ` rotate3d(0, 1, 0, ${value})`;
-                    continue;
-                }
-                throw invalidArg(rotateY);
-            case rotate:
-            case rotateZ:
-                if (isString(value)) {
-                    cssTransform += ` rotate3d(0, 0, 1, ${value})`;
-                    continue;
-                }
-                throw invalidArg(rotateZ);
-            case translate3d:
-                if (isArray(value)) {
-                    const arr = value as (number | string)[];
-                    if (arr.length !== 3) {
-                        throw invalidArg(translate3d);
-                    }
-                    translateArray[xIndex] = arr[xIndex];
-                    translateArray[yIndex] = arr[yIndex];
-                    translateArray[zIndex] = arr[zIndex];
-                    continue;
-                }
-                if (isString(value) || isNumber(value)) {
-                    translateArray[xIndex] = value;
-                    translateArray[yIndex] = value;
-                    translateArray[zIndex] = value;
-                    continue;
-                }
-                throw invalidArg(rotate3d);
-            case translate:
-                if (isArray(value)) {
-                    const arr = value as (number | string)[];
-                    if (arr.length !== 2) {
-                        throw invalidArg(translate);
-                    }
-                    translateArray[xIndex] = arr[xIndex];
-                    translateArray[yIndex] = arr[yIndex];
-                    continue;
-                }
-                if (isString(value) || isNumber(value)) {
-                    translateArray[xIndex] = value;
-                    translateArray[yIndex] = value;
-                    continue;
-                }
-                throw invalidArg(translate);
-            case x:
-            case translateX:
-                if (isString(value) || isNumber(value)) {
-                    translateArray[xIndex] = value;
-                    continue;
-                }
-                throw invalidArg(x);
-            case y:
-            case translateY:
-                if (isString(value) || isNumber(value)) {
-                    translateArray[yIndex] = value;
-                    continue;
-                }
-                throw invalidArg(y);
-            case z:
-            case translateZ:
-                if (isString(value) || isNumber(value)) {
-                    translateArray[zIndex] = value;
-                    continue;
-                }
-                throw invalidArg(z);
-            case transform:
-                cssTransform += ' ' + value;
-                break;
-            default:
-                keyframe[toCamelCase(prop)] = value;
-                break;
+        // get the final property name
+        const propAlias = propertyAliases[prop] || prop;
+
+        // find out if the property needs to end up on transform
+        const transformIndex = transforms.indexOf(propAlias);
+
+        if (transformIndex !== -1) {
+            // handle transforms
+            cssTransforms.push([propAlias, value]);
+        } else if (propAlias === easingString) {
+            // handle easings
+            keyframe[easingString] = easings[value] || value || nil;
+        } else {
+            // handle others (change background-color and the like to backgroundColor)
+            keyframe[toCamelCase(propAlias)] = value;            
         }
     }
 
-    // combine scale
-    const isScaleX = scaleArray[xIndex] !== nil;
-    const isScaleY = scaleArray[yIndex] !== nil;
-    const isScaleZ = scaleArray[zIndex] !== nil;
-    if (isScaleX && isScaleZ || isScaleY && isScaleZ) {
-        const scaleString = scaleArray.map((s: number) => s || '1').join(',');
-        cssTransform += ` scale3d(${scaleString})`;
-    } else if (isScaleX && isScaleY) {
-        cssTransform += ` scale(${scaleArray[xIndex] || 1}, ${scaleArray[yIndex] || 1})`;
-    } else if (isScaleX) {
-        cssTransform += ` scaleX(${scaleArray[xIndex]})`;
-    } else if (isScaleY) {
-        cssTransform += ` scaleX(${scaleArray[yIndex]})`;
-    } else if (isScaleZ) {
-        cssTransform += ` scaleX(${scaleArray[zIndex]})`;
-    } else {
-        // do nil
-    }
-
-    // combine skew
-    const isskewX = skewArray[xIndex] !== nil;
-    const isskewY = skewArray[yIndex] !== nil;
-    if (isskewX && isskewY) {
-        cssTransform += ` skew(${skewArray[xIndex] || 1}, ${skewArray[yIndex] || 1})`;
-    } else if (isskewX) {
-        cssTransform += ` skewX(${skewArray[xIndex]})`;
-    } else if (isskewY) {
-        cssTransform += ` skewY(${skewArray[yIndex]})`;
-    } else {
-        // do nil
-    }
-
-    // combine translate
-    const istranslateX = translateArray[xIndex] !== nil;
-    const istranslateY = translateArray[yIndex] !== nil;
-    const istranslateZ = translateArray[zIndex] !== nil;
-    if (istranslateX && istranslateZ || istranslateY && istranslateZ) {
-        const translateString = translateArray.map((s: string) => s || '1').join(',');
-        cssTransform += ` translate3d(${translateString})`;
-    } else if (istranslateX && istranslateY) {
-        cssTransform += ` translate(${translateArray[xIndex] || 1}, ${translateArray[yIndex] || 1})`;
-    } else if (istranslateX) {
-        cssTransform += ` translateX(${translateArray[xIndex]})`;
-    } else if (istranslateY) {
-        cssTransform += ` translateY(${translateArray[yIndex]})`;
-    } else if (istranslateZ) {
-        cssTransform += ` translateZ(${translateArray[zIndex]})`;
-    } else {
-        // do nil
-    }
-
-    if (cssTransform) {
-        keyframe[transform] = cssTransform;
+    if (cssTransforms.length) {
+        keyframe[transform] = cssTransforms
+            .sort(transformPropertyComparer)
+            .reduce((c: string, n: string[]) => c + ` ${n[0]}(${n[1]})`, '');
     }
 }
-
