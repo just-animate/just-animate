@@ -2,12 +2,17 @@
 
 *Just Animate creates beautify animations using the latest browser standards*
 
-Just Animate provides a toolbox of over 75 preset animations and an API that is designed to make motion design flow really well.
+Just Animate provides a toolbox of animatinos and an API that is designed to make motion design flow.
 
-## Documentation (needs update!)
+## Features
 
-Check out the [Full Documentation Here](https://just-animate.github.io)
-
+- over 75 preset animations
+- hardware acceleration on Chrome and FireFox using the Web Animation API
+- multiple animation control
+- animation sequencing
+- animation timelines
+- randomness and staggered timing through property resolvers
+- full animation control (reverse, pause, cancel, and seek)
 
 ## Getting Started
 ### Setting up the environment
