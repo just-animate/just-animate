@@ -1,4 +1,5 @@
-#JustAnimate
+# JustAnimate
+
 *Just Animate creates beautify animations using the latest browser standards*
 
 Just Animate provides a toolbox of over 75 preset animations and an API that is designed to make motion design flow really well.
@@ -8,11 +9,13 @@ Just Animate provides a toolbox of over 75 preset animations and an API that is 
 Check out the [Full Documentation Here](https://just-animate.github.io)
 
 ## Demos (needs update!)
+  - [Demo All Mixins](http://codepen.io/notoriousb1t/full/vXZNvm/)
   - [Basic Animations](http://codepen.io/notoriousb1t/pen/BjgGmY)
   - [Basic Animation with Angular 1.x](http://codepen.io/notoriousb1t/pen/Rrzvjb)
   - [Basic Animation with JQuery](http://codepen.io/notoriousb1t/pen/obrmMr)
   - [Animating Multiple Elements](http://codepen.io/notoriousb1t/pen/Wwevxv)
   - [Registering Custom Animations](http://codepen.io/notoriousb1t/pen/WwNvON)
+
   
 ## Getting Started
 ### Setting up the environment
@@ -70,13 +73,17 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
   ```
   
 ## Usage
- - Call just.animate()
 
-   - targets: the things to be animated.  Can be a html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.
-   - css: an array of keyframes like in CSS Keyframes
-   - to: number of miliseconds until the end of the animation
-   - from: number of milliseconds until the animation starts
-   - mixins: a preset or a list of presets to add to the animation(e.g. fadeIn, hinge, zoomOutLeft, etc.)
+|property|type|description|
+|:-------------|:-------------|:-------------|
+|targets|AnimationTarget|An html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.|
+|css|CSSKeyframe[] or CSSProperty|An array of keyframes or an object of properties to animate|
+|to|Time|When to stop the animation written as '2s', '2000ms', or 2000|
+|from|Time|When to start the animation as '2s', '2000ms', or 2000|
+|delay|Time or Function|Time before animation starts as '2s', '2000ms', 2000, or function() { return 2000; }|
+|easing|AnimationTimingFunction|Animation timing function (ease, ease-in, easeOutCubic, step(1,end))|
+|mixins|string or string[]|A preset or a list of presets to add to the animation(e.g. fadeIn, hinge, zoomOutLeft, etc.)|
+
  ```javascript
   just.animate({
     targets: '#animate-me'
@@ -97,6 +104,7 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
     to: '1s'
   })
  ```
+
 
  - Use the player returned from animate to do more advanced things:
  
@@ -142,93 +150,13 @@ player
   .cancel();
  ```
 
-
-## Included animations
-
-  The animations in just-animate-animations.js are based on Animate.css.  [Check out all the animations here on their page!](https://daneden.github.io/animate.css/)
-
-  * `bounce`
-  * `flash`
-  * `pulse`
-  * `rubberBand`
-  * `shake`
-  * `headShake`
-  * `swing`
-  * `tada`
-  * `wobble`
-  * `jello`
-  * `bounceIn`
-  * `bounceInDown`
-  * `bounceInLeft`
-  * `bounceInRight`
-  * `bounceInUp`
-  * `bounceOut`
-  * `bounceOutDown`
-  * `bounceOutLeft`
-  * `bounceOutRight`
-  * `bounceOutUp`
-  * `fadeIn`
-  * `fadeInDown`
-  * `fadeInDownBig`
-  * `fadeInLeft`
-  * `fadeInLeftBig`
-  * `fadeInRight`
-  * `fadeInRightBig`
-  * `fadeInUp`
-  * `fadeInUpBig`
-  * `fadeOut`
-  * `fadeOutDown`
-  * `fadeOutDownBig`
-  * `fadeOutLeft`
-  * `fadeOutLeftBig`
-  * `fadeOutRight`
-  * `fadeOutRightBig`
-  * `fadeOutUp`
-  * `fadeOutUpBig`
-  * `flipInX`
-  * `flipInY`
-  * `flipOutX`
-  * `flipOutY`
-  * `lightSpeedIn`
-  * `lightSpeedOut`
-  * `rotateIn`
-  * `rotateInDownLeft`
-  * `rotateInDownRight`
-  * `rotateInUpLeft`
-  * `rotateInUpRight`
-  * `rotateOut`
-  * `rotateOutDownLeft`
-  * `rotateOutDownRight`
-  * `rotateOutUpLeft`
-  * `rotateOutUpRight`
-  * `hinge`
-  * `rollIn`
-  * `rollOut`
-  * `zoomIn`
-  * `zoomInDown`
-  * `zoomInLeft`
-  * `zoomInRight`
-  * `zoomInUp`
-  * `zoomOut`
-  * `zoomOutDown`
-  * `zoomOutLeft`
-  * `zoomOutRight`
-  * `zoomOutUp`
-  * `slideInDown`
-  * `slideInLeft`
-  * `slideInRight`
-  * `slideInUp`
-  * `slideOutDown`
-  * `slideOutLeft`
-  * `slideOutRight`
-  * `slideOutUp`
-
 ## License
+
 JustAnimate is licensed under the MIT license. (http://opensource.org/licenses/MIT)
 
 ## How can you contribute?
 
- - make awesome things with Just Animate.  If you make it on Code Pen or otherwise, send me a link so I can put show it off.
+ - make awesome things with Just Animate.  If you make it on CodePen or otherwise, send me a link so I can put show it off.
  - create issues if there is a bug or an unexpected behavior (if it isn't reported, it probably won't get fixed)
  - contribute code and help me make this library great!
  - help with documentation.  It takes four times as long at least to build out docs.  When you contribute docs, you are helping out everyone including me.

@@ -1094,7 +1094,7 @@ function normalizeProperties(keyframe) {
             continue;
         }
         keyframe[prop] = nil;
-        var propAlias = toCamelCase(propertyAliases[prop] || prop);
+        var propAlias = propertyAliases[prop] || prop;
         var transformIndex = transforms.indexOf(propAlias);
         if (transformIndex !== -1) {
             cssTransforms.push([propAlias, value]);
@@ -1103,7 +1103,7 @@ function normalizeProperties(keyframe) {
             keyframe[easingString] = easings[value] || value || nil;
         }
         else {
-            keyframe[propAlias] = value;
+            keyframe[toCamelCase(propAlias)] = value;
         }
     }
     if (cssTransforms.length) {

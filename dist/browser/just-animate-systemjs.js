@@ -4389,27 +4389,29 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 keyframe[prop] = resources_12.nil;
                 continue;
             }
-            // nullify properties
+            // nullify properties so shorthand and handled properties don't end up in the result
             keyframe[prop] = resources_12.nil;
-            var propAlias = strings_2.toCamelCase(propertyAliases[prop] || prop);
-            if (propAlias === resources_12.easingString) {
-                var easing = keyframe[resources_12.easingString];
-                keyframe[resources_12.easingString] = easings_2.easings[easing] || easing || resources_12.nil;
-                continue;
+            // get the final property name
+            var propAlias = propertyAliases[prop] || prop;
+            // find out if the property needs to end up on transform
+            var transformIndex = transforms.indexOf(propAlias);
+            if (transformIndex !== -1) {
+                // handle transforms
+                cssTransforms.push([propAlias, value]);
             }
-            var transformIndex = transforms.indexOf(prop);
-            if (transformIndex === -1) {
-                keyframe[propAlias] = value;
+            else if (propAlias === resources_12.easingString) {
+                // handle easings
+                keyframe[resources_12.easingString] = easings_2.easings[value] || value || resources_12.nil;
             }
             else {
-                debugger;
-                cssTransforms.push([propAlias, value]);
+                // handle others (change background-color and the like to backgroundColor)
+                keyframe[strings_2.toCamelCase(propAlias)] = value;
             }
         }
         if (cssTransforms.length) {
             keyframe[resources_12.transform] = cssTransforms
                 .sort(transformPropertyComparer)
-                .reduce(function (c, n) { return c + (" " + n[0] + "(n[1])"); }, '');
+                .reduce(function (c, n) { return c + (" " + n[0] + "(" + n[1] + ")"); }, '');
         }
     }
     var type_7, strings_2, easings_2, lists_5, objects_2, KeyframeAnimator_1, units_2, resources_12, global, propertyAliases, transforms;
