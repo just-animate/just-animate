@@ -174,11 +174,8 @@ just.animate({
 
 ```javascript
 just.animate({
-    css: [
-    {
-        transform: 'none'
-    },
-    {
+    /* .. */
+    css: [{
         perspective: '200px',                // camera distance from the z plane
         matrix:      '1, 1, 1, 1, 1px, 1px', // matrix transform function
         translate:   '20px, 30px',           // X, Y distance from origin
@@ -205,6 +202,11 @@ just.animate({
     }]
 });
 ```
+
+#### Notes:
+- The properties are evaluated in the order shown here.  I believe the order solves a large number of use cases.  The transform propery can be used directly for other cases. 
+- Using aliased properties such as translateX and x together may result in unexpected results
+
 
 ### Use the player returned from .animate() to listen for events or other functions control the animations.
 
