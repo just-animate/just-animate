@@ -191,12 +191,8 @@ player.animate([ ]);      // appends a set of animations to this player
 
 ## Demos
 
-- [Demo All Mixins](http://codepen.io/notoriousb1t/full/vXZNvm/)
-- [Basic Animations](http://codepen.io/notoriousb1t/pen/BjgGmY)
-- [Basic Animation with Angular 1.x](http://codepen.io/notoriousb1t/pen/Rrzvjb)
-- [Basic Animation with JQuery](http://codepen.io/notoriousb1t/pen/obrmMr)
-- [Animating Multiple Elements](http://codepen.io/notoriousb1t/pen/Wwevxv)
-- [Registering Custom Animations](http://codepen.io/notoriousb1t/pen/WwNvON)
+- [All Mixins](http://codepen.io/notoriousb1t/full/vXZNvm/)
+- [CodePen Demos](http://codepen.io/collection/ANzZxb/)
 
 
 ## License
