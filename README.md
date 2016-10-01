@@ -204,7 +204,7 @@ just.animate({
 ```
 
 #### Notes:
-- The properties are evaluated in the order shown here.  I believe the order solves a large number of use cases.  The transform propery can be used directly for other cases. 
+- The properties are evaluated in the order shown here.  I believe the order solves a large number of use cases.  The transform property can be used directly for other cases. 
 - Using aliased properties such as translateX and x together may result in unexpected results
 
 
