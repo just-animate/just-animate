@@ -96,31 +96,37 @@ Just Animate provides a toolbox of animatinos and an API that is designed to mak
  ```
 
 
-### Animate multiple elements by using an html selector, JQuery, or an array of targets
+### Animate multiple targets by using an html selector, JQuery, or an array of targets
 
  ```javascript
 just.animate({
-    mixins: 'fadeIn',
-    targets: ['#first', '#second']
+       mixins: 'fadeIn',
+       targets: '#animate-me',
+    // targets: document.getElementById('animate-me),
+    // targets: document.querySelectorAll('#animate-me),
+    // targets: $('#animate-me),
+    // targets: ['#animate-me'],
+    // targets: () => document.getElementById('animate-me'),
+    // targets: function() { return document.getElementById('animate-me'); },
 });
  ```
 
-### Animate targets in sequence by chaining .animate() calls
+### Animate multiple targets in sequence by chaining .animate() calls
 
  ```javascript
 just.animate({
       mixins: 'fadeIn',
-      targets: ['#first', '#second']
+      targets: '#first',
   })
   .animate({
       mixins: 'fadeIn',
-      targets: ['#first', '#second']
+      targets: '.second'
   });
 
 ```
 
 
-### Animate targets at the same time by passing in an array of options
+### Use multiple animations at the same time by passing in an array of animation options
 
   ```javascript
   just.animate([
@@ -142,7 +148,7 @@ just.animate({
 
 ```
 
-### Animate anything using the update function
+### Create custom animations or seconrary effects using the update function
 
   ```javascript
 just.animate({
@@ -192,7 +198,7 @@ player.currentTime();    // returns the current time of the animations
 player.currentTime(500); // seeks to 500 milliseconds
 
 player.playbackRate();    // returns the current playbackRate
-player.playbackRate(1.2); // changes the playback rate
+player.playbackRate(2); // changes the playback rate to 2 (2x speed)
 
 player.animate({ });      // appends a new animation to this player
 player.animate([ ]);      // appends a set of animations to this player
