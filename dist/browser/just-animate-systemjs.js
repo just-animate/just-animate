@@ -4453,27 +4453,27 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             transforms = [
                 'perspective',
                 'matrix',
-                resources_12.translate,
-                resources_12.translate3d,
                 resources_12.translateX,
                 resources_12.translateY,
                 resources_12.translateZ,
+                resources_12.translate,
+                resources_12.translate3d,
                 resources_12.x,
                 resources_12.y,
                 resources_12.z,
                 resources_12.skew,
                 resources_12.skewX,
                 resources_12.skewY,
-                resources_12.scale,
-                resources_12.scale3d,
+                resources_12.rotateX,
+                resources_12.rotateY,
+                resources_12.rotateZ,
+                resources_12.rotate,
+                resources_12.rotate3d,
                 resources_12.scaleX,
                 resources_12.scaleY,
                 resources_12.scaleZ,
-                resources_12.rotate,
-                resources_12.rotate3d,
-                resources_12.rotateX,
-                resources_12.rotateY,
-                resources_12.rotateZ
+                resources_12.scale,
+                resources_12.scale3d
             ];
         }
     };
