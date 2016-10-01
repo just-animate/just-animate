@@ -170,6 +170,41 @@ just.animate({
 
 ```
 
+### Animate CSS transforms with easy to use shorthand properties
+
+```javascript
+just.animate({
+    css: [
+    {
+        transform: 'none'
+    },
+    {
+        perspective: '200px',                // camera distance from the z plane
+        matrix:      '1, 1, 1, 1, 1px, 1px', // matrix transform function
+        translate:   '20px, 30px',           // X, Y distance from origin
+        translate3d: '20px, 30px, 40px'      // X, Y, Z distance from origin
+        translateX:  '20px'                  // same as x
+        translateY:  '20px'                  // same as y
+        translateZ:  '20px'                  // same as z
+        x:           '20px',                 // X distance from origin
+        y:           '30px',                 // Y distance from origin
+        z:           '40px',                 // X distance from origin
+        skew:        '20deg',                // X, Y skew function
+        skewX:       '20deg',                // X skew function
+        skewY:       '20deg',                // Y skew function
+        scale:        1.1,                   // X, Y scale
+        scale3d:      1.3,                   // X, Y, Z scale
+        scaleX:       1,                     // X scale
+        scaleY:       1,                     // Y scale
+        scaleZ:       1,                     // Z scale
+        rotate:      '90deg',                // same as rotateZ
+        rotate3d:    '90deg',                // X, Y, Z rotation
+        rotateX:     '90deg',                // X rotation
+        rotateY:     '90deg',                // Y rotation
+        rotateZ:     '90deg'                 // Z rotation
+    }]
+});
+```
 
 ### Use the player returned from .animate() to listen for events or other functions control the animations.
 
