@@ -1,14 +1,12 @@
 # JustAnimate
 
-*Just Animate creates beautify animations using the latest browser standards*
-
-Just Animate provides a toolbox of animatinos and an API that is designed to make motion design flow.
+*Just Animate creates beautiful animations using the latest browser standards*
 
 ## Features
 
 - over 75 preset animations
 - hardware acceleration on Chrome and FireFox using the Web Animation API
-- multiple animation control
+- control multiple animations
 - animation sequencing
 - animation timelines
 - randomness and staggered timing through property resolvers
@@ -148,7 +146,7 @@ just.animate({
 
 ```
 
-### Create custom animations or seconrary effects using the update function
+### Create custom animations or secondary effects using the update function
 
   ```javascript
 just.animate({
