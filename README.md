@@ -32,13 +32,17 @@ Just Animate provides a toolbox of animatinos and an API that is designed to mak
 
 |property|type|description|
 |:-------------|:-------------|:-------------|
-|targets|AnimationTarget|An html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.|
 |css|CSSKeyframe[] or CSSProperty|An array of keyframes or an object of properties to animate|
-|to|Time|When to stop the animation written as '2s', '2000ms', or 2000|
-|from|Time|When to start the animation as '2s', '2000ms', or 2000|
 |delay|Time or Function|Time before animation starts as '2s', '2000ms', 2000, or function() { return 2000; }|
+|direction|string|Direction of the animation (normal, reverse, alternate)|
 |easing|AnimationTimingFunction|Animation timing function (ease, ease-in, easeOutCubic, step(1,end))|
+|fill|string|Animation fill mode (none, both, forwards, backwards)|
+|from|Time|When to start the animation as '2s', '2000ms', or 2000|
+|iterations|number|Number of iterations, defaults to 1|
 |mixins|string or string[]|A preset or a list of presets to add to the animation(e.g. fadeIn, hinge, zoomOutLeft, etc.)|
+|targets|AnimationTarget|An html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.|
+|to|Time|When to stop the animation written as '2s', '2000ms', or 2000|
+
 
  ```javascript
   just.animate({
