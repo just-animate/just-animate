@@ -57,9 +57,13 @@
                 easing: "easeInQuint",
                 css: [
                     {
-                        opacity: 0,
                         backgroundColor: '#ffffff',
-                        transform: 'translate(' + offsetX + 'px, ' + offsetY + 'px) rotate(' + angle + 'rad) scale(0.032, 0.032)'
+                        opacity: 0,                        
+                        rotateZ: angle + 'rad',
+                        scale: 0.032,
+                        x: offsetX + 'px',
+                        y: offsetY + 'px',
+                        // transform: 'translate(' + offsetX + 'px, ' + offsetY + 'px) rotate(' + angle + 'rad) scale(0.032, 0.032)'
                     },
                     {
                         offset: 0.08,
@@ -67,8 +71,13 @@
                     },
                     {
                         backgroundColor: '#6699ff',
-                        transform: 'translate(' + endX + 'px, ' + endY + 'px) rotate(' + angle + 'rad) scale(' + hyperspaceSpeed + ', 0.2)',
-                        opacity: 1
+                        // transform: 'translate(' + endX + 'px, ' + endY + 'px) rotate(' + angle + 'rad) scale(' + hyperspaceSpeed + ', 0.2)',
+                        opacity: 1,
+                        rotateZ: angle + 'rad',
+                        scaleX: hyperspaceSpeed,
+                        scaleY: 0.2,
+                        x: endX + 'px',
+                        y: endY + 'px'
                     }
                 ]
             })
@@ -89,7 +98,7 @@
         }
 
         function warpToLightSpeed() {
-            var stars = createStars(250);
+            var stars = createStars(50);
             stars.forEach(function(star) {
                 animateStar(star);
             });

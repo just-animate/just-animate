@@ -16,27 +16,27 @@ var propertyAliases = {
 var transforms = [
     'perspective',
     'matrix',
-    resources_1.translate,
-    resources_1.translate3d,
     resources_1.translateX,
     resources_1.translateY,
     resources_1.translateZ,
+    resources_1.translate,
+    resources_1.translate3d,
     resources_1.x,
     resources_1.y,
     resources_1.z,
     resources_1.skew,
     resources_1.skewX,
     resources_1.skewY,
-    resources_1.scale,
-    resources_1.scale3d,
+    resources_1.rotateX,
+    resources_1.rotateY,
+    resources_1.rotateZ,
+    resources_1.rotate,
+    resources_1.rotate3d,
     resources_1.scaleX,
     resources_1.scaleY,
     resources_1.scaleZ,
-    resources_1.rotate,
-    resources_1.rotate3d,
-    resources_1.rotateX,
-    resources_1.rotateY,
-    resources_1.rotateZ
+    resources_1.scale,
+    resources_1.scale3d
 ];
 function createAnimator(ctx) {
     var options = ctx.options;

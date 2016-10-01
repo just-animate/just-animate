@@ -831,27 +831,27 @@ var propertyAliases = {
 var transforms = [
     'perspective',
     'matrix',
-    translate,
-    translate3d,
     translateX,
     translateY,
     translateZ,
+    translate,
+    translate3d,
     x,
     y,
     z,
     skew,
     skewX,
     skewY,
-    scale,
-    scale3d,
+    rotateX,
+    rotateY,
+    rotateZ,
+    rotate,
+    rotate3d,
     scaleX,
     scaleY,
     scaleZ,
-    rotate,
-    rotate3d,
-    rotateX,
-    rotateY,
-    rotateZ
+    scale,
+    scale3d
 ];
 function createAnimator(ctx) {
     var options = ctx.options;

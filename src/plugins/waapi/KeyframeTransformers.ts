@@ -48,27 +48,31 @@ const propertyAliases = {
 const transforms = [
     'perspective',
     'matrix',
-    translate,
-    translate3d,
+
     translateX,
     translateY,    
     translateZ,
+    translate,
+    translate3d,
     x,
     y,
     z,
+    
     skew,
     skewX,
     skewY,
-    scale,    
-    scale3d,
+
+    rotateX,
+    rotateY,
+    rotateZ,
+    rotate,
+    rotate3d,
+
     scaleX,
     scaleY,
     scaleZ,
-    rotate,
-    rotate3d,    
-    rotateX,
-    rotateY,
-    rotateZ
+    scale,        
+    scale3d
 ];
 
 export function createAnimator(ctx: ja.CreateAnimationContext<HTMLElement>): ja.IAnimationController {
