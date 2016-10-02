@@ -1,13 +1,16 @@
 # JustAnimate
 
-*Just Animate creates beautify animations using the latest browser standards*
+*Just Animate creates beautiful animations using the latest browser standards*
 
-Just Animate provides a toolbox of over 75 preset animations and an API that is designed to make motion design flow really well.
+## Features
 
-## Documentation (needs update!)
-
-Check out the [Full Documentation Here](https://just-animate.github.io)
-
+- over 75 preset animations
+- hardware acceleration on Chrome and FireFox using the Web Animation API
+- control multiple animations
+- animation sequencing
+- animation timelines
+- randomness and staggered timing through property resolvers
+- full animation control (reverse, pause, cancel, and seek)
 
 ## Getting Started
 ### Setting up the environment
@@ -27,13 +30,17 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
 
 |property|type|description|
 |:-------------|:-------------|:-------------|
-|targets|AnimationTarget|An html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.|
 |css|CSSKeyframe[] or CSSProperty|An array of keyframes or an object of properties to animate|
-|to|Time|When to stop the animation written as '2s', '2000ms', or 2000|
-|from|Time|When to start the animation as '2s', '2000ms', or 2000|
 |delay|Time or Function|Time before animation starts as '2s', '2000ms', 2000, or function() { return 2000; }|
+|direction|string|Direction of the animation (normal, reverse, alternate)|
 |easing|AnimationTimingFunction|Animation timing function (ease, ease-in, easeOutCubic, step(1,end))|
+|fill|string|Animation fill mode (none, both, forwards, backwards)|
+|from|Time|When to start the animation as '2s', '2000ms', or 2000|
+|iterations|number|Number of iterations, defaults to 1|
 |mixins|string or string[]|A preset or a list of presets to add to the animation(e.g. fadeIn, hinge, zoomOutLeft, etc.)|
+|targets|AnimationTarget|An html selector, an Element, a NodeList, or a jQuery object. This can also be an array of any of those or a function that returns any of those.|
+|to|Time|When to stop the animation written as '2s', '2000ms', or 2000|
+
 
  ```javascript
   just.animate({
@@ -87,31 +94,37 @@ Check out the [Full Documentation Here](https://just-animate.github.io)
  ```
 
 
-### Animate multiple elements by using an html selector, JQuery, or an array of targets
+### Animate multiple targets by using an html selector, JQuery, or an array of targets
 
  ```javascript
 just.animate({
-    mixins: 'fadeIn',
-    targets: ['#first', '#second']
+       mixins: 'fadeIn',
+       targets: '#animate-me',
+    // targets: document.getElementById('animate-me),
+    // targets: document.querySelectorAll('#animate-me),
+    // targets: $('#animate-me),
+    // targets: ['#animate-me'],
+    // targets: () => document.getElementById('animate-me'),
+    // targets: function() { return document.getElementById('animate-me'); },
 });
  ```
 
-### Animate targets in sequence by chaining .animate() calls
+### Animate multiple targets in sequence by chaining .animate() calls
 
  ```javascript
 just.animate({
       mixins: 'fadeIn',
-      targets: ['#first', '#second']
+      targets: '#first',
   })
   .animate({
       mixins: 'fadeIn',
-      targets: ['#first', '#second']
+      targets: '.second'
   });
 
 ```
 
 
-### Animate targets at the same time by passing in an array of options
+### Use multiple animations at the same time by passing in an array of animation options
 
   ```javascript
   just.animate([
@@ -133,7 +146,7 @@ just.animate({
 
 ```
 
-### Animate anything using the update function
+### Create custom animations or secondary effects using the update function
 
   ```javascript
 just.animate({
@@ -156,6 +169,43 @@ just.animate({
 });
 
 ```
+
+### Animate CSS transforms with easy to use shorthand properties
+
+```javascript
+just.animate({
+    /* .. */
+    css: [{
+        perspective: '200px',                // camera distance from the z plane
+        matrix:      '1, 1, 1, 1, 1px, 1px', // matrix transform function
+        translate:   '20px, 30px',           // X, Y distance from origin
+        translate3d: '20px, 30px, 40px'      // X, Y, Z distance from origin
+        translateX:  '20px'                  // same as x
+        translateY:  '20px'                  // same as y
+        translateZ:  '20px'                  // same as z
+        x:           '20px',                 // X distance from origin
+        y:           '30px',                 // Y distance from origin
+        z:           '40px',                 // X distance from origin
+        skew:        '20deg',                // X, Y skew function
+        skewX:       '20deg',                // X skew function
+        skewY:       '20deg',                // Y skew function
+        scale:        1.1,                   // X, Y scale
+        scale3d:      1.3,                   // X, Y, Z scale
+        scaleX:       1,                     // X scale
+        scaleY:       1,                     // Y scale
+        scaleZ:       1,                     // Z scale
+        rotate:      '90deg',                // same as rotateZ
+        rotate3d:    '90deg',                // X, Y, Z rotation
+        rotateX:     '90deg',                // X rotation
+        rotateY:     '90deg',                // Y rotation
+        rotateZ:     '90deg'                 // Z rotation
+    }]
+});
+```
+
+#### Notes:
+- The properties are evaluated in the order shown here.  I believe the order solves a large number of use cases.  The transform property can be used directly for other cases. 
+- Using aliased properties such as translateX and x together may result in unexpected results
 
 
 ### Use the player returned from .animate() to listen for events or other functions control the animations.
@@ -183,7 +233,7 @@ player.currentTime();    // returns the current time of the animations
 player.currentTime(500); // seeks to 500 milliseconds
 
 player.playbackRate();    // returns the current playbackRate
-player.playbackRate(1.2); // changes the playback rate
+player.playbackRate(2); // changes the playback rate to 2 (2x speed)
 
 player.animate({ });      // appends a new animation to this player
 player.animate([ ]);      // appends a set of animations to this player
@@ -191,12 +241,8 @@ player.animate([ ]);      // appends a set of animations to this player
 
 ## Demos
 
-- [Demo All Mixins](http://codepen.io/notoriousb1t/full/vXZNvm/)
-- [Basic Animations](http://codepen.io/notoriousb1t/pen/BjgGmY)
-- [Basic Animation with Angular 1.x](http://codepen.io/notoriousb1t/pen/Rrzvjb)
-- [Basic Animation with JQuery](http://codepen.io/notoriousb1t/pen/obrmMr)
-- [Animating Multiple Elements](http://codepen.io/notoriousb1t/pen/Wwevxv)
-- [Registering Custom Animations](http://codepen.io/notoriousb1t/pen/WwNvON)
+- [All Mixins](http://codepen.io/notoriousb1t/full/vXZNvm/)
+- [CodePen Demos](http://codepen.io/collection/ANzZxb/)
 
 
 ## License
