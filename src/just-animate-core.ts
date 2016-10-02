@@ -3,7 +3,7 @@ import { JustAnimate } from './JustAnimate';
 import { KeyframePlugin } from './plugins/waapi/KeyframePlugin';
 
 
-declare var window: Window & { just: ja.IJustAnimate };
+declare var window: Window & { just: ja.JustAnimate };
 declare var angular: any;
 
 // register with angular if it is present

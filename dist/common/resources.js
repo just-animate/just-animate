@@ -30,6 +30,7 @@ exports.scaleZ = 'scaleZ';
 exports.skew = 'skew';
 exports.skewX = 'skewX';
 exports.skewY = 'skewY';
+exports.steps = 'steps';
 exports.transform = 'transform';
 exports.translate = 'translate';
 exports.translate3d = 'translate3d';

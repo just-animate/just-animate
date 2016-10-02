@@ -1,11 +1,10 @@
-import {isDefined, isFunction, isNumber, isString, isArray} from '../../common/type';
-import {toCamelCase} from '../../common/strings';
-import {invalidArg} from '../../common/errors';
-import {easings} from '../../common/easings';
-import {each, head, tail} from '../../common/lists';
-import {listProps, unwrap} from '../../common/objects';
-import {KeyframeAnimator} from '../waapi/KeyframeAnimator';
-import {resolveTimeExpression} from '../../common/units';
+import { isDefined, isFunction, isNumber, isArray } from '../../common/type';
+import { toCamelCase } from '../../common/strings';
+import { getEasingString } from '../core/easings';
+import { each, head, tail } from '../../common/lists';
+import { listProps, unwrap } from '../../common/objects';
+import { KeyframeAnimator } from '../waapi/KeyframeAnimator';
+import { resolveTimeExpression } from '../../common/units';
 
 import {
     animate,
@@ -42,22 +41,22 @@ const global = window;
 const propertyAliases = {
     x: translateX,
     y: translateY,
-    Z: translateZ
-}
+    z: translateZ
+};
 
 const transforms = [
     'perspective',
     'matrix',
 
     translateX,
-    translateY,    
+    translateY,
     translateZ,
     translate,
     translate3d,
     x,
     y,
     z,
-    
+
     skew,
     skewX,
     skewY,
@@ -71,7 +70,7 @@ const transforms = [
     scaleX,
     scaleY,
     scaleZ,
-    scale,        
+    scale,
     scale3d
 ];
 
@@ -102,7 +101,7 @@ export function createAnimator(ctx: ja.CreateAnimationContext<HTMLElement>): ja.
 
     const animator = new KeyframeAnimator(initAnimator.bind(nada, timings, ctx));
     animator.totalDuration = totalTime;
-    
+
     if (isFunction(options.update)) {
         animator.onupdate = options.update;
     }
@@ -127,10 +126,10 @@ function initAnimator(timings: waapi.IEffectTiming, ctx: ja.CreateAnimationConte
     }
 
     const targetKeyframes: waapi.IKeyframe[] = [];
-    
+
     unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
     spaceKeyframes(targetKeyframes);
-    
+
     if (options.isTransition === true) {
         addTransition(targetKeyframes, target);
     } else {
@@ -163,7 +162,7 @@ function addTransition(keyframes: waapi.IKeyframe[], target: HTMLElement): void 
         if (property === offsetString) {
             return;
         }
-    
+
         const alias = transforms.indexOf(property) !== -1 ? transform : property;
         const val = style[alias];
         if (isDefined(val)) {
@@ -184,8 +183,8 @@ function expandOffsets(keyframes: ja.ICssKeyframeOptions[]): void {
         const keyframe = keyframes[i];
 
         if (isArray(keyframe.offset)) {
-            keyframes.splice(i, 1);            
-            
+            keyframes.splice(i, 1);
+
             const offsets = keyframe.offset as number[];
             const offsetLen = offsets.length;
             for (let j = offsetLen - 1; j > -1; --j) {
@@ -197,7 +196,7 @@ function expandOffsets(keyframes: ja.ICssKeyframeOptions[]): void {
                     }
                 }
                 newKeyframe.offset = offsetAmount;
-                keyframes.splice(i, 0, newKeyframe);                
+                keyframes.splice(i, 0, newKeyframe);
             }
         }
     }
@@ -220,7 +219,7 @@ function unwrapPropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: j
             }
             targetKeyframe[propertyName] = unwrap(sourceValue, ctx);
         }
-            
+
         normalizeProperties(targetKeyframe);
         target.push(targetKeyframe);
     }
@@ -340,23 +339,23 @@ function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
     let first: waapi.IKeyframe =
         head(keyframes, (k: waapi.IKeyframe) => k.offset === 0)
         || head(keyframes, (k: waapi.IKeyframe) => k.offset === nil);
-    
+
     if (first === nil) {
         first = {};
         keyframes.splice(0, 0, first);
-    }   
+    }
     if (first.offset === nil) {
         first.offset = 0;
     }
-    
+
     let last: waapi.IKeyframe =
         tail(keyframes, (k: waapi.IKeyframe) => k.offset === 1)
         || tail(keyframes, (k: waapi.IKeyframe) => k.offset === nil);
-    
+
     if (last === nil) {
         last = {};
         keyframes.push(last);
-    }  
+    }
     if (last.offset === nil) {
         last.offset = 0;
     }
@@ -383,14 +382,14 @@ function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
     }
 
     // sort by offset (should have all offsets assigned)
-    keyframes.sort(keyframeOffsetComparer);    
+    keyframes.sort(keyframeOffsetComparer);
 }
 
 function keyframeOffsetComparer(a: waapi.IKeyframe, b: waapi.IKeyframe): number {
     return (a.offset as number) - (b.offset as number);
 }
 
-function transformPropertyComparer(a: string[], b: string[]) {
+function transformPropertyComparer(a: string[], b: string[]): number {
     return transforms.indexOf(a[0]) - transforms.indexOf(b[0]);
 }
 
@@ -421,10 +420,10 @@ function normalizeProperties(keyframe: waapi.IKeyframe): void {
             cssTransforms.push([propAlias, value]);
         } else if (propAlias === easingString) {
             // handle easings
-            keyframe[easingString] = easings[value] || value || nil;
+            keyframe[easingString] = getEasingString(value);
         } else {
             // handle others (change background-color and the like to backgroundColor)
-            keyframe[toCamelCase(propAlias)] = value;            
+            keyframe[toCamelCase(propAlias)] = value;
         }
     }
 

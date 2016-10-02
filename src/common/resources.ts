@@ -30,6 +30,7 @@ export const scaleZ = 'scaleZ';
 export const skew = 'skew';
 export const skewX = 'skewX';
 export const skewY = 'skewY';
+export const steps = 'steps';
 export const transform = 'transform';
 export const translate = 'translate';
 export const translate3d = 'translate3d';

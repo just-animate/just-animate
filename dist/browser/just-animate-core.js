@@ -32,6 +32,7 @@ var scaleZ = 'scaleZ';
 var skew = 'skew';
 var skewX = 'skewX';
 var skewY = 'skewY';
+var steps = 'steps';
 var transform = 'transform';
 var translate = 'translate';
 var translate3d = 'translate3d';
@@ -262,38 +263,61 @@ function camelCaseReplacer(match, p1, p2) {
 function toCamelCase(value) {
     return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : nil;
 }
+function startsWith(value, pattern) {
+    return value.indexOf(pattern) === 0;
+}
 var cssFunction = function () {
     var args = arguments;
     return args[0] + "(" + toArray(args, 1).join(',') + ")";
 };
 
 var easings = {
-    easeInBack: cssFunction(cubicBezier, 0.6, -0.28, 0.735, 0.045),
-    easeInCirc: cssFunction(cubicBezier, 0.6, 0.04, 0.98, 0.335),
-    easeInCubic: cssFunction(cubicBezier, 0.55, 0.055, 0.675, 0.19),
-    easeInExpo: cssFunction(cubicBezier, 0.95, 0.05, 0.795, 0.035),
-    easeInOutBack: cssFunction(cubicBezier, 0.68, -0.55, 0.265, 1.55),
-    easeInOutCirc: cssFunction(cubicBezier, 0.785, 0.135, 0.15, 0.86),
-    easeInOutCubic: cssFunction(cubicBezier, 0.645, 0.045, 0.355, 1),
-    easeInOutExpo: cssFunction(cubicBezier, 1, 0, 0, 1),
-    easeInOutQuad: cssFunction(cubicBezier, 0.455, 0.03, 0.515, 0.955),
-    easeInOutQuart: cssFunction(cubicBezier, 0.77, 0, 0.175, 1),
-    easeInOutQuint: cssFunction(cubicBezier, 0.86, 0, 0.07, 1),
-    easeInOutSine: cssFunction(cubicBezier, 0.445, 0.05, 0.55, 0.95),
-    easeInQuad: cssFunction(cubicBezier, 0.55, 0.085, 0.68, 0.53),
-    easeInQuart: cssFunction(cubicBezier, 0.895, 0.03, 0.685, 0.22),
-    easeInQuint: cssFunction(cubicBezier, 0.755, 0.05, 0.855, 0.06),
-    easeInSine: cssFunction(cubicBezier, 0.47, 0, 0.745, 0.715),
-    easeOutBack: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275),
-    easeOutCirc: cssFunction(cubicBezier, 0.075, 0.82, 0.165, 1),
-    easeOutCubic: cssFunction(cubicBezier, 0.215, 0.61, 0.355, 1),
-    easeOutExpo: cssFunction(cubicBezier, 0.19, 1, 0.22, 1),
-    easeOutQuad: cssFunction(cubicBezier, 0.25, 0.46, 0.45, 0.94),
-    easeOutQuart: cssFunction(cubicBezier, 0.165, 0.84, 0.44, 1),
-    easeOutQuint: cssFunction(cubicBezier, 0.23, 1, 0.32, 1),
-    easeOutSine: cssFunction(cubicBezier, 0.39, 0.575, 0.565, 1),
-    elegantSlowStartEnd: cssFunction(cubicBezier, 0.175, 0.885, 0.32, 1.275)
+    ease: [cubicBezier, 0.25, 0.1, 0.25, 1],
+    easeIn: [cubicBezier, 0.42, 0, 1, 1],
+    easeInBack: [cubicBezier, 0.6, -0.28, 0.735, 0.045],
+    easeInCirc: [cubicBezier, 0.6, 0.04, 0.98, 0.335],
+    easeInCubic: [cubicBezier, 0.55, 0.055, 0.675, 0.19],
+    easeInExpo: [cubicBezier, 0.95, 0.05, 0.795, 0.035],
+    easeInOut: [cubicBezier, 0.42, 0, 0.58, 1],
+    easeInOutBack: [cubicBezier, 0.68, -0.55, 0.265, 1.55],
+    easeInOutCirc: [cubicBezier, 0.785, 0.135, 0.15, 0.86],
+    easeInOutCubic: [cubicBezier, 0.645, 0.045, 0.355, 1],
+    easeInOutExpo: [cubicBezier, 1, 0, 0, 1],
+    easeInOutQuad: [cubicBezier, 0.455, 0.03, 0.515, 0.955],
+    easeInOutQuart: [cubicBezier, 0.77, 0, 0.175, 1],
+    easeInOutQuint: [cubicBezier, 0.86, 0, 0.07, 1],
+    easeInOutSine: [cubicBezier, 0.445, 0.05, 0.55, 0.95],
+    easeInQuad: [cubicBezier, 0.55, 0.085, 0.68, 0.53],
+    easeInQuart: [cubicBezier, 0.895, 0.03, 0.685, 0.22],
+    easeInQuint: [cubicBezier, 0.755, 0.05, 0.855, 0.06],
+    easeInSine: [cubicBezier, 0.47, 0, 0.745, 0.715],
+    easeOut: [cubicBezier, 0, 0, 0.58, 1],
+    easeOutBack: [cubicBezier, 0.175, 0.885, 0.32, 1.275],
+    easeOutCirc: [cubicBezier, 0.075, 0.82, 0.165, 1],
+    easeOutCubic: [cubicBezier, 0.215, 0.61, 0.355, 1],
+    easeOutExpo: [cubicBezier, 0.19, 1, 0.22, 1],
+    easeOutQuad: [cubicBezier, 0.25, 0.46, 0.45, 0.94],
+    easeOutQuart: [cubicBezier, 0.165, 0.84, 0.44, 1],
+    easeOutQuint: [cubicBezier, 0.23, 1, 0.32, 1],
+    easeOutSine: [cubicBezier, 0.39, 0.575, 0.565, 1],
+    elegantSlowStartEnd: [cubicBezier, 0.175, 0.885, 0.32, 1.275],
+    linear: [cubicBezier, 0, 0, 1, 1],
+    stepEnd: [steps, 'end'],
+    stepStart: [steps, 'start']
 };
+function getEasingString(easingString$$1) {
+    if (easingString$$1) {
+        if (startsWith(easingString$$1, cubicBezier) || startsWith(easingString$$1, steps)) {
+            return easingString$$1;
+        }
+        var name = toCamelCase(easingString$$1);
+        var def = easings[name];
+        if (def) {
+            return cssFunction.apply(nil, def);
+        }
+    }
+    return cssFunction.apply(nil, easings.ease);
+}
 
 var stepNone = '=';
 var stepForward = '+=';
@@ -501,7 +525,7 @@ var Animator = (function () {
         event.from = unitOut.value + this._duration;
         fromTime(event.to || 0, unitOut);
         event.to = unitOut.value + this._duration;
-        event.easing = event.easing ? (easings[event.easing] || event.easing) : 'linear';
+        event.easing = getEasingString(event.easing);
         each(this._plugins, function (plugin) {
             if (plugin.canHandle(event)) {
                 var animators = plugin.handle(event);
@@ -723,6 +747,40 @@ var MixinService = (function () {
 
 var JustAnimate = (function () {
     function JustAnimate() {
+        this.easings = {
+            ease: 'ease',
+            easeIn: 'easeIn',
+            easeInBack: 'easeInBack',
+            easeInCirc: 'easeInCirc',
+            easeInCubic: 'easeInCubic',
+            easeInExpo: 'easeInExpo',
+            easeInOut: 'easeInOut',
+            easeInOutBack: 'easeInOutBack',
+            easeInOutCirc: 'easeInOutCirc',
+            easeInOutCubic: 'easeInOutCubic',
+            easeInOutExpo: 'easeInOutExpo',
+            easeInOutQuad: 'easeInOutQuad',
+            easeInOutQuart: 'easeInOutQuart',
+            easeInOutQuint: 'easeInOutQuint',
+            easeInOutSine: 'easeInOutSine',
+            easeInQuad: 'easeInQuad',
+            easeInQuart: 'easeInQuart',
+            easeInQuint: 'easeInQuint',
+            easeInSine: 'easeInSine',
+            easeOut: 'easeOut',
+            easeOutBack: 'easeOutBack',
+            easeOutCirc: 'easeOutCirc',
+            easeOutCubic: 'easeOutCubic',
+            easeOutExpo: 'easeOutExpo',
+            easeOutQuad: 'easeOutQuad',
+            easeOutQuart: 'easeOutQuart',
+            easeOutQuint: 'easeOutQuint',
+            easeOutSine: 'easeOutSine',
+            elegantSlowStartEnd: 'elegantSlowStartEnd',
+            linear: 'linear',
+            stepEnd: 'stepEnd',
+            stepStart: 'stepStart'
+        };
         var self = this;
         self._resolver = new MixinService();
         self._timeLoop = TimeLoop();
@@ -826,7 +884,7 @@ var global$1 = window;
 var propertyAliases = {
     x: translateX,
     y: translateY,
-    Z: translateZ
+    z: translateZ
 };
 var transforms = [
     'perspective',
@@ -1100,7 +1158,7 @@ function normalizeProperties(keyframe) {
             cssTransforms.push([propAlias, value]);
         }
         else if (propAlias === easingString) {
-            keyframe[easingString] = easings[value] || value || nil;
+            keyframe[easingString] = getEasingString(value);
         }
         else {
             keyframe[toCamelCase(propAlias)] = value;

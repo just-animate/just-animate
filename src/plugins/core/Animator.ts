@@ -8,7 +8,7 @@ import {duration, finish, cancel, pause, nil} from '../../common/resources';
 import {Dispatcher, IDispatcher} from './Dispatcher';
 import {MixinService} from './MixinService';
 import {ITimeLoop} from './TimeLoop';
-import {easings} from '../../common/easings';
+import {getEasingString} from './easings';
 import {fromTime, Unit} from '../../common/units';
 
 // todo: remove these imports as soon as possible
@@ -178,7 +178,7 @@ export class Animator implements ja.IAnimator {
         event.to = unitOut.value + this._duration;
 
         // set easing to linear by default      
-        event.easing = event.easing ? (easings[event.easing] || event.easing) : 'linear';
+        event.easing = getEasingString(event.easing);
 
         each(this._plugins, (plugin: ja.IPlugin) => {
             if (plugin.canHandle(event)) {

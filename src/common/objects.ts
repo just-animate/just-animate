@@ -48,11 +48,11 @@ export const expand: Function = function (expandable: any): any {
     return result;
 };
 
-export function unwrap<T1, T2>(value: T1 | ja.IResolver<T1>, ctx: ja.CreateAnimationContext<T2>): T1 {
+export function unwrap<T1, T2>(value: T1 | ja.Resolver<T1>, ctx: ja.CreateAnimationContext<T2>): T1 {
     if (!isFunction(value)) {
         return value as T1;
     }
-    return (value as ja.IResolver<T1>)(ctx.target, ctx.index, ctx.targets);
+    return (value as ja.Resolver<T1>)(ctx.target, ctx.index, ctx.targets);
 }
 
 

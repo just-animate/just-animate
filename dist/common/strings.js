@@ -9,6 +9,10 @@ function toCamelCase(value) {
     return type_1.isString(value) ? value.replace(resources_1.camelCaseRegex, camelCaseReplacer) : resources_1.nil;
 }
 exports.toCamelCase = toCamelCase;
+function startsWith(value, pattern) {
+    return value.indexOf(pattern) === 0;
+}
+exports.startsWith = startsWith;
 exports.cssFunction = function () {
     var args = arguments;
     return args[0] + "(" + lists_1.toArray(args, 1).join(',') + ")";

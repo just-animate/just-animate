@@ -6,7 +6,7 @@ var math_1 = require("../../common/math");
 var errors_1 = require("../../common/errors");
 var resources_1 = require("../../common/resources");
 var Dispatcher_1 = require("./Dispatcher");
-var easings_1 = require("../../common/easings");
+var easings_1 = require("./easings");
 var units_1 = require("../../common/units");
 // todo: remove these imports as soon as possible
 // fixme!: this controls the amount of time left before the timeline gives up 
@@ -147,7 +147,7 @@ var Animator = (function () {
         units_1.fromTime(event.to || 0, unitOut);
         event.to = unitOut.value + this._duration;
         // set easing to linear by default      
-        event.easing = event.easing ? (easings_1.easings[event.easing] || event.easing) : 'linear';
+        event.easing = easings_1.getEasingString(event.easing);
         lists_1.each(this._plugins, function (plugin) {
             if (plugin.canHandle(event)) {
                 var animators = plugin.handle(event);

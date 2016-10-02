@@ -4,3 +4,5 @@ node_modules
 .vs
 npm-debug.log*
 **/*.map
+dist/package.json
+dist/README.md

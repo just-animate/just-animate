@@ -4,10 +4,10 @@ export class KeyframeAnimator implements ja.IAnimationController {
     public totalDuration: number;
     public onupdate: { (context: ja.IAnimationTimeContext): void };
     
-    private _init: ja.Resolver<waapi.IAnimation>;
+    private _init: ja.Resolvable<waapi.IAnimation>;
     private _animator: waapi.IAnimation;
 
-    constructor(init: ja.Resolver<waapi.IAnimation>) {
+    constructor(init: ja.Resolvable<waapi.IAnimation>) {
         this._init = init;
     }
 
@@ -52,7 +52,7 @@ export class KeyframeAnimator implements ja.IAnimationController {
 
     private _ensureInit(): void {
         if (this._init) {
-            this._animator = (this._init as ja.IResolver<waapi.IAnimation>)();
+            this._animator = (this._init as ja.Resolver<waapi.IAnimation>)();
             this._init = nil;
         }
     }

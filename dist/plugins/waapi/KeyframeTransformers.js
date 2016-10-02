@@ -1,7 +1,7 @@
 "use strict";
 var type_1 = require("../../common/type");
 var strings_1 = require("../../common/strings");
-var easings_1 = require("../../common/easings");
+var easings_1 = require("../core/easings");
 var lists_1 = require("../../common/lists");
 var objects_1 = require("../../common/objects");
 var KeyframeAnimator_1 = require("../waapi/KeyframeAnimator");
@@ -11,7 +11,7 @@ var global = window;
 var propertyAliases = {
     x: resources_1.translateX,
     y: resources_1.translateY,
-    Z: resources_1.translateZ
+    z: resources_1.translateZ
 };
 var transforms = [
     'perspective',
@@ -331,7 +331,7 @@ function normalizeProperties(keyframe) {
         }
         else if (propAlias === resources_1.easingString) {
             // handle easings
-            keyframe[resources_1.easingString] = easings_1.easings[value] || value || resources_1.nil;
+            keyframe[resources_1.easingString] = easings_1.getEasingString(value);
         }
         else {
             // handle others (change background-color and the like to backgroundColor)

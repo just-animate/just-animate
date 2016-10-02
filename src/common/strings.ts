@@ -10,6 +10,10 @@ export function toCamelCase(value: string): string {
     return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : nil;
 }
 
+export function startsWith(value: string, pattern: string): boolean {
+    return value.indexOf(pattern) === 0;
+}
+
 export const cssFunction: Function = function(): string {
     const args = arguments;
     return `${args[0]}(${toArray(args, 1).join(',')})`;

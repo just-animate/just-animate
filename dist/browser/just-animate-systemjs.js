@@ -2749,7 +2749,7 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
 System.register("just-animate/common/resources", [], function (exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
-    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, transform, translate, translate3d, translateX, translateY, translateZ, update, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
+    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, steps, transform, translate, translate3d, translateX, translateY, translateZ, update, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
     return {
         setters: [],
         execute: function () {
@@ -2784,6 +2784,7 @@ System.register("just-animate/common/resources", [], function (exports_78, conte
             exports_78("skew", skew = 'skew');
             exports_78("skewX", skewX = 'skewX');
             exports_78("skewY", skewY = 'skewY');
+            exports_78("steps", steps = 'steps');
             exports_78("transform", transform = 'transform');
             exports_78("translate", translate = 'translate');
             exports_78("translate3d", translate3d = 'translate3d');
@@ -2805,91 +2806,21 @@ System.register("just-animate/common/resources", [], function (exports_78, conte
         }
     };
 });
-System.register("just-animate/common/type", ["just-animate/common/resources"], function (exports_79, context_79) {
+System.register("just-animate/common/lists", ["just-animate/common/resources"], function (exports_79, context_79) {
     "use strict";
     var __moduleName = context_79 && context_79.id;
-    /**
-     * Tests if object is a list
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if is not a string and length property is a number
-     */
-    function isArray(a) {
-        return isDefined(a) && !isString(a) && isNumber(a.length);
-    }
-    function isDefined(a) {
-        return a !== resources_1.nil && a !== resources_1.nada && a !== '';
-    }
-    /**
-     * Tests if object is a function
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if object.toString reports it as a Function
-     */
-    function isFunction(a) {
-        return getTypeString(a) === resources_1.functionTypeString;
-    }
-    /**
-     * Tests if object is a number
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if the object is typeof number
-     */
-    function isNumber(a) {
-        return typeof a === resources_1.numberString;
-    }
-    function isObject(a) {
-        return typeof a === resources_1.objectString && a !== resources_1.nada;
-    }
-    /**
-     * Tests if object is a string
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if object is typeof string
-     */
-    function isString(a) {
-        return typeof a === resources_1.stringString;
-    }
-    function getTypeString(val) {
-        return ostring.call(val);
-    }
-    var resources_1, ostring;
-    exports_79("isArray", isArray);
-    exports_79("isDefined", isDefined);
-    exports_79("isFunction", isFunction);
-    exports_79("isNumber", isNumber);
-    exports_79("isObject", isObject);
-    exports_79("isString", isString);
-    return {
-        setters: [
-            function (resources_1_1) {
-                resources_1 = resources_1_1;
-            }
-        ],
-        execute: function () {
-            ostring = Object.prototype.toString;
-        }
-    };
-});
-System.register("just-animate/common/lists", ["just-animate/common/resources"], function (exports_80, context_80) {
-    "use strict";
-    var __moduleName = context_80 && context_80.id;
     /**
      * Returns the first object in the list or undefined
      */
     function head(indexed, predicate) {
         if (!indexed) {
-            return resources_2.nil;
+            return resources_1.nil;
         }
         var len = indexed.length;
         if (len < 1) {
-            return resources_2.nil;
+            return resources_1.nil;
         }
-        if (predicate === resources_2.nil) {
+        if (predicate === resources_1.nil) {
             return indexed[0];
         }
         for (var i = 0; i < len; i++) {
@@ -2899,20 +2830,20 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
                 return item;
             }
         }
-        return resources_2.nil;
+        return resources_1.nil;
     }
     /**
      * Returns the last object in the list or undefined
      */
     function tail(indexed, predicate) {
         if (!indexed) {
-            return resources_2.nil;
+            return resources_1.nil;
         }
         var len = indexed.length;
         if (len < 1) {
-            return resources_2.nil;
+            return resources_1.nil;
         }
-        if (predicate === resources_2.nil) {
+        if (predicate === resources_1.nil) {
             return indexed[len - 1];
         }
         for (var i = len - 1; i > -1; --i) {
@@ -2922,7 +2853,7 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
                 return item;
             }
         }
-        return resources_2.nil;
+        return resources_1.nil;
     }
     /**
      * Converts list to an Array.
@@ -3004,7 +2935,7 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         var results = [];
         for (var i = 0, len = items.length; i < len; i++) {
             var result = fn(items[i]);
-            if (result !== resources_2.nil) {
+            if (result !== resources_1.nil) {
                 results.push(result);
             }
         }
@@ -3021,19 +2952,19 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
     function pushAll(source, target) {
         push.apply(source, target);
     }
-    var resources_2, slice, push;
-    exports_80("head", head);
-    exports_80("tail", tail);
-    exports_80("toArray", toArray);
-    exports_80("each", each);
-    exports_80("max", max);
-    exports_80("maxBy", maxBy);
-    exports_80("map", map);
-    exports_80("pushAll", pushAll);
+    var resources_1, slice, push;
+    exports_79("head", head);
+    exports_79("tail", tail);
+    exports_79("toArray", toArray);
+    exports_79("each", each);
+    exports_79("max", max);
+    exports_79("maxBy", maxBy);
+    exports_79("map", map);
+    exports_79("pushAll", pushAll);
     return {
         setters: [
-            function (resources_2_1) {
-                resources_2 = resources_2_1;
+            function (resources_1_1) {
+                resources_1 = resources_1_1;
             }
         ],
         execute: function () {
@@ -3043,97 +2974,92 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         }
     };
 });
-System.register("just-animate/common/strings", ["just-animate/common/type", "just-animate/common/lists", "just-animate/common/resources"], function (exports_81, context_81) {
+System.register("just-animate/common/type", ["just-animate/common/resources"], function (exports_80, context_80) {
+    "use strict";
+    var __moduleName = context_80 && context_80.id;
+    /**
+     * Tests if object is a list
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if is not a string and length property is a number
+     */
+    function isArray(a) {
+        return isDefined(a) && !isString(a) && isNumber(a.length);
+    }
+    function isDefined(a) {
+        return a !== resources_2.nil && a !== resources_2.nada && a !== '';
+    }
+    /**
+     * Tests if object is a function
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object.toString reports it as a Function
+     */
+    function isFunction(a) {
+        return getTypeString(a) === resources_2.functionTypeString;
+    }
+    /**
+     * Tests if object is a number
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if the object is typeof number
+     */
+    function isNumber(a) {
+        return typeof a === resources_2.numberString;
+    }
+    function isObject(a) {
+        return typeof a === resources_2.objectString && a !== resources_2.nada;
+    }
+    /**
+     * Tests if object is a string
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object is typeof string
+     */
+    function isString(a) {
+        return typeof a === resources_2.stringString;
+    }
+    function getTypeString(val) {
+        return ostring.call(val);
+    }
+    var resources_2, ostring;
+    exports_80("isArray", isArray);
+    exports_80("isDefined", isDefined);
+    exports_80("isFunction", isFunction);
+    exports_80("isNumber", isNumber);
+    exports_80("isObject", isObject);
+    exports_80("isString", isString);
+    return {
+        setters: [
+            function (resources_2_1) {
+                resources_2 = resources_2_1;
+            }
+        ],
+        execute: function () {
+            ostring = Object.prototype.toString;
+        }
+    };
+});
+System.register("just-animate/common/errors", [], function (exports_81, context_81) {
     "use strict";
     var __moduleName = context_81 && context_81.id;
-    function camelCaseReplacer(match, p1, p2) {
-        return p1 + p2.toUpperCase();
-    }
-    function toCamelCase(value) {
-        return type_1.isString(value) ? value.replace(resources_3.camelCaseRegex, camelCaseReplacer) : resources_3.nil;
-    }
-    var type_1, lists_1, resources_3, cssFunction;
-    exports_81("toCamelCase", toCamelCase);
-    return {
-        setters: [
-            function (type_1_1) {
-                type_1 = type_1_1;
-            },
-            function (lists_1_1) {
-                lists_1 = lists_1_1;
-            },
-            function (resources_3_1) {
-                resources_3 = resources_3_1;
-            }
-        ],
-        execute: function () {
-            exports_81("cssFunction", cssFunction = function () {
-                var args = arguments;
-                return args[0] + "(" + lists_1.toArray(args, 1).join(',') + ")";
-            });
-        }
-    };
-});
-System.register("just-animate/common/easings", ["just-animate/common/strings", "just-animate/common/resources"], function (exports_82, context_82) {
-    "use strict";
-    var __moduleName = context_82 && context_82.id;
-    var strings_1, resources_4, easings;
-    return {
-        setters: [
-            function (strings_1_1) {
-                strings_1 = strings_1_1;
-            },
-            function (resources_4_1) {
-                resources_4 = resources_4_1;
-            }
-        ],
-        execute: function () {
-            exports_82("easings", easings = {
-                easeInBack: strings_1.cssFunction(resources_4.cubicBezier, 0.6, -0.28, 0.735, 0.045),
-                easeInCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.6, 0.04, 0.98, 0.335),
-                easeInCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.55, 0.055, 0.675, 0.19),
-                easeInExpo: strings_1.cssFunction(resources_4.cubicBezier, 0.95, 0.05, 0.795, 0.035),
-                easeInOutBack: strings_1.cssFunction(resources_4.cubicBezier, 0.68, -0.55, 0.265, 1.55),
-                easeInOutCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.785, 0.135, 0.15, 0.86),
-                easeInOutCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.645, 0.045, 0.355, 1),
-                easeInOutExpo: strings_1.cssFunction(resources_4.cubicBezier, 1, 0, 0, 1),
-                easeInOutQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.455, 0.03, 0.515, 0.955),
-                easeInOutQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.77, 0, 0.175, 1),
-                easeInOutQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.86, 0, 0.07, 1),
-                easeInOutSine: strings_1.cssFunction(resources_4.cubicBezier, 0.445, 0.05, 0.55, 0.95),
-                easeInQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.55, 0.085, 0.68, 0.53),
-                easeInQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.895, 0.03, 0.685, 0.22),
-                easeInQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.755, 0.05, 0.855, 0.06),
-                easeInSine: strings_1.cssFunction(resources_4.cubicBezier, 0.47, 0, 0.745, 0.715),
-                easeOutBack: strings_1.cssFunction(resources_4.cubicBezier, 0.175, 0.885, 0.32, 1.275),
-                easeOutCirc: strings_1.cssFunction(resources_4.cubicBezier, 0.075, 0.82, 0.165, 1),
-                easeOutCubic: strings_1.cssFunction(resources_4.cubicBezier, 0.215, 0.61, 0.355, 1),
-                easeOutExpo: strings_1.cssFunction(resources_4.cubicBezier, 0.19, 1, 0.22, 1),
-                easeOutQuad: strings_1.cssFunction(resources_4.cubicBezier, 0.25, 0.46, 0.45, 0.94),
-                easeOutQuart: strings_1.cssFunction(resources_4.cubicBezier, 0.165, 0.84, 0.44, 1),
-                easeOutQuint: strings_1.cssFunction(resources_4.cubicBezier, 0.23, 1, 0.32, 1),
-                easeOutSine: strings_1.cssFunction(resources_4.cubicBezier, 0.39, 0.575, 0.565, 1),
-                elegantSlowStartEnd: strings_1.cssFunction(resources_4.cubicBezier, 0.175, 0.885, 0.32, 1.275)
-            });
-        }
-    };
-});
-System.register("just-animate/common/errors", [], function (exports_83, context_83) {
-    "use strict";
-    var __moduleName = context_83 && context_83.id;
     function invalidArg(name) {
         return new Error("Bad: " + name);
     }
-    exports_83("invalidArg", invalidArg);
+    exports_81("invalidArg", invalidArg);
     return {
         setters: [],
         execute: function () {
         }
     };
 });
-System.register("just-animate/common/elements", ["just-animate/common/lists", "just-animate/common/type", "just-animate/common/errors"], function (exports_84, context_84) {
+System.register("just-animate/common/elements", ["just-animate/common/lists", "just-animate/common/type", "just-animate/common/errors"], function (exports_82, context_82) {
     "use strict";
-    var __moduleName = context_84 && context_84.id;
+    var __moduleName = context_82 && context_82.id;
     /**
      * Recursively resolves the element source from dom, selector, jquery, array, and function sources
      *
@@ -3144,25 +3070,25 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         if (!source) {
             throw errors_1.invalidArg('source');
         }
-        if (type_2.isString(source)) {
+        if (type_1.isString(source)) {
             // if query selector, search for elements 
             var nodeResults = document.querySelectorAll(source);
-            return lists_2.toArray(nodeResults);
+            return lists_1.toArray(nodeResults);
         }
         if (typeof source['tagName'] === 'string') {
             // if a single element, wrap in array 
             return [source];
         }
-        if (type_2.isFunction(source)) {
+        if (type_1.isFunction(source)) {
             // if function, call it and call this function
             var provider = source;
             var result = provider();
             return queryElements(result);
         }
-        if (type_2.isArray(source)) {
+        if (type_1.isArray(source)) {
             // if array or jQuery object, flatten to an array
             var elements_1 = [];
-            lists_2.each(source, function (i) {
+            lists_1.each(source, function (i) {
                 // recursively call this function in case of nested elements
                 var innerElements = queryElements(i);
                 elements_1.push.apply(elements_1, innerElements);
@@ -3172,15 +3098,15 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         // otherwise return empty    
         return [];
     }
-    var lists_2, type_2, errors_1;
-    exports_84("queryElements", queryElements);
+    var lists_1, type_1, errors_1;
+    exports_82("queryElements", queryElements);
     return {
         setters: [
-            function (lists_2_1) {
-                lists_2 = lists_2_1;
+            function (lists_1_1) {
+                lists_1 = lists_1_1;
             },
-            function (type_2_1) {
-                type_2 = type_2_1;
+            function (type_1_1) {
+                type_1 = type_1_1;
             },
             function (errors_1_1) {
                 errors_1 = errors_1_1;
@@ -3190,9 +3116,9 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         }
     };
 });
-System.register("just-animate/common/math", ["just-animate/common/resources"], function (exports_85, context_85) {
+System.register("just-animate/common/math", ["just-animate/common/resources"], function (exports_83, context_83) {
     "use strict";
-    var __moduleName = context_85 && context_85.id;
+    var __moduleName = context_83 && context_83.id;
     /**
      * Clamps a number between the min and max
      *
@@ -3203,7 +3129,7 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
      * @returns {number} val if between min-max, min if lesser, max if greater
      */
     function clamp(val, min, max) {
-        return val === resources_5.nil ? resources_5.nil : val < min ? min : val > max ? max : val;
+        return val === resources_3.nil ? resources_3.nil : val < min ? min : val > max ? max : val;
     }
     function inRange(val, min, max) {
         return min < max ? min <= val && val <= max : max <= val && val <= min;
@@ -3239,14 +3165,14 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
             return x;
         };
     }
-    var resources_5, linearCubicBezier, SUBDIVISION_EPSILON;
-    exports_85("clamp", clamp);
-    exports_85("inRange", inRange);
-    exports_85("cubicBezier", cubicBezier);
+    var resources_3, linearCubicBezier, SUBDIVISION_EPSILON;
+    exports_83("clamp", clamp);
+    exports_83("inRange", inRange);
+    exports_83("cubicBezier", cubicBezier);
     return {
         setters: [
-            function (resources_5_1) {
-                resources_5 = resources_5_1;
+            function (resources_3_1) {
+                resources_3 = resources_3_1;
             }
         ],
         execute: function () {
@@ -3255,11 +3181,11 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
         }
     };
 });
-System.register("just-animate/common/objects", ["just-animate/common/type"], function (exports_86, context_86) {
+System.register("just-animate/common/objects", ["just-animate/common/type"], function (exports_84, context_84) {
     "use strict";
-    var __moduleName = context_86 && context_86.id;
+    var __moduleName = context_84 && context_84.id;
     function unwrap(value, ctx) {
-        if (!type_3.isFunction(value)) {
+        if (!type_2.isFunction(value)) {
             return value;
         }
         return value(ctx.target, ctx.index, ctx.targets);
@@ -3277,13 +3203,13 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
         }
         return props;
     }
-    var type_3, extend, inherit, expand;
-    exports_86("unwrap", unwrap);
-    exports_86("listProps", listProps);
+    var type_2, extend, inherit, expand;
+    exports_84("unwrap", unwrap);
+    exports_84("listProps", listProps);
     return {
         setters: [
-            function (type_3_1) {
-                type_3 = type_3_1;
+            function (type_2_1) {
+                type_2 = type_2_1;
             }
         ],
         execute: function () {
@@ -3295,7 +3221,7 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
              * @param {...any[]} sources sources from which to inherit properties
              * @returns {*} first object
              */
-            exports_86("extend", extend = function () {
+            exports_84("extend", extend = function () {
                 var args = arguments;
                 var target = args[0];
                 for (var i = 1, len = args.length; i < len; i++) {
@@ -3306,27 +3232,27 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
                 }
                 return target;
             });
-            exports_86("inherit", inherit = function () {
+            exports_84("inherit", inherit = function () {
                 var args = arguments;
                 var target = args[0];
                 for (var i = 1, len = args.length; i < len; i++) {
                     var source = args[i];
                     for (var propName in source) {
-                        if (!type_3.isDefined(target[propName])) {
+                        if (!type_2.isDefined(target[propName])) {
                             target[propName] = source[propName];
                         }
                     }
                 }
                 return target;
             });
-            exports_86("expand", expand = function (expandable) {
+            exports_84("expand", expand = function (expandable) {
                 var result = {};
                 for (var prop in expandable) {
                     var propVal = expandable[prop];
-                    if (type_3.isFunction(propVal)) {
+                    if (type_2.isFunction(propVal)) {
                         propVal = propVal();
                     }
-                    else if (type_3.isObject(propVal)) {
+                    else if (type_2.isObject(propVal)) {
                         propVal = expand(propVal);
                     }
                     result[prop] = propVal;
@@ -3336,35 +3262,70 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
         }
     };
 });
-System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function (exports_87, context_87) {
+System.register("just-animate/common/strings", ["just-animate/common/type", "just-animate/common/lists", "just-animate/common/resources"], function (exports_85, context_85) {
     "use strict";
-    var __moduleName = context_87 && context_87.id;
+    var __moduleName = context_85 && context_85.id;
+    function camelCaseReplacer(match, p1, p2) {
+        return p1 + p2.toUpperCase();
+    }
+    function toCamelCase(value) {
+        return type_3.isString(value) ? value.replace(resources_4.camelCaseRegex, camelCaseReplacer) : resources_4.nil;
+    }
+    function startsWith(value, pattern) {
+        return value.indexOf(pattern) === 0;
+    }
+    var type_3, lists_2, resources_4, cssFunction;
+    exports_85("toCamelCase", toCamelCase);
+    exports_85("startsWith", startsWith);
+    return {
+        setters: [
+            function (type_3_1) {
+                type_3 = type_3_1;
+            },
+            function (lists_2_1) {
+                lists_2 = lists_2_1;
+            },
+            function (resources_4_1) {
+                resources_4 = resources_4_1;
+            }
+        ],
+        execute: function () {
+            exports_85("cssFunction", cssFunction = function () {
+                var args = arguments;
+                return args[0] + "(" + lists_2.toArray(args, 1).join(',') + ")";
+            });
+        }
+    };
+});
+System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function (exports_86, context_86) {
+    "use strict";
+    var __moduleName = context_86 && context_86.id;
     function Unit() {
         var self = this instanceof Unit ? this : Object.create(Unit.prototype);
         return self;
     }
     function fromDistance(val, unit) {
         if (!type_4.isDefined(val)) {
-            return resources_6.nil;
+            return resources_5.nil;
         }
         var returnUnit = unit || Unit();
         if (type_4.isNumber(val)) {
             return returnUnit.values(Number(val), px, stepNone);
         }
-        var match = resources_6.distanceExpression.exec(val);
+        var match = resources_5.distanceExpression.exec(val);
         var unitType = match[2];
         var value = parseFloat(match[1]);
         return returnUnit.values(value, unitType, stepNone);
     }
     function fromPercentage(val, unit) {
         if (!type_4.isDefined(val)) {
-            return resources_6.nil;
+            return resources_5.nil;
         }
         var returnUnit = unit || Unit();
         if (type_4.isNumber(val)) {
             return returnUnit.values(Number(val), percent, stepNone);
         }
-        var match = resources_6.percentageExpression.exec(val);
+        var match = resources_5.percentageExpression.exec(val);
         var value = parseFloat(match[1]);
         return returnUnit.values(value, percent, stepNone);
     }
@@ -3373,12 +3334,12 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         if (type_4.isNumber(val)) {
             return returnUnit.values(Number(val), millisecond, stepNone);
         }
-        var match = resources_6.timeExpression.exec(val);
+        var match = resources_5.timeExpression.exec(val);
         var step = match[1] || stepNone;
         var unitType = match[3];
         var value = parseFloat(match[2]);
         var valueMs;
-        if (unitType === resources_6.nil || unitType === millisecond) {
+        if (unitType === resources_5.nil || unitType === millisecond) {
             valueMs = value;
         }
         else if (unitType === second) {
@@ -3399,50 +3360,50 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         }
         return sharedUnit.value;
     }
-    var type_4, resources_6, errors_2, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
-    exports_87("Unit", Unit);
-    exports_87("fromDistance", fromDistance);
-    exports_87("fromPercentage", fromPercentage);
-    exports_87("fromTime", fromTime);
-    exports_87("resolveTimeExpression", resolveTimeExpression);
+    var type_4, resources_5, errors_2, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
+    exports_86("Unit", Unit);
+    exports_86("fromDistance", fromDistance);
+    exports_86("fromPercentage", fromPercentage);
+    exports_86("fromTime", fromTime);
+    exports_86("resolveTimeExpression", resolveTimeExpression);
     return {
         setters: [
             function (type_4_1) {
                 type_4 = type_4_1;
             },
-            function (resources_6_1) {
-                resources_6 = resources_6_1;
+            function (resources_5_1) {
+                resources_5 = resources_5_1;
             },
             function (errors_2_1) {
                 errors_2 = errors_2_1;
             }
         ],
         execute: function () {
-            exports_87("stepNone", stepNone = '=');
-            exports_87("stepForward", stepForward = '+=');
-            exports_87("stepBackward", stepBackward = '-=');
-            exports_87("em", em = 'em');
-            exports_87("ex", ex = 'ex');
-            exports_87("ch", ch = 'ch');
-            exports_87("rem", rem = 'rem');
-            exports_87("vh", vh = 'vh');
-            exports_87("vw", vw = 'vw');
-            exports_87("vmin", vmin = 'vmin');
-            exports_87("vmax", vmax = 'vmax');
-            exports_87("px", px = 'px');
-            exports_87("mm", mm = 'mm');
-            exports_87("q", q = 'q');
-            exports_87("cm", cm = 'cm');
-            exports_87("inch", inch = 'in');
-            exports_87("point", point = 'pt');
-            exports_87("pica", pica = 'pc');
-            exports_87("percent", percent = '%');
-            exports_87("millisecond", millisecond = 'ms');
-            exports_87("second", second = 's');
+            exports_86("stepNone", stepNone = '=');
+            exports_86("stepForward", stepForward = '+=');
+            exports_86("stepBackward", stepBackward = '-=');
+            exports_86("em", em = 'em');
+            exports_86("ex", ex = 'ex');
+            exports_86("ch", ch = 'ch');
+            exports_86("rem", rem = 'rem');
+            exports_86("vh", vh = 'vh');
+            exports_86("vw", vw = 'vw');
+            exports_86("vmin", vmin = 'vmin');
+            exports_86("vmax", vmax = 'vmax');
+            exports_86("px", px = 'px');
+            exports_86("mm", mm = 'mm');
+            exports_86("q", q = 'q');
+            exports_86("cm", cm = 'cm');
+            exports_86("inch", inch = 'in');
+            exports_86("point", point = 'pt');
+            exports_86("pica", pica = 'pc');
+            exports_86("percent", percent = '%');
+            exports_86("millisecond", millisecond = 'ms');
+            exports_86("second", second = 's');
             Unit.prototype = {
-                step: resources_6.nil,
-                unit: resources_6.nil,
-                value: resources_6.nil,
+                step: resources_5.nil,
+                unit: resources_5.nil,
+                value: resources_5.nil,
                 values: function (value, unit, step) {
                     var self = this;
                     self.value = value;
@@ -3458,19 +3419,19 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         }
     };
 });
-System.register("just-animate/common/utils", [], function (exports_88, context_88) {
+System.register("just-animate/common/utils", [], function (exports_87, context_87) {
     "use strict";
-    var __moduleName = context_88 && context_88.id;
+    var __moduleName = context_87 && context_87.id;
     var global, requestAnimationFrame, now, raf;
     return {
         setters: [],
         execute: function () {
             global = window;
             requestAnimationFrame = global.requestAnimationFrame;
-            exports_88("now", now = (performance && performance.now)
+            exports_87("now", now = (performance && performance.now)
                 ? function () { return performance.now(); }
                 : function () { return Date.now(); });
-            exports_88("raf", raf = (requestAnimationFrame)
+            exports_87("raf", raf = (requestAnimationFrame)
                 ? function (ctx, fn) {
                     requestAnimationFrame(function () { fn(ctx); });
                 }
@@ -3480,17 +3441,17 @@ System.register("just-animate/common/utils", [], function (exports_88, context_8
         }
     };
 });
-System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/type", "just-animate/common/errors", "just-animate/common/resources"], function (exports_89, context_89) {
+System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/type", "just-animate/common/errors", "just-animate/common/resources"], function (exports_88, context_88) {
     "use strict";
-    var __moduleName = context_89 && context_89.id;
+    var __moduleName = context_88 && context_88.id;
     function Dispatcher() {
         var self = this;
         self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);
         self._fn = {};
         return self;
     }
-    var type_5, errors_3, resources_7;
-    exports_89("Dispatcher", Dispatcher);
+    var type_5, errors_3, resources_6;
+    exports_88("Dispatcher", Dispatcher);
     return {
         setters: [
             function (type_5_1) {
@@ -3499,13 +3460,13 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
             function (errors_3_1) {
                 errors_3 = errors_3_1;
             },
-            function (resources_7_1) {
-                resources_7 = resources_7_1;
+            function (resources_6_1) {
+                resources_6 = resources_6_1;
             }
         ],
         execute: function () {
             Dispatcher.prototype = {
-                _fn: resources_7.nil,
+                _fn: resources_6.nil,
                 trigger: function (eventName, args) {
                     var listeners = this._fn[eventName];
                     if (!listeners) {
@@ -3514,7 +3475,7 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
                     var len = listeners.length;
                     for (var i = 0; i < len; i++) {
                         var listener = listeners[i];
-                        listener.apply(resources_7.nil, args);
+                        listener.apply(resources_6.nil, args);
                     }
                 },
                 on: function (eventName, listener) {
@@ -3545,14 +3506,14 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
         }
     };
 });
-System.register("just-animate/plugins/core/MixinService", ["just-animate/common/resources"], function (exports_90, context_90) {
+System.register("just-animate/plugins/core/MixinService", ["just-animate/common/resources"], function (exports_89, context_89) {
     "use strict";
-    var __moduleName = context_90 && context_90.id;
-    var resources_8, presets, MixinService;
+    var __moduleName = context_89 && context_89.id;
+    var resources_7, presets, MixinService;
     return {
         setters: [
-            function (resources_8_1) {
-                resources_8 = resources_8_1;
+            function (resources_7_1) {
+                resources_7 = resources_7_1;
             }
         ],
         execute: function () {
@@ -3562,7 +3523,7 @@ System.register("just-animate/plugins/core/MixinService", ["just-animate/common/
                     this.defs = {};
                 }
                 MixinService.prototype.findAnimation = function (name) {
-                    return this.defs[name] || presets[name] || resources_8.nil;
+                    return this.defs[name] || presets[name] || resources_7.nil;
                 };
                 MixinService.prototype.registerAnimation = function (animationOptions, isGlobal) {
                     var name = animationOptions.name;
@@ -3574,19 +3535,19 @@ System.register("just-animate/plugins/core/MixinService", ["just-animate/common/
                 };
                 return MixinService;
             }());
-            exports_90("MixinService", MixinService);
+            exports_89("MixinService", MixinService);
         }
     };
 });
-System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/resources", "just-animate/common/utils"], function (exports_91, context_91) {
+System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/resources", "just-animate/common/utils"], function (exports_90, context_90) {
     "use strict";
-    var __moduleName = context_91 && context_91.id;
+    var __moduleName = context_90 && context_90.id;
     function TimeLoop() {
         var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
         self.active = [];
         self.elapses = [];
-        self.isActive = resources_9.nil;
-        self.lastTime = resources_9.nil;
+        self.isActive = resources_8.nil;
+        self.lastTime = resources_8.nil;
         self.offs = [];
         self.ons = [];
         return self;
@@ -3603,8 +3564,8 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
         // if nil is subscribed, kill the cycle
         if (!len) {
             // end recursion
-            self.isActive = resources_9.nil;
-            self.lastTime = resources_9.nil;
+            self.isActive = resources_8.nil;
+            self.lastTime = resources_8.nil;
             return;
         }
         // ensure running and requestAnimationFrame is called
@@ -3643,12 +3604,12 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
             }
         }
     }
-    var resources_9, utils_1;
-    exports_91("TimeLoop", TimeLoop);
+    var resources_8, utils_1;
+    exports_90("TimeLoop", TimeLoop);
     return {
         setters: [
-            function (resources_9_1) {
-                resources_9 = resources_9_1;
+            function (resources_8_1) {
+                resources_8 = resources_8_1;
             },
             function (utils_1_1) {
                 utils_1 = utils_1_1;
@@ -3692,7 +3653,75 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
         }
     };
 });
-System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/common/easings", "just-animate/common/units"], function (exports_92, context_92) {
+System.register("just-animate/plugins/core/easings", ["just-animate/common/strings", "just-animate/common/resources"], function (exports_91, context_91) {
+    "use strict";
+    var __moduleName = context_91 && context_91.id;
+    function getEasingString(easingString) {
+        // if no function supplied return linear as cubic
+        if (easingString) {
+            // if starts with known css function, return with no parsing
+            if (strings_1.startsWith(easingString, resources_9.cubicBezier) || strings_1.startsWith(easingString, resources_9.steps)) {
+                return easingString;
+            }
+            // get name as camel case
+            var name_1 = strings_1.toCamelCase(easingString);
+            var def = easings[name_1];
+            if (!def) {
+                return strings_1.cssFunction.apply(resources_9.nil, def);
+            }
+        }
+        return strings_1.cssFunction.apply(resources_9.nil, easings.ease);
+    }
+    var strings_1, resources_9, easings;
+    exports_91("getEasingString", getEasingString);
+    return {
+        setters: [
+            function (strings_1_1) {
+                strings_1 = strings_1_1;
+            },
+            function (resources_9_1) {
+                resources_9 = resources_9_1;
+            }
+        ],
+        execute: function () {
+            easings = {
+                ease: [resources_9.cubicBezier, 0.25, 0.1, 0.25, 1],
+                easeIn: [resources_9.cubicBezier, 0.42, 0, 1, 1],
+                easeInBack: [resources_9.cubicBezier, 0.6, -0.28, 0.735, 0.045],
+                easeInCirc: [resources_9.cubicBezier, 0.6, 0.04, 0.98, 0.335],
+                easeInCubic: [resources_9.cubicBezier, 0.55, 0.055, 0.675, 0.19],
+                easeInExpo: [resources_9.cubicBezier, 0.95, 0.05, 0.795, 0.035],
+                easeInOut: [resources_9.cubicBezier, 0.42, 0, 0.58, 1],
+                easeInOutBack: [resources_9.cubicBezier, 0.68, -0.55, 0.265, 1.55],
+                easeInOutCirc: [resources_9.cubicBezier, 0.785, 0.135, 0.15, 0.86],
+                easeInOutCubic: [resources_9.cubicBezier, 0.645, 0.045, 0.355, 1],
+                easeInOutExpo: [resources_9.cubicBezier, 1, 0, 0, 1],
+                easeInOutQuad: [resources_9.cubicBezier, 0.455, 0.03, 0.515, 0.955],
+                easeInOutQuart: [resources_9.cubicBezier, 0.77, 0, 0.175, 1],
+                easeInOutQuint: [resources_9.cubicBezier, 0.86, 0, 0.07, 1],
+                easeInOutSine: [resources_9.cubicBezier, 0.445, 0.05, 0.55, 0.95],
+                easeInQuad: [resources_9.cubicBezier, 0.55, 0.085, 0.68, 0.53],
+                easeInQuart: [resources_9.cubicBezier, 0.895, 0.03, 0.685, 0.22],
+                easeInQuint: [resources_9.cubicBezier, 0.755, 0.05, 0.855, 0.06],
+                easeInSine: [resources_9.cubicBezier, 0.47, 0, 0.745, 0.715],
+                easeOut: [resources_9.cubicBezier, 0, 0, 0.58, 1],
+                easeOutBack: [resources_9.cubicBezier, 0.175, 0.885, 0.32, 1.275],
+                easeOutCirc: [resources_9.cubicBezier, 0.075, 0.82, 0.165, 1],
+                easeOutCubic: [resources_9.cubicBezier, 0.215, 0.61, 0.355, 1],
+                easeOutExpo: [resources_9.cubicBezier, 0.19, 1, 0.22, 1],
+                easeOutQuad: [resources_9.cubicBezier, 0.25, 0.46, 0.45, 0.94],
+                easeOutQuart: [resources_9.cubicBezier, 0.165, 0.84, 0.44, 1],
+                easeOutQuint: [resources_9.cubicBezier, 0.23, 1, 0.32, 1],
+                easeOutSine: [resources_9.cubicBezier, 0.39, 0.575, 0.565, 1],
+                elegantSlowStartEnd: [resources_9.cubicBezier, 0.175, 0.885, 0.32, 1.275],
+                linear: [resources_9.cubicBezier, 0, 0, 1, 1],
+                stepEnd: [resources_9.steps, 'end'],
+                stepStart: [resources_9.steps, 'start']
+            };
+        }
+    };
+});
+System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/easings", "just-animate/common/units"], function (exports_92, context_92) {
     "use strict";
     var __moduleName = context_92 && context_92.id;
     var lists_3, objects_1, type_6, math_1, errors_4, resources_10, Dispatcher_1, easings_1, units_1, animationPadding, unitOut, Animator;
@@ -3866,7 +3895,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     units_1.fromTime(event.to || 0, unitOut);
                     event.to = unitOut.value + this._duration;
                     // set easing to linear by default      
-                    event.easing = event.easing ? (easings_1.easings[event.easing] || event.easing) : 'linear';
+                    event.easing = easings_1.getEasingString(event.easing);
                     lists_3.each(this._plugins, function (plugin) {
                         if (plugin.canHandle(event)) {
                             var animators = plugin.handle(event);
@@ -3997,6 +4026,40 @@ System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-
         execute: function () {
             JustAnimate = (function () {
                 function JustAnimate() {
+                    this.easings = {
+                        ease: 'ease',
+                        easeIn: 'easeIn',
+                        easeInBack: 'easeInBack',
+                        easeInCirc: 'easeInCirc',
+                        easeInCubic: 'easeInCubic',
+                        easeInExpo: 'easeInExpo',
+                        easeInOut: 'easeInOut',
+                        easeInOutBack: 'easeInOutBack',
+                        easeInOutCirc: 'easeInOutCirc',
+                        easeInOutCubic: 'easeInOutCubic',
+                        easeInOutExpo: 'easeInOutExpo',
+                        easeInOutQuad: 'easeInOutQuad',
+                        easeInOutQuart: 'easeInOutQuart',
+                        easeInOutQuint: 'easeInOutQuint',
+                        easeInOutSine: 'easeInOutSine',
+                        easeInQuad: 'easeInQuad',
+                        easeInQuart: 'easeInQuart',
+                        easeInQuint: 'easeInQuint',
+                        easeInSine: 'easeInSine',
+                        easeOut: 'easeOut',
+                        easeOutBack: 'easeOutBack',
+                        easeOutCirc: 'easeOutCirc',
+                        easeOutCubic: 'easeOutCubic',
+                        easeOutExpo: 'easeOutExpo',
+                        easeOutQuad: 'easeOutQuad',
+                        easeOutQuart: 'easeOutQuart',
+                        easeOutQuint: 'easeOutQuint',
+                        easeOutSine: 'easeOutSine',
+                        elegantSlowStartEnd: 'elegantSlowStartEnd',
+                        linear: 'linear',
+                        stepEnd: 'stepEnd',
+                        stepStart: 'stepStart'
+                    };
                     var self = this;
                     self._resolver = new MixinService_1.MixinService();
                     self._timeLoop = TimeLoop_1.TimeLoop();
@@ -4106,7 +4169,7 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/common/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/resources"], function (exports_96, context_96) {
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/plugins/core/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/resources"], function (exports_96, context_96) {
     "use strict";
     var __moduleName = context_96 && context_96.id;
     function createAnimator(ctx) {
@@ -4401,7 +4464,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             }
             else if (propAlias === resources_12.easingString) {
                 // handle easings
-                keyframe[resources_12.easingString] = easings_2.easings[value] || value || resources_12.nil;
+                keyframe[resources_12.easingString] = easings_2.getEasingString(value);
             }
             else {
                 // handle others (change background-color and the like to backgroundColor)
@@ -4448,7 +4511,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             propertyAliases = {
                 x: resources_12.translateX,
                 y: resources_12.translateY,
-                Z: resources_12.translateZ
+                z: resources_12.translateZ
             };
             transforms = [
                 'perspective',

@@ -116,7 +116,7 @@ export function max<T1>(items: T1[], propertyName: string): any {
  * @param {string} propertyName property to evaluate
  * @returns {*} max value of the property provided
  */
-export function maxBy<T1, T2>(items: T1[], predicate: ja.IMapper<T1, T2>): T2 {
+export function maxBy<T1, T2>(items: T1[], predicate: ja.Mapper<T1, T2>): T2 {
     let max: any = '';
     for (let i = 0, len = items.length; i < len; i++) {
         const item = items[i] as any;
@@ -139,7 +139,7 @@ export function maxBy<T1, T2>(items: T1[], predicate: ja.IMapper<T1, T2>): T2 {
  * @param {ja.IMapper<T1, T2>} fn function that maps each object
  * @returns {T2[]} new list of objects
  */
-export function map<T1, T2>(items: IList<T1>, fn: ja.IMapper<T1, T2>): T2[] {
+export function map<T1, T2>(items: IList<T1>, fn: ja.Mapper<T1, T2>): T2[] {
     const results = [] as T2[];
     for (let i = 0, len = items.length; i < len; i++) {
         const result = fn(items[i]);
