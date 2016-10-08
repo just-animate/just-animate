@@ -199,13 +199,8 @@ function listProps(indexed) {
     return props;
 }
 
-var SUBDIVISION_EPSILON = 0.0001;
-
 function inRange(val, min, max) {
     return min < max ? min <= val && val <= max : max <= val && val <= min;
-}
-function bezier(n1, n2, t) {
-    return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
 }
 
 function invalidArg(name) {
@@ -271,52 +266,111 @@ var cssFunction = function () {
     return args[0] + "(" + toArray(args, 1).join(',') + ")";
 };
 
-var easings = {
-    ease: [cubicBezier, 0.25, 0.1, 0.25, 1],
-    easeIn: [cubicBezier, 0.42, 0, 1, 1],
-    easeInBack: [cubicBezier, 0.6, -0.28, 0.735, 0.045],
-    easeInCirc: [cubicBezier, 0.6, 0.04, 0.98, 0.335],
-    easeInCubic: [cubicBezier, 0.55, 0.055, 0.675, 0.19],
-    easeInExpo: [cubicBezier, 0.95, 0.05, 0.795, 0.035],
-    easeInOut: [cubicBezier, 0.42, 0, 0.58, 1],
-    easeInOutBack: [cubicBezier, 0.68, -0.55, 0.265, 1.55],
-    easeInOutCirc: [cubicBezier, 0.785, 0.135, 0.15, 0.86],
-    easeInOutCubic: [cubicBezier, 0.645, 0.045, 0.355, 1],
-    easeInOutExpo: [cubicBezier, 1, 0, 0, 1],
-    easeInOutQuad: [cubicBezier, 0.455, 0.03, 0.515, 0.955],
-    easeInOutQuart: [cubicBezier, 0.77, 0, 0.175, 1],
-    easeInOutQuint: [cubicBezier, 0.86, 0, 0.07, 1],
-    easeInOutSine: [cubicBezier, 0.445, 0.05, 0.55, 0.95],
-    easeInQuad: [cubicBezier, 0.55, 0.085, 0.68, 0.53],
-    easeInQuart: [cubicBezier, 0.895, 0.03, 0.685, 0.22],
-    easeInQuint: [cubicBezier, 0.755, 0.05, 0.855, 0.06],
-    easeInSine: [cubicBezier, 0.47, 0, 0.745, 0.715],
-    easeOut: [cubicBezier, 0, 0, 0.58, 1],
-    easeOutBack: [cubicBezier, 0.175, 0.885, 0.32, 1.275],
-    easeOutCirc: [cubicBezier, 0.075, 0.82, 0.165, 1],
-    easeOutCubic: [cubicBezier, 0.215, 0.61, 0.355, 1],
-    easeOutExpo: [cubicBezier, 0.19, 1, 0.22, 1],
-    easeOutQuad: [cubicBezier, 0.25, 0.46, 0.45, 0.94],
-    easeOutQuart: [cubicBezier, 0.165, 0.84, 0.44, 1],
-    easeOutQuint: [cubicBezier, 0.23, 1, 0.32, 1],
-    easeOutSine: [cubicBezier, 0.39, 0.575, 0.565, 1],
-    elegantSlowStartEnd: [cubicBezier, 0.175, 0.885, 0.32, 1.275],
-    linear: [cubicBezier, 0, 0, 1, 1],
-    stepEnd: [steps, 'end'],
-    stepStart: [steps, 'start']
+var SUBDIVISION_EPSILON = 0.0001;
+var cssFunctionRegex = /([a-z-]+)\(([^\)]+)\)/ig;
+var linearCubicBezier = function (x$$1) { return x$$1; };
+var stepAliases = {
+    end: 0,
+    start: 1
 };
+var easings = {
+    ease: [cubicBezier, .25, .1, .25, 1],
+    easeIn: [cubicBezier, .42, 0, 1, 1],
+    easeInBack: [cubicBezier, .6, -.28, .735, .045],
+    easeInCirc: [cubicBezier, .6, .04, .98, .335],
+    easeInCubic: [cubicBezier, .55, .055, .675, .19],
+    easeInExpo: [cubicBezier, .95, .05, .795, .035],
+    easeInOut: [cubicBezier, .42, 0, .58, 1],
+    easeInOutBack: [cubicBezier, .68, -.55, .265, 1.55],
+    easeInOutCirc: [cubicBezier, .785, .135, .15, .86],
+    easeInOutCubic: [cubicBezier, .645, .045, .355, 1],
+    easeInOutExpo: [cubicBezier, 1, 0, 0, 1],
+    easeInOutQuad: [cubicBezier, .455, .03, .515, .955],
+    easeInOutQuart: [cubicBezier, .77, 0, .175, 1],
+    easeInOutQuint: [cubicBezier, .86, 0, .07, 1],
+    easeInOutSine: [cubicBezier, .445, .05, .55, .95],
+    easeInQuad: [cubicBezier, .55, .085, .68, .53],
+    easeInQuart: [cubicBezier, .895, .03, .685, .22],
+    easeInQuint: [cubicBezier, .755, .05, .855, .06],
+    easeInSine: [cubicBezier, .47, 0, .745, .715],
+    easeOut: [cubicBezier, 0, 0, .58, 1],
+    easeOutBack: [cubicBezier, .175, .885, .32, 1.275],
+    easeOutCirc: [cubicBezier, .075, .82, .165, 1],
+    easeOutCubic: [cubicBezier, .215, .61, .355, 1],
+    easeOutExpo: [cubicBezier, .19, 1, .22, 1],
+    easeOutQuad: [cubicBezier, .25, .46, .45, .94],
+    easeOutQuart: [cubicBezier, .165, .84, .44, 1],
+    easeOutQuint: [cubicBezier, .23, 1, .32, 1],
+    easeOutSine: [cubicBezier, .39, .575, .565, 1],
+    elegantSlowStartEnd: [cubicBezier, .175, .885, .32, 1.275],
+    linear: [cubicBezier, 0, 0, 1, 1],
+    stepEnd: [steps, 1, 'end'],
+    stepStart: [steps, 1, 'start']
+};
+var defaultEasing = easings.ease;
 function getEasingString(easingString$$1) {
     if (easingString$$1) {
         if (startsWith(easingString$$1, cubicBezier) || startsWith(easingString$$1, steps)) {
             return easingString$$1;
         }
-        var name = toCamelCase(easingString$$1);
-        var def = easings[name];
+        var def = easings[toCamelCase(easingString$$1)];
         if (def) {
             return cssFunction.apply(nil, def);
         }
     }
-    return cssFunction.apply(nil, easings.ease);
+    return cssFunction.apply(nil, defaultEasing);
+}
+
+function getEasingDef(easingString$$1) {
+    if (!easingString$$1) {
+        return defaultEasing;
+    }
+    var def = easings[toCamelCase(easingString$$1)];
+    if (def && def.length) {
+        return def;
+    }
+    var matches = cssFunctionRegex.exec(easingString$$1);
+    if (matches && matches.length) {
+        return matches.slice(1);
+    }
+    return defaultEasing;
+}
+function bezier(n1, n2, t) {
+    return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
+}
+function cubic(p0, p1, p2, p3) {
+    if (p0 < 0 || p0 > 1 || p2 < 0 || p2 > 1) {
+        return linearCubicBezier;
+    }
+    return function (x$$1) {
+        if (x$$1 === 0 || x$$1 === 1) {
+            return x$$1;
+        }
+        var start = 0;
+        var end = 1;
+        var limit = 20;
+        while (--limit) {
+            var mid = (start + end) / 2;
+            var xEst = bezier(p0, p2, mid);
+            if (Math.abs(x$$1 - xEst) < SUBDIVISION_EPSILON) {
+                return bezier(p1, p3, mid);
+            }
+            if (xEst < x$$1) {
+                start = mid;
+            }
+            else {
+                end = mid;
+            }
+        }
+        return x$$1;
+    };
+}
+function steps$1(count, pos) {
+    var p = stepAliases.hasOwnProperty(pos)
+        ? stepAliases[pos]
+        : pos;
+    var ratio = count / 1;
+    return function (x$$1) { return x$$1 >= 1 ? 1 : (p * ratio + x$$1) - (p * ratio + x$$1) % ratio; };
 }
 
 var stepNone = '=';

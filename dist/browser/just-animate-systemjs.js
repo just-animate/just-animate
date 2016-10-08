@@ -3134,41 +3134,9 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
     function inRange(val, min, max) {
         return min < max ? min <= val && val <= max : max <= val && val <= min;
     }
-    function bezier(n1, n2, t) {
-        return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
-    }
-    function cubicBezier(p0, p1, p2, p3) {
-        if (p0 < 0 || p0 > 1 || p2 < 0 || p2 > 1) {
-            return linearCubicBezier;
-        }
-        return function (x) {
-            if (x === 0 || x === 1) {
-                return x;
-            }
-            var start = 0;
-            var end = 1;
-            var limit = 20;
-            while (--limit) {
-                var mid = (start + end) / 2;
-                var xEst = bezier(p0, p2, mid);
-                if (Math.abs(x - xEst) < SUBDIVISION_EPSILON) {
-                    return bezier(p1, p3, mid);
-                }
-                if (xEst < x) {
-                    start = mid;
-                }
-                else {
-                    end = mid;
-                }
-            }
-            // limit is reached        
-            return x;
-        };
-    }
-    var resources_3, linearCubicBezier, SUBDIVISION_EPSILON;
+    var resources_3;
     exports_83("clamp", clamp);
     exports_83("inRange", inRange);
-    exports_83("cubicBezier", cubicBezier);
     return {
         setters: [
             function (resources_3_1) {
@@ -3176,8 +3144,6 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
             }
         ],
         execute: function () {
-            linearCubicBezier = function (x) { return x; };
-            SUBDIVISION_EPSILON = 0.0001;
         }
     };
 });
@@ -3664,16 +3630,76 @@ System.register("just-animate/plugins/core/easings", ["just-animate/common/strin
                 return easingString;
             }
             // get name as camel case
-            var name_1 = strings_1.toCamelCase(easingString);
-            var def = easings[name_1];
-            if (!def) {
+            var def = easings[strings_1.toCamelCase(easingString)];
+            if (def) {
                 return strings_1.cssFunction.apply(resources_9.nil, def);
             }
         }
-        return strings_1.cssFunction.apply(resources_9.nil, easings.ease);
+        return strings_1.cssFunction.apply(resources_9.nil, defaultEasing);
     }
-    var strings_1, resources_9, easings;
+    function getEasingFunction(easingString) {
+        var parts = getEasingDef(easingString);
+        return parts[0] === resources_9.steps
+            ? steps(parts[1], parts[2])
+            : cubic(parts[1], parts[2], parts[3], parts[4]);
+    }
+    function getEasingDef(easingString) {
+        if (!easingString) {
+            return defaultEasing;
+        }
+        var def = easings[strings_1.toCamelCase(easingString)];
+        if (def && def.length) {
+            return def;
+        }
+        var matches = cssFunctionRegex.exec(easingString);
+        if (matches && matches.length) {
+            return matches.slice(1);
+        }
+        return defaultEasing;
+    }
+    function bezier(n1, n2, t) {
+        return 3 * n1 * (1 - t) * (1 - t) * t + 3 * n2 * (1 - t) * t * t + t * t * t;
+    }
+    function cubic(p0, p1, p2, p3) {
+        if (p0 < 0 || p0 > 1 || p2 < 0 || p2 > 1) {
+            return linearCubicBezier;
+        }
+        return function (x) {
+            if (x === 0 || x === 1) {
+                return x;
+            }
+            var start = 0;
+            var end = 1;
+            var limit = 20;
+            while (--limit) {
+                var mid = (start + end) / 2;
+                var xEst = bezier(p0, p2, mid);
+                if (Math.abs(x - xEst) < SUBDIVISION_EPSILON) {
+                    return bezier(p1, p3, mid);
+                }
+                if (xEst < x) {
+                    start = mid;
+                }
+                else {
+                    end = mid;
+                }
+            }
+            // limit is reached        
+            return x;
+        };
+    }
+    function steps(count, pos) {
+        var p = stepAliases.hasOwnProperty(pos)
+            ? stepAliases[pos]
+            : pos;
+        var ratio = count / 1;
+        return function (x) { return x >= 1 ? 1 : (p * ratio + x) - (p * ratio + x) % ratio; };
+    }
+    var strings_1, resources_9, SUBDIVISION_EPSILON, cssFunctionRegex, linearCubicBezier, stepAliases, easings, defaultEasing;
     exports_91("getEasingString", getEasingString);
+    exports_91("getEasingFunction", getEasingFunction);
+    exports_91("cubic", cubic);
+    exports_91("steps", steps);
     return {
         setters: [
             function (strings_1_1) {
@@ -3684,40 +3710,48 @@ System.register("just-animate/plugins/core/easings", ["just-animate/common/strin
             }
         ],
         execute: function () {
-            easings = {
-                ease: [resources_9.cubicBezier, 0.25, 0.1, 0.25, 1],
-                easeIn: [resources_9.cubicBezier, 0.42, 0, 1, 1],
-                easeInBack: [resources_9.cubicBezier, 0.6, -0.28, 0.735, 0.045],
-                easeInCirc: [resources_9.cubicBezier, 0.6, 0.04, 0.98, 0.335],
-                easeInCubic: [resources_9.cubicBezier, 0.55, 0.055, 0.675, 0.19],
-                easeInExpo: [resources_9.cubicBezier, 0.95, 0.05, 0.795, 0.035],
-                easeInOut: [resources_9.cubicBezier, 0.42, 0, 0.58, 1],
-                easeInOutBack: [resources_9.cubicBezier, 0.68, -0.55, 0.265, 1.55],
-                easeInOutCirc: [resources_9.cubicBezier, 0.785, 0.135, 0.15, 0.86],
-                easeInOutCubic: [resources_9.cubicBezier, 0.645, 0.045, 0.355, 1],
-                easeInOutExpo: [resources_9.cubicBezier, 1, 0, 0, 1],
-                easeInOutQuad: [resources_9.cubicBezier, 0.455, 0.03, 0.515, 0.955],
-                easeInOutQuart: [resources_9.cubicBezier, 0.77, 0, 0.175, 1],
-                easeInOutQuint: [resources_9.cubicBezier, 0.86, 0, 0.07, 1],
-                easeInOutSine: [resources_9.cubicBezier, 0.445, 0.05, 0.55, 0.95],
-                easeInQuad: [resources_9.cubicBezier, 0.55, 0.085, 0.68, 0.53],
-                easeInQuart: [resources_9.cubicBezier, 0.895, 0.03, 0.685, 0.22],
-                easeInQuint: [resources_9.cubicBezier, 0.755, 0.05, 0.855, 0.06],
-                easeInSine: [resources_9.cubicBezier, 0.47, 0, 0.745, 0.715],
-                easeOut: [resources_9.cubicBezier, 0, 0, 0.58, 1],
-                easeOutBack: [resources_9.cubicBezier, 0.175, 0.885, 0.32, 1.275],
-                easeOutCirc: [resources_9.cubicBezier, 0.075, 0.82, 0.165, 1],
-                easeOutCubic: [resources_9.cubicBezier, 0.215, 0.61, 0.355, 1],
-                easeOutExpo: [resources_9.cubicBezier, 0.19, 1, 0.22, 1],
-                easeOutQuad: [resources_9.cubicBezier, 0.25, 0.46, 0.45, 0.94],
-                easeOutQuart: [resources_9.cubicBezier, 0.165, 0.84, 0.44, 1],
-                easeOutQuint: [resources_9.cubicBezier, 0.23, 1, 0.32, 1],
-                easeOutSine: [resources_9.cubicBezier, 0.39, 0.575, 0.565, 1],
-                elegantSlowStartEnd: [resources_9.cubicBezier, 0.175, 0.885, 0.32, 1.275],
-                linear: [resources_9.cubicBezier, 0, 0, 1, 1],
-                stepEnd: [resources_9.steps, 'end'],
-                stepStart: [resources_9.steps, 'start']
+            SUBDIVISION_EPSILON = 0.0001;
+            cssFunctionRegex = /([a-z-]+)\(([^\)]+)\)/ig;
+            linearCubicBezier = function (x) { return x; };
+            stepAliases = {
+                end: 0,
+                start: 1
             };
+            easings = {
+                ease: [resources_9.cubicBezier, .25, .1, .25, 1],
+                easeIn: [resources_9.cubicBezier, .42, 0, 1, 1],
+                easeInBack: [resources_9.cubicBezier, .6, -.28, .735, .045],
+                easeInCirc: [resources_9.cubicBezier, .6, .04, .98, .335],
+                easeInCubic: [resources_9.cubicBezier, .55, .055, .675, .19],
+                easeInExpo: [resources_9.cubicBezier, .95, .05, .795, .035],
+                easeInOut: [resources_9.cubicBezier, .42, 0, .58, 1],
+                easeInOutBack: [resources_9.cubicBezier, .68, -.55, .265, 1.55],
+                easeInOutCirc: [resources_9.cubicBezier, .785, .135, .15, .86],
+                easeInOutCubic: [resources_9.cubicBezier, .645, .045, .355, 1],
+                easeInOutExpo: [resources_9.cubicBezier, 1, 0, 0, 1],
+                easeInOutQuad: [resources_9.cubicBezier, .455, .03, .515, .955],
+                easeInOutQuart: [resources_9.cubicBezier, .77, 0, .175, 1],
+                easeInOutQuint: [resources_9.cubicBezier, .86, 0, .07, 1],
+                easeInOutSine: [resources_9.cubicBezier, .445, .05, .55, .95],
+                easeInQuad: [resources_9.cubicBezier, .55, .085, .68, .53],
+                easeInQuart: [resources_9.cubicBezier, .895, .03, .685, .22],
+                easeInQuint: [resources_9.cubicBezier, .755, .05, .855, .06],
+                easeInSine: [resources_9.cubicBezier, .47, 0, .745, .715],
+                easeOut: [resources_9.cubicBezier, 0, 0, .58, 1],
+                easeOutBack: [resources_9.cubicBezier, .175, .885, .32, 1.275],
+                easeOutCirc: [resources_9.cubicBezier, .075, .82, .165, 1],
+                easeOutCubic: [resources_9.cubicBezier, .215, .61, .355, 1],
+                easeOutExpo: [resources_9.cubicBezier, .19, 1, .22, 1],
+                easeOutQuad: [resources_9.cubicBezier, .25, .46, .45, .94],
+                easeOutQuart: [resources_9.cubicBezier, .165, .84, .44, 1],
+                easeOutQuint: [resources_9.cubicBezier, .23, 1, .32, 1],
+                easeOutSine: [resources_9.cubicBezier, .39, .575, .565, 1],
+                elegantSlowStartEnd: [resources_9.cubicBezier, .175, .885, .32, 1.275],
+                linear: [resources_9.cubicBezier, 0, 0, 1, 1],
+                stepEnd: [resources_9.steps, 1, 'end'],
+                stepStart: [resources_9.steps, 1, 'start']
+            };
+            defaultEasing = easings.ease;
         }
     };
 });

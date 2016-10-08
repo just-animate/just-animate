@@ -18,3 +18,4 @@ export const cssFunction: Function = function(): string {
     const args = arguments;
     return `${args[0]}(${toArray(args, 1).join(',')})`;
 };
+
