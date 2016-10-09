@@ -133,14 +133,12 @@ var Animator = (function () {
         var self = this;
         // resolve mixin properties        
         if (event.mixins) {
-            if (!type_1.isString(event.mixins)) {
-                lists_1.each(event.mixins, function (mixin) {
-                    self._resolveMixin(mixin, event);
-                });
+            if (type_1.isString(event.mixins)) {
+                event.mixins = [event.mixins];
             }
-            else {
-                self._resolveMixin(event.mixins, event);
-            }
+            event.mixins.forEach(function (mixin) {
+                self._resolveMixin(mixin, event);
+            });
         }
         // set from and to relative to existing duration    
         units_1.fromTime(event.from || 0, unitOut);

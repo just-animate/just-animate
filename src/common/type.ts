@@ -56,6 +56,6 @@ export function isString(a: any): boolean {
 }
 
 
-function getTypeString(val: any): string {
+export function getTypeString(val: any): string {
     return ostring.call(val);
 }

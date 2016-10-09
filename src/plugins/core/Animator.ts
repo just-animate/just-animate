@@ -162,13 +162,12 @@ export class Animator implements ja.IAnimator {
 
         // resolve mixin properties        
         if (event.mixins) {
-            if (!isString(event.mixins)) {
-                each(event.mixins as string[], (mixin: string) => {
-                    self._resolveMixin(mixin as string, event);
-                });
-            } else {
-                self._resolveMixin(event.mixins as string, event);                
+            if (isString(event.mixins)) {
+                event.mixins = [event.mixins as string];
             }
+            (event.mixins as string[]).forEach((mixin: string) => {
+                self._resolveMixin(mixin, event);
+            });
         }
 
         // set from and to relative to existing duration    

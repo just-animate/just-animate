@@ -139,19 +139,37 @@ function getTypeString(val) {
     return ostring.call(val);
 }
 
-var inherit = function () {
-    var args = arguments;
-    var target = args[0];
-    for (var i = 1, len = args.length; i < len; i++) {
-        var source = args[i];
-        for (var propName in source) {
-            if (!isDefined(target[propName])) {
-                target[propName] = source[propName];
-            }
+function deepCopyObject(origin, dest) {
+    dest = dest || {};
+    for (var prop in origin) {
+        deepCopyProperty(prop, origin, dest);
+    }
+    return dest;
+}
+function deepCopyProperty(prop, origin, dest) {
+    var originProp = origin[prop];
+    var destProp = dest[prop];
+    var originType = getTypeString(originProp);
+    var destType = getTypeString(destProp);
+    if (originType !== destType) {
+        destProp = nil;
+    }
+    if (isObject(originProp)) {
+        dest[prop] = deepCopyObject(originProp, destProp);
+    }
+    else {
+        dest[prop] = originProp;
+    }
+}
+function inherit(target, source) {
+    for (var propName in source) {
+        if (!isDefined(target[propName])) {
+            target[propName] = source[propName];
         }
     }
     return target;
-};
+}
+
 var expand = function (expandable) {
     var result = {};
     for (var prop in expandable) {
@@ -585,14 +603,12 @@ var Animator = (function () {
     Animator.prototype._addEvent = function (event) {
         var self = this;
         if (event.mixins) {
-            if (!isString(event.mixins)) {
-                each(event.mixins, function (mixin) {
-                    self._resolveMixin(mixin, event);
-                });
+            if (isString(event.mixins)) {
+                event.mixins = [event.mixins];
             }
-            else {
-                self._resolveMixin(event.mixins, event);
-            }
+            event.mixins.forEach(function (mixin) {
+                self._resolveMixin(mixin, event);
+            });
         }
         fromTime(event.from || 0, unitOut);
         event.from = unitOut.value + this._duration;

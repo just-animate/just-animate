@@ -56,3 +56,4 @@ exports.isString = isString;
 function getTypeString(val) {
     return ostring.call(val);
 }
+exports.getTypeString = getTypeString;
