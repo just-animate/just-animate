@@ -8,6 +8,7 @@ var resources_1 = require("../../common/resources");
 var Dispatcher_1 = require("./Dispatcher");
 var easings_1 = require("./easings");
 var units_1 = require("../../common/units");
+var elements_1 = require("../../common/elements");
 // todo: remove these imports as soon as possible
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
@@ -146,19 +147,30 @@ var Animator = (function () {
         event.from = unitOut.value + this._duration;
         units_1.fromTime(event.to || 0, unitOut);
         event.to = unitOut.value + this._duration;
-        // set easing to linear by default      
+        // set easing to linear by default     
+        var easingFn = easings_1.getEasingFunction(event.easing);
         event.easing = easings_1.getEasingString(event.easing);
         lists_1.each(this._plugins, function (plugin) {
             if (plugin.canHandle(event)) {
-                var animators = plugin.handle(event);
-                var events = lists_1.map(animators, function (animator) {
-                    return {
+                var targets = elements_1.queryElements(event.targets);
+                for (var i = 0, len = targets.length; i < len; i++) {
+                    var target = targets[i];
+                    var animator = plugin.handle({
+                        index: i,
+                        options: event,
+                        target: target,
+                        targets: targets
+                    });
+                    self._events.push({
                         animator: animator,
+                        easingFn: easingFn,
                         endTimeMs: event.from + animator.totalDuration,
-                        startTimeMs: event.from
-                    };
-                });
-                lists_1.pushAll(self._events, events);
+                        index: i,
+                        startTimeMs: event.from,
+                        target: target,
+                        targets: targets
+                    });
+                }
             }
         });
     };
@@ -238,13 +250,17 @@ var Animator = (function () {
                     // calculate relative timing properties
                     var relativeDuration = evt.endTimeMs - evt.startTimeMs;
                     var relativeCurrentTime = currentTime - evt.startTimeMs;
-                    var offset = relativeCurrentTime / relativeDuration;
+                    var timeOffset = relativeCurrentTime / relativeDuration;
                     // set context object values for this update cycle            
                     context.currentTime = relativeCurrentTime;
                     context.delta = delta;
                     context.duration = relativeDuration;
-                    context.offset = offset;
+                    context.offset = timeOffset;
                     context.playbackRate = playbackRate;
+                    context.computedOffset = evt.easingFn(timeOffset);
+                    context.target = evt.target;
+                    context.targets = evt.targets;
+                    context.index = evt.index;
                     animator.onupdate(context);
                 }
             }

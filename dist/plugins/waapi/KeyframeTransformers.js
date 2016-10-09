@@ -4,8 +4,6 @@ var strings_1 = require("../../common/strings");
 var easings_1 = require("../core/easings");
 var lists_1 = require("../../common/lists");
 var objects_1 = require("../../common/objects");
-var KeyframeAnimator_1 = require("../waapi/KeyframeAnimator");
-var units_1 = require("../../common/units");
 var resources_1 = require("../../common/resources");
 var global = window;
 var propertyAliases = {
@@ -38,36 +36,6 @@ var transforms = [
     resources_1.scale,
     resources_1.scale3d
 ];
-function createAnimator(ctx) {
-    var options = ctx.options;
-    var delay = units_1.resolveTimeExpression(objects_1.unwrap(options.delay, ctx) || 0, ctx.index);
-    var endDelay = units_1.resolveTimeExpression(objects_1.unwrap(options.endDelay, ctx) || 0, ctx.index);
-    var iterations = objects_1.unwrap(options.iterations, ctx) || 1;
-    var iterationStart = objects_1.unwrap(options.iterationStart, ctx) || 0;
-    var direction = objects_1.unwrap(options.direction, ctx) || resources_1.nil;
-    var duration = options.to - options.from;
-    var fill = objects_1.unwrap(options.fill, ctx) || 'none';
-    var totalTime = delay + ((iterations || 1) * duration) + endDelay;
-    // note: don't unwrap easings so we don't break this later with custom easings
-    var easing = options.easing || 'linear';
-    var timings = {
-        delay: delay,
-        endDelay: endDelay,
-        duration: duration,
-        iterations: iterations,
-        iterationStart: iterationStart,
-        fill: fill,
-        direction: direction,
-        easing: easing
-    };
-    var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_1.nada, timings, ctx));
-    animator.totalDuration = totalTime;
-    if (type_1.isFunction(options.update)) {
-        animator.onupdate = options.update;
-    }
-    return animator;
-}
-exports.createAnimator = createAnimator;
 function initAnimator(timings, ctx) {
     // process css as either keyframes or calculate what those keyframes should be   
     var options = ctx.options;
@@ -96,6 +64,7 @@ function initAnimator(timings, ctx) {
     animator.cancel();
     return animator;
 }
+exports.initAnimator = initAnimator;
 function addTransition(keyframes, target) {
     // detect properties to transition
     var properties = objects_1.listProps(keyframes);
@@ -120,6 +89,7 @@ function addTransition(keyframes, target) {
         }
     });
 }
+exports.addTransition = addTransition;
 /**
  * copies keyframs with an offset array to separate keyframes
  *
@@ -148,6 +118,7 @@ function expandOffsets(keyframes) {
         }
     }
 }
+exports.expandOffsets = expandOffsets;
 function unwrapPropertiesInKeyframes(source, target, ctx) {
     var len = source.length;
     for (var i = 0; i < len; i++) {
@@ -167,6 +138,7 @@ function unwrapPropertiesInKeyframes(source, target, ctx) {
         target.push(targetKeyframe);
     }
 }
+exports.unwrapPropertiesInKeyframes = unwrapPropertiesInKeyframes;
 function propsToKeyframes(css, keyframes, ctx) {
     // create a map to capture each keyframe by offset
     var keyframesByOffset = {};
@@ -208,6 +180,7 @@ function propsToKeyframes(css, keyframes, ctx) {
         keyframes.push(keyframe);
     }
 }
+exports.propsToKeyframes = propsToKeyframes;
 function spaceKeyframes(keyframes) {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
@@ -254,6 +227,7 @@ function spaceKeyframes(keyframes) {
         }
     }
 }
+exports.spaceKeyframes = spaceKeyframes;
 /**
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
@@ -302,12 +276,15 @@ function fixPartialKeyframes(keyframes) {
     // sort by offset (should have all offsets assigned)
     keyframes.sort(keyframeOffsetComparer);
 }
+exports.fixPartialKeyframes = fixPartialKeyframes;
 function keyframeOffsetComparer(a, b) {
     return a.offset - b.offset;
 }
+exports.keyframeOffsetComparer = keyframeOffsetComparer;
 function transformPropertyComparer(a, b) {
     return transforms.indexOf(a[0]) - transforms.indexOf(b[0]);
 }
+exports.transformPropertyComparer = transformPropertyComparer;
 /**
  * Handles transforming short hand key properties into their native form
  */
@@ -344,3 +321,4 @@ function normalizeProperties(keyframe) {
             .reduce(function (c, n) { return c + (" " + n[0] + "(" + n[1] + ")"); }, '');
     }
 }
+exports.normalizeProperties = normalizeProperties;

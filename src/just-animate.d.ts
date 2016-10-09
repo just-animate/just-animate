@@ -82,13 +82,17 @@ declare module ja {
         stepStart: 'stepStart';
     }
     export interface IPlugin {
-        handle(options: ja.IAnimationOptions): ja.IAnimationController[];
+        handle(ctx: CreateAnimationContext<HTMLElement>): ja.IAnimationController;
         canHandle(options: ja.IAnimationOptions): boolean;
     }
     export interface ITimelineEvent {
+        animator: IAnimationController;        
+        easingFn: Func<number>;
+        endTimeMs: number;        
+        index: number;
         startTimeMs: number;
-        endTimeMs: number;
-        animator: IAnimationController;
+        target: any;
+        targets: any[];
     }
     export interface IAnimationController {
         seek(value: number): void;
@@ -104,7 +108,11 @@ declare module ja {
         delta: number;
         duration: number;
         offset: number;
+        computedOffset: number;
         playbackRate: number;
+        target: any;
+        targets: any[];
+        index: number;
     }
     export interface IAnimator {
         animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator;

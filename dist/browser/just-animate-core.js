@@ -115,19 +115,6 @@ function maxBy(items, predicate) {
     }
     return max;
 }
-function map(items, fn) {
-    var results = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-        var result = fn(items[i]);
-        if (result !== nil) {
-            results.push(result);
-        }
-    }
-    return results;
-}
-function pushAll(source, target) {
-    push.apply(source, target);
-}
 
 var ostring = Object.prototype.toString;
 function isArray(a) {
@@ -320,7 +307,12 @@ function getEasingString(easingString$$1) {
     }
     return cssFunction.apply(nil, defaultEasing);
 }
-
+function getEasingFunction(easingString$$1) {
+    var parts = getEasingDef(easingString$$1);
+    return parts[0] === steps
+        ? steps$1(parts[1], parts[2])
+        : cubic(parts[1], parts[2], parts[3], parts[4]);
+}
 function getEasingDef(easingString$$1) {
     if (!easingString$$1) {
         return defaultEasing;
@@ -446,6 +438,33 @@ function resolveTimeExpression(val, index) {
         return sharedUnit.value * index * -1;
     }
     return sharedUnit.value;
+}
+
+function queryElements(source) {
+    if (!source) {
+        throw invalidArg('source');
+    }
+    if (isString(source)) {
+        var nodeResults = document.querySelectorAll(source);
+        return toArray(nodeResults);
+    }
+    if (typeof source['tagName'] === 'string') {
+        return [source];
+    }
+    if (isFunction(source)) {
+        var provider = source;
+        var result = provider();
+        return queryElements(result);
+    }
+    if (isArray(source)) {
+        var elements_1 = [];
+        each(source, function (i) {
+            var innerElements = queryElements(i);
+            elements_1.push.apply(elements_1, innerElements);
+        });
+        return elements_1;
+    }
+    return [];
 }
 
 var animationPadding = 1.0 / 30;
@@ -579,18 +598,29 @@ var Animator = (function () {
         event.from = unitOut.value + this._duration;
         fromTime(event.to || 0, unitOut);
         event.to = unitOut.value + this._duration;
+        var easingFn = getEasingFunction(event.easing);
         event.easing = getEasingString(event.easing);
         each(this._plugins, function (plugin) {
             if (plugin.canHandle(event)) {
-                var animators = plugin.handle(event);
-                var events = map(animators, function (animator) {
-                    return {
+                var targets = queryElements(event.targets);
+                for (var i = 0, len = targets.length; i < len; i++) {
+                    var target = targets[i];
+                    var animator = plugin.handle({
+                        index: i,
+                        options: event,
+                        target: target,
+                        targets: targets
+                    });
+                    self._events.push({
                         animator: animator,
+                        easingFn: easingFn,
                         endTimeMs: event.from + animator.totalDuration,
-                        startTimeMs: event.from
-                    };
-                });
-                pushAll(self._events, events);
+                        index: i,
+                        startTimeMs: event.from,
+                        target: target,
+                        targets: targets
+                    });
+                }
             }
         });
     };
@@ -661,12 +691,16 @@ var Animator = (function () {
                 if (animator.onupdate) {
                     var relativeDuration = evt.endTimeMs - evt.startTimeMs;
                     var relativeCurrentTime = currentTime - evt.startTimeMs;
-                    var offset = relativeCurrentTime / relativeDuration;
+                    var timeOffset = relativeCurrentTime / relativeDuration;
                     context.currentTime = relativeCurrentTime;
                     context.delta = delta;
                     context.duration = relativeDuration;
-                    context.offset = offset;
+                    context.offset = timeOffset;
                     context.playbackRate = playbackRate;
+                    context.computedOffset = evt.easingFn(timeOffset);
+                    context.target = evt.target;
+                    context.targets = evt.targets;
+                    context.index = evt.index;
                     animator.onupdate(context);
                 }
             }
@@ -857,33 +891,6 @@ var JustAnimate = (function () {
     return JustAnimate;
 }());
 
-function queryElements(source) {
-    if (!source) {
-        throw invalidArg('source');
-    }
-    if (isString(source)) {
-        var nodeResults = document.querySelectorAll(source);
-        return toArray(nodeResults);
-    }
-    if (typeof source['tagName'] === 'string') {
-        return [source];
-    }
-    if (isFunction(source)) {
-        var provider = source;
-        var result = provider();
-        return queryElements(result);
-    }
-    if (isArray(source)) {
-        var elements_1 = [];
-        each(source, function (i) {
-            var innerElements = queryElements(i);
-            elements_1.push.apply(elements_1, innerElements);
-        });
-        return elements_1;
-    }
-    return [];
-}
-
 var KeyframeAnimator = (function () {
     function KeyframeAnimator(init) {
         this._init = init;
@@ -965,34 +972,6 @@ var transforms = [
     scale,
     scale3d
 ];
-function createAnimator(ctx) {
-    var options = ctx.options;
-    var delay = resolveTimeExpression(unwrap(options.delay, ctx) || 0, ctx.index);
-    var endDelay = resolveTimeExpression(unwrap(options.endDelay, ctx) || 0, ctx.index);
-    var iterations = unwrap(options.iterations, ctx) || 1;
-    var iterationStart = unwrap(options.iterationStart, ctx) || 0;
-    var direction = unwrap(options.direction, ctx) || nil;
-    var duration$$1 = options.to - options.from;
-    var fill = unwrap(options.fill, ctx) || 'none';
-    var totalTime = delay + ((iterations || 1) * duration$$1) + endDelay;
-    var easing = options.easing || 'linear';
-    var timings = {
-        delay: delay,
-        endDelay: endDelay,
-        duration: duration$$1,
-        iterations: iterations,
-        iterationStart: iterationStart,
-        fill: fill,
-        direction: direction,
-        easing: easing
-    };
-    var animator = new KeyframeAnimator(initAnimator.bind(nada, timings, ctx));
-    animator.totalDuration = totalTime;
-    if (isFunction(options.update)) {
-        animator.onupdate = options.update;
-    }
-    return animator;
-}
 function initAnimator(timings, ctx) {
     var options = ctx.options;
     var target = ctx.target;
@@ -1231,18 +1210,33 @@ var KeyframePlugin = (function () {
     KeyframePlugin.prototype.canHandle = function (options) {
         return !!(options.css);
     };
-    KeyframePlugin.prototype.handle = function (options) {
-        var targets = queryElements(options.targets);
-        var animators = [];
-        for (var i = 0, len = targets.length; i < len; i++) {
-            animators.push(createAnimator({
-                index: i,
-                options: options,
-                target: targets[i],
-                targets: targets
-            }));
+    KeyframePlugin.prototype.handle = function (ctx) {
+        var options = ctx.options;
+        var delay = resolveTimeExpression(unwrap(options.delay, ctx) || 0, ctx.index);
+        var endDelay = resolveTimeExpression(unwrap(options.endDelay, ctx) || 0, ctx.index);
+        var iterations = unwrap(options.iterations, ctx) || 1;
+        var iterationStart = unwrap(options.iterationStart, ctx) || 0;
+        var direction = unwrap(options.direction, ctx) || nil;
+        var duration$$1 = options.to - options.from;
+        var fill = unwrap(options.fill, ctx) || 'none';
+        var totalTime = delay + ((iterations || 1) * duration$$1) + endDelay;
+        var easing = getEasingString(options.easing);
+        var timings = {
+            delay: delay,
+            endDelay: endDelay,
+            duration: duration$$1,
+            iterations: iterations,
+            iterationStart: iterationStart,
+            fill: fill,
+            direction: direction,
+            easing: easing
+        };
+        var animator = new KeyframeAnimator(initAnimator.bind(nada, timings, ctx));
+        animator.totalDuration = totalTime;
+        if (isFunction(options.update)) {
+            animator.onupdate = options.update;
         }
-        return animators;
+        return animator;
     };
     return KeyframePlugin;
 }());

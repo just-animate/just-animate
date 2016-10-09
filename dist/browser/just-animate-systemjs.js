@@ -3755,10 +3755,10 @@ System.register("just-animate/plugins/core/easings", ["just-animate/common/strin
         }
     };
 });
-System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/easings", "just-animate/common/units"], function (exports_92, context_92) {
+System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/easings", "just-animate/common/units", "just-animate/common/elements"], function (exports_92, context_92) {
     "use strict";
     var __moduleName = context_92 && context_92.id;
-    var lists_3, objects_1, type_6, math_1, errors_4, resources_10, Dispatcher_1, easings_1, units_1, animationPadding, unitOut, Animator;
+    var lists_3, objects_1, type_6, math_1, errors_4, resources_10, Dispatcher_1, easings_1, units_1, elements_2, animationPadding, unitOut, Animator;
     return {
         setters: [
             function (lists_3_1) {
@@ -3787,6 +3787,9 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
             },
             function (units_1_1) {
                 units_1 = units_1_1;
+            },
+            function (elements_2_1) {
+                elements_2 = elements_2_1;
             }
         ],
         execute: function () {
@@ -3928,19 +3931,30 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     event.from = unitOut.value + this._duration;
                     units_1.fromTime(event.to || 0, unitOut);
                     event.to = unitOut.value + this._duration;
-                    // set easing to linear by default      
+                    // set easing to linear by default     
+                    var easingFn = easings_1.getEasingFunction(event.easing);
                     event.easing = easings_1.getEasingString(event.easing);
                     lists_3.each(this._plugins, function (plugin) {
                         if (plugin.canHandle(event)) {
-                            var animators = plugin.handle(event);
-                            var events = lists_3.map(animators, function (animator) {
-                                return {
+                            var targets = elements_2.queryElements(event.targets);
+                            for (var i = 0, len = targets.length; i < len; i++) {
+                                var target = targets[i];
+                                var animator = plugin.handle({
+                                    index: i,
+                                    options: event,
+                                    target: target,
+                                    targets: targets
+                                });
+                                self._events.push({
                                     animator: animator,
+                                    easingFn: easingFn,
                                     endTimeMs: event.from + animator.totalDuration,
-                                    startTimeMs: event.from
-                                };
-                            });
-                            lists_3.pushAll(self._events, events);
+                                    index: i,
+                                    startTimeMs: event.from,
+                                    target: target,
+                                    targets: targets
+                                });
+                            }
                         }
                     });
                 };
@@ -4020,13 +4034,17 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                                 // calculate relative timing properties
                                 var relativeDuration = evt.endTimeMs - evt.startTimeMs;
                                 var relativeCurrentTime = currentTime - evt.startTimeMs;
-                                var offset = relativeCurrentTime / relativeDuration;
+                                var timeOffset = relativeCurrentTime / relativeDuration;
                                 // set context object values for this update cycle            
                                 context.currentTime = relativeCurrentTime;
                                 context.delta = delta;
                                 context.duration = relativeDuration;
-                                context.offset = offset;
+                                context.offset = timeOffset;
                                 context.playbackRate = playbackRate;
+                                context.computedOffset = evt.easingFn(timeOffset);
+                                context.target = evt.target;
+                                context.targets = evt.targets;
+                                context.index = evt.index;
                                 animator.onupdate(context);
                             }
                         }
@@ -4203,38 +4221,9 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/plugins/core/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/resources"], function (exports_96, context_96) {
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/plugins/core/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/common/resources"], function (exports_96, context_96) {
     "use strict";
     var __moduleName = context_96 && context_96.id;
-    function createAnimator(ctx) {
-        var options = ctx.options;
-        var delay = units_2.resolveTimeExpression(objects_2.unwrap(options.delay, ctx) || 0, ctx.index);
-        var endDelay = units_2.resolveTimeExpression(objects_2.unwrap(options.endDelay, ctx) || 0, ctx.index);
-        var iterations = objects_2.unwrap(options.iterations, ctx) || 1;
-        var iterationStart = objects_2.unwrap(options.iterationStart, ctx) || 0;
-        var direction = objects_2.unwrap(options.direction, ctx) || resources_12.nil;
-        var duration = options.to - options.from;
-        var fill = objects_2.unwrap(options.fill, ctx) || 'none';
-        var totalTime = delay + ((iterations || 1) * duration) + endDelay;
-        // note: don't unwrap easings so we don't break this later with custom easings
-        var easing = options.easing || 'linear';
-        var timings = {
-            delay: delay,
-            endDelay: endDelay,
-            duration: duration,
-            iterations: iterations,
-            iterationStart: iterationStart,
-            fill: fill,
-            direction: direction,
-            easing: easing
-        };
-        var animator = new KeyframeAnimator_1.KeyframeAnimator(initAnimator.bind(resources_12.nada, timings, ctx));
-        animator.totalDuration = totalTime;
-        if (type_7.isFunction(options.update)) {
-            animator.onupdate = options.update;
-        }
-        return animator;
-    }
     function initAnimator(timings, ctx) {
         // process css as either keyframes or calculate what those keyframes should be   
         var options = ctx.options;
@@ -4511,8 +4500,17 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 .reduce(function (c, n) { return c + (" " + n[0] + "(" + n[1] + ")"); }, '');
         }
     }
-    var type_7, strings_2, easings_2, lists_5, objects_2, KeyframeAnimator_1, units_2, resources_12, global, propertyAliases, transforms;
-    exports_96("createAnimator", createAnimator);
+    var type_7, strings_2, easings_2, lists_5, objects_2, resources_12, global, propertyAliases, transforms;
+    exports_96("initAnimator", initAnimator);
+    exports_96("addTransition", addTransition);
+    exports_96("expandOffsets", expandOffsets);
+    exports_96("unwrapPropertiesInKeyframes", unwrapPropertiesInKeyframes);
+    exports_96("propsToKeyframes", propsToKeyframes);
+    exports_96("spaceKeyframes", spaceKeyframes);
+    exports_96("fixPartialKeyframes", fixPartialKeyframes);
+    exports_96("keyframeOffsetComparer", keyframeOffsetComparer);
+    exports_96("transformPropertyComparer", transformPropertyComparer);
+    exports_96("normalizeProperties", normalizeProperties);
     return {
         setters: [
             function (type_7_1) {
@@ -4529,12 +4527,6 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             },
             function (objects_2_1) {
                 objects_2 = objects_2_1;
-            },
-            function (KeyframeAnimator_1_1) {
-                KeyframeAnimator_1 = KeyframeAnimator_1_1;
-            },
-            function (units_2_1) {
-                units_2 = units_2_1;
             },
             function (resources_12_1) {
                 resources_12 = resources_12_1;
@@ -4575,14 +4567,29 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/common/elements", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_97, context_97) {
+System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/type", "just-animate/plugins/core/easings", "just-animate/common/objects", "just-animate/common/resources", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_97, context_97) {
     "use strict";
     var __moduleName = context_97 && context_97.id;
-    var elements_2, KeyframeTransformers_1, KeyframePlugin;
+    var KeyframeAnimator_1, units_2, type_8, easings_3, objects_3, resources_13, KeyframeTransformers_1, KeyframePlugin;
     return {
         setters: [
-            function (elements_2_1) {
-                elements_2 = elements_2_1;
+            function (KeyframeAnimator_1_1) {
+                KeyframeAnimator_1 = KeyframeAnimator_1_1;
+            },
+            function (units_2_1) {
+                units_2 = units_2_1;
+            },
+            function (type_8_1) {
+                type_8 = type_8_1;
+            },
+            function (easings_3_1) {
+                easings_3 = easings_3_1;
+            },
+            function (objects_3_1) {
+                objects_3 = objects_3_1;
+            },
+            function (resources_13_1) {
+                resources_13 = resources_13_1;
             },
             function (KeyframeTransformers_1_1) {
                 KeyframeTransformers_1 = KeyframeTransformers_1_1;
@@ -4595,18 +4602,34 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/comm
                 KeyframePlugin.prototype.canHandle = function (options) {
                     return !!(options.css);
                 };
-                KeyframePlugin.prototype.handle = function (options) {
-                    var targets = elements_2.queryElements(options.targets);
-                    var animators = [];
-                    for (var i = 0, len = targets.length; i < len; i++) {
-                        animators.push(KeyframeTransformers_1.createAnimator({
-                            index: i,
-                            options: options,
-                            target: targets[i],
-                            targets: targets
-                        }));
+                KeyframePlugin.prototype.handle = function (ctx) {
+                    var options = ctx.options;
+                    var delay = units_2.resolveTimeExpression(objects_3.unwrap(options.delay, ctx) || 0, ctx.index);
+                    var endDelay = units_2.resolveTimeExpression(objects_3.unwrap(options.endDelay, ctx) || 0, ctx.index);
+                    var iterations = objects_3.unwrap(options.iterations, ctx) || 1;
+                    var iterationStart = objects_3.unwrap(options.iterationStart, ctx) || 0;
+                    var direction = objects_3.unwrap(options.direction, ctx) || resources_13.nil;
+                    var duration = options.to - options.from;
+                    var fill = objects_3.unwrap(options.fill, ctx) || 'none';
+                    var totalTime = delay + ((iterations || 1) * duration) + endDelay;
+                    // note: don't unwrap easings so we don't break this later with custom easings
+                    var easing = easings_3.getEasingString(options.easing);
+                    var timings = {
+                        delay: delay,
+                        endDelay: endDelay,
+                        duration: duration,
+                        iterations: iterations,
+                        iterationStart: iterationStart,
+                        fill: fill,
+                        direction: direction,
+                        easing: easing
+                    };
+                    var animator = new KeyframeAnimator_1.KeyframeAnimator(KeyframeTransformers_1.initAnimator.bind(resources_13.nada, timings, ctx));
+                    animator.totalDuration = totalTime;
+                    if (type_8.isFunction(options.update)) {
+                        animator.onupdate = options.update;
                     }
-                    return animators;
+                    return animator;
                 };
                 return KeyframePlugin;
             }());

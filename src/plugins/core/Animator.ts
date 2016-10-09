@@ -1,4 +1,4 @@
-import {each, map, pushAll, maxBy} from '../../common/lists';
+import {each, pushAll, maxBy} from '../../common/lists';
 import {inherit} from '../../common/objects';
 import {isArray, isDefined, isString} from '../../common/type';
 import {inRange} from '../../common/math';
@@ -8,8 +8,9 @@ import {duration, finish, cancel, pause, nil} from '../../common/resources';
 import {Dispatcher, IDispatcher} from './Dispatcher';
 import {MixinService} from './MixinService';
 import {ITimeLoop} from './TimeLoop';
-import {getEasingString} from './easings';
+import {getEasingFunction, getEasingString} from './easings';
 import {fromTime, Unit} from '../../common/units';
+import { queryElements } from '../../common/elements';
 
 // todo: remove these imports as soon as possible
 
@@ -177,20 +178,33 @@ export class Animator implements ja.IAnimator {
         fromTime(event.to || 0, unitOut);
         event.to = unitOut.value + this._duration;
 
-        // set easing to linear by default      
+        // set easing to linear by default     
+        const easingFn = getEasingFunction(event.easing);
         event.easing = getEasingString(event.easing);
 
         each(this._plugins, (plugin: ja.IPlugin) => {
             if (plugin.canHandle(event)) {
-                const animators = plugin.handle(event);
-                const events = map(animators, (animator: ja.IAnimationController) => {
-                    return {
+                const targets = queryElements(event.targets) as HTMLElement[];
+
+                for (let i = 0, len = targets.length; i < len; i++) {
+                    const target = targets[i];
+                    const animator = plugin.handle({
+                        index: i,                
+                        options: event,
+                        target: target,
+                        targets: targets
+                    });
+
+                    self._events.push({
                         animator: animator,
+                        easingFn: easingFn,                        
                         endTimeMs: event.from + animator.totalDuration,
-                        startTimeMs: event.from
-                    };
-                });
-                pushAll(self._events, events);
+                        index: i,                        
+                        startTimeMs: event.from,
+                        target: target,
+                        targets: targets
+                    });
+                }
             }
         });
     }
@@ -277,14 +291,19 @@ export class Animator implements ja.IAnimator {
                     // calculate relative timing properties
                     const relativeDuration = evt.endTimeMs - evt.startTimeMs;
                     const relativeCurrentTime = currentTime - evt.startTimeMs;
-                    const offset = relativeCurrentTime / relativeDuration;
+                    const timeOffset = relativeCurrentTime / relativeDuration;
 
                     // set context object values for this update cycle            
                     context.currentTime = relativeCurrentTime;
                     context.delta = delta;
                     context.duration = relativeDuration;
-                    context.offset = offset;
+                    context.offset = timeOffset;
                     context.playbackRate = playbackRate;
+                    context.computedOffset = evt.easingFn(timeOffset);
+                    context.target = evt.target;
+                    context.targets = evt.targets;
+                    context.index = evt.index;
+
                     animator.onupdate(context);
                 }
             }

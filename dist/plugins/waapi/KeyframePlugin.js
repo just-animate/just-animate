@@ -1,5 +1,10 @@
 "use strict";
-var elements_1 = require("../../common/elements");
+var KeyframeAnimator_1 = require("../waapi/KeyframeAnimator");
+var units_1 = require("../../common/units");
+var type_1 = require("../../common/type");
+var easings_1 = require("../core/easings");
+var objects_1 = require("../../common/objects");
+var resources_1 = require("../../common/resources");
 var KeyframeTransformers_1 = require("./KeyframeTransformers");
 var KeyframePlugin = (function () {
     function KeyframePlugin() {
@@ -7,18 +12,34 @@ var KeyframePlugin = (function () {
     KeyframePlugin.prototype.canHandle = function (options) {
         return !!(options.css);
     };
-    KeyframePlugin.prototype.handle = function (options) {
-        var targets = elements_1.queryElements(options.targets);
-        var animators = [];
-        for (var i = 0, len = targets.length; i < len; i++) {
-            animators.push(KeyframeTransformers_1.createAnimator({
-                index: i,
-                options: options,
-                target: targets[i],
-                targets: targets
-            }));
+    KeyframePlugin.prototype.handle = function (ctx) {
+        var options = ctx.options;
+        var delay = units_1.resolveTimeExpression(objects_1.unwrap(options.delay, ctx) || 0, ctx.index);
+        var endDelay = units_1.resolveTimeExpression(objects_1.unwrap(options.endDelay, ctx) || 0, ctx.index);
+        var iterations = objects_1.unwrap(options.iterations, ctx) || 1;
+        var iterationStart = objects_1.unwrap(options.iterationStart, ctx) || 0;
+        var direction = objects_1.unwrap(options.direction, ctx) || resources_1.nil;
+        var duration = options.to - options.from;
+        var fill = objects_1.unwrap(options.fill, ctx) || 'none';
+        var totalTime = delay + ((iterations || 1) * duration) + endDelay;
+        // note: don't unwrap easings so we don't break this later with custom easings
+        var easing = easings_1.getEasingString(options.easing);
+        var timings = {
+            delay: delay,
+            endDelay: endDelay,
+            duration: duration,
+            iterations: iterations,
+            iterationStart: iterationStart,
+            fill: fill,
+            direction: direction,
+            easing: easing
+        };
+        var animator = new KeyframeAnimator_1.KeyframeAnimator(KeyframeTransformers_1.initAnimator.bind(resources_1.nada, timings, ctx));
+        animator.totalDuration = totalTime;
+        if (type_1.isFunction(options.update)) {
+            animator.onupdate = options.update;
         }
-        return animators;
+        return animator;
     };
     return KeyframePlugin;
 }());
