@@ -1,4 +1,4 @@
-import { isDefined, isFunction, isObject, getTypeString } from './type';
+import { isArray, isDefined, isFunction, isObject, getTypeString } from './type';
 import { nil } from './resources';
 
 /**
@@ -41,13 +41,15 @@ export function deepCopyProperty(prop: string|number, origin: {}, dest: {}): voi
         destProp = nil;
     }
     
-    if (isObject(originProp)) {
+    if (isArray(originProp)) {
+        // note: a compromise until a solution for merging arrays becomes clear
+        dest[prop] = originProp.slice(0);
+    } else if (isObject(originProp)) {
         dest[prop] = deepCopyObject(originProp, destProp);
     } else {
         dest[prop] = originProp;
     }
 }
-
 
 export function inherit<T1, T2>(target: T1, source: T2): T1&T2 {
     for (let propName in source) {

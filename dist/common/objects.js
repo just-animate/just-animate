@@ -37,7 +37,11 @@ function deepCopyProperty(prop, origin, dest) {
     if (originType !== destType) {
         destProp = resources_1.nil;
     }
-    if (type_1.isObject(originProp)) {
+    if (type_1.isArray(originProp)) {
+        // note: a compromise until a solution for merging arrays becomes clear
+        dest[prop] = originProp.slice(0);
+    }
+    else if (type_1.isObject(originProp)) {
         dest[prop] = deepCopyObject(originProp, destProp);
     }
     else {

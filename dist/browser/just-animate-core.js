@@ -154,7 +154,10 @@ function deepCopyProperty(prop, origin, dest) {
     if (originType !== destType) {
         destProp = nil;
     }
-    if (isObject(originProp)) {
+    if (isArray(originProp)) {
+        dest[prop] = originProp.slice(0);
+    }
+    else if (isObject(originProp)) {
         dest[prop] = deepCopyObject(originProp, destProp);
     }
     else {

@@ -3167,7 +3167,11 @@ System.register("just-animate/common/objects", ["just-animate/common/type", "jus
         if (originType !== destType) {
             destProp = resources_4.nil;
         }
-        if (type_2.isObject(originProp)) {
+        if (type_2.isArray(originProp)) {
+            // note: a compromise until a solution for merging arrays becomes clear
+            dest[prop] = originProp.slice(0);
+        }
+        else if (type_2.isObject(originProp)) {
             dest[prop] = deepCopyObject(originProp, destProp);
         }
         else {
