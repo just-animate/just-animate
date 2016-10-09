@@ -1,4 +1,5 @@
 import { nil } from './resources';
+import { isArray } from './type';
 
 const slice = Array.prototype.slice;
 const push = Array.prototype.push;
@@ -70,6 +71,18 @@ export function tail<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
  */
 export function toArray<T>(indexed: IList<T>, index?: number): T[] {
     return slice.call(indexed, index || 0);
+}
+
+/**
+ * returns an array or an object wrapped in an array
+ * 
+ * @export
+ * @template T
+ * @param {(IList<T> | T)} indexed
+ * @returns {T[]}
+ */
+export function chain<T>(indexed: IList<T> | T): T[] {
+    return isArray(indexed) ? indexed as T[] : [indexed as T];
 }
 
 /**

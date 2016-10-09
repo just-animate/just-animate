@@ -1,15 +1,15 @@
-import {each, pushAll, maxBy} from '../../common/lists';
-import {inherit} from '../../common/objects';
-import {isArray, isDefined, isString} from '../../common/type';
-import {inRange} from '../../common/math';
-import {invalidArg} from '../../common/errors';
-import {duration, finish, cancel, pause, nil} from '../../common/resources';
+import { chain, each, maxBy } from '../../common/lists';
+import { deepCopyObject, inherit } from '../../common/objects';
+import { isArray, isDefined } from '../../common/type';
+import { inRange } from '../../common/math';
+import { invalidArg } from '../../common/errors';
+import { duration, finish, cancel, pause, nil } from '../../common/resources';
 
-import {Dispatcher, IDispatcher} from './Dispatcher';
-import {MixinService} from './MixinService';
-import {ITimeLoop} from './TimeLoop';
-import {getEasingFunction, getEasingString} from './easings';
-import {fromTime, Unit} from '../../common/units';
+import { Dispatcher, IDispatcher } from './Dispatcher';
+import { MixinService } from './MixinService';
+import { ITimeLoop } from './TimeLoop';
+import { getEasingFunction, getEasingString } from './easings';
+import { fromTime, Unit } from '../../common/units';
 import { queryElements } from '../../common/elements';
 
 // todo: remove these imports as soon as possible
@@ -38,7 +38,7 @@ export class Animator implements ja.IAnimator {
             throw invalidArg(duration);
         }
 
-        self._context = {} as ja.IAnimationTimeContext;        
+        self._context = {} as ja.IAnimationTimeContext;
         self._duration = 0;
         self._currentTime = nil;
         self._playState = 'idle';
@@ -148,26 +148,25 @@ export class Animator implements ja.IAnimator {
         self._duration = endsAt;
     }
 
-    private _resolveMixin(mixin: string, event: ja.IAnimationOptions): void {
-        const self = this;
-        const def = self._resolver.findAnimation(mixin);
-        if (!isDefined(def)) {
-            throw invalidArg('mixin');
-        }
-        inherit(event, def);
-    }
-
-    private _addEvent(event: ja.IAnimationOptions): void {
+    private _addEvent(options: ja.IAnimationOptions): void {
         const self = this;
 
-        // resolve mixin properties        
-        if (event.mixins) {
-            if (isString(event.mixins)) {
-                event.mixins = [event.mixins as string];
-            }
-            (event.mixins as string[]).forEach((mixin: string) => {
-                self._resolveMixin(mixin, event);
-            });
+        // resolve mixin properties     
+        let event: ja.IAnimationOptions;
+        if (options.mixins) {
+            const mixinTarget = chain(options.mixins)
+                .map((mixin: string) => {
+                    const def = self._resolver.findAnimation(mixin);
+                    if (!isDefined(def)) {
+                        throw invalidArg('mixin');
+                    }
+                    return def;
+                })
+                .reduce((c: ja.IAnimationMixin, n: ja.IAnimationMixin) => deepCopyObject(n, c));
+
+            event = inherit(options, mixinTarget);
+        } else {
+            event = options;
         }
 
         // set from and to relative to existing duration    
@@ -188,7 +187,7 @@ export class Animator implements ja.IAnimator {
                 for (let i = 0, len = targets.length; i < len; i++) {
                     const target = targets[i];
                     const animator = plugin.handle({
-                        index: i,                
+                        index: i,
                         options: event,
                         target: target,
                         targets: targets
@@ -196,9 +195,9 @@ export class Animator implements ja.IAnimator {
 
                     self._events.push({
                         animator: animator,
-                        easingFn: easingFn,                        
+                        easingFn: easingFn,
                         endTimeMs: event.from + animator.totalDuration,
-                        index: i,                        
+                        index: i,
                         startTimeMs: event.from,
                         target: target,
                         targets: targets

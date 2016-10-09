@@ -121,24 +121,24 @@ var Animator = (function () {
         var endsAt = lists_1.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration; });
         self._duration = endsAt;
     };
-    Animator.prototype._resolveMixin = function (mixin, event) {
+    Animator.prototype._addEvent = function (options) {
         var self = this;
-        var def = self._resolver.findAnimation(mixin);
-        if (!type_1.isDefined(def)) {
-            throw errors_1.invalidArg('mixin');
+        // resolve mixin properties     
+        var event;
+        if (options.mixins) {
+            var mixinTarget = lists_1.chain(options.mixins)
+                .map(function (mixin) {
+                var def = self._resolver.findAnimation(mixin);
+                if (!type_1.isDefined(def)) {
+                    throw errors_1.invalidArg('mixin');
+                }
+                return def;
+            })
+                .reduce(function (c, n) { return objects_1.deepCopyObject(n, c); });
+            event = objects_1.inherit(options, mixinTarget);
         }
-        objects_1.inherit(event, def);
-    };
-    Animator.prototype._addEvent = function (event) {
-        var self = this;
-        // resolve mixin properties        
-        if (event.mixins) {
-            if (type_1.isString(event.mixins)) {
-                event.mixins = [event.mixins];
-            }
-            event.mixins.forEach(function (mixin) {
-                self._resolveMixin(mixin, event);
-            });
+        else {
+            event = options;
         }
         // set from and to relative to existing duration    
         units_1.fromTime(event.from || 0, unitOut);

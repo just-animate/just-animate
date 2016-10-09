@@ -32,6 +32,29 @@ describe('lists', function () {
     });
   });
 
+  describe('chain', function () {
+    it('wraps an existing object in an array', function () {
+      var input = { x: 2 };
+      var result = lists.chain(input);
+
+      expect(result[0]).to.equal(input);
+    });
+
+    it('wraps an existing string in an array', function () {
+      var input = 'a string';
+      var result = lists.chain(input);
+
+      expect(result[0]).to.equal(input);
+    });
+
+    it('returns an array back if passed an array', function () {
+      var input = [1, 2, 3];
+      var result = lists.chain(input);
+
+      expect(result).to.equal(input);
+    });
+  });
+
   describe('each()', function () {
     it('iterates over each item', function () {
       var initial = [1, 2, 3];

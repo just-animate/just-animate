@@ -11,7 +11,7 @@ const ostring = Object.prototype.toString;
  * @returns {boolean} true if is not a string and length property is a number
  */
 export function isArray(a: any): boolean {
-    return isDefined(a) && !isString(a) && isNumber(a.length);
+    return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length);
 }
 
 export function isDefined(a: any): boolean {

@@ -2806,21 +2806,92 @@ System.register("just-animate/common/resources", [], function (exports_78, conte
         }
     };
 });
-System.register("just-animate/common/lists", ["just-animate/common/resources"], function (exports_79, context_79) {
+System.register("just-animate/common/type", ["just-animate/common/resources"], function (exports_79, context_79) {
     "use strict";
     var __moduleName = context_79 && context_79.id;
+    /**
+     * Tests if object is a list
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if is not a string and length property is a number
+     */
+    function isArray(a) {
+        return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length);
+    }
+    function isDefined(a) {
+        return a !== resources_1.nil && a !== resources_1.nada && a !== '';
+    }
+    /**
+     * Tests if object is a function
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object.toString reports it as a Function
+     */
+    function isFunction(a) {
+        return getTypeString(a) === resources_1.functionTypeString;
+    }
+    /**
+     * Tests if object is a number
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if the object is typeof number
+     */
+    function isNumber(a) {
+        return typeof a === resources_1.numberString;
+    }
+    function isObject(a) {
+        return typeof a === resources_1.objectString && a !== resources_1.nada;
+    }
+    /**
+     * Tests if object is a string
+     *
+     * @export
+     * @param {*} a object to test
+     * @returns {boolean} true if object is typeof string
+     */
+    function isString(a) {
+        return typeof a === resources_1.stringString;
+    }
+    function getTypeString(val) {
+        return ostring.call(val);
+    }
+    var resources_1, ostring;
+    exports_79("isArray", isArray);
+    exports_79("isDefined", isDefined);
+    exports_79("isFunction", isFunction);
+    exports_79("isNumber", isNumber);
+    exports_79("isObject", isObject);
+    exports_79("isString", isString);
+    exports_79("getTypeString", getTypeString);
+    return {
+        setters: [
+            function (resources_1_1) {
+                resources_1 = resources_1_1;
+            }
+        ],
+        execute: function () {
+            ostring = Object.prototype.toString;
+        }
+    };
+});
+System.register("just-animate/common/lists", ["just-animate/common/resources", "just-animate/common/type"], function (exports_80, context_80) {
+    "use strict";
+    var __moduleName = context_80 && context_80.id;
     /**
      * Returns the first object in the list or undefined
      */
     function head(indexed, predicate) {
         if (!indexed) {
-            return resources_1.nil;
+            return resources_2.nil;
         }
         var len = indexed.length;
         if (len < 1) {
-            return resources_1.nil;
+            return resources_2.nil;
         }
-        if (predicate === resources_1.nil) {
+        if (predicate === resources_2.nil) {
             return indexed[0];
         }
         for (var i = 0; i < len; i++) {
@@ -2830,20 +2901,20 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
                 return item;
             }
         }
-        return resources_1.nil;
+        return resources_2.nil;
     }
     /**
      * Returns the last object in the list or undefined
      */
     function tail(indexed, predicate) {
         if (!indexed) {
-            return resources_1.nil;
+            return resources_2.nil;
         }
         var len = indexed.length;
         if (len < 1) {
-            return resources_1.nil;
+            return resources_2.nil;
         }
-        if (predicate === resources_1.nil) {
+        if (predicate === resources_2.nil) {
             return indexed[len - 1];
         }
         for (var i = len - 1; i > -1; --i) {
@@ -2853,7 +2924,7 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
                 return item;
             }
         }
-        return resources_1.nil;
+        return resources_2.nil;
     }
     /**
      * Converts list to an Array.
@@ -2866,6 +2937,17 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
      */
     function toArray(indexed, index) {
         return slice.call(indexed, index || 0);
+    }
+    /**
+     * returns an array or an object wrapped in an array
+     *
+     * @export
+     * @template T
+     * @param {(IList<T> | T)} indexed
+     * @returns {T[]}
+     */
+    function chain(indexed) {
+        return type_1.isArray(indexed) ? indexed : [indexed];
     }
     /**
      * Performs the function against all objects in the list
@@ -2935,7 +3017,7 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
         var results = [];
         for (var i = 0, len = items.length; i < len; i++) {
             var result = fn(items[i]);
-            if (result !== resources_1.nil) {
+            if (result !== resources_2.nil) {
                 results.push(result);
             }
         }
@@ -2952,96 +3034,29 @@ System.register("just-animate/common/lists", ["just-animate/common/resources"], 
     function pushAll(source, target) {
         push.apply(source, target);
     }
-    var resources_1, slice, push;
-    exports_79("head", head);
-    exports_79("tail", tail);
-    exports_79("toArray", toArray);
-    exports_79("each", each);
-    exports_79("max", max);
-    exports_79("maxBy", maxBy);
-    exports_79("map", map);
-    exports_79("pushAll", pushAll);
+    var resources_2, type_1, slice, push;
+    exports_80("head", head);
+    exports_80("tail", tail);
+    exports_80("toArray", toArray);
+    exports_80("chain", chain);
+    exports_80("each", each);
+    exports_80("max", max);
+    exports_80("maxBy", maxBy);
+    exports_80("map", map);
+    exports_80("pushAll", pushAll);
     return {
         setters: [
-            function (resources_1_1) {
-                resources_1 = resources_1_1;
+            function (resources_2_1) {
+                resources_2 = resources_2_1;
+            },
+            function (type_1_1) {
+                type_1 = type_1_1;
             }
         ],
         execute: function () {
             slice = Array.prototype.slice;
             push = Array.prototype.push;
             ;
-        }
-    };
-});
-System.register("just-animate/common/type", ["just-animate/common/resources"], function (exports_80, context_80) {
-    "use strict";
-    var __moduleName = context_80 && context_80.id;
-    /**
-     * Tests if object is a list
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if is not a string and length property is a number
-     */
-    function isArray(a) {
-        return isDefined(a) && !isString(a) && isNumber(a.length);
-    }
-    function isDefined(a) {
-        return a !== resources_2.nil && a !== resources_2.nada && a !== '';
-    }
-    /**
-     * Tests if object is a function
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if object.toString reports it as a Function
-     */
-    function isFunction(a) {
-        return getTypeString(a) === resources_2.functionTypeString;
-    }
-    /**
-     * Tests if object is a number
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if the object is typeof number
-     */
-    function isNumber(a) {
-        return typeof a === resources_2.numberString;
-    }
-    function isObject(a) {
-        return typeof a === resources_2.objectString && a !== resources_2.nada;
-    }
-    /**
-     * Tests if object is a string
-     *
-     * @export
-     * @param {*} a object to test
-     * @returns {boolean} true if object is typeof string
-     */
-    function isString(a) {
-        return typeof a === resources_2.stringString;
-    }
-    function getTypeString(val) {
-        return ostring.call(val);
-    }
-    var resources_2, ostring;
-    exports_80("isArray", isArray);
-    exports_80("isDefined", isDefined);
-    exports_80("isFunction", isFunction);
-    exports_80("isNumber", isNumber);
-    exports_80("isObject", isObject);
-    exports_80("isString", isString);
-    exports_80("getTypeString", getTypeString);
-    return {
-        setters: [
-            function (resources_2_1) {
-                resources_2 = resources_2_1;
-            }
-        ],
-        execute: function () {
-            ostring = Object.prototype.toString;
         }
     };
 });
@@ -3071,7 +3086,7 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         if (!source) {
             throw errors_1.invalidArg('source');
         }
-        if (type_1.isString(source)) {
+        if (type_2.isString(source)) {
             // if query selector, search for elements 
             var nodeResults = document.querySelectorAll(source);
             return lists_1.toArray(nodeResults);
@@ -3080,13 +3095,13 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
             // if a single element, wrap in array 
             return [source];
         }
-        if (type_1.isFunction(source)) {
+        if (type_2.isFunction(source)) {
             // if function, call it and call this function
             var provider = source;
             var result = provider();
             return queryElements(result);
         }
-        if (type_1.isArray(source)) {
+        if (type_2.isArray(source)) {
             // if array or jQuery object, flatten to an array
             var elements_1 = [];
             lists_1.each(source, function (i) {
@@ -3099,15 +3114,15 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         // otherwise return empty    
         return [];
     }
-    var lists_1, type_1, errors_1;
+    var lists_1, type_2, errors_1;
     exports_82("queryElements", queryElements);
     return {
         setters: [
             function (lists_1_1) {
                 lists_1 = lists_1_1;
             },
-            function (type_1_1) {
-                type_1 = type_1_1;
+            function (type_2_1) {
+                type_2 = type_2_1;
             },
             function (errors_1_1) {
                 errors_1 = errors_1_1;
@@ -3162,16 +3177,16 @@ System.register("just-animate/common/objects", ["just-animate/common/type", "jus
         var originProp = origin[prop];
         var destProp = dest[prop];
         // if the source and target don't have the same type, replace with target
-        var originType = type_2.getTypeString(originProp);
-        var destType = type_2.getTypeString(destProp);
+        var originType = type_3.getTypeString(originProp);
+        var destType = type_3.getTypeString(destProp);
         if (originType !== destType) {
             destProp = resources_4.nil;
         }
-        if (type_2.isArray(originProp)) {
+        if (type_3.isArray(originProp)) {
             // note: a compromise until a solution for merging arrays becomes clear
             dest[prop] = originProp.slice(0);
         }
-        else if (type_2.isObject(originProp)) {
+        else if (type_3.isObject(originProp)) {
             dest[prop] = deepCopyObject(originProp, destProp);
         }
         else {
@@ -3180,14 +3195,14 @@ System.register("just-animate/common/objects", ["just-animate/common/type", "jus
     }
     function inherit(target, source) {
         for (var propName in source) {
-            if (!type_2.isDefined(target[propName])) {
+            if (!type_3.isDefined(target[propName])) {
                 target[propName] = source[propName];
             }
         }
         return target;
     }
     function resolve(value, ctx) {
-        if (!type_2.isFunction(value)) {
+        if (!type_3.isFunction(value)) {
             return value;
         }
         return value(ctx.target, ctx.index, ctx.targets);
@@ -3205,7 +3220,7 @@ System.register("just-animate/common/objects", ["just-animate/common/type", "jus
         }
         return props;
     }
-    var type_2, resources_4;
+    var type_3, resources_4;
     exports_84("deepCopyObject", deepCopyObject);
     exports_84("deepCopyProperty", deepCopyProperty);
     exports_84("inherit", inherit);
@@ -3213,8 +3228,8 @@ System.register("just-animate/common/objects", ["just-animate/common/type", "jus
     exports_84("listProps", listProps);
     return {
         setters: [
-            function (type_2_1) {
-                type_2 = type_2_1;
+            function (type_3_1) {
+                type_3 = type_3_1;
             },
             function (resources_4_1) {
                 resources_4 = resources_4_1;
@@ -3232,18 +3247,18 @@ System.register("just-animate/common/strings", ["just-animate/common/type", "jus
         return p1 + p2.toUpperCase();
     }
     function toCamelCase(value) {
-        return type_3.isString(value) ? value.replace(resources_5.camelCaseRegex, camelCaseReplacer) : resources_5.nil;
+        return type_4.isString(value) ? value.replace(resources_5.camelCaseRegex, camelCaseReplacer) : resources_5.nil;
     }
     function startsWith(value, pattern) {
         return value.indexOf(pattern) === 0;
     }
-    var type_3, lists_2, resources_5, cssFunction;
+    var type_4, lists_2, resources_5, cssFunction;
     exports_85("toCamelCase", toCamelCase);
     exports_85("startsWith", startsWith);
     return {
         setters: [
-            function (type_3_1) {
-                type_3 = type_3_1;
+            function (type_4_1) {
+                type_4 = type_4_1;
             },
             function (lists_2_1) {
                 lists_2 = lists_2_1;
@@ -3268,11 +3283,11 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         return self;
     }
     function fromDistance(val, unit) {
-        if (!type_4.isDefined(val)) {
+        if (!type_5.isDefined(val)) {
             return resources_6.nil;
         }
         var returnUnit = unit || Unit();
-        if (type_4.isNumber(val)) {
+        if (type_5.isNumber(val)) {
             return returnUnit.values(Number(val), px, stepNone);
         }
         var match = resources_6.distanceExpression.exec(val);
@@ -3281,11 +3296,11 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         return returnUnit.values(value, unitType, stepNone);
     }
     function fromPercentage(val, unit) {
-        if (!type_4.isDefined(val)) {
+        if (!type_5.isDefined(val)) {
             return resources_6.nil;
         }
         var returnUnit = unit || Unit();
-        if (type_4.isNumber(val)) {
+        if (type_5.isNumber(val)) {
             return returnUnit.values(Number(val), percent, stepNone);
         }
         var match = resources_6.percentageExpression.exec(val);
@@ -3294,7 +3309,7 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
     }
     function fromTime(val, unit) {
         var returnUnit = unit || Unit();
-        if (type_4.isNumber(val)) {
+        if (type_5.isNumber(val)) {
             return returnUnit.values(Number(val), millisecond, stepNone);
         }
         var match = resources_6.timeExpression.exec(val);
@@ -3323,7 +3338,7 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         }
         return sharedUnit.value;
     }
-    var type_4, resources_6, errors_2, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
+    var type_5, resources_6, errors_2, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
     exports_86("Unit", Unit);
     exports_86("fromDistance", fromDistance);
     exports_86("fromPercentage", fromPercentage);
@@ -3331,8 +3346,8 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
     exports_86("resolveTimeExpression", resolveTimeExpression);
     return {
         setters: [
-            function (type_4_1) {
-                type_4 = type_4_1;
+            function (type_5_1) {
+                type_5 = type_5_1;
             },
             function (resources_6_1) {
                 resources_6 = resources_6_1;
@@ -3413,12 +3428,12 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
         self._fn = {};
         return self;
     }
-    var type_5, errors_3, resources_7;
+    var type_6, errors_3, resources_7;
     exports_88("Dispatcher", Dispatcher);
     return {
         setters: [
-            function (type_5_1) {
-                type_5 = type_5_1;
+            function (type_6_1) {
+                type_6 = type_6_1;
             },
             function (errors_3_1) {
                 errors_3 = errors_3_1;
@@ -3442,7 +3457,7 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
                     }
                 },
                 on: function (eventName, listener) {
-                    if (!type_5.isFunction(listener)) {
+                    if (!type_6.isFunction(listener)) {
                         throw errors_3.invalidArg('listener');
                     }
                     var fn = this._fn;
@@ -3755,7 +3770,7 @@ System.register("just-animate/plugins/core/easings", ["just-animate/common/strin
 System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/easings", "just-animate/common/units", "just-animate/common/elements"], function (exports_92, context_92) {
     "use strict";
     var __moduleName = context_92 && context_92.id;
-    var lists_3, objects_1, type_6, math_1, errors_4, resources_11, Dispatcher_1, easings_1, units_1, elements_2, animationPadding, unitOut, Animator;
+    var lists_3, objects_1, type_7, math_1, errors_4, resources_11, Dispatcher_1, easings_1, units_1, elements_2, animationPadding, unitOut, Animator;
     return {
         setters: [
             function (lists_3_1) {
@@ -3764,8 +3779,8 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
             function (objects_1_1) {
                 objects_1 = objects_1_1;
             },
-            function (type_6_1) {
-                type_6 = type_6_1;
+            function (type_7_1) {
+                type_7 = type_7_1;
             },
             function (math_1_1) {
                 math_1 = math_1_1;
@@ -3799,7 +3814,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
             Animator = (function () {
                 function Animator(resolver, timeloop, plugins) {
                     var self = this;
-                    if (!type_6.isDefined(resources_11.duration)) {
+                    if (!type_7.isDefined(resources_11.duration)) {
                         throw errors_4.invalidArg(resources_11.duration);
                     }
                     self._context = {};
@@ -3822,7 +3837,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                 }
                 Animator.prototype.animate = function (options) {
                     var self = this;
-                    if (type_6.isArray(options)) {
+                    if (type_7.isArray(options)) {
                         lists_3.each(options, function (e) { return self._addEvent(e); });
                     }
                     else {
@@ -3841,7 +3856,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                 };
                 Animator.prototype.currentTime = function (value) {
                     var self = this;
-                    if (!type_6.isDefined(value)) {
+                    if (!type_7.isDefined(value)) {
                         return self._currentTime;
                     }
                     self._currentTime = value;
@@ -3854,7 +3869,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                 };
                 Animator.prototype.playbackRate = function (value) {
                     var self = this;
-                    if (!type_6.isDefined(value)) {
+                    if (!type_7.isDefined(value)) {
                         return self._playbackRate;
                     }
                     self._playbackRate = value;
@@ -3862,7 +3877,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                 };
                 Animator.prototype.playState = function (value) {
                     var self = this;
-                    if (!type_6.isDefined(value)) {
+                    if (!type_7.isDefined(value)) {
                         return self._playState;
                     }
                     self._playState = value;
@@ -3902,24 +3917,24 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     var endsAt = lists_3.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration; });
                     self._duration = endsAt;
                 };
-                Animator.prototype._resolveMixin = function (mixin, event) {
+                Animator.prototype._addEvent = function (options) {
                     var self = this;
-                    var def = self._resolver.findAnimation(mixin);
-                    if (!type_6.isDefined(def)) {
-                        throw errors_4.invalidArg('mixin');
+                    // resolve mixin properties     
+                    var event;
+                    if (options.mixins) {
+                        var mixinTarget = lists_3.chain(options.mixins)
+                            .map(function (mixin) {
+                            var def = self._resolver.findAnimation(mixin);
+                            if (!type_7.isDefined(def)) {
+                                throw errors_4.invalidArg('mixin');
+                            }
+                            return def;
+                        })
+                            .reduce(function (c, n) { return objects_1.deepCopyObject(n, c); });
+                        event = objects_1.inherit(options, mixinTarget);
                     }
-                    objects_1.inherit(event, def);
-                };
-                Animator.prototype._addEvent = function (event) {
-                    var self = this;
-                    // resolve mixin properties        
-                    if (event.mixins) {
-                        if (type_6.isString(event.mixins)) {
-                            event.mixins = [event.mixins];
-                        }
-                        event.mixins.forEach(function (mixin) {
-                            self._resolveMixin(mixin, event);
-                        });
+                    else {
+                        event = options;
                     }
                     // set from and to relative to existing duration    
                     units_1.fromTime(event.from || 0, unitOut);
@@ -4225,7 +4240,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         var target = ctx.target;
         var css = options.css;
         var sourceKeyframes;
-        if (type_7.isArray(css)) {
+        if (type_8.isArray(css)) {
             // if an array, no processing has to occur
             sourceKeyframes = css;
             expandOffsets(sourceKeyframes);
@@ -4262,7 +4277,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             }
             var alias = transforms.indexOf(property) !== -1 ? resources_13.transform : property;
             var val = style[alias];
-            if (type_7.isDefined(val)) {
+            if (type_8.isDefined(val)) {
                 firstFrame[alias] = val;
             }
         });
@@ -4277,7 +4292,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         var len = keyframes.length;
         for (var i = len - 1; i > -1; --i) {
             var keyframe = keyframes[i];
-            if (type_7.isArray(keyframe.offset)) {
+            if (type_8.isArray(keyframe.offset)) {
                 keyframes.splice(i, 1);
                 var offsets = keyframe.offset;
                 var offsetLen = offsets.length;
@@ -4305,7 +4320,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                     continue;
                 }
                 var sourceValue = sourceKeyframe[propertyName];
-                if (!type_7.isDefined(sourceValue)) {
+                if (!type_8.isDefined(sourceValue)) {
                     continue;
                 }
                 targetKeyframe[propertyName] = objects_2.resolve(sourceValue, ctx);
@@ -4325,7 +4340,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             }
             // resolve value (changes function into discrete value or array)                    
             var val = objects_2.resolve(cssProps[prop], ctx);
-            if (type_7.isArray(val)) {
+            if (type_8.isArray(val)) {
                 // if the value is an array, split up the offset automatically
                 var valAsArray = val;
                 var valLength = valAsArray.length;
@@ -4379,13 +4394,13 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         for (var i = 1; i < lasti; i++) {
             var target = keyframes[i];
             // skip entries that have an offset        
-            if (type_7.isNumber(target.offset)) {
+            if (type_8.isNumber(target.offset)) {
                 continue;
             }
             // search for the next offset with a value        
             for (var j = i + 1; j < len; j++) {
                 // pass if offset is not set
-                if (!type_7.isNumber(keyframes[j].offset)) {
+                if (!type_8.isNumber(keyframes[j].offset)) {
                     continue;
                 }
                 // calculate timing/position info
@@ -4445,7 +4460,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         for (var i = 1; i < len; i++) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop !== resources_13.offsetString && !type_7.isDefined(first[prop])) {
+                if (prop !== resources_13.offsetString && !type_8.isDefined(first[prop])) {
                     first[prop] = keyframe[prop];
                 }
             }
@@ -4454,7 +4469,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         for (var i = len - 2; i > -1; i--) {
             var keyframe = keyframes[i];
             for (var prop in keyframe) {
-                if (prop !== resources_13.offsetString && !type_7.isDefined(last[prop])) {
+                if (prop !== resources_13.offsetString && !type_8.isDefined(last[prop])) {
                     last[prop] = keyframe[prop];
                 }
             }
@@ -4473,7 +4488,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         var cssTransforms = [];
         for (var prop in keyframe) {
             var value = keyframe[prop];
-            if (!type_7.isDefined(value)) {
+            if (!type_8.isDefined(value)) {
                 keyframe[prop] = resources_13.nil;
                 continue;
             }
@@ -4502,7 +4517,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 .reduce(function (c, n) { return c + (" " + n[0] + "(" + n[1] + ")"); }, '');
         }
     }
-    var type_7, strings_2, easings_2, lists_5, objects_2, resources_13, propertyAliases, transforms;
+    var type_8, strings_2, easings_2, lists_5, objects_2, resources_13, propertyAliases, transforms;
     exports_96("initAnimator", initAnimator);
     exports_96("addTransition", addTransition);
     exports_96("expandOffsets", expandOffsets);
@@ -4516,8 +4531,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
     exports_96("normalizeProperties", normalizeProperties);
     return {
         setters: [
-            function (type_7_1) {
-                type_7 = type_7_1;
+            function (type_8_1) {
+                type_8 = type_8_1;
             },
             function (strings_2_1) {
                 strings_2 = strings_2_1;
@@ -4572,7 +4587,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
 System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/type", "just-animate/plugins/core/easings", "just-animate/common/objects", "just-animate/common/resources", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_97, context_97) {
     "use strict";
     var __moduleName = context_97 && context_97.id;
-    var KeyframeAnimator_1, units_2, type_8, easings_3, objects_3, resources_14, KeyframeTransformers_1, KeyframePlugin;
+    var KeyframeAnimator_1, units_2, type_9, easings_3, objects_3, resources_14, KeyframeTransformers_1, KeyframePlugin;
     return {
         setters: [
             function (KeyframeAnimator_1_1) {
@@ -4581,8 +4596,8 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plug
             function (units_2_1) {
                 units_2 = units_2_1;
             },
-            function (type_8_1) {
-                type_8 = type_8_1;
+            function (type_9_1) {
+                type_9 = type_9_1;
             },
             function (easings_3_1) {
                 easings_3 = easings_3_1;
@@ -4628,7 +4643,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plug
                     };
                     var animator = new KeyframeAnimator_1.KeyframeAnimator(KeyframeTransformers_1.initAnimator.bind(resources_14.nada, timings, ctx));
                     animator.totalDuration = totalTime;
-                    if (type_8.isFunction(options.update)) {
+                    if (type_9.isFunction(options.update)) {
                         animator.onupdate = options.update;
                     }
                     return animator;

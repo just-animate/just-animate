@@ -1,5 +1,6 @@
 "use strict";
 var resources_1 = require("./resources");
+var type_1 = require("./type");
 var slice = Array.prototype.slice;
 var push = Array.prototype.push;
 ;
@@ -64,6 +65,18 @@ function toArray(indexed, index) {
     return slice.call(indexed, index || 0);
 }
 exports.toArray = toArray;
+/**
+ * returns an array or an object wrapped in an array
+ *
+ * @export
+ * @template T
+ * @param {(IList<T> | T)} indexed
+ * @returns {T[]}
+ */
+function chain(indexed) {
+    return type_1.isArray(indexed) ? indexed : [indexed];
+}
+exports.chain = chain;
 /**
  * Performs the function against all objects in the list
  *

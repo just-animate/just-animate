@@ -9,7 +9,7 @@ var ostring = Object.prototype.toString;
  * @returns {boolean} true if is not a string and length property is a number
  */
 function isArray(a) {
-    return isDefined(a) && !isString(a) && isNumber(a.length);
+    return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length);
 }
 exports.isArray = isArray;
 function isDefined(a) {

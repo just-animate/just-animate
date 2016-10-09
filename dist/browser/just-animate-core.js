@@ -52,6 +52,29 @@ var distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|c
 var percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/;
 var timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
 
+var ostring = Object.prototype.toString;
+function isArray(a) {
+    return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length);
+}
+function isDefined(a) {
+    return a !== nil && a !== nada && a !== '';
+}
+function isFunction(a) {
+    return getTypeString(a) === functionTypeString;
+}
+function isNumber(a) {
+    return typeof a === numberString;
+}
+function isObject(a) {
+    return typeof a === objectString && a !== nada;
+}
+function isString(a) {
+    return typeof a === stringString;
+}
+function getTypeString(val) {
+    return ostring.call(val);
+}
+
 var slice = Array.prototype.slice;
 var push = Array.prototype.push;
 
@@ -98,6 +121,9 @@ function tail(indexed, predicate) {
 function toArray(indexed, index) {
     return slice.call(indexed, index || 0);
 }
+function chain(indexed) {
+    return isArray(indexed) ? indexed : [indexed];
+}
 function each(items, fn) {
     for (var i = 0, len = items.length; i < len; i++) {
         fn(items[i]);
@@ -114,29 +140,6 @@ function maxBy(items, predicate) {
         }
     }
     return max;
-}
-
-var ostring = Object.prototype.toString;
-function isArray(a) {
-    return isDefined(a) && !isString(a) && isNumber(a.length);
-}
-function isDefined(a) {
-    return a !== nil && a !== nada && a !== '';
-}
-function isFunction(a) {
-    return getTypeString(a) === functionTypeString;
-}
-function isNumber(a) {
-    return typeof a === numberString;
-}
-function isObject(a) {
-    return typeof a === objectString && a !== nada;
-}
-function isString(a) {
-    return typeof a === stringString;
-}
-function getTypeString(val) {
-    return ostring.call(val);
 }
 
 function deepCopyObject(origin, dest) {
@@ -581,23 +584,23 @@ var Animator = (function () {
         var endsAt = maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration; });
         self._duration = endsAt;
     };
-    Animator.prototype._resolveMixin = function (mixin, event) {
+    Animator.prototype._addEvent = function (options) {
         var self = this;
-        var def = self._resolver.findAnimation(mixin);
-        if (!isDefined(def)) {
-            throw invalidArg('mixin');
+        var event;
+        if (options.mixins) {
+            var mixinTarget = chain(options.mixins)
+                .map(function (mixin) {
+                var def = self._resolver.findAnimation(mixin);
+                if (!isDefined(def)) {
+                    throw invalidArg('mixin');
+                }
+                return def;
+            })
+                .reduce(function (c, n) { return deepCopyObject(n, c); });
+            event = inherit(options, mixinTarget);
         }
-        inherit(event, def);
-    };
-    Animator.prototype._addEvent = function (event) {
-        var self = this;
-        if (event.mixins) {
-            if (isString(event.mixins)) {
-                event.mixins = [event.mixins];
-            }
-            event.mixins.forEach(function (mixin) {
-                self._resolveMixin(mixin, event);
-            });
+        else {
+            event = options;
         }
         fromTime(event.from || 0, unitOut);
         event.from = unitOut.value + this._duration;
