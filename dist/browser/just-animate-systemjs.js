@@ -4240,14 +4240,13 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             propsToKeyframes(css, sourceKeyframes, ctx);
         }
         var targetKeyframes = [];
-        unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
-        spaceKeyframes(targetKeyframes);
+        resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
         if (options.isTransition === true) {
             addTransition(targetKeyframes, target);
         }
-        else {
-            fixPartialKeyframes(targetKeyframes);
-        }
+        spaceKeyframes(targetKeyframes);
+        arrangeKeyframes(targetKeyframes);
+        fixPartialKeyframes(targetKeyframes);
         var animator = target[resources_12.animate](targetKeyframes, timings);
         animator.cancel();
         return animator;
@@ -4255,16 +4254,13 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
     function addTransition(keyframes, target) {
         // detect properties to transition
         var properties = objects_2.listProps(keyframes);
-        // get or create the first frame
-        var firstFrame = lists_5.head(keyframes, function (t) { return t.offset === 0; });
-        if (!firstFrame) {
-            firstFrame = { offset: 0 };
-            keyframes.splice(0, 0, firstFrame);
-        }
         // copy properties from the dom to the animation
         // todo: check how to do this in IE8, or not?
-        var style = global.getComputedStyle(target);
-        lists_5.each(properties, function (property) {
+        var style = window.getComputedStyle(target);
+        // create the first frame
+        var firstFrame = { offset: 0 };
+        keyframes.splice(0, 0, firstFrame);
+        properties.forEach(function (property) {
             // skip offset property
             if (property === resources_12.offsetString) {
                 return;
@@ -4304,7 +4300,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             }
         }
     }
-    function unwrapPropertiesInKeyframes(source, target, ctx) {
+    function resolvePropertiesInKeyframes(source, target, ctx) {
         var len = source.length;
         for (var i = 0; i < len; i++) {
             var sourceKeyframe = source[i];
@@ -4332,7 +4328,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             if (!cssProps.hasOwnProperty(prop)) {
                 continue;
             }
-            // unwrap value (changes function into discrete value or array)                    
+            // resolve value (changes function into discrete value or array)                    
             var val = objects_2.resolve(cssProps[prop], ctx);
             if (type_7.isArray(val)) {
                 // if the value is an array, split up the offset automatically
@@ -4358,11 +4354,14 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 keyframe[prop] = val;
             }
         }
+        // reassemble as array
         for (var offset in keyframesByOffset) {
             var keyframe = keyframesByOffset[offset];
             keyframe.offset = Number(offset);
             keyframes.push(keyframe);
         }
+        // resort by offset    
+        keyframes.sort(keyframeOffsetComparer);
     }
     function spaceKeyframes(keyframes) {
         // don't attempt to fill animation if less than 2 keyframes
@@ -4410,11 +4409,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             }
         }
     }
-    /**
-     * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
-     */
-    function fixPartialKeyframes(keyframes) {
-        // don't attempt to fill animation if less than 1 keyframes
+    function arrangeKeyframes(keyframes) {
+        // don't arrange frames if there aren't any
         if (keyframes.length < 1) {
             return;
         }
@@ -4424,7 +4420,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             first = {};
             keyframes.splice(0, 0, first);
         }
-        if (first.offset === resources_12.nil) {
+        if (first.offset !== 0) {
             first.offset = 0;
         }
         var last = lists_5.tail(keyframes, function (k) { return k.offset === 1; })
@@ -4433,9 +4429,22 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             last = {};
             keyframes.push(last);
         }
-        if (last.offset === resources_12.nil) {
+        if (last.offset !== 1) {
             last.offset = 0;
         }
+        // sort by offset (should have all offsets assigned)
+        keyframes.sort(keyframeOffsetComparer);
+    }
+    /**
+     * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
+     */
+    function fixPartialKeyframes(keyframes) {
+        // don't attempt to fill animation if less than 1 keyframes
+        if (keyframes.length < 1) {
+            return;
+        }
+        var first = lists_5.head(keyframes);
+        var last = lists_5.tail(keyframes);
         // fill initial keyframe with missing props
         var len = keyframes.length;
         for (var i = 1; i < len; i++) {
@@ -4455,8 +4464,6 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 }
             }
         }
-        // sort by offset (should have all offsets assigned)
-        keyframes.sort(keyframeOffsetComparer);
     }
     function keyframeOffsetComparer(a, b) {
         return a.offset - b.offset;
@@ -4500,13 +4507,14 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 .reduce(function (c, n) { return c + (" " + n[0] + "(" + n[1] + ")"); }, '');
         }
     }
-    var type_7, strings_2, easings_2, lists_5, objects_2, resources_12, global, propertyAliases, transforms;
+    var type_7, strings_2, easings_2, lists_5, objects_2, resources_12, propertyAliases, transforms;
     exports_96("initAnimator", initAnimator);
     exports_96("addTransition", addTransition);
     exports_96("expandOffsets", expandOffsets);
-    exports_96("unwrapPropertiesInKeyframes", unwrapPropertiesInKeyframes);
+    exports_96("resolvePropertiesInKeyframes", resolvePropertiesInKeyframes);
     exports_96("propsToKeyframes", propsToKeyframes);
     exports_96("spaceKeyframes", spaceKeyframes);
+    exports_96("arrangeKeyframes", arrangeKeyframes);
     exports_96("fixPartialKeyframes", fixPartialKeyframes);
     exports_96("keyframeOffsetComparer", keyframeOffsetComparer);
     exports_96("transformPropertyComparer", transformPropertyComparer);
@@ -4533,7 +4541,6 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             }
         ],
         execute: function () {
-            global = window;
             propertyAliases = {
                 x: resources_12.translateX,
                 y: resources_12.translateY,

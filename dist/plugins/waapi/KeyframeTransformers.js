@@ -5,7 +5,6 @@ var easings_1 = require("../core/easings");
 var lists_1 = require("../../common/lists");
 var objects_1 = require("../../common/objects");
 var resources_1 = require("../../common/resources");
-var global = window;
 var propertyAliases = {
     x: resources_1.translateX,
     y: resources_1.translateY,
@@ -52,14 +51,13 @@ function initAnimator(timings, ctx) {
         propsToKeyframes(css, sourceKeyframes, ctx);
     }
     var targetKeyframes = [];
-    unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
-    spaceKeyframes(targetKeyframes);
+    resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
     if (options.isTransition === true) {
         addTransition(targetKeyframes, target);
     }
-    else {
-        fixPartialKeyframes(targetKeyframes);
-    }
+    spaceKeyframes(targetKeyframes);
+    arrangeKeyframes(targetKeyframes);
+    fixPartialKeyframes(targetKeyframes);
     var animator = target[resources_1.animate](targetKeyframes, timings);
     animator.cancel();
     return animator;
@@ -68,16 +66,13 @@ exports.initAnimator = initAnimator;
 function addTransition(keyframes, target) {
     // detect properties to transition
     var properties = objects_1.listProps(keyframes);
-    // get or create the first frame
-    var firstFrame = lists_1.head(keyframes, function (t) { return t.offset === 0; });
-    if (!firstFrame) {
-        firstFrame = { offset: 0 };
-        keyframes.splice(0, 0, firstFrame);
-    }
     // copy properties from the dom to the animation
     // todo: check how to do this in IE8, or not?
-    var style = global.getComputedStyle(target);
-    lists_1.each(properties, function (property) {
+    var style = window.getComputedStyle(target);
+    // create the first frame
+    var firstFrame = { offset: 0 };
+    keyframes.splice(0, 0, firstFrame);
+    properties.forEach(function (property) {
         // skip offset property
         if (property === resources_1.offsetString) {
             return;
@@ -119,7 +114,7 @@ function expandOffsets(keyframes) {
     }
 }
 exports.expandOffsets = expandOffsets;
-function unwrapPropertiesInKeyframes(source, target, ctx) {
+function resolvePropertiesInKeyframes(source, target, ctx) {
     var len = source.length;
     for (var i = 0; i < len; i++) {
         var sourceKeyframe = source[i];
@@ -138,7 +133,7 @@ function unwrapPropertiesInKeyframes(source, target, ctx) {
         target.push(targetKeyframe);
     }
 }
-exports.unwrapPropertiesInKeyframes = unwrapPropertiesInKeyframes;
+exports.resolvePropertiesInKeyframes = resolvePropertiesInKeyframes;
 function propsToKeyframes(css, keyframes, ctx) {
     // create a map to capture each keyframe by offset
     var keyframesByOffset = {};
@@ -148,7 +143,7 @@ function propsToKeyframes(css, keyframes, ctx) {
         if (!cssProps.hasOwnProperty(prop)) {
             continue;
         }
-        // unwrap value (changes function into discrete value or array)                    
+        // resolve value (changes function into discrete value or array)                    
         var val = objects_1.resolve(cssProps[prop], ctx);
         if (type_1.isArray(val)) {
             // if the value is an array, split up the offset automatically
@@ -174,11 +169,14 @@ function propsToKeyframes(css, keyframes, ctx) {
             keyframe[prop] = val;
         }
     }
+    // reassemble as array
     for (var offset in keyframesByOffset) {
         var keyframe = keyframesByOffset[offset];
         keyframe.offset = Number(offset);
         keyframes.push(keyframe);
     }
+    // resort by offset    
+    keyframes.sort(keyframeOffsetComparer);
 }
 exports.propsToKeyframes = propsToKeyframes;
 function spaceKeyframes(keyframes) {
@@ -228,11 +226,8 @@ function spaceKeyframes(keyframes) {
     }
 }
 exports.spaceKeyframes = spaceKeyframes;
-/**
- * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
- */
-function fixPartialKeyframes(keyframes) {
-    // don't attempt to fill animation if less than 1 keyframes
+function arrangeKeyframes(keyframes) {
+    // don't arrange frames if there aren't any
     if (keyframes.length < 1) {
         return;
     }
@@ -242,7 +237,7 @@ function fixPartialKeyframes(keyframes) {
         first = {};
         keyframes.splice(0, 0, first);
     }
-    if (first.offset === resources_1.nil) {
+    if (first.offset !== 0) {
         first.offset = 0;
     }
     var last = lists_1.tail(keyframes, function (k) { return k.offset === 1; })
@@ -251,9 +246,23 @@ function fixPartialKeyframes(keyframes) {
         last = {};
         keyframes.push(last);
     }
-    if (last.offset === resources_1.nil) {
+    if (last.offset !== 1) {
         last.offset = 0;
     }
+    // sort by offset (should have all offsets assigned)
+    keyframes.sort(keyframeOffsetComparer);
+}
+exports.arrangeKeyframes = arrangeKeyframes;
+/**
+ * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
+ */
+function fixPartialKeyframes(keyframes) {
+    // don't attempt to fill animation if less than 1 keyframes
+    if (keyframes.length < 1) {
+        return;
+    }
+    var first = lists_1.head(keyframes);
+    var last = lists_1.tail(keyframes);
     // fill initial keyframe with missing props
     var len = keyframes.length;
     for (var i = 1; i < len; i++) {
@@ -273,8 +282,6 @@ function fixPartialKeyframes(keyframes) {
             }
         }
     }
-    // sort by offset (should have all offsets assigned)
-    keyframes.sort(keyframeOffsetComparer);
 }
 exports.fixPartialKeyframes = fixPartialKeyframes;
 function keyframeOffsetComparer(a, b) {

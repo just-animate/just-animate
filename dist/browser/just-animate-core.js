@@ -941,7 +941,6 @@ var KeyframeAnimator = (function () {
     return KeyframeAnimator;
 }());
 
-var global$1 = window;
 var propertyAliases = {
     x: translateX,
     y: translateY,
@@ -986,27 +985,23 @@ function initAnimator(timings, ctx) {
         propsToKeyframes(css, sourceKeyframes, ctx);
     }
     var targetKeyframes = [];
-    unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
-    spaceKeyframes(targetKeyframes);
+    resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
     if (options.isTransition === true) {
         addTransition(targetKeyframes, target);
     }
-    else {
-        fixPartialKeyframes(targetKeyframes);
-    }
+    spaceKeyframes(targetKeyframes);
+    arrangeKeyframes(targetKeyframes);
+    fixPartialKeyframes(targetKeyframes);
     var animator = target[animate](targetKeyframes, timings);
     animator.cancel();
     return animator;
 }
 function addTransition(keyframes, target) {
     var properties = listProps(keyframes);
-    var firstFrame = head(keyframes, function (t) { return t.offset === 0; });
-    if (!firstFrame) {
-        firstFrame = { offset: 0 };
-        keyframes.splice(0, 0, firstFrame);
-    }
-    var style = global$1.getComputedStyle(target);
-    each(properties, function (property) {
+    var style = window.getComputedStyle(target);
+    var firstFrame = { offset: 0 };
+    keyframes.splice(0, 0, firstFrame);
+    properties.forEach(function (property) {
         if (property === offsetString) {
             return;
         }
@@ -1039,7 +1034,7 @@ function expandOffsets(keyframes) {
         }
     }
 }
-function unwrapPropertiesInKeyframes(source, target, ctx) {
+function resolvePropertiesInKeyframes(source, target, ctx) {
     var len = source.length;
     for (var i = 0; i < len; i++) {
         var sourceKeyframe = source[i];
@@ -1093,6 +1088,7 @@ function propsToKeyframes(css, keyframes, ctx) {
         keyframe.offset = Number(offset);
         keyframes.push(keyframe);
     }
+    keyframes.sort(keyframeOffsetComparer);
 }
 function spaceKeyframes(keyframes) {
     if (keyframes.length < 2) {
@@ -1129,7 +1125,7 @@ function spaceKeyframes(keyframes) {
         }
     }
 }
-function fixPartialKeyframes(keyframes) {
+function arrangeKeyframes(keyframes) {
     if (keyframes.length < 1) {
         return;
     }
@@ -1139,7 +1135,7 @@ function fixPartialKeyframes(keyframes) {
         first = {};
         keyframes.splice(0, 0, first);
     }
-    if (first.offset === nil) {
+    if (first.offset !== 0) {
         first.offset = 0;
     }
     var last = tail(keyframes, function (k) { return k.offset === 1; })
@@ -1148,9 +1144,17 @@ function fixPartialKeyframes(keyframes) {
         last = {};
         keyframes.push(last);
     }
-    if (last.offset === nil) {
+    if (last.offset !== 1) {
         last.offset = 0;
     }
+    keyframes.sort(keyframeOffsetComparer);
+}
+function fixPartialKeyframes(keyframes) {
+    if (keyframes.length < 1) {
+        return;
+    }
+    var first = head(keyframes);
+    var last = tail(keyframes);
     var len = keyframes.length;
     for (var i = 1; i < len; i++) {
         var keyframe = keyframes[i];
@@ -1168,7 +1172,6 @@ function fixPartialKeyframes(keyframes) {
             }
         }
     }
-    keyframes.sort(keyframeOffsetComparer);
 }
 function keyframeOffsetComparer(a, b) {
     return a.offset - b.offset;

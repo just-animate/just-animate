@@ -1,7 +1,7 @@
 import { isDefined, isNumber, isArray } from '../../common/type';
 import { toCamelCase } from '../../common/strings';
 import { getEasingString } from '../core/easings';
-import { each, head, tail } from '../../common/lists';
+import { head, tail } from '../../common/lists';
 import { listProps, resolve } from '../../common/objects';
 
 
@@ -33,8 +33,6 @@ import {
     translateZ,
     transform
 } from '../../common/resources';
-
-const global = window;
 
 const propertyAliases = {
     x: translateX,
@@ -92,14 +90,15 @@ export function initAnimator(timings: waapi.IEffectTiming, ctx: ja.CreateAnimati
 
     const targetKeyframes: waapi.IKeyframe[] = [];
 
-    unwrapPropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
-    spaceKeyframes(targetKeyframes);
+    resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
 
     if (options.isTransition === true) {
         addTransition(targetKeyframes, target);
-    } else {
-        fixPartialKeyframes(targetKeyframes);
     }
+
+    spaceKeyframes(targetKeyframes);    
+    arrangeKeyframes(targetKeyframes);
+    fixPartialKeyframes(targetKeyframes);
 
     const animator = target[animate](targetKeyframes, timings);
     animator.cancel();
@@ -111,18 +110,15 @@ export function addTransition(keyframes: waapi.IKeyframe[], target: HTMLElement)
     // detect properties to transition
     const properties = listProps(keyframes);
 
-    // get or create the first frame
-    let firstFrame = head(keyframes, (t: ja.ICssKeyframeOptions) => t.offset === 0) as waapi.IKeyframe;
-    if (!firstFrame) {
-        firstFrame = { offset: 0 };
-        keyframes.splice(0, 0, firstFrame);
-    }
-
     // copy properties from the dom to the animation
     // todo: check how to do this in IE8, or not?
-    const style = global.getComputedStyle(target);
+    const style = window.getComputedStyle(target);
 
-    each(properties, (property: string) => {
+    // create the first frame
+    const firstFrame: waapi.IKeyframe = { offset: 0 };
+    keyframes.splice(0, 0, firstFrame);    
+
+    properties.forEach((property: string) => {
         // skip offset property
         if (property === offsetString) {
             return;
@@ -130,6 +126,7 @@ export function addTransition(keyframes: waapi.IKeyframe[], target: HTMLElement)
 
         const alias = transforms.indexOf(property) !== -1 ? transform : property;
         const val = style[alias];
+
         if (isDefined(val)) {
             firstFrame[alias] = val;
         }
@@ -168,7 +165,7 @@ export function expandOffsets(keyframes: ja.ICssKeyframeOptions[]): void {
 }
 
 
-export function unwrapPropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: ja.ICssKeyframeOptions[], ctx: ja.CreateAnimationContext<HTMLElement>): void {
+export function resolvePropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: ja.ICssKeyframeOptions[], ctx: ja.CreateAnimationContext<HTMLElement>): void {
     const len = source.length;
     for (let i = 0; i < len; i++) {
         const sourceKeyframe = source[i];
@@ -201,7 +198,7 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             continue;
         }
 
-        // unwrap value (changes function into discrete value or array)                    
+        // resolve value (changes function into discrete value or array)                    
         const val = resolve(cssProps[prop], ctx);
 
         if (isArray(val)) {
@@ -228,12 +225,16 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             keyframe[prop] = val;
         }
     }
-
+    
+    // reassemble as array
     for (let offset in keyframesByOffset) {
         const keyframe = keyframesByOffset[offset];
         keyframe.offset = Number(offset);
         keyframes.push(keyframe);
     }
+
+    // resort by offset    
+    keyframes.sort(keyframeOffsetComparer);    
 }
 
 
@@ -292,11 +293,8 @@ export function spaceKeyframes(keyframes: waapi.IKeyframe[]): void {
     }
 }
 
-/**
- * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
- */
-export function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
-    // don't attempt to fill animation if less than 1 keyframes
+export function arrangeKeyframes(keyframes: waapi.IKeyframe[]): void {
+    // don't arrange frames if there aren't any
     if (keyframes.length < 1) {
         return;
     }
@@ -304,12 +302,12 @@ export function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
     let first: waapi.IKeyframe =
         head(keyframes, (k: waapi.IKeyframe) => k.offset === 0)
         || head(keyframes, (k: waapi.IKeyframe) => k.offset === nil);
-
+    
     if (first === nil) {
         first = {};
         keyframes.splice(0, 0, first);
     }
-    if (first.offset === nil) {
+    if (first.offset !== 0) {
         first.offset = 0;
     }
 
@@ -321,9 +319,25 @@ export function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
         last = {};
         keyframes.push(last);
     }
-    if (last.offset === nil) {
+    if (last.offset !== 1) {
         last.offset = 0;
     }
+
+    // sort by offset (should have all offsets assigned)
+    keyframes.sort(keyframeOffsetComparer);    
+}
+
+/**
+ * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
+ */
+export function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
+    // don't attempt to fill animation if less than 1 keyframes
+    if (keyframes.length < 1) {
+        return;
+    }
+
+    const first = head(keyframes);
+    const last = tail(keyframes);
 
     // fill initial keyframe with missing props
     const len = keyframes.length;
@@ -345,9 +359,6 @@ export function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
             }
         }
     }
-
-    // sort by offset (should have all offsets assigned)
-    keyframes.sort(keyframeOffsetComparer);
 }
 
 export function keyframeOffsetComparer(a: waapi.IKeyframe, b: waapi.IKeyframe): number {
