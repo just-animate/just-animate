@@ -173,20 +173,6 @@ function inherit(target, source) {
     return target;
 }
 
-var expand = function (expandable) {
-    var result = {};
-    for (var prop in expandable) {
-        var propVal = expandable[prop];
-        if (isFunction(propVal)) {
-            propVal = propVal();
-        }
-        else if (isObject(propVal)) {
-            propVal = expand(propVal);
-        }
-        result[prop] = propVal;
-    }
-    return result;
-};
 function resolve(value, ctx) {
     if (!isFunction(value)) {
         return value;

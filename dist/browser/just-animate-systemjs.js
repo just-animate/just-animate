@@ -3205,7 +3205,7 @@ System.register("just-animate/common/objects", ["just-animate/common/type", "jus
         }
         return props;
     }
-    var type_2, resources_4, extend, expand;
+    var type_2, resources_4;
     exports_84("deepCopyObject", deepCopyObject);
     exports_84("deepCopyProperty", deepCopyProperty);
     exports_84("inherit", inherit);
@@ -3221,40 +3221,7 @@ System.register("just-animate/common/objects", ["just-animate/common/type", "jus
             }
         ],
         execute: function () {
-            /**
-             * Extends the first object with the properties of each subsequent object
-             *
-             * @export
-             * @param {*} target object to extend
-             * @param {...any[]} sources sources from which to inherit properties
-             * @returns {*} first object
-             */
-            exports_84("extend", extend = function () {
-                var args = arguments;
-                var target = args[0];
-                for (var i = 1, len = args.length; i < len; i++) {
-                    var source = args[i];
-                    for (var propName in source) {
-                        target[propName] = source[propName];
-                    }
-                }
-                return target;
-            });
             ;
-            exports_84("expand", expand = function (expandable) {
-                var result = {};
-                for (var prop in expandable) {
-                    var propVal = expandable[prop];
-                    if (type_2.isFunction(propVal)) {
-                        propVal = propVal();
-                    }
-                    else if (type_2.isObject(propVal)) {
-                        propVal = expand(propVal);
-                    }
-                    result[prop] = propVal;
-                }
-                return result;
-            });
         }
     };
 });

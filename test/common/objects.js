@@ -4,16 +4,6 @@ var assert = chai.assert;
 var expect = chai.expect;
 
 describe('objects', function () {
-    describe('extend()', function () {
-        it('combines objects together', function () {
-            var first = { first: 'Jane' };
-            var last = { last: 'Smith' };
-            var name = objects.extend(first, last);
-
-            assert.equal(first, name);
-            assert.equal('Jane Smith', name.first + ' ' + name.last);
-        });
-    });
 
     describe('resolve', function () {
         it('returns the same value when a non-function', function () {
