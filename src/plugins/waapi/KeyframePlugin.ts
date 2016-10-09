@@ -2,7 +2,7 @@ import { KeyframeAnimator } from '../waapi/KeyframeAnimator';
 import { resolveTimeExpression } from '../../common/units';
 import { isFunction } from '../../common/type';
 import { getEasingString } from '../core/easings';
-import { unwrap } from '../../common/objects';
+import { resolve } from '../../common/objects';
 import { nil, nada } from '../../common/resources';
 import { initAnimator } from './KeyframeTransformers';
 
@@ -13,13 +13,13 @@ export class KeyframePlugin implements ja.IPlugin {
 
     public handle(ctx: ja.CreateAnimationContext<HTMLElement>): ja.IAnimationController {
         const options = ctx.options;
-        const delay = resolveTimeExpression(unwrap(options.delay, ctx) || 0, ctx.index);
-        const endDelay = resolveTimeExpression(unwrap(options.endDelay, ctx) || 0, ctx.index);
-        const iterations = unwrap(options.iterations, ctx) || 1;
-        const iterationStart = unwrap(options.iterationStart, ctx) || 0;
-        const direction = unwrap(options.direction, ctx) || nil;
+        const delay = resolveTimeExpression(resolve(options.delay, ctx) || 0, ctx.index);
+        const endDelay = resolveTimeExpression(resolve(options.endDelay, ctx) || 0, ctx.index);
+        const iterations = resolve(options.iterations, ctx) || 1;
+        const iterationStart = resolve(options.iterationStart, ctx) || 0;
+        const direction = resolve(options.direction, ctx) || nil;
         const duration = options.to - options.from;
-        const fill = unwrap(options.fill, ctx) || 'none';
+        const fill = resolve(options.fill, ctx) || 'none';
         const totalTime = delay + ((iterations || 1) * duration) + endDelay;
 
         // note: don't unwrap easings so we don't break this later with custom easings

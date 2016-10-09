@@ -48,7 +48,7 @@ export const expand: Function = function (expandable: any): any {
     return result;
 };
 
-export function unwrap<T1, T2>(value: T1 | ja.Resolver<T1>, ctx: ja.CreateAnimationContext<T2>): T1 {
+export function resolve<T1, T2>(value: T1 | ja.Resolver<T1>, ctx: ja.CreateAnimationContext<T2>): T1 {
     if (!isFunction(value)) {
         return value as T1;
     }

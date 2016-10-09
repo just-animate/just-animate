@@ -46,13 +46,13 @@ exports.expand = function (expandable) {
     }
     return result;
 };
-function unwrap(value, ctx) {
+function resolve(value, ctx) {
     if (!type_1.isFunction(value)) {
         return value;
     }
     return value(ctx.target, ctx.index, ctx.targets);
 }
-exports.unwrap = unwrap;
+exports.resolve = resolve;
 function listProps(indexed) {
     var props = [];
     var len = indexed.length;

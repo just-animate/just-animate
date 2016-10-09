@@ -2,7 +2,7 @@ import { isDefined, isNumber, isArray } from '../../common/type';
 import { toCamelCase } from '../../common/strings';
 import { getEasingString } from '../core/easings';
 import { each, head, tail } from '../../common/lists';
-import { listProps, unwrap } from '../../common/objects';
+import { listProps, resolve } from '../../common/objects';
 
 
 import {
@@ -182,7 +182,7 @@ export function unwrapPropertiesInKeyframes(source: ja.ICssKeyframeOptions[], ta
             if (!isDefined(sourceValue)) {
                 continue;
             }
-            targetKeyframe[propertyName] = unwrap(sourceValue, ctx);
+            targetKeyframe[propertyName] = resolve(sourceValue, ctx);
         }
 
         normalizeProperties(targetKeyframe);
@@ -202,7 +202,7 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
         }
 
         // unwrap value (changes function into discrete value or array)                    
-        const val = unwrap(cssProps[prop], ctx);
+        const val = resolve(cssProps[prop], ctx);
 
         if (isArray(val)) {
             // if the value is an array, split up the offset automatically

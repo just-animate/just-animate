@@ -3150,7 +3150,7 @@ System.register("just-animate/common/math", ["just-animate/common/resources"], f
 System.register("just-animate/common/objects", ["just-animate/common/type"], function (exports_84, context_84) {
     "use strict";
     var __moduleName = context_84 && context_84.id;
-    function unwrap(value, ctx) {
+    function resolve(value, ctx) {
         if (!type_2.isFunction(value)) {
             return value;
         }
@@ -3170,7 +3170,7 @@ System.register("just-animate/common/objects", ["just-animate/common/type"], fun
         return props;
     }
     var type_2, extend, inherit, expand;
-    exports_84("unwrap", unwrap);
+    exports_84("resolve", resolve);
     exports_84("listProps", listProps);
     return {
         setters: [
@@ -4317,7 +4317,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 if (!type_7.isDefined(sourceValue)) {
                     continue;
                 }
-                targetKeyframe[propertyName] = objects_2.unwrap(sourceValue, ctx);
+                targetKeyframe[propertyName] = objects_2.resolve(sourceValue, ctx);
             }
             normalizeProperties(targetKeyframe);
             target.push(targetKeyframe);
@@ -4333,7 +4333,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 continue;
             }
             // unwrap value (changes function into discrete value or array)                    
-            var val = objects_2.unwrap(cssProps[prop], ctx);
+            var val = objects_2.resolve(cssProps[prop], ctx);
             if (type_7.isArray(val)) {
                 // if the value is an array, split up the offset automatically
                 var valAsArray = val;
@@ -4604,13 +4604,13 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plug
                 };
                 KeyframePlugin.prototype.handle = function (ctx) {
                     var options = ctx.options;
-                    var delay = units_2.resolveTimeExpression(objects_3.unwrap(options.delay, ctx) || 0, ctx.index);
-                    var endDelay = units_2.resolveTimeExpression(objects_3.unwrap(options.endDelay, ctx) || 0, ctx.index);
-                    var iterations = objects_3.unwrap(options.iterations, ctx) || 1;
-                    var iterationStart = objects_3.unwrap(options.iterationStart, ctx) || 0;
-                    var direction = objects_3.unwrap(options.direction, ctx) || resources_13.nil;
+                    var delay = units_2.resolveTimeExpression(objects_3.resolve(options.delay, ctx) || 0, ctx.index);
+                    var endDelay = units_2.resolveTimeExpression(objects_3.resolve(options.endDelay, ctx) || 0, ctx.index);
+                    var iterations = objects_3.resolve(options.iterations, ctx) || 1;
+                    var iterationStart = objects_3.resolve(options.iterationStart, ctx) || 0;
+                    var direction = objects_3.resolve(options.direction, ctx) || resources_13.nil;
                     var duration = options.to - options.from;
-                    var fill = objects_3.unwrap(options.fill, ctx) || 'none';
+                    var fill = objects_3.resolve(options.fill, ctx) || 'none';
                     var totalTime = delay + ((iterations || 1) * duration) + endDelay;
                     // note: don't unwrap easings so we don't break this later with custom easings
                     var easing = easings_3.getEasingString(options.easing);

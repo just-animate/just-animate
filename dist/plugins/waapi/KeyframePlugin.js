@@ -14,13 +14,13 @@ var KeyframePlugin = (function () {
     };
     KeyframePlugin.prototype.handle = function (ctx) {
         var options = ctx.options;
-        var delay = units_1.resolveTimeExpression(objects_1.unwrap(options.delay, ctx) || 0, ctx.index);
-        var endDelay = units_1.resolveTimeExpression(objects_1.unwrap(options.endDelay, ctx) || 0, ctx.index);
-        var iterations = objects_1.unwrap(options.iterations, ctx) || 1;
-        var iterationStart = objects_1.unwrap(options.iterationStart, ctx) || 0;
-        var direction = objects_1.unwrap(options.direction, ctx) || resources_1.nil;
+        var delay = units_1.resolveTimeExpression(objects_1.resolve(options.delay, ctx) || 0, ctx.index);
+        var endDelay = units_1.resolveTimeExpression(objects_1.resolve(options.endDelay, ctx) || 0, ctx.index);
+        var iterations = objects_1.resolve(options.iterations, ctx) || 1;
+        var iterationStart = objects_1.resolve(options.iterationStart, ctx) || 0;
+        var direction = objects_1.resolve(options.direction, ctx) || resources_1.nil;
         var duration = options.to - options.from;
-        var fill = objects_1.unwrap(options.fill, ctx) || 'none';
+        var fill = objects_1.resolve(options.fill, ctx) || 'none';
         var totalTime = delay + ((iterations || 1) * duration) + endDelay;
         // note: don't unwrap easings so we don't break this later with custom easings
         var easing = easings_1.getEasingString(options.easing);

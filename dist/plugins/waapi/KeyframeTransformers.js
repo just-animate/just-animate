@@ -132,7 +132,7 @@ function unwrapPropertiesInKeyframes(source, target, ctx) {
             if (!type_1.isDefined(sourceValue)) {
                 continue;
             }
-            targetKeyframe[propertyName] = objects_1.unwrap(sourceValue, ctx);
+            targetKeyframe[propertyName] = objects_1.resolve(sourceValue, ctx);
         }
         normalizeProperties(targetKeyframe);
         target.push(targetKeyframe);
@@ -149,7 +149,7 @@ function propsToKeyframes(css, keyframes, ctx) {
             continue;
         }
         // unwrap value (changes function into discrete value or array)                    
-        var val = objects_1.unwrap(cssProps[prop], ctx);
+        var val = objects_1.resolve(cssProps[prop], ctx);
         if (type_1.isArray(val)) {
             // if the value is an array, split up the offset automatically
             var valAsArray = val;

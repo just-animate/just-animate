@@ -166,7 +166,7 @@ var expand = function (expandable) {
     }
     return result;
 };
-function unwrap(value, ctx) {
+function resolve(value, ctx) {
     if (!isFunction(value)) {
         return value;
     }
@@ -1052,7 +1052,7 @@ function unwrapPropertiesInKeyframes(source, target, ctx) {
             if (!isDefined(sourceValue)) {
                 continue;
             }
-            targetKeyframe[propertyName] = unwrap(sourceValue, ctx);
+            targetKeyframe[propertyName] = resolve(sourceValue, ctx);
         }
         normalizeProperties(targetKeyframe);
         target.push(targetKeyframe);
@@ -1065,7 +1065,7 @@ function propsToKeyframes(css, keyframes, ctx) {
         if (!cssProps.hasOwnProperty(prop)) {
             continue;
         }
-        var val = unwrap(cssProps[prop], ctx);
+        var val = resolve(cssProps[prop], ctx);
         if (isArray(val)) {
             var valAsArray = val;
             var valLength = valAsArray.length;
@@ -1212,13 +1212,13 @@ var KeyframePlugin = (function () {
     };
     KeyframePlugin.prototype.handle = function (ctx) {
         var options = ctx.options;
-        var delay = resolveTimeExpression(unwrap(options.delay, ctx) || 0, ctx.index);
-        var endDelay = resolveTimeExpression(unwrap(options.endDelay, ctx) || 0, ctx.index);
-        var iterations = unwrap(options.iterations, ctx) || 1;
-        var iterationStart = unwrap(options.iterationStart, ctx) || 0;
-        var direction = unwrap(options.direction, ctx) || nil;
+        var delay = resolveTimeExpression(resolve(options.delay, ctx) || 0, ctx.index);
+        var endDelay = resolveTimeExpression(resolve(options.endDelay, ctx) || 0, ctx.index);
+        var iterations = resolve(options.iterations, ctx) || 1;
+        var iterationStart = resolve(options.iterationStart, ctx) || 0;
+        var direction = resolve(options.direction, ctx) || nil;
         var duration$$1 = options.to - options.from;
-        var fill = unwrap(options.fill, ctx) || 'none';
+        var fill = resolve(options.fill, ctx) || 'none';
         var totalTime = delay + ((iterations || 1) * duration$$1) + endDelay;
         var easing = getEasingString(options.easing);
         var timings = {
