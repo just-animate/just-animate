@@ -88,6 +88,16 @@ describe('easings', function() {
             assert.equal(easingFn(.999), 0);
             assert.equal(easingFn(1), 1);
         });
+
+        it('slowmo should return the same value', function () {
+            var slowmo = easings.getEasingFunction('cubic-bezier(0,1,1,0)');
+
+            assert.equal(0, slowmo(0));
+            assert.closeTo(.345, slowmo(.07), 0.001);
+            assert.equal(.5, slowmo(.5));
+            assert.closeTo(.655, slowmo(.93), 0.001);
+            assert.equal(1, slowmo(1));
+        });
     });
 
     describe('getEasingString()', function() {

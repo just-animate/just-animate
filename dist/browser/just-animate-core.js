@@ -331,7 +331,7 @@ function getEasingDef(easingString$$1) {
     }
     var matches = cssFunctionRegex.exec(easingString$$1);
     if (matches && matches.length) {
-        return matches.slice(1);
+        return [matches[1]].concat(matches[2].split(','));
     }
     return defaultEasing;
 }
