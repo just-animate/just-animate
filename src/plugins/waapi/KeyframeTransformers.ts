@@ -2,7 +2,7 @@ import { isDefined, isNumber, isArray } from '../../common/type';
 import { toCamelCase } from '../../common/strings';
 import { getEasingString } from '../core/easings';
 import { head, tail } from '../../common/lists';
-import { listProps, resolve } from '../../common/objects';
+import { listProps, resolve, deepCopyObject } from '../../common/objects';
 
 
 import {
@@ -96,7 +96,7 @@ export function initAnimator(timings: waapi.IEffectTiming, ctx: ja.CreateAnimati
         addTransition(targetKeyframes, target);
     }
 
-    spaceKeyframes(targetKeyframes);    
+    spaceKeyframes(targetKeyframes);
     arrangeKeyframes(targetKeyframes);
     fixPartialKeyframes(targetKeyframes);
 
@@ -116,7 +116,7 @@ export function addTransition(keyframes: waapi.IKeyframe[], target: HTMLElement)
 
     // create the first frame
     const firstFrame: waapi.IKeyframe = { offset: 0 };
-    keyframes.splice(0, 0, firstFrame);    
+    keyframes.splice(0, 0, firstFrame);
 
     properties.forEach((property: string) => {
         // skip offset property
@@ -144,24 +144,24 @@ export function expandOffsets(keyframes: ja.ICssKeyframeOptions[]): void {
     for (let i = len - 1; i > -1; --i) {
         const keyframe = keyframes[i];
 
-        if (isArray(keyframe.offset)) {
-            keyframes.splice(i, 1);
+        if (!isArray(keyframe.offset)) {
+            continue;
+        }
 
-            const offsets = keyframe.offset as number[];
-            const offsetLen = offsets.length;
-            for (let j = offsetLen - 1; j > -1; --j) {
-                const offsetAmount = offsets[j];
-                const newKeyframe: ja.ICssKeyframeOptions = {};
-                for (let prop in keyframe) {
-                    if (prop !== offsetString) {
-                        newKeyframe[prop] = keyframe[prop];
-                    }
-                }
-                newKeyframe.offset = offsetAmount;
-                keyframes.splice(i, 0, newKeyframe);
-            }
+        keyframes.splice(i, 1);
+
+        const offsets = keyframe.offset as number[];
+        const offsetLen = offsets.length;
+
+        for (let j = 0; j < offsetLen; j++) {
+            const newKeyframe = deepCopyObject(keyframe);
+            newKeyframe.offset = offsets[j];
+            keyframes.splice(i, 0, newKeyframe);
         }
     }
+    
+    // resort by offset    
+    keyframes.sort(keyframeOffsetComparer);
 }
 
 
@@ -225,7 +225,7 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             keyframe[prop] = val;
         }
     }
-    
+
     // reassemble as array
     for (let offset in keyframesByOffset) {
         const keyframe = keyframesByOffset[offset];
@@ -234,7 +234,7 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
     }
 
     // resort by offset    
-    keyframes.sort(keyframeOffsetComparer);    
+    keyframes.sort(keyframeOffsetComparer);
 }
 
 
@@ -302,7 +302,7 @@ export function arrangeKeyframes(keyframes: waapi.IKeyframe[]): void {
     let first: waapi.IKeyframe =
         head(keyframes, (k: waapi.IKeyframe) => k.offset === 0)
         || head(keyframes, (k: waapi.IKeyframe) => k.offset === nil);
-    
+
     if (first === nil) {
         first = {};
         keyframes.splice(0, 0, first);
@@ -324,7 +324,7 @@ export function arrangeKeyframes(keyframes: waapi.IKeyframe[]): void {
     }
 
     // sort by offset (should have all offsets assigned)
-    keyframes.sort(keyframeOffsetComparer);    
+    keyframes.sort(keyframeOffsetComparer);
 }
 
 /**

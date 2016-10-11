@@ -95,23 +95,20 @@ function expandOffsets(keyframes) {
     var len = keyframes.length;
     for (var i = len - 1; i > -1; --i) {
         var keyframe = keyframes[i];
-        if (type_1.isArray(keyframe.offset)) {
-            keyframes.splice(i, 1);
-            var offsets = keyframe.offset;
-            var offsetLen = offsets.length;
-            for (var j = offsetLen - 1; j > -1; --j) {
-                var offsetAmount = offsets[j];
-                var newKeyframe = {};
-                for (var prop in keyframe) {
-                    if (prop !== resources_1.offsetString) {
-                        newKeyframe[prop] = keyframe[prop];
-                    }
-                }
-                newKeyframe.offset = offsetAmount;
-                keyframes.splice(i, 0, newKeyframe);
-            }
+        if (!type_1.isArray(keyframe.offset)) {
+            continue;
+        }
+        keyframes.splice(i, 1);
+        var offsets = keyframe.offset;
+        var offsetLen = offsets.length;
+        for (var j = 0; j < offsetLen; j++) {
+            var newKeyframe = objects_1.deepCopyObject(keyframe);
+            newKeyframe.offset = offsets[j];
+            keyframes.splice(i, 0, newKeyframe);
         }
     }
+    // resort by offset    
+    keyframes.sort(keyframeOffsetComparer);
 }
 exports.expandOffsets = expandOffsets;
 function resolvePropertiesInKeyframes(source, target, ctx) {
