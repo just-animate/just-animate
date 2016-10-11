@@ -1,5 +1,6 @@
 node_modules
 .vscode
+.alm
 .idea
 .vs
 npm-debug.log*
