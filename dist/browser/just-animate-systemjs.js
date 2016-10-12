@@ -3114,8 +3114,16 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         // otherwise return empty    
         return [];
     }
+    function getEmSize(el) {
+        return parseFloat(getComputedStyle(el).fontSize);
+    }
+    function getRemSize() {
+        return parseFloat(getComputedStyle(document.body).fontSize);
+    }
     var lists_1, type_2, errors_1;
     exports_82("queryElements", queryElements);
+    exports_82("getEmSize", getEmSize);
+    exports_82("getRemSize", getRemSize);
     return {
         setters: [
             function (lists_1_1) {
@@ -3240,9 +3248,26 @@ System.register("just-animate/common/objects", ["just-animate/common/type", "jus
         }
     };
 });
-System.register("just-animate/common/strings", ["just-animate/common/type", "just-animate/common/lists", "just-animate/common/resources"], function (exports_85, context_85) {
+System.register("just-animate/common/random", [], function (exports_85, context_85) {
     "use strict";
     var __moduleName = context_85 && context_85.id;
+    function shuffle(choices) {
+        return choices[Math.floor(Math.random() * choices.length)];
+    }
+    function random(first, last) {
+        return Math.floor(first + (Math.random() * (last - first)));
+    }
+    exports_85("shuffle", shuffle);
+    exports_85("random", random);
+    return {
+        setters: [],
+        execute: function () {
+        }
+    };
+});
+System.register("just-animate/common/strings", ["just-animate/common/type", "just-animate/common/lists", "just-animate/common/resources"], function (exports_86, context_86) {
+    "use strict";
+    var __moduleName = context_86 && context_86.id;
     function camelCaseReplacer(match, p1, p2) {
         return p1 + p2.toUpperCase();
     }
@@ -3253,8 +3278,8 @@ System.register("just-animate/common/strings", ["just-animate/common/type", "jus
         return value.indexOf(pattern) === 0;
     }
     var type_4, lists_2, resources_5, cssFunction;
-    exports_85("toCamelCase", toCamelCase);
-    exports_85("startsWith", startsWith);
+    exports_86("toCamelCase", toCamelCase);
+    exports_86("startsWith", startsWith);
     return {
         setters: [
             function (type_4_1) {
@@ -3268,16 +3293,16 @@ System.register("just-animate/common/strings", ["just-animate/common/type", "jus
             }
         ],
         execute: function () {
-            exports_85("cssFunction", cssFunction = function () {
+            exports_86("cssFunction", cssFunction = function () {
                 var args = arguments;
                 return args[0] + "(" + lists_2.toArray(args, 1).join(',') + ")";
             });
         }
     };
 });
-System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function (exports_86, context_86) {
+System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function (exports_87, context_87) {
     "use strict";
-    var __moduleName = context_86 && context_86.id;
+    var __moduleName = context_87 && context_87.id;
     function Unit() {
         var self = this instanceof Unit ? this : Object.create(Unit.prototype);
         return self;
@@ -3339,11 +3364,11 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         return sharedUnit.value;
     }
     var type_5, resources_6, errors_2, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
-    exports_86("Unit", Unit);
-    exports_86("fromDistance", fromDistance);
-    exports_86("fromPercentage", fromPercentage);
-    exports_86("fromTime", fromTime);
-    exports_86("resolveTimeExpression", resolveTimeExpression);
+    exports_87("Unit", Unit);
+    exports_87("fromDistance", fromDistance);
+    exports_87("fromPercentage", fromPercentage);
+    exports_87("fromTime", fromTime);
+    exports_87("resolveTimeExpression", resolveTimeExpression);
     return {
         setters: [
             function (type_5_1) {
@@ -3357,27 +3382,27 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
             }
         ],
         execute: function () {
-            exports_86("stepNone", stepNone = '=');
-            exports_86("stepForward", stepForward = '+=');
-            exports_86("stepBackward", stepBackward = '-=');
-            exports_86("em", em = 'em');
-            exports_86("ex", ex = 'ex');
-            exports_86("ch", ch = 'ch');
-            exports_86("rem", rem = 'rem');
-            exports_86("vh", vh = 'vh');
-            exports_86("vw", vw = 'vw');
-            exports_86("vmin", vmin = 'vmin');
-            exports_86("vmax", vmax = 'vmax');
-            exports_86("px", px = 'px');
-            exports_86("mm", mm = 'mm');
-            exports_86("q", q = 'q');
-            exports_86("cm", cm = 'cm');
-            exports_86("inch", inch = 'in');
-            exports_86("point", point = 'pt');
-            exports_86("pica", pica = 'pc');
-            exports_86("percent", percent = '%');
-            exports_86("millisecond", millisecond = 'ms');
-            exports_86("second", second = 's');
+            exports_87("stepNone", stepNone = '=');
+            exports_87("stepForward", stepForward = '+=');
+            exports_87("stepBackward", stepBackward = '-=');
+            exports_87("em", em = 'em');
+            exports_87("ex", ex = 'ex');
+            exports_87("ch", ch = 'ch');
+            exports_87("rem", rem = 'rem');
+            exports_87("vh", vh = 'vh');
+            exports_87("vw", vw = 'vw');
+            exports_87("vmin", vmin = 'vmin');
+            exports_87("vmax", vmax = 'vmax');
+            exports_87("px", px = 'px');
+            exports_87("mm", mm = 'mm');
+            exports_87("q", q = 'q');
+            exports_87("cm", cm = 'cm');
+            exports_87("inch", inch = 'in');
+            exports_87("point", point = 'pt');
+            exports_87("pica", pica = 'pc');
+            exports_87("percent", percent = '%');
+            exports_87("millisecond", millisecond = 'ms');
+            exports_87("second", second = 's');
             Unit.prototype = {
                 step: resources_6.nil,
                 unit: resources_6.nil,
@@ -3397,19 +3422,19 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         }
     };
 });
-System.register("just-animate/common/utils", [], function (exports_87, context_87) {
+System.register("just-animate/common/utils", [], function (exports_88, context_88) {
     "use strict";
-    var __moduleName = context_87 && context_87.id;
+    var __moduleName = context_88 && context_88.id;
     var global, requestAnimationFrame, now, raf;
     return {
         setters: [],
         execute: function () {
             global = window;
             requestAnimationFrame = global.requestAnimationFrame;
-            exports_87("now", now = (performance && performance.now)
+            exports_88("now", now = (performance && performance.now)
                 ? function () { return performance.now(); }
                 : function () { return Date.now(); });
-            exports_87("raf", raf = (requestAnimationFrame)
+            exports_88("raf", raf = (requestAnimationFrame)
                 ? function (ctx, fn) {
                     requestAnimationFrame(function () { fn(ctx); });
                 }
@@ -3419,9 +3444,9 @@ System.register("just-animate/common/utils", [], function (exports_87, context_8
         }
     };
 });
-System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/type", "just-animate/common/errors", "just-animate/common/resources"], function (exports_88, context_88) {
+System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/type", "just-animate/common/errors", "just-animate/common/resources"], function (exports_89, context_89) {
     "use strict";
-    var __moduleName = context_88 && context_88.id;
+    var __moduleName = context_89 && context_89.id;
     function Dispatcher() {
         var self = this;
         self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);
@@ -3429,7 +3454,7 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
         return self;
     }
     var type_6, errors_3, resources_7;
-    exports_88("Dispatcher", Dispatcher);
+    exports_89("Dispatcher", Dispatcher);
     return {
         setters: [
             function (type_6_1) {
@@ -3484,9 +3509,9 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
         }
     };
 });
-System.register("just-animate/plugins/core/MixinService", ["just-animate/common/resources"], function (exports_89, context_89) {
+System.register("just-animate/plugins/core/MixinService", ["just-animate/common/resources"], function (exports_90, context_90) {
     "use strict";
-    var __moduleName = context_89 && context_89.id;
+    var __moduleName = context_90 && context_90.id;
     var resources_8, presets, MixinService;
     return {
         setters: [
@@ -3513,13 +3538,13 @@ System.register("just-animate/plugins/core/MixinService", ["just-animate/common/
                 };
                 return MixinService;
             }());
-            exports_89("MixinService", MixinService);
+            exports_90("MixinService", MixinService);
         }
     };
 });
-System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/resources", "just-animate/common/utils"], function (exports_90, context_90) {
+System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/resources", "just-animate/common/utils"], function (exports_91, context_91) {
     "use strict";
-    var __moduleName = context_90 && context_90.id;
+    var __moduleName = context_91 && context_91.id;
     function TimeLoop() {
         var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
         self.active = [];
@@ -3583,7 +3608,7 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
         }
     }
     var resources_9, utils_1;
-    exports_90("TimeLoop", TimeLoop);
+    exports_91("TimeLoop", TimeLoop);
     return {
         setters: [
             function (resources_9_1) {
@@ -3631,9 +3656,9 @@ System.register("just-animate/plugins/core/TimeLoop", ["just-animate/common/reso
         }
     };
 });
-System.register("just-animate/plugins/core/easings", ["just-animate/common/strings", "just-animate/common/resources"], function (exports_91, context_91) {
+System.register("just-animate/plugins/core/easings", ["just-animate/common/strings", "just-animate/common/resources"], function (exports_92, context_92) {
     "use strict";
-    var __moduleName = context_91 && context_91.id;
+    var __moduleName = context_92 && context_92.id;
     function getEasingString(easingString) {
         // if no function supplied return linear as cubic
         if (easingString) {
@@ -3708,10 +3733,10 @@ System.register("just-animate/plugins/core/easings", ["just-animate/common/strin
         return function (x) { return x >= 1 ? 1 : (p * ratio + x) - (p * ratio + x) % ratio; };
     }
     var strings_1, resources_10, SUBDIVISION_EPSILON, cssFunctionRegex, linearCubicBezier, stepAliases, easings, defaultEasing;
-    exports_91("getEasingString", getEasingString);
-    exports_91("getEasingFunction", getEasingFunction);
-    exports_91("cubic", cubic);
-    exports_91("steps", steps);
+    exports_92("getEasingString", getEasingString);
+    exports_92("getEasingFunction", getEasingFunction);
+    exports_92("cubic", cubic);
+    exports_92("steps", steps);
     return {
         setters: [
             function (strings_1_1) {
@@ -3767,9 +3792,9 @@ System.register("just-animate/plugins/core/easings", ["just-animate/common/strin
         }
     };
 });
-System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/easings", "just-animate/common/units", "just-animate/common/elements"], function (exports_92, context_92) {
+System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/easings", "just-animate/common/units", "just-animate/common/elements"], function (exports_93, context_93) {
     "use strict";
-    var __moduleName = context_92 && context_92.id;
+    var __moduleName = context_93 && context_93.id;
     var lists_3, objects_1, type_7, math_1, errors_4, resources_11, Dispatcher_1, easings_1, units_1, elements_2, animationPadding, unitOut, Animator;
     return {
         setters: [
@@ -4062,18 +4087,21 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                 };
                 return Animator;
             }());
-            exports_92("Animator", Animator);
+            exports_93("Animator", Animator);
         }
     };
 });
-System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function (exports_93, context_93) {
+System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-animate/common/random", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function (exports_94, context_94) {
     "use strict";
-    var __moduleName = context_93 && context_93.id;
-    var lists_4, Animator_1, TimeLoop_1, MixinService_1, JustAnimate;
+    var __moduleName = context_94 && context_94.id;
+    var lists_4, random_1, Animator_1, TimeLoop_1, MixinService_1, JustAnimate;
     return {
         setters: [
             function (lists_4_1) {
                 lists_4 = lists_4_1;
+            },
+            function (random_1_1) {
+                random_1 = random_1_1;
             },
             function (Animator_1_1) {
                 Animator_1 = Animator_1_1;
@@ -4088,6 +4116,12 @@ System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-
         execute: function () {
             JustAnimate = (function () {
                 function JustAnimate() {
+                    /**
+                     * List of supported easing functions
+                     *
+                     * @type {ja.EasingList}
+                     * @memberOf JustAnimate
+                     */
                     this.easings = {
                         ease: 'ease',
                         easeIn: 'easeIn',
@@ -4127,29 +4161,83 @@ System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-
                     self._timeLoop = TimeLoop_1.TimeLoop();
                     self.plugins = [];
                 }
+                /**
+                 * Register a list of mixins across all instances of JustAnimate
+                 *
+                 * @static
+                 * @param {ja.IAnimationMixin[]} animations
+                 *
+                 * @memberOf JustAnimate
+                 */
                 JustAnimate.inject = function (animations) {
                     var resolver = new MixinService_1.MixinService();
                     lists_4.each(animations, function (a) { return resolver.registerAnimation(a, true); });
                 };
+                /**
+                 * Returns a new timeline of animation(s) using the options provided
+                 *
+                 * @param {(ja.IAnimationOptions | ja.IAnimationOptions[])} options
+                 * @returns {ja.IAnimator}
+                 *
+                 * @memberOf JustAnimate
+                 */
                 JustAnimate.prototype.animate = function (options) {
                     return new Animator_1.Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
                 };
+                /**
+                 * Generates a random number between the first and last number (exclusive)
+                 *
+                 * @param {number} first number; start of range
+                 * @param {number} last number: end of range
+                 * @returns {number} at or between the first number until the last number
+                 *
+                 * @memberOf JustAnimate
+                 */
+                JustAnimate.prototype.random = function (first, last) {
+                    return random_1.random(first, last);
+                };
+                /**
+                 * Registers a mixin to this instance of JustAnimate.
+                 *
+                 * @param {ja.IAnimationMixin} preset
+                 *
+                 * @memberOf JustAnimate
+                 */
                 JustAnimate.prototype.register = function (preset) {
                     this._resolver.registerAnimation(preset, false);
                 };
+                /**
+                 * Returns one of the supplied values at random
+                 *
+                 * @template T
+                 * @param {T[]} choices from which to choose
+                 * @returns {T} a choice at random
+                 *
+                 * @memberOf JustAnimate
+                 */
+                JustAnimate.prototype.shuffle = function (choices) {
+                    return random_1.shuffle(choices);
+                };
+                /**
+                 * Registers a list of mixins across all instances of JustAnimate.  Same as register in a browser environment
+                 *
+                 * @param {ja.IAnimationMixin[]} animations
+                 *
+                 * @memberOf JustAnimate
+                 */
                 JustAnimate.prototype.inject = function (animations) {
                     var resolver = this._resolver;
                     lists_4.each(animations, function (a) { return resolver.registerAnimation(a, true); });
                 };
                 return JustAnimate;
             }());
-            exports_93("JustAnimate", JustAnimate);
+            exports_94("JustAnimate", JustAnimate);
         }
     };
 });
-System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function (exports_94, context_94) {
+System.register("just-animate/index", ["just-animate/animations", "just-animate/JustAnimate"], function (exports_95, context_95) {
     "use strict";
-    var __moduleName = context_94 && context_94.id;
+    var __moduleName = context_95 && context_95.id;
     var animations;
     return {
         setters: [
@@ -4157,19 +4245,19 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
                 animations = animations_1;
             },
             function (JustAnimate_1_1) {
-                exports_94({
+                exports_95({
                     "JustAnimate": JustAnimate_1_1["JustAnimate"]
                 });
             }
         ],
         execute: function () {
-            exports_94("animations", animations);
+            exports_95("animations", animations);
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/common/resources"], function (exports_95, context_95) {
+System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/common/resources"], function (exports_96, context_96) {
     "use strict";
-    var __moduleName = context_95 && context_95.id;
+    var __moduleName = context_96 && context_96.id;
     var resources_12, KeyframeAnimator;
     return {
         setters: [
@@ -4227,13 +4315,13 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
                 };
                 return KeyframeAnimator;
             }());
-            exports_95("KeyframeAnimator", KeyframeAnimator);
+            exports_96("KeyframeAnimator", KeyframeAnimator);
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/plugins/core/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/common/resources"], function (exports_96, context_96) {
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/plugins/core/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/common/resources"], function (exports_97, context_97) {
     "use strict";
-    var __moduleName = context_96 && context_96.id;
+    var __moduleName = context_97 && context_97.id;
     function initAnimator(timings, ctx) {
         // process css as either keyframes or calculate what those keyframes should be   
         var options = ctx.options;
@@ -4515,17 +4603,17 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         }
     }
     var type_8, strings_2, easings_2, lists_5, objects_2, resources_13, propertyAliases, transforms;
-    exports_96("initAnimator", initAnimator);
-    exports_96("addTransition", addTransition);
-    exports_96("expandOffsets", expandOffsets);
-    exports_96("resolvePropertiesInKeyframes", resolvePropertiesInKeyframes);
-    exports_96("propsToKeyframes", propsToKeyframes);
-    exports_96("spaceKeyframes", spaceKeyframes);
-    exports_96("arrangeKeyframes", arrangeKeyframes);
-    exports_96("fixPartialKeyframes", fixPartialKeyframes);
-    exports_96("keyframeOffsetComparer", keyframeOffsetComparer);
-    exports_96("transformPropertyComparer", transformPropertyComparer);
-    exports_96("normalizeProperties", normalizeProperties);
+    exports_97("initAnimator", initAnimator);
+    exports_97("addTransition", addTransition);
+    exports_97("expandOffsets", expandOffsets);
+    exports_97("resolvePropertiesInKeyframes", resolvePropertiesInKeyframes);
+    exports_97("propsToKeyframes", propsToKeyframes);
+    exports_97("spaceKeyframes", spaceKeyframes);
+    exports_97("arrangeKeyframes", arrangeKeyframes);
+    exports_97("fixPartialKeyframes", fixPartialKeyframes);
+    exports_97("keyframeOffsetComparer", keyframeOffsetComparer);
+    exports_97("transformPropertyComparer", transformPropertyComparer);
+    exports_97("normalizeProperties", normalizeProperties);
     return {
         setters: [
             function (type_8_1) {
@@ -4581,9 +4669,9 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/type", "just-animate/plugins/core/easings", "just-animate/common/objects", "just-animate/common/resources", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_97, context_97) {
+System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/type", "just-animate/plugins/core/easings", "just-animate/common/objects", "just-animate/common/resources", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_98, context_98) {
     "use strict";
-    var __moduleName = context_97 && context_97.id;
+    var __moduleName = context_98 && context_98.id;
     var KeyframeAnimator_1, units_2, type_9, easings_3, objects_3, resources_14, KeyframeTransformers_1, KeyframePlugin;
     return {
         setters: [
@@ -4647,7 +4735,7 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plug
                 };
                 return KeyframePlugin;
             }());
-            exports_97("KeyframePlugin", KeyframePlugin);
+            exports_98("KeyframePlugin", KeyframePlugin);
         }
     };
 });

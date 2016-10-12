@@ -142,6 +142,13 @@ function maxBy(items, predicate) {
     return max;
 }
 
+function shuffle(choices) {
+    return choices[Math.floor(Math.random() * choices.length)];
+}
+function random(first, last) {
+    return Math.floor(first + (Math.random() * (last - first)));
+}
+
 function deepCopyObject(origin, dest) {
     dest = dest || {};
     for (var prop in origin) {
@@ -889,8 +896,14 @@ var JustAnimate = (function () {
     JustAnimate.prototype.animate = function (options) {
         return new Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
     };
+    JustAnimate.prototype.random = function (first, last) {
+        return random(first, last);
+    };
     JustAnimate.prototype.register = function (preset) {
         this._resolver.registerAnimation(preset, false);
+    };
+    JustAnimate.prototype.shuffle = function (choices) {
+        return shuffle(choices);
     };
     JustAnimate.prototype.inject = function (animations) {
         var resolver = this._resolver;

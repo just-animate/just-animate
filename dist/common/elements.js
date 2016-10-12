@@ -41,3 +41,11 @@ function queryElements(source) {
     return [];
 }
 exports.queryElements = queryElements;
+function getEmSize(el) {
+    return parseFloat(getComputedStyle(el).fontSize);
+}
+exports.getEmSize = getEmSize;
+function getRemSize() {
+    return parseFloat(getComputedStyle(document.body).fontSize);
+}
+exports.getRemSize = getRemSize;
