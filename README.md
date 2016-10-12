@@ -21,8 +21,8 @@
 
  - Include the core script and (optionally) the animations script for ready to use animation presets.
   ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.0-beta.20160922a/just-animate-core.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.0-beta.20160922a/just-animate-animations.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.0-beta.20161011a/just-animate-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.0-beta.20161011a/just-animate-animations.min.js"></script>
   ```
  - That's it!
   
