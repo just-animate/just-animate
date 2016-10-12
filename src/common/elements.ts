@@ -41,3 +41,12 @@ export function queryElements(source: ja.AnimationTarget): Element[] {
     // otherwise return empty    
     return [];
 }
+
+export function getEmSize(el: HTMLElement): number {
+    return parseFloat(getComputedStyle(el).fontSize);
+}
+
+
+export function getRemSize(): number {
+    return parseFloat(getComputedStyle(document.body).fontSize);
+}
