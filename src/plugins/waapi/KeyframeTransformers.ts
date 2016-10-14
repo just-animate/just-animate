@@ -2,8 +2,9 @@ import { isDefined, isNumber, isArray } from '../../common/type';
 import { toCamelCase } from '../../common/strings';
 import { getEasingString } from '../core/easings';
 import { head, tail } from '../../common/lists';
+import { fromAnyUnit, Unit } from '../../common/units';
 import { listProps, resolve, deepCopyObject } from '../../common/objects';
-
+import { unsupported } from '../../common/errors';
 
 import {
     animate,
@@ -69,8 +70,6 @@ const transforms = [
     scale,
     scale3d
 ];
-
-
 
 export function initAnimator(timings: waapi.IEffectTiming, ctx: ja.CreateAnimationContext<HTMLElement>): waapi.IAnimation {
     // process css as either keyframes or calculate what those keyframes should be   
@@ -207,7 +206,10 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             const valLength = valAsArray.length;
 
             for (let i = 0; i < valLength; i++) {
-                const offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                const offset = i === 0 ? 0
+                    : i === valLength - 1 ? 1
+                        : i / (valLength - 1.0);
+                
                 let keyframe = keyframesByOffset[offset];
                 if (!keyframe) {
                     keyframe = {};
@@ -223,6 +225,76 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
                 keyframesByOffset[1] = keyframe;
             }
             keyframe[prop] = val;
+        }
+    }
+
+    // get list of transform properties in object
+    const includedTransforms: string[] = Object
+        .keys(cssProps)
+        .filter((c: string) => transforms.indexOf(c) !== -1);
+
+    const offsets = Object
+        .keys(keyframesByOffset)
+        .map((s: ja.ICssKeyframeOptions) => Number(s))
+        .sort();
+    
+    const unit = Unit();
+
+    // if prop not present calculate each transform property in list
+    // a keyframe at offset 1 should be guaranteed for each property, so skip that one
+    for (let i = offsets.length - 2; i > -1; --i) {
+        const offset = offsets[i];
+        const keyframe = keyframesByOffset[offset];
+        
+        // foreach keyframe if has transform property
+        for (let transform of includedTransforms) {
+            if (isDefined(keyframe[transform])) {
+                continue;
+            }
+            // get the next keyframe (should always be one ahead with a good value)
+            const endOffset = offsets[i + 1];
+            const endKeyframe = keyframesByOffset[endOffset];
+
+            // parse out unit values of next keyframe       
+            fromAnyUnit(endKeyframe[transform], unit);
+            const endValue = unit.value;
+            const endUnitType = unit.unit;
+
+            // search downward for the previous value or use defaults  
+            let startIndex = 0;
+            let startValue = endValue;
+            let startOffset = 0;
+            for (let j = i - 1; j > -1; --j) {
+                const offset1 = offsets[j];
+                const keyframe1 = keyframesByOffset[offset1];
+                if (isDefined(keyframe1[transform])) {
+                    fromAnyUnit(keyframe1[transform], unit);
+                    startValue = unit.value;
+                    startIndex = j;
+                    startOffset = offsets[j]; 
+
+                    if (startValue !== 0 && unit.unit !== endUnitType) {
+                        throw unsupported('Mixed transform property units');
+                    }
+                    break;
+                }
+            }
+      
+            // iterate forward
+            for (let j = startIndex; j < i + 1; j++) {
+                const currentOffset = offsets[j];
+                const currentKeyframe = keyframesByOffset[currentOffset];
+
+                // calculate offset delta (how much animation progress to apply)
+                const offsetDelta = (currentOffset - startOffset) / (endOffset - startOffset);
+                const currentValue = startValue + (endValue - startValue) * offsetDelta;
+
+                currentKeyframe[transform] = isDefined(endUnitType) ? currentValue + endUnitType : currentValue;
+
+                // move reference point forward
+                startOffset = currentOffset;
+                startValue = currentValue;
+            }
         }
     }
 

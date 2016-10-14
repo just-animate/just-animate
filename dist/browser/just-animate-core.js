@@ -51,6 +51,7 @@ var camelCaseRegex = /([a-z])[- ]([a-z])/ig;
 var distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/;
 var percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/;
 var timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
+var genericUnitExpression = /([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}([a-z%]+){0,1}/i;
 
 var ostring = Object.prototype.toString;
 function isArray(a) {
@@ -209,6 +210,9 @@ function inRange(val, min, max) {
 
 function invalidArg(name) {
     return new Error("Bad: " + name);
+}
+function unsupported(msg) {
+    return new Error("Unsupported: " + msg);
 }
 
 function Dispatcher() {
@@ -423,6 +427,19 @@ Unit.prototype = {
     }
 };
 var sharedUnit = Unit();
+function fromAnyUnit(val, unit) {
+    if (!isDefined(val)) {
+        return nil;
+    }
+    var returnUnit = unit || Unit();
+    if (isNumber(val)) {
+        return returnUnit.values(Number(val), undefined, stepNone);
+    }
+    var match = genericUnitExpression.exec(val);
+    var unitType = match[2];
+    var value = parseFloat(match[1]);
+    return returnUnit.values(value, unitType, stepNone);
+}
 
 
 function fromTime(val, unit) {
@@ -1082,7 +1099,9 @@ function propsToKeyframes(css, keyframes, ctx) {
             var valAsArray = val;
             var valLength = valAsArray.length;
             for (var i = 0; i < valLength; i++) {
-                var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                var offset = i === 0 ? 0
+                    : i === valLength - 1 ? 1
+                        : i / (valLength - 1.0);
                 var keyframe = keyframesByOffset[offset];
                 if (!keyframe) {
                     keyframe = {};
@@ -1098,6 +1117,55 @@ function propsToKeyframes(css, keyframes, ctx) {
                 keyframesByOffset[1] = keyframe;
             }
             keyframe[prop] = val;
+        }
+    }
+    var includedTransforms = Object
+        .keys(cssProps)
+        .filter(function (c) { return transforms.indexOf(c) !== -1; });
+    var offsets = Object
+        .keys(keyframesByOffset)
+        .map(function (s) { return Number(s); })
+        .sort();
+    var unit = Unit();
+    for (var i = offsets.length - 2; i > -1; --i) {
+        var offset = offsets[i];
+        var keyframe = keyframesByOffset[offset];
+        for (var _i = 0, includedTransforms_1 = includedTransforms; _i < includedTransforms_1.length; _i++) {
+            var transform_1 = includedTransforms_1[_i];
+            if (isDefined(keyframe[transform_1])) {
+                continue;
+            }
+            var endOffset = offsets[i + 1];
+            var endKeyframe = keyframesByOffset[endOffset];
+            fromAnyUnit(endKeyframe[transform_1], unit);
+            var endValue = unit.value;
+            var endUnitType = unit.unit;
+            var startIndex = 0;
+            var startValue = endValue;
+            var startOffset = 0;
+            for (var j = i - 1; j > -1; --j) {
+                var offset1 = offsets[j];
+                var keyframe1 = keyframesByOffset[offset1];
+                if (isDefined(keyframe1[transform_1])) {
+                    fromAnyUnit(keyframe1[transform_1], unit);
+                    startValue = unit.value;
+                    startIndex = j;
+                    startOffset = offsets[j];
+                    if (startValue !== 0 && unit.unit !== endUnitType) {
+                        throw unsupported('Mixed transform property units');
+                    }
+                    break;
+                }
+            }
+            for (var j = startIndex; j < i + 1; j++) {
+                var currentOffset = offsets[j];
+                var currentKeyframe = keyframesByOffset[currentOffset];
+                var offsetDelta = (currentOffset - startOffset) / (endOffset - startOffset);
+                var currentValue = startValue + (endValue - startValue) * offsetDelta;
+                currentKeyframe[transform_1] = isDefined(endUnitType) ? currentValue + endUnitType : currentValue;
+                startOffset = currentOffset;
+                startValue = currentValue;
+            }
         }
     }
     for (var offset in keyframesByOffset) {

@@ -49,3 +49,4 @@ exports.camelCaseRegex = /([a-z])[- ]([a-z])/ig;
 exports.distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/;
 exports.percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/;
 exports.timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
+exports.genericUnitExpression = /([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}([a-z%]+){0,1}/i;

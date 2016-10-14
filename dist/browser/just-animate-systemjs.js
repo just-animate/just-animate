@@ -2749,7 +2749,7 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
 System.register("just-animate/common/resources", [], function (exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
-    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, steps, transform, translate, translate3d, translateX, translateY, translateZ, update, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression;
+    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, steps, transform, translate, translate3d, translateX, translateY, translateZ, update, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression, genericUnitExpression;
     return {
         setters: [],
         execute: function () {
@@ -2803,6 +2803,7 @@ System.register("just-animate/common/resources", [], function (exports_78, conte
             exports_78("distanceExpression", distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/);
             exports_78("percentageExpression", percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/);
             exports_78("timeExpression", timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/);
+            exports_78("genericUnitExpression", genericUnitExpression = /([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}([a-z%]+){0,1}/i);
         }
     };
 });
@@ -3066,7 +3067,11 @@ System.register("just-animate/common/errors", [], function (exports_81, context_
     function invalidArg(name) {
         return new Error("Bad: " + name);
     }
+    function unsupported(msg) {
+        return new Error("Unsupported: " + msg);
+    }
     exports_81("invalidArg", invalidArg);
+    exports_81("unsupported", unsupported);
     return {
         setters: [],
         execute: function () {
@@ -3307,6 +3312,19 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
         var self = this instanceof Unit ? this : Object.create(Unit.prototype);
         return self;
     }
+    function fromAnyUnit(val, unit) {
+        if (!type_5.isDefined(val)) {
+            return resources_6.nil;
+        }
+        var returnUnit = unit || Unit();
+        if (type_5.isNumber(val)) {
+            return returnUnit.values(Number(val), undefined, stepNone);
+        }
+        var match = resources_6.genericUnitExpression.exec(val);
+        var unitType = match[2];
+        var value = parseFloat(match[1]);
+        return returnUnit.values(value, unitType, stepNone);
+    }
     function fromDistance(val, unit) {
         if (!type_5.isDefined(val)) {
             return resources_6.nil;
@@ -3365,6 +3383,7 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
     }
     var type_5, resources_6, errors_2, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
     exports_87("Unit", Unit);
+    exports_87("fromAnyUnit", fromAnyUnit);
     exports_87("fromDistance", fromDistance);
     exports_87("fromPercentage", fromPercentage);
     exports_87("fromTime", fromTime);
@@ -4319,7 +4338,7 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/plugins/core/easings", "just-animate/common/lists", "just-animate/common/objects", "just-animate/common/resources"], function (exports_97, context_97) {
+System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animate/common/type", "just-animate/common/strings", "just-animate/plugins/core/easings", "just-animate/common/lists", "just-animate/common/units", "just-animate/common/objects", "just-animate/common/errors", "just-animate/common/resources"], function (exports_97, context_97) {
     "use strict";
     var __moduleName = context_97 && context_97.id;
     function initAnimator(timings, ctx) {
@@ -4430,7 +4449,9 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 var valAsArray = val;
                 var valLength = valAsArray.length;
                 for (var i = 0; i < valLength; i++) {
-                    var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                    var offset = i === 0 ? 0
+                        : i === valLength - 1 ? 1
+                            : i / (valLength - 1.0);
                     var keyframe = keyframesByOffset[offset];
                     if (!keyframe) {
                         keyframe = {};
@@ -4447,6 +4468,65 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                     keyframesByOffset[1] = keyframe;
                 }
                 keyframe[prop] = val;
+            }
+        }
+        // get list of transform properties in object
+        var includedTransforms = Object
+            .keys(cssProps)
+            .filter(function (c) { return transforms.indexOf(c) !== -1; });
+        var offsets = Object
+            .keys(keyframesByOffset)
+            .map(function (s) { return Number(s); })
+            .sort();
+        var unit = units_2.Unit();
+        // if prop not present calculate each transform property in list
+        // a keyframe at offset 1 should be guaranteed for each property, so skip that one
+        for (var i = offsets.length - 2; i > -1; --i) {
+            var offset = offsets[i];
+            var keyframe = keyframesByOffset[offset];
+            // foreach keyframe if has transform property
+            for (var _i = 0, includedTransforms_1 = includedTransforms; _i < includedTransforms_1.length; _i++) {
+                var transform_1 = includedTransforms_1[_i];
+                if (type_8.isDefined(keyframe[transform_1])) {
+                    continue;
+                }
+                // get the next keyframe (should always be one ahead with a good value)
+                var endOffset = offsets[i + 1];
+                var endKeyframe = keyframesByOffset[endOffset];
+                // parse out unit values of next keyframe       
+                units_2.fromAnyUnit(endKeyframe[transform_1], unit);
+                var endValue = unit.value;
+                var endUnitType = unit.unit;
+                // search downward for the previous value or use defaults  
+                var startIndex = 0;
+                var startValue = endValue;
+                var startOffset = 0;
+                for (var j = i - 1; j > -1; --j) {
+                    var offset1 = offsets[j];
+                    var keyframe1 = keyframesByOffset[offset1];
+                    if (type_8.isDefined(keyframe1[transform_1])) {
+                        units_2.fromAnyUnit(keyframe1[transform_1], unit);
+                        startValue = unit.value;
+                        startIndex = j;
+                        startOffset = offsets[j];
+                        if (startValue !== 0 && unit.unit !== endUnitType) {
+                            throw errors_5.unsupported('Mixed transform property units');
+                        }
+                        break;
+                    }
+                }
+                // iterate forward
+                for (var j = startIndex; j < i + 1; j++) {
+                    var currentOffset = offsets[j];
+                    var currentKeyframe = keyframesByOffset[currentOffset];
+                    // calculate offset delta (how much animation progress to apply)
+                    var offsetDelta = (currentOffset - startOffset) / (endOffset - startOffset);
+                    var currentValue = startValue + (endValue - startValue) * offsetDelta;
+                    currentKeyframe[transform_1] = type_8.isDefined(endUnitType) ? currentValue + endUnitType : currentValue;
+                    // move reference point forward
+                    startOffset = currentOffset;
+                    startValue = currentValue;
+                }
             }
         }
         // reassemble as array
@@ -4602,7 +4682,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 .reduce(function (c, n) { return c + (" " + n[0] + "(" + n[1] + ")"); }, '');
         }
     }
-    var type_8, strings_2, easings_2, lists_5, objects_2, resources_13, propertyAliases, transforms;
+    var type_8, strings_2, easings_2, lists_5, units_2, objects_2, errors_5, resources_13, propertyAliases, transforms;
     exports_97("initAnimator", initAnimator);
     exports_97("addTransition", addTransition);
     exports_97("expandOffsets", expandOffsets);
@@ -4628,8 +4708,14 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             function (lists_5_1) {
                 lists_5 = lists_5_1;
             },
+            function (units_2_1) {
+                units_2 = units_2_1;
+            },
             function (objects_2_1) {
                 objects_2 = objects_2_1;
+            },
+            function (errors_5_1) {
+                errors_5 = errors_5_1;
             },
             function (resources_13_1) {
                 resources_13 = resources_13_1;
@@ -4672,14 +4758,14 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
 System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/type", "just-animate/plugins/core/easings", "just-animate/common/objects", "just-animate/common/resources", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_98, context_98) {
     "use strict";
     var __moduleName = context_98 && context_98.id;
-    var KeyframeAnimator_1, units_2, type_9, easings_3, objects_3, resources_14, KeyframeTransformers_1, KeyframePlugin;
+    var KeyframeAnimator_1, units_3, type_9, easings_3, objects_3, resources_14, KeyframeTransformers_1, KeyframePlugin;
     return {
         setters: [
             function (KeyframeAnimator_1_1) {
                 KeyframeAnimator_1 = KeyframeAnimator_1_1;
             },
-            function (units_2_1) {
-                units_2 = units_2_1;
+            function (units_3_1) {
+                units_3 = units_3_1;
             },
             function (type_9_1) {
                 type_9 = type_9_1;
@@ -4706,8 +4792,8 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plug
                 };
                 KeyframePlugin.prototype.handle = function (ctx) {
                     var options = ctx.options;
-                    var delay = units_2.resolveTimeExpression(objects_3.resolve(options.delay, ctx) || 0, ctx.index);
-                    var endDelay = units_2.resolveTimeExpression(objects_3.resolve(options.endDelay, ctx) || 0, ctx.index);
+                    var delay = units_3.resolveTimeExpression(objects_3.resolve(options.delay, ctx) || 0, ctx.index);
+                    var endDelay = units_3.resolveTimeExpression(objects_3.resolve(options.endDelay, ctx) || 0, ctx.index);
                     var iterations = objects_3.resolve(options.iterations, ctx) || 1;
                     var iterationStart = objects_3.resolve(options.iterationStart, ctx) || 0;
                     var direction = objects_3.resolve(options.direction, ctx) || resources_14.nil;

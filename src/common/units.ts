@@ -1,5 +1,5 @@
 import { isDefined, isNumber } from './type';
-import { distanceExpression, percentageExpression, timeExpression, nil } from './resources';
+import { distanceExpression, genericUnitExpression, percentageExpression, timeExpression, nil } from './resources';
 import { invalidArg } from './errors';
 
 export const stepNone: string = '=';
@@ -56,6 +56,23 @@ Unit.prototype = {
 
 const sharedUnit = Unit();
 
+
+export function fromAnyUnit(val: string | number, unit?: IUnit): IUnit {
+    if (!isDefined(val)) {
+        return nil;
+    }
+
+    const returnUnit = unit || Unit();    
+    if (isNumber(val)) {
+        return returnUnit.values(Number(val), undefined, stepNone);
+    }
+
+    const match = genericUnitExpression.exec(val as string);
+    const unitType = match[2];
+    const value = parseFloat(match[1]);
+
+    return returnUnit.values(value, unitType, stepNone);
+}
 
 export function fromDistance(val: string | number, unit?: IUnit): IUnit {
     if (!isDefined(val)) {

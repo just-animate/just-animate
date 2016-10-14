@@ -51,3 +51,4 @@ export const camelCaseRegex = /([a-z])[- ]([a-z])/ig;
 export const distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/;
 export const percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/;
 export const timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
+export const genericUnitExpression = /([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}([a-z%]+){0,1}/i;

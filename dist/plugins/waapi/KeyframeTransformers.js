@@ -3,7 +3,9 @@ var type_1 = require("../../common/type");
 var strings_1 = require("../../common/strings");
 var easings_1 = require("../core/easings");
 var lists_1 = require("../../common/lists");
+var units_1 = require("../../common/units");
 var objects_1 = require("../../common/objects");
+var errors_1 = require("../../common/errors");
 var resources_1 = require("../../common/resources");
 var propertyAliases = {
     x: resources_1.translateX,
@@ -147,7 +149,9 @@ function propsToKeyframes(css, keyframes, ctx) {
             var valAsArray = val;
             var valLength = valAsArray.length;
             for (var i = 0; i < valLength; i++) {
-                var offset = i === 0 ? 0 : i === valLength - 1 ? 1 : i / (valLength - 1.0);
+                var offset = i === 0 ? 0
+                    : i === valLength - 1 ? 1
+                        : i / (valLength - 1.0);
                 var keyframe = keyframesByOffset[offset];
                 if (!keyframe) {
                     keyframe = {};
@@ -164,6 +168,65 @@ function propsToKeyframes(css, keyframes, ctx) {
                 keyframesByOffset[1] = keyframe;
             }
             keyframe[prop] = val;
+        }
+    }
+    // get list of transform properties in object
+    var includedTransforms = Object
+        .keys(cssProps)
+        .filter(function (c) { return transforms.indexOf(c) !== -1; });
+    var offsets = Object
+        .keys(keyframesByOffset)
+        .map(function (s) { return Number(s); })
+        .sort();
+    var unit = units_1.Unit();
+    // if prop not present calculate each transform property in list
+    // a keyframe at offset 1 should be guaranteed for each property, so skip that one
+    for (var i = offsets.length - 2; i > -1; --i) {
+        var offset = offsets[i];
+        var keyframe = keyframesByOffset[offset];
+        // foreach keyframe if has transform property
+        for (var _i = 0, includedTransforms_1 = includedTransforms; _i < includedTransforms_1.length; _i++) {
+            var transform_1 = includedTransforms_1[_i];
+            if (type_1.isDefined(keyframe[transform_1])) {
+                continue;
+            }
+            // get the next keyframe (should always be one ahead with a good value)
+            var endOffset = offsets[i + 1];
+            var endKeyframe = keyframesByOffset[endOffset];
+            // parse out unit values of next keyframe       
+            units_1.fromAnyUnit(endKeyframe[transform_1], unit);
+            var endValue = unit.value;
+            var endUnitType = unit.unit;
+            // search downward for the previous value or use defaults  
+            var startIndex = 0;
+            var startValue = endValue;
+            var startOffset = 0;
+            for (var j = i - 1; j > -1; --j) {
+                var offset1 = offsets[j];
+                var keyframe1 = keyframesByOffset[offset1];
+                if (type_1.isDefined(keyframe1[transform_1])) {
+                    units_1.fromAnyUnit(keyframe1[transform_1], unit);
+                    startValue = unit.value;
+                    startIndex = j;
+                    startOffset = offsets[j];
+                    if (startValue !== 0 && unit.unit !== endUnitType) {
+                        throw errors_1.unsupported('Mixed transform property units');
+                    }
+                    break;
+                }
+            }
+            // iterate forward
+            for (var j = startIndex; j < i + 1; j++) {
+                var currentOffset = offsets[j];
+                var currentKeyframe = keyframesByOffset[currentOffset];
+                // calculate offset delta (how much animation progress to apply)
+                var offsetDelta = (currentOffset - startOffset) / (endOffset - startOffset);
+                var currentValue = startValue + (endValue - startValue) * offsetDelta;
+                currentKeyframe[transform_1] = type_1.isDefined(endUnitType) ? currentValue + endUnitType : currentValue;
+                // move reference point forward
+                startOffset = currentOffset;
+                startValue = currentValue;
+            }
         }
     }
     // reassemble as array

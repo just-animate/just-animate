@@ -44,6 +44,20 @@ Unit.prototype = {
     }
 };
 var sharedUnit = Unit();
+function fromAnyUnit(val, unit) {
+    if (!type_1.isDefined(val)) {
+        return resources_1.nil;
+    }
+    var returnUnit = unit || Unit();
+    if (type_1.isNumber(val)) {
+        return returnUnit.values(Number(val), undefined, exports.stepNone);
+    }
+    var match = resources_1.genericUnitExpression.exec(val);
+    var unitType = match[2];
+    var value = parseFloat(match[1]);
+    return returnUnit.values(value, unitType, exports.stepNone);
+}
+exports.fromAnyUnit = fromAnyUnit;
 function fromDistance(val, unit) {
     if (!type_1.isDefined(val)) {
         return resources_1.nil;
