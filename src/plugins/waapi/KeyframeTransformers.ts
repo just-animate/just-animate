@@ -264,6 +264,7 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             let startIndex = 0;
             let startValue = endValue;
             let startOffset = 0;
+            let startUnit = nil;
             for (let j = i - 1; j > -1; --j) {
                 const offset1 = offsets[j];
                 const keyframe1 = keyframesByOffset[offset1];
@@ -288,8 +289,13 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
                 // calculate offset delta (how much animation progress to apply)
                 const offsetDelta = (currentOffset - startOffset) / (endOffset - startOffset);
                 const currentValue = startValue + (endValue - startValue) * offsetDelta;
+                const currentValueWithUnit = isDefined(endUnitType)
+                    ? currentValue + endUnitType
+                    : isDefined(startUnit)
+                        ? currentValue + startUnit
+                        : currentValue;
 
-                currentKeyframe[transform] = isDefined(endUnitType) ? currentValue + endUnitType : currentValue;
+                currentKeyframe[transform] = currentValueWithUnit;
 
                 // move reference point forward
                 startOffset = currentOffset;

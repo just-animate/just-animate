@@ -201,6 +201,7 @@ function propsToKeyframes(css, keyframes, ctx) {
             var startIndex = 0;
             var startValue = endValue;
             var startOffset = 0;
+            var startUnit = resources_1.nil;
             for (var j = i - 1; j > -1; --j) {
                 var offset1 = offsets[j];
                 var keyframe1 = keyframesByOffset[offset1];
@@ -222,7 +223,12 @@ function propsToKeyframes(css, keyframes, ctx) {
                 // calculate offset delta (how much animation progress to apply)
                 var offsetDelta = (currentOffset - startOffset) / (endOffset - startOffset);
                 var currentValue = startValue + (endValue - startValue) * offsetDelta;
-                currentKeyframe[transform_1] = type_1.isDefined(endUnitType) ? currentValue + endUnitType : currentValue;
+                var currentValueWithUnit = type_1.isDefined(endUnitType)
+                    ? currentValue + endUnitType
+                    : type_1.isDefined(startUnit)
+                        ? currentValue + startUnit
+                        : currentValue;
+                currentKeyframe[transform_1] = currentValueWithUnit;
                 // move reference point forward
                 startOffset = currentOffset;
                 startValue = currentValue;

@@ -1143,6 +1143,7 @@ function propsToKeyframes(css, keyframes, ctx) {
             var startIndex = 0;
             var startValue = endValue;
             var startOffset = 0;
+            var startUnit = nil;
             for (var j = i - 1; j > -1; --j) {
                 var offset1 = offsets[j];
                 var keyframe1 = keyframesByOffset[offset1];
@@ -1162,7 +1163,12 @@ function propsToKeyframes(css, keyframes, ctx) {
                 var currentKeyframe = keyframesByOffset[currentOffset];
                 var offsetDelta = (currentOffset - startOffset) / (endOffset - startOffset);
                 var currentValue = startValue + (endValue - startValue) * offsetDelta;
-                currentKeyframe[transform_1] = isDefined(endUnitType) ? currentValue + endUnitType : currentValue;
+                var currentValueWithUnit = isDefined(endUnitType)
+                    ? currentValue + endUnitType
+                    : isDefined(startUnit)
+                        ? currentValue + startUnit
+                        : currentValue;
+                currentKeyframe[transform_1] = currentValueWithUnit;
                 startOffset = currentOffset;
                 startValue = currentValue;
             }
