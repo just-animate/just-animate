@@ -265,20 +265,22 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             let startValue = endValue;
             let startOffset = 0;
             let startUnit = nil;
+
             for (let j = i - 1; j > -1; --j) {
                 const offset1 = offsets[j];
                 const keyframe1 = keyframesByOffset[offset1];
                 if (isDefined(keyframe1[transform])) {
                     fromAnyUnit(keyframe1[transform], unit);
                     startValue = unit.value;
+                    startUnit = unit.unit;
                     startIndex = j;
                     startOffset = offsets[j]; 
-
-                    if (startValue !== 0 && unit.unit !== endUnitType) {
-                        throw unsupported('Mixed transform property units');
-                    }
                     break;
                 }
+            }
+
+            if (startValue !== 0 && isDefined(startUnit) && isDefined(endUnitType) && startUnit !== endUnitType) {
+                throw unsupported('Mixed transform property units');
             }
       
             // iterate forward

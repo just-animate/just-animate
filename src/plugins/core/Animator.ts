@@ -1,4 +1,4 @@
-import { chain, each, maxBy } from '../../common/lists';
+import { chain, maxBy } from '../../common/lists';
 import { deepCopyObject, inherit } from '../../common/objects';
 import { isArray, isDefined } from '../../common/type';
 import { inRange } from '../../common/math';
@@ -62,7 +62,9 @@ export class Animator implements ja.IAnimator {
     public animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator {
         const self = this;
         if (isArray(options)) {
-            each(options as ja.IAnimationOptions[], (e: ja.IAnimationOptions) => self._addEvent(e));
+            for (let e of options as ja.IAnimationOptions[]) {
+                self._addEvent(e);
+            }
         } else {
             self._addEvent(options as ja.IAnimationOptions);
         }
@@ -144,8 +146,7 @@ export class Animator implements ja.IAnimator {
 
     private _recalculate(): void {
         const self = this;
-        const endsAt = maxBy(self._events, (e: ja.ITimelineEvent) => e.startTimeMs + e.animator.totalDuration);
-        self._duration = endsAt;
+        self._duration =  maxBy(self._events, (e: ja.ITimelineEvent) => e.startTimeMs + e.animator.totalDuration);
     }
 
     private _addEvent(options: ja.IAnimationOptions): void {
@@ -171,16 +172,16 @@ export class Animator implements ja.IAnimator {
 
         // set from and to relative to existing duration    
         fromTime(event.from || 0, unitOut);
-        event.from = unitOut.value + this._duration;
+        event.from = unitOut.value + self._duration;
 
         fromTime(event.to || 0, unitOut);
-        event.to = unitOut.value + this._duration;
+        event.to = unitOut.value + self._duration;
 
         // set easing to linear by default     
         const easingFn = getEasingFunction(event.easing);
         event.easing = getEasingString(event.easing);
 
-        each(this._plugins, (plugin: ja.IPlugin) => {
+        for (let plugin of self._plugins) {
             if (plugin.canHandle(event)) {
                 const targets = queryElements(event.targets) as HTMLElement[];
 
@@ -204,24 +205,30 @@ export class Animator implements ja.IAnimator {
                     });
                 }
             }
-        });
+        }
     }
     private _onCancel(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'idle';
-        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.playState('idle'); });
+        for (let evt of self._events) {
+            evt.animator.playState('idle');
+        }
     }
     private _onFinish(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'finished';
-        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.playState('finished'); });
+        for (let evt of self._events) {
+            evt.animator.playState('finished');
+        }
     }
     private _onPause(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._playState = 'paused';
-        each(self._events, (evt: ja.ITimelineEvent) => { evt.animator.playState('paused'); });
+        for (let evt of self._events) {
+            evt.animator.playState('paused');
+        }
     }
     private _onTick(delta: number, runningTime: number): void {
         const self = this;
@@ -270,17 +277,19 @@ export class Animator implements ja.IAnimator {
         }
 
         // start animations if should be active and currently aren't   
-        const events = self._events;
-        const eventLength = events.length;
-        for (let i = 0; i < eventLength; i++) {
-            const evt = events[i];
+        for (let evt of self._events) {
             const startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             const endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
             const shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
 
             if (shouldBeActive) {
                 const animator = evt.animator;
-                if (animator.playState() !== 'running') {
+                const controllerState = animator.playState();
+                if (controllerState === 'fatal') {
+                    dispatcher.trigger(cancel, [self]);
+                    return;
+                }
+                if (controllerState !== 'running') {
                     animator.playbackRate(playbackRate);
                     animator.playState('running');
                 }

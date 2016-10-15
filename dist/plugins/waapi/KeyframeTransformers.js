@@ -208,13 +208,14 @@ function propsToKeyframes(css, keyframes, ctx) {
                 if (type_1.isDefined(keyframe1[transform_1])) {
                     units_1.fromAnyUnit(keyframe1[transform_1], unit);
                     startValue = unit.value;
+                    startUnit = unit.unit;
                     startIndex = j;
                     startOffset = offsets[j];
-                    if (startValue !== 0 && unit.unit !== endUnitType) {
-                        throw errors_1.unsupported('Mixed transform property units');
-                    }
                     break;
                 }
+            }
+            if (startValue !== 0 && type_1.isDefined(startUnit) && type_1.isDefined(endUnitType) && startUnit !== endUnitType) {
+                throw errors_1.unsupported('Mixed transform property units');
             }
             // iterate forward
             for (var j = startIndex; j < i + 1; j++) {

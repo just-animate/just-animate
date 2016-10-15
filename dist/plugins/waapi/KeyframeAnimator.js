@@ -3,6 +3,7 @@ var resources_1 = require("../../common/resources");
 var KeyframeAnimator = (function () {
     function KeyframeAnimator(init) {
         this._init = init;
+        this._initialized = resources_1.nil;
     }
     KeyframeAnimator.prototype.seek = function (value) {
         this._ensureInit();
@@ -24,11 +25,13 @@ var KeyframeAnimator = (function () {
         var self = this;
         self._ensureInit();
         var animator = self._animator;
-        var playState = animator.playState;
+        var playState = !animator || self._initialized === false ? 'fatal' : animator.playState;
         if (value === resources_1.nil) {
             return playState;
         }
-        if (value === resources_1.finished) {
+        if (playState === 'fatal') {
+        }
+        else if (value === resources_1.finished) {
             animator.finish();
         }
         else if (value === resources_1.idle) {
@@ -42,9 +45,13 @@ var KeyframeAnimator = (function () {
         }
     };
     KeyframeAnimator.prototype._ensureInit = function () {
+        var self = this;
         if (this._init) {
-            this._animator = this._init();
-            this._init = resources_1.nil;
+            var init = self._init;
+            self._init = resources_1.nil;
+            self._initialized = false;
+            self._animator = init();
+            self._initialized = true;
         }
     };
     return KeyframeAnimator;

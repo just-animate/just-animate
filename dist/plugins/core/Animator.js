@@ -42,7 +42,10 @@ var Animator = (function () {
     Animator.prototype.animate = function (options) {
         var self = this;
         if (type_1.isArray(options)) {
-            lists_1.each(options, function (e) { return self._addEvent(e); });
+            for (var _i = 0, _a = options; _i < _a.length; _i++) {
+                var e = _a[_i];
+                self._addEvent(e);
+            }
         }
         else {
             self._addEvent(options);
@@ -118,8 +121,7 @@ var Animator = (function () {
     };
     Animator.prototype._recalculate = function () {
         var self = this;
-        var endsAt = lists_1.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration; });
-        self._duration = endsAt;
+        self._duration = lists_1.maxBy(self._events, function (e) { return e.startTimeMs + e.animator.totalDuration; });
     };
     Animator.prototype._addEvent = function (options) {
         var self = this;
@@ -142,13 +144,14 @@ var Animator = (function () {
         }
         // set from and to relative to existing duration    
         units_1.fromTime(event.from || 0, unitOut);
-        event.from = unitOut.value + this._duration;
+        event.from = unitOut.value + self._duration;
         units_1.fromTime(event.to || 0, unitOut);
-        event.to = unitOut.value + this._duration;
+        event.to = unitOut.value + self._duration;
         // set easing to linear by default     
         var easingFn = easings_1.getEasingFunction(event.easing);
         event.easing = easings_1.getEasingString(event.easing);
-        lists_1.each(this._plugins, function (plugin) {
+        for (var _i = 0, _a = self._plugins; _i < _a.length; _i++) {
+            var plugin = _a[_i];
             if (plugin.canHandle(event)) {
                 var targets = elements_1.queryElements(event.targets);
                 for (var i = 0, len = targets.length; i < len; i++) {
@@ -170,24 +173,33 @@ var Animator = (function () {
                     });
                 }
             }
-        });
+        }
     };
     Animator.prototype._onCancel = function (self) {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'idle';
-        lists_1.each(self._events, function (evt) { evt.animator.playState('idle'); });
+        for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
+            var evt = _a[_i];
+            evt.animator.playState('idle');
+        }
     };
     Animator.prototype._onFinish = function (self) {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._playState = 'finished';
-        lists_1.each(self._events, function (evt) { evt.animator.playState('finished'); });
+        for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
+            var evt = _a[_i];
+            evt.animator.playState('finished');
+        }
     };
     Animator.prototype._onPause = function (self) {
         self._timeLoop.off(self._onTick);
         self._playState = 'paused';
-        lists_1.each(self._events, function (evt) { evt.animator.playState('paused'); });
+        for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
+            var evt = _a[_i];
+            evt.animator.playState('paused');
+        }
     };
     Animator.prototype._onTick = function (delta, runningTime) {
         var self = this;
@@ -230,16 +242,19 @@ var Animator = (function () {
             return;
         }
         // start animations if should be active and currently aren't   
-        var events = self._events;
-        var eventLength = events.length;
-        for (var i = 0; i < eventLength; i++) {
-            var evt = events[i];
+        for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
+            var evt = _a[_i];
             var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
             var shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
             if (shouldBeActive) {
                 var animator = evt.animator;
-                if (animator.playState() !== 'running') {
+                var controllerState = animator.playState();
+                if (controllerState === 'fatal') {
+                    dispatcher.trigger(resources_1.cancel, [self]);
+                    return;
+                }
+                if (controllerState !== 'running') {
                     animator.playbackRate(playbackRate);
                     animator.playState('running');
                 }
