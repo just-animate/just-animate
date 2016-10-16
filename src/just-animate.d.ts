@@ -102,6 +102,7 @@ declare module ja {
         playState(): AnimationPlaybackState;
         playState(value: AnimationPlaybackState): void;
         reverse(): void;
+        restart(): void;
         onupdate(context: IAnimationTimeContext): void;
     }
     export interface IAnimationTimeContext {

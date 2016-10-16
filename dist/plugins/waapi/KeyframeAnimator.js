@@ -21,6 +21,11 @@ var KeyframeAnimator = (function () {
         this._ensureInit();
         this._animator.playbackRate *= -1;
     };
+    KeyframeAnimator.prototype.restart = function () {
+        var animator = this._animator;
+        animator.cancel();
+        animator.play();
+    };
     KeyframeAnimator.prototype.playState = function (value) {
         var self = this;
         self._ensureInit();

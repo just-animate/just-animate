@@ -29,7 +29,11 @@ export class KeyframeAnimator implements ja.IAnimationController {
         this._ensureInit();
         this._animator.playbackRate *= -1;
     }
-
+    public restart(): void {
+        const animator = this._animator;
+        animator.cancel();
+        animator.play();
+    }
     public playState(): ja.AnimationPlaybackState;
     public playState(value: ja.AnimationPlaybackState): void;
     public playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState | void {

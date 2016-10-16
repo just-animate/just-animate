@@ -4095,9 +4095,11 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     var currentTime = self._currentTime + delta * playbackRate;
                     var currentIteration = self._currentIteration;
                     // check if animation has finished
+                    var isLastFrame = false;
                     if (!math_1.inRange(currentTime, startTime, endTime)) {
+                        isLastFrame = true;
                         currentIteration += isReversed ? -1 : 1;
-                        currentTime = isReversed ? duration1 + (duration1 % currentTime) : duration1 % currentTime;
+                        currentTime = startTime;
                     }
                     self._currentIteration = currentIteration;
                     self._currentTime = currentTime;
@@ -4111,36 +4113,41 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                         var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
                         var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
                         var shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
-                        if (shouldBeActive) {
-                            var animator = evt.animator;
-                            var controllerState = animator.playState();
-                            if (controllerState === 'fatal') {
-                                dispatcher.trigger(resources_11.cancel, [self]);
-                                return;
-                            }
-                            if (controllerState !== 'running') {
-                                animator.playbackRate(playbackRate);
-                                animator.playState('running');
-                            }
+                        var animator = evt.animator;
+                        if (!shouldBeActive) {
+                            continue;
+                        }
+                        var controllerState = animator.playState();
+                        // cancel animation if there was a fatal error
+                        if (controllerState === 'fatal') {
+                            dispatcher.trigger(resources_11.cancel, [self]);
+                            return;
+                        }
+                        if (isLastFrame) {
+                            animator.restart();
+                        }
+                        if (controllerState !== 'running' || isLastFrame) {
                             animator.playbackRate(playbackRate);
-                            if (animator.onupdate) {
-                                // calculate relative timing properties
-                                var relativeDuration = evt.endTimeMs - evt.startTimeMs;
-                                var relativeCurrentTime = currentTime - evt.startTimeMs;
-                                var timeOffset = relativeCurrentTime / relativeDuration;
-                                // set context object values for this update cycle            
-                                context.currentTime = relativeCurrentTime;
-                                context.delta = delta;
-                                context.duration = relativeDuration;
-                                context.offset = timeOffset;
-                                context.playbackRate = playbackRate;
-                                context.computedOffset = evt.easingFn(timeOffset);
-                                context.target = evt.target;
-                                context.targets = evt.targets;
-                                context.index = evt.index;
-                                context.iterations = currentIteration;
-                                animator.onupdate(context);
-                            }
+                            animator.playState('running');
+                        }
+                        animator.playbackRate(playbackRate);
+                        if (animator.onupdate) {
+                            // calculate relative timing properties
+                            var relativeDuration = evt.endTimeMs - evt.startTimeMs;
+                            var relativeCurrentTime = currentTime - evt.startTimeMs;
+                            var timeOffset = relativeCurrentTime / relativeDuration;
+                            // set context object values for this update cycle            
+                            context.currentTime = relativeCurrentTime;
+                            context.delta = delta;
+                            context.duration = relativeDuration;
+                            context.offset = timeOffset;
+                            context.playbackRate = playbackRate;
+                            context.computedOffset = evt.easingFn(timeOffset);
+                            context.target = evt.target;
+                            context.targets = evt.targets;
+                            context.index = evt.index;
+                            context.iterations = currentIteration;
+                            animator.onupdate(context);
                         }
                     }
                 };
@@ -4348,6 +4355,11 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
                 KeyframeAnimator.prototype.reverse = function () {
                     this._ensureInit();
                     this._animator.playbackRate *= -1;
+                };
+                KeyframeAnimator.prototype.restart = function () {
+                    var animator = this._animator;
+                    animator.cancel();
+                    animator.play();
                 };
                 KeyframeAnimator.prototype.playState = function (value) {
                     var self = this;

@@ -316,9 +316,11 @@ export class Animator implements ja.IAnimator {
         let currentIteration = self._currentIteration;
 
         // check if animation has finished
+        let isLastFrame = false;
         if (!inRange(currentTime, startTime, endTime)) {
+            isLastFrame = true;
             currentIteration += isReversed ? -1 : 1;
-            currentTime = isReversed ? duration1 + (duration1 % currentTime) : duration1 % currentTime;
+            currentTime = startTime;
         }
 
         self._currentIteration = currentIteration;        
@@ -334,39 +336,49 @@ export class Animator implements ja.IAnimator {
             const startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             const endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
             const shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
+            const animator = evt.animator;
 
-            if (shouldBeActive) {
-                const animator = evt.animator;
-                const controllerState = animator.playState();
-                if (controllerState === 'fatal') {
-                    dispatcher.trigger(cancel, [self]);
-                    return;
-                }
-                if (controllerState !== 'running') {
-                    animator.playbackRate(playbackRate);
-                    animator.playState('running');
-                }
+            if (!shouldBeActive) {
+                continue;
+            }   
+            
+            const controllerState = animator.playState();
+            
+            // cancel animation if there was a fatal error
+            if (controllerState === 'fatal') {
+                dispatcher.trigger(cancel, [self]);
+                return;
+            }
+
+            if (isLastFrame) {
+                animator.restart();
+            }
+
+            if (controllerState !== 'running' || isLastFrame) {
                 animator.playbackRate(playbackRate);
-                if (animator.onupdate) {
-                    // calculate relative timing properties
-                    const relativeDuration = evt.endTimeMs - evt.startTimeMs;
-                    const relativeCurrentTime = currentTime - evt.startTimeMs;
-                    const timeOffset = relativeCurrentTime / relativeDuration;
+                animator.playState('running');
+            }
 
-                    // set context object values for this update cycle            
-                    context.currentTime = relativeCurrentTime;
-                    context.delta = delta;
-                    context.duration = relativeDuration;
-                    context.offset = timeOffset;
-                    context.playbackRate = playbackRate;
-                    context.computedOffset = evt.easingFn(timeOffset);
-                    context.target = evt.target;
-                    context.targets = evt.targets;
-                    context.index = evt.index;
-                    context.iterations = currentIteration;
+            animator.playbackRate(playbackRate);
+            if (animator.onupdate) {
+                // calculate relative timing properties
+                const relativeDuration = evt.endTimeMs - evt.startTimeMs;
+                const relativeCurrentTime = currentTime - evt.startTimeMs;
+                const timeOffset = relativeCurrentTime / relativeDuration;
 
-                    animator.onupdate(context);
-                }
+                // set context object values for this update cycle            
+                context.currentTime = relativeCurrentTime;
+                context.delta = delta;
+                context.duration = relativeDuration;
+                context.offset = timeOffset;
+                context.playbackRate = playbackRate;
+                context.computedOffset = evt.easingFn(timeOffset);
+                context.target = evt.target;
+                context.targets = evt.targets;
+                context.index = evt.index;
+                context.iterations = currentIteration;
+
+                animator.onupdate(context);
             }
         }
     }
