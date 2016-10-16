@@ -16,9 +16,7 @@ Dispatcher.prototype = {
         if (!listeners) {
             return;
         }
-        const len = listeners.length;
-        for (let i = 0; i < len; i++) {
-            const listener = listeners[i];
+        for (const listener of listeners) {
             listener.apply(nil, args);
         }
     },

@@ -1,4 +1,4 @@
-import { each, toArray } from './lists';
+import { toArray } from './lists';
 import { isArray, isFunction, isString } from './type';
 import { invalidArg } from './errors';
 
@@ -30,11 +30,11 @@ export function queryElements(source: ja.AnimationTarget): Element[] {
     if (isArray(source)) {
         // if array or jQuery object, flatten to an array
         const elements: Element[] = [];
-        each(source as any[], (i: any) => {
+        for (const i of source as ja.AnimationTarget[]) {
             // recursively call this function in case of nested elements
             const innerElements = queryElements(i);
             elements.push.apply(elements, innerElements);
-        });
+        }
         return elements;
     }
 

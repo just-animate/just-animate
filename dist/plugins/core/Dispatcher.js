@@ -16,9 +16,8 @@ Dispatcher.prototype = {
         if (!listeners) {
             return;
         }
-        var len = listeners.length;
-        for (var i = 0; i < len; i++) {
-            var listener = listeners[i];
+        for (var _i = 0, listeners_1 = listeners; _i < listeners_1.length; _i++) {
+            var listener = listeners_1[_i];
             listener.apply(resources_1.nil, args);
         }
     },

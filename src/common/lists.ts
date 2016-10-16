@@ -24,14 +24,11 @@ export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
     if (predicate === nil) {
         return indexed[0];
     }
-    for (let i = 0; i < len; i++) {
-        const item = indexed[i];
-        const result = predicate(item);
-        if (result === true) {
+    for (const item of indexed as T[]) {
+        if (predicate(item)) {
             return item;
         }
     }
-
     return nil;
 }
 /**
@@ -49,14 +46,11 @@ export function tail<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
     if (predicate === nil) {
         return indexed[len - 1];
     }
-    for (let i = len - 1; i > -1; --i) {
-        const item = indexed[i];
-        const result = predicate(item);
-        if (result === true) {
+    for (const item of indexed as T[]) {
+        if (predicate(item)) {
             return item;
         }
     }
-
     return nil;
 }
 
@@ -86,20 +80,6 @@ export function chain<T>(indexed: IList<T> | T): T[] {
 }
 
 /**
- * Performs the function against all objects in the list
- * 
- * @export
- * @template T1
- * @param {T[]} items list of objects
- * @param {ja.IConsumer<T1>} fn function to execute for each object
- */
-export function each<T1>(items: T1[], fn: { (c: T1): any }): void {
-    for (let i = 0, len = items.length; i < len; i++) {
-        fn(items[i]);
-    }
-}
-
-/**
  * Returns the max value of a given property in a list
  * 
  * @export
@@ -110,8 +90,7 @@ export function each<T1>(items: T1[], fn: { (c: T1): any }): void {
  */
 export function max<T1>(items: T1[], propertyName: string): any {
     let max: any = '';
-    for (let i = 0, len = items.length; i < len; i++) {
-        const item = items[i] as any;
+    for (const item of items) {
         const prop = item[propertyName] as any;
         if (max < prop) {
             max = prop;
@@ -131,8 +110,7 @@ export function max<T1>(items: T1[], propertyName: string): any {
  */
 export function maxBy<T1, T2>(items: T1[], predicate: ja.Mapper<T1, T2>): T2 {
     let max: any = '';
-    for (let i = 0, len = items.length; i < len; i++) {
-        const item = items[i] as any;
+    for (const item of items)  {
         const prop = predicate(item);
         if (max < prop) {
             max = prop;
@@ -149,13 +127,13 @@ export function maxBy<T1, T2>(items: T1[], predicate: ja.Mapper<T1, T2>): T2 {
  * @template T1
  * @template T2
  * @param {T1[]} items list of objects to map
- * @param {ja.IMapper<T1, T2>} fn function that maps each object
+ * @param {ja.IMapper<T1, T2>} fn function that maps all objects
  * @returns {T2[]} new list of objects
  */
 export function map<T1, T2>(items: IList<T1>, fn: ja.Mapper<T1, T2>): T2[] {
     const results = [] as T2[];
-    for (let i = 0, len = items.length; i < len; i++) {
-        const result = fn(items[i]);
+    for (const item of items as T1[]) {
+        const result = fn(item);
         if (result !== nil) {
             results.push(result);
         }

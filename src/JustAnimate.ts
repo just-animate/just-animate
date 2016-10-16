@@ -1,4 +1,3 @@
-import { each } from './common/lists';
 import { random, shuffle } from './common/random';
 import { Animator } from './plugins/core/Animator';
 import { TimeLoop, ITimeLoop } from './plugins/core/TimeLoop';
@@ -67,7 +66,9 @@ export class JustAnimate {
      */    
     public static inject(animations: ja.IAnimationMixin[]): void {
         const resolver = new MixinService();
-        each(animations, (a: ja.IAnimationMixin) => resolver.registerAnimation(a, true));
+        for (const a of animations) {
+            resolver.registerAnimation(a, true);
+        }
     }
 
     constructor() {
@@ -130,6 +131,8 @@ export class JustAnimate {
      */
     public inject(animations: ja.IAnimationMixin[]): void {
         const resolver = this._resolver;
-        each(animations, (a: ja.IAnimationMixin) => resolver.registerAnimation(a, true));
+        for (const a of animations) {
+            resolver.registerAnimation(a, true);
+        }
     }
 }

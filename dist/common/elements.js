@@ -29,13 +29,14 @@ function queryElements(source) {
     }
     if (type_1.isArray(source)) {
         // if array or jQuery object, flatten to an array
-        var elements_1 = [];
-        lists_1.each(source, function (i) {
+        var elements = [];
+        for (var _i = 0, _a = source; _i < _a.length; _i++) {
+            var i = _a[_i];
             // recursively call this function in case of nested elements
             var innerElements = queryElements(i);
-            elements_1.push.apply(elements_1, innerElements);
-        });
-        return elements_1;
+            elements.push.apply(elements, innerElements);
+        }
+        return elements;
     }
     // otherwise return empty    
     return [];

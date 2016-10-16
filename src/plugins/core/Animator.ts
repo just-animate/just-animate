@@ -1,6 +1,6 @@
 import { chain, maxBy } from '../../common/lists';
 import { deepCopyObject, inherit } from '../../common/objects';
-import { isArray, isDefined } from '../../common/type';
+import { isArray, isDefined, isNumber } from '../../common/type';
 import { inRange } from '../../common/math';
 import { invalidArg } from '../../common/errors';
 import { duration, finish, cancel, pause, nil } from '../../common/resources';
@@ -21,8 +21,10 @@ const animationPadding = 1.0 / 30;
 const unitOut = Unit();
 
 export class Animator implements ja.IAnimator {
+    private _currentIteration: number;
     private _currentTime: number;
     private _context: ja.IAnimationTimeContext;
+    private _direction: ja.AnimationDirection;
     private _dispatcher: IDispatcher;
     private _duration: number;
     private _events: ja.ITimelineEvent[];
@@ -30,6 +32,7 @@ export class Animator implements ja.IAnimator {
     private _playbackRate: number;
     private _resolver: MixinService;
     private _timeLoop: ITimeLoop;
+    private _totalIterations: number;
     private _plugins: ja.IPlugin[];
 
     constructor(resolver: MixinService, timeloop: ITimeLoop, plugins: ja.IPlugin[]) {
@@ -41,6 +44,7 @@ export class Animator implements ja.IAnimator {
         self._context = {} as ja.IAnimationTimeContext;
         self._duration = 0;
         self._currentTime = nil;
+        self._currentIteration = nil;
         self._playState = 'idle';
         self._playbackRate = 1;
         self._events = [];
@@ -130,8 +134,39 @@ export class Animator implements ja.IAnimator {
         self._dispatcher.trigger(pause, [self]);
         return self;
     }
-    public play(): ja.IAnimator {
+
+    public play(): ja.IAnimator;
+    public play(iterations: number): ja.IAnimator;
+    public play(options: ja.IPlayOptions): ja.IAnimator;
+    public play(options?: number | ja.IPlayOptions): ja.IAnimator {     
         const self = this;
+
+        let totalIterations: number;
+        let direction: ja.AnimationDirection;
+        if (options) {
+            if (!isNumber(options)) {
+                const playOptions = options as ja.IPlayOptions;
+                if (playOptions.iterations) {
+                    totalIterations = playOptions.iterations;
+                }
+                if (playOptions.direction) {
+                    direction = playOptions.direction;                    
+                }   
+            } else {
+                totalIterations = options as number;                            
+            }
+        }
+
+        if (!totalIterations) {
+            totalIterations = 1;
+        }
+        if (!direction) {
+            direction = 'normal';
+        }
+
+        self._totalIterations = totalIterations;        
+        self._direction = direction;
+
         if (!(self._playState === 'running' || self._playState === 'pending')) {
             self._playState = 'pending';
             self._timeLoop.on(self._onTick);
@@ -184,8 +219,9 @@ export class Animator implements ja.IAnimator {
         for (let plugin of self._plugins) {
             if (plugin.canHandle(event)) {
                 const targets = queryElements(event.targets) as HTMLElement[];
+                const targetLength = targets.length;
 
-                for (let i = 0, len = targets.length; i < len; i++) {
+                for (let i = 0, len = targetLength; i < len; i++) {
                     const target = targets[i];
                     const animator = plugin.handle({
                         index: i,
@@ -210,6 +246,7 @@ export class Animator implements ja.IAnimator {
     private _onCancel(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
+        self._currentIteration = nil;
         self._playState = 'idle';
         for (let evt of self._events) {
             evt.animator.playState('idle');
@@ -217,7 +254,8 @@ export class Animator implements ja.IAnimator {
     }
     private _onFinish(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
-        self._currentTime = 0;
+        self._currentTime = nil;
+        self._currentIteration = nil;        
         self._playState = 'finished';
         for (let evt of self._events) {
             evt.animator.playState('finished');
@@ -259,19 +297,34 @@ export class Animator implements ja.IAnimator {
         const duration1 = self._duration;
         const startTime = isReversed ? duration1 : 0;
         const endTime = isReversed ? 0 : duration1;
+        const totalIterations = self._totalIterations;
+        const startIteration = isReversed ? totalIterations : 0;
+        const endIteration = isReversed ? 0 : totalIterations;
 
+     
         if (self._playState === 'pending') {
-            const currentTime = self._currentTime;
-            self._currentTime = currentTime === nil || currentTime === endTime ? startTime : currentTime;
+            const currentTime2 = self._currentTime;
+            const currentIteration = self._currentIteration;
+            self._currentTime = currentTime2 === nil || currentTime2 === endTime ? startTime : currentTime2;
+            self._currentIteration = currentIteration === nil || currentIteration === endIteration ? startIteration : currentIteration;
             self._playState = 'running';
-        }
 
+        } 
+        
         // calculate currentTime from delta
-        const currentTime = self._currentTime + delta * playbackRate;
-        self._currentTime = currentTime;
+        let currentTime = self._currentTime + delta * playbackRate;
+        let currentIteration = self._currentIteration;
 
         // check if animation has finished
         if (!inRange(currentTime, startTime, endTime)) {
+            currentIteration += isReversed ? -1 : 1;
+            currentTime = isReversed ? duration1 + (duration1 % currentTime) : duration1 % currentTime;
+        }
+
+        self._currentIteration = currentIteration;        
+        self._currentTime = currentTime;
+
+        if (endIteration === currentIteration) {
             dispatcher.trigger(finish, [self]);
             return;
         }
@@ -310,6 +363,7 @@ export class Animator implements ja.IAnimator {
                     context.target = evt.target;
                     context.targets = evt.targets;
                     context.index = evt.index;
+                    context.iterations = currentIteration;
 
                     animator.onupdate(context);
                 }
@@ -320,6 +374,9 @@ export class Animator implements ja.IAnimator {
 
 
 interface IAnimationContext {
+    _direction: string;
+    _totalIterations: number;
+    _currentIteration: number;
     _currentTime: number;
     _dispatcher: IDispatcher;
     _duration: number;

@@ -3,6 +3,7 @@ declare module ja {
     export type FillMode = 'none' | 'forwards' | 'backwards' | 'both' | 'auto';
     export type AnimationPlaybackState = 'fatal' | 'idle' | 'pending' | 'running' | 'paused' | 'finished';
     export type AnimationTarget = Node | Node[] | NodeList | string | { (): AnimationTarget };
+    export type AnimationDirection = 'normal' | 'alternate';
     export type Angle = string | number;
     export type Color = string;
     export type Distance = string | number;
@@ -113,6 +114,7 @@ declare module ja {
         target: any;
         targets: any[];
         index: number;
+        iterations: number;
     }
     export interface IAnimator {
         animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator;
@@ -123,12 +125,18 @@ declare module ja {
         duration(): number;
         playState(): AnimationPlaybackState;
         finish(): IAnimator;
-        play(): IAnimator;
+        play(iterations: number): IAnimator;
+        play(options: IPlayOptions): IAnimator;
+        play(options?: number|IPlayOptions): IAnimator;        
         pause(): IAnimator;
         reverse(): IAnimator;
         cancel(): IAnimator;
         on(eventName: string, listener: Function): IAnimator;
         off(eventName: string, listener: Function): IAnimator;
+    }
+    export interface IPlayOptions {
+        direction?: AnimationDirection;
+        iterations?: number;
     }
     export interface IAnimationMixin extends IAnimation {
         name: string;

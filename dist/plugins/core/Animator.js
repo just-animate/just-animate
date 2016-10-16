@@ -24,6 +24,7 @@ var Animator = (function () {
         self._context = {};
         self._duration = 0;
         self._currentTime = resources_1.nil;
+        self._currentIteration = resources_1.nil;
         self._playState = 'idle';
         self._playbackRate = 1;
         self._events = [];
@@ -106,8 +107,32 @@ var Animator = (function () {
         self._dispatcher.trigger(resources_1.pause, [self]);
         return self;
     };
-    Animator.prototype.play = function () {
+    Animator.prototype.play = function (options) {
         var self = this;
+        var totalIterations;
+        var direction;
+        if (options) {
+            if (!type_1.isNumber(options)) {
+                var playOptions = options;
+                if (playOptions.iterations) {
+                    totalIterations = playOptions.iterations;
+                }
+                if (playOptions.direction) {
+                    direction = playOptions.direction;
+                }
+            }
+            else {
+                totalIterations = options;
+            }
+        }
+        if (!totalIterations) {
+            totalIterations = 1;
+        }
+        if (!direction) {
+            direction = 'normal';
+        }
+        self._totalIterations = totalIterations;
+        self._direction = direction;
         if (!(self._playState === 'running' || self._playState === 'pending')) {
             self._playState = 'pending';
             self._timeLoop.on(self._onTick);
@@ -154,7 +179,8 @@ var Animator = (function () {
             var plugin = _a[_i];
             if (plugin.canHandle(event)) {
                 var targets = elements_1.queryElements(event.targets);
-                for (var i = 0, len = targets.length; i < len; i++) {
+                var targetLength = targets.length;
+                for (var i = 0, len = targetLength; i < len; i++) {
                     var target = targets[i];
                     var animator = plugin.handle({
                         index: i,
@@ -178,6 +204,7 @@ var Animator = (function () {
     Animator.prototype._onCancel = function (self) {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
+        self._currentIteration = resources_1.nil;
         self._playState = 'idle';
         for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
             var evt = _a[_i];
@@ -186,7 +213,8 @@ var Animator = (function () {
     };
     Animator.prototype._onFinish = function (self) {
         self._timeLoop.off(self._onTick);
-        self._currentTime = 0;
+        self._currentTime = resources_1.nil;
+        self._currentIteration = resources_1.nil;
         self._playState = 'finished';
         for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
             var evt = _a[_i];
@@ -228,16 +256,27 @@ var Animator = (function () {
         var duration1 = self._duration;
         var startTime = isReversed ? duration1 : 0;
         var endTime = isReversed ? 0 : duration1;
+        var totalIterations = self._totalIterations;
+        var startIteration = isReversed ? totalIterations : 0;
+        var endIteration = isReversed ? 0 : totalIterations;
         if (self._playState === 'pending') {
-            var currentTime_1 = self._currentTime;
-            self._currentTime = currentTime_1 === resources_1.nil || currentTime_1 === endTime ? startTime : currentTime_1;
+            var currentTime2 = self._currentTime;
+            var currentIteration_1 = self._currentIteration;
+            self._currentTime = currentTime2 === resources_1.nil || currentTime2 === endTime ? startTime : currentTime2;
+            self._currentIteration = currentIteration_1 === resources_1.nil || currentIteration_1 === endIteration ? startIteration : currentIteration_1;
             self._playState = 'running';
         }
         // calculate currentTime from delta
         var currentTime = self._currentTime + delta * playbackRate;
-        self._currentTime = currentTime;
+        var currentIteration = self._currentIteration;
         // check if animation has finished
         if (!math_1.inRange(currentTime, startTime, endTime)) {
+            currentIteration += isReversed ? -1 : 1;
+            currentTime = isReversed ? duration1 + (duration1 % currentTime) : duration1 % currentTime;
+        }
+        self._currentIteration = currentIteration;
+        self._currentTime = currentTime;
+        if (endIteration === currentIteration) {
             dispatcher.trigger(resources_1.finish, [self]);
             return;
         }
@@ -274,6 +313,7 @@ var Animator = (function () {
                     context.target = evt.target;
                     context.targets = evt.targets;
                     context.index = evt.index;
+                    context.iterations = currentIteration;
                     animator.onupdate(context);
                 }
             }

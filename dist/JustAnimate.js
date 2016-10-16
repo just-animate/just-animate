@@ -1,5 +1,4 @@
 "use strict";
-var lists_1 = require("./common/lists");
 var random_1 = require("./common/random");
 var Animator_1 = require("./plugins/core/Animator");
 var TimeLoop_1 = require("./plugins/core/TimeLoop");
@@ -61,7 +60,10 @@ var JustAnimate = (function () {
      */
     JustAnimate.inject = function (animations) {
         var resolver = new MixinService_1.MixinService();
-        lists_1.each(animations, function (a) { return resolver.registerAnimation(a, true); });
+        for (var _i = 0, animations_1 = animations; _i < animations_1.length; _i++) {
+            var a = animations_1[_i];
+            resolver.registerAnimation(a, true);
+        }
     };
     /**
      * Returns a new timeline of animation(s) using the options provided
@@ -117,7 +119,10 @@ var JustAnimate = (function () {
      */
     JustAnimate.prototype.inject = function (animations) {
         var resolver = this._resolver;
-        lists_1.each(animations, function (a) { return resolver.registerAnimation(a, true); });
+        for (var _i = 0, animations_2 = animations; _i < animations_2.length; _i++) {
+            var a = animations_2[_i];
+            resolver.registerAnimation(a, true);
+        }
     };
     return JustAnimate;
 }());

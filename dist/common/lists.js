@@ -18,10 +18,9 @@ function head(indexed, predicate) {
     if (predicate === resources_1.nil) {
         return indexed[0];
     }
-    for (var i = 0; i < len; i++) {
-        var item = indexed[i];
-        var result = predicate(item);
-        if (result === true) {
+    for (var _i = 0, _a = indexed; _i < _a.length; _i++) {
+        var item = _a[_i];
+        if (predicate(item)) {
             return item;
         }
     }
@@ -42,10 +41,9 @@ function tail(indexed, predicate) {
     if (predicate === resources_1.nil) {
         return indexed[len - 1];
     }
-    for (var i = len - 1; i > -1; --i) {
-        var item = indexed[i];
-        var result = predicate(item);
-        if (result === true) {
+    for (var _i = 0, _a = indexed; _i < _a.length; _i++) {
+        var item = _a[_i];
+        if (predicate(item)) {
             return item;
         }
     }
@@ -78,20 +76,6 @@ function chain(indexed) {
 }
 exports.chain = chain;
 /**
- * Performs the function against all objects in the list
- *
- * @export
- * @template T1
- * @param {T[]} items list of objects
- * @param {ja.IConsumer<T1>} fn function to execute for each object
- */
-function each(items, fn) {
-    for (var i = 0, len = items.length; i < len; i++) {
-        fn(items[i]);
-    }
-}
-exports.each = each;
-/**
  * Returns the max value of a given property in a list
  *
  * @export
@@ -102,8 +86,8 @@ exports.each = each;
  */
 function max(items, propertyName) {
     var max = '';
-    for (var i = 0, len = items.length; i < len; i++) {
-        var item = items[i];
+    for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+        var item = items_1[_i];
         var prop = item[propertyName];
         if (max < prop) {
             max = prop;
@@ -123,8 +107,8 @@ exports.max = max;
  */
 function maxBy(items, predicate) {
     var max = '';
-    for (var i = 0, len = items.length; i < len; i++) {
-        var item = items[i];
+    for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
+        var item = items_2[_i];
         var prop = predicate(item);
         if (max < prop) {
             max = prop;
@@ -141,13 +125,14 @@ exports.maxBy = maxBy;
  * @template T1
  * @template T2
  * @param {T1[]} items list of objects to map
- * @param {ja.IMapper<T1, T2>} fn function that maps each object
+ * @param {ja.IMapper<T1, T2>} fn function that maps all objects
  * @returns {T2[]} new list of objects
  */
 function map(items, fn) {
     var results = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-        var result = fn(items[i]);
+    for (var _i = 0, _a = items; _i < _a.length; _i++) {
+        var item = _a[_i];
+        var result = fn(item);
         if (result !== resources_1.nil) {
             results.push(result);
         }

@@ -2895,10 +2895,9 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
         if (predicate === resources_2.nil) {
             return indexed[0];
         }
-        for (var i = 0; i < len; i++) {
-            var item = indexed[i];
-            var result = predicate(item);
-            if (result === true) {
+        for (var _i = 0, _a = indexed; _i < _a.length; _i++) {
+            var item = _a[_i];
+            if (predicate(item)) {
                 return item;
             }
         }
@@ -2918,10 +2917,9 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
         if (predicate === resources_2.nil) {
             return indexed[len - 1];
         }
-        for (var i = len - 1; i > -1; --i) {
-            var item = indexed[i];
-            var result = predicate(item);
-            if (result === true) {
+        for (var _i = 0, _a = indexed; _i < _a.length; _i++) {
+            var item = _a[_i];
+            if (predicate(item)) {
                 return item;
             }
         }
@@ -2951,19 +2949,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
         return type_1.isArray(indexed) ? indexed : [indexed];
     }
     /**
-     * Performs the function against all objects in the list
-     *
-     * @export
-     * @template T1
-     * @param {T[]} items list of objects
-     * @param {ja.IConsumer<T1>} fn function to execute for each object
-     */
-    function each(items, fn) {
-        for (var i = 0, len = items.length; i < len; i++) {
-            fn(items[i]);
-        }
-    }
-    /**
      * Returns the max value of a given property in a list
      *
      * @export
@@ -2974,8 +2959,8 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
      */
     function max(items, propertyName) {
         var max = '';
-        for (var i = 0, len = items.length; i < len; i++) {
-            var item = items[i];
+        for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+            var item = items_1[_i];
             var prop = item[propertyName];
             if (max < prop) {
                 max = prop;
@@ -2994,8 +2979,8 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
      */
     function maxBy(items, predicate) {
         var max = '';
-        for (var i = 0, len = items.length; i < len; i++) {
-            var item = items[i];
+        for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
+            var item = items_2[_i];
             var prop = predicate(item);
             if (max < prop) {
                 max = prop;
@@ -3011,13 +2996,14 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
      * @template T1
      * @template T2
      * @param {T1[]} items list of objects to map
-     * @param {ja.IMapper<T1, T2>} fn function that maps each object
+     * @param {ja.IMapper<T1, T2>} fn function that maps all objects
      * @returns {T2[]} new list of objects
      */
     function map(items, fn) {
         var results = [];
-        for (var i = 0, len = items.length; i < len; i++) {
-            var result = fn(items[i]);
+        for (var _i = 0, _a = items; _i < _a.length; _i++) {
+            var item = _a[_i];
+            var result = fn(item);
             if (result !== resources_2.nil) {
                 results.push(result);
             }
@@ -3040,7 +3026,6 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
     exports_80("tail", tail);
     exports_80("toArray", toArray);
     exports_80("chain", chain);
-    exports_80("each", each);
     exports_80("max", max);
     exports_80("maxBy", maxBy);
     exports_80("map", map);
@@ -3108,13 +3093,14 @@ System.register("just-animate/common/elements", ["just-animate/common/lists", "j
         }
         if (type_2.isArray(source)) {
             // if array or jQuery object, flatten to an array
-            var elements_1 = [];
-            lists_1.each(source, function (i) {
+            var elements = [];
+            for (var _i = 0, _a = source; _i < _a.length; _i++) {
+                var i = _a[_i];
                 // recursively call this function in case of nested elements
                 var innerElements = queryElements(i);
-                elements_1.push.apply(elements_1, innerElements);
-            });
-            return elements_1;
+                elements.push.apply(elements, innerElements);
+            }
+            return elements;
         }
         // otherwise return empty    
         return [];
@@ -3494,9 +3480,8 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
                     if (!listeners) {
                         return;
                     }
-                    var len = listeners.length;
-                    for (var i = 0; i < len; i++) {
-                        var listener = listeners[i];
+                    for (var _i = 0, listeners_1 = listeners; _i < listeners_1.length; _i++) {
+                        var listener = listeners_1[_i];
                         listener.apply(resources_7.nil, args);
                     }
                 },
@@ -3814,7 +3799,7 @@ System.register("just-animate/plugins/core/easings", ["just-animate/common/strin
 System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/easings", "just-animate/common/units", "just-animate/common/elements"], function (exports_93, context_93) {
     "use strict";
     var __moduleName = context_93 && context_93.id;
-    var lists_3, objects_1, type_7, math_1, errors_4, resources_11, Dispatcher_1, easings_1, units_1, elements_2, animationPadding, unitOut, Animator;
+    var lists_3, objects_1, type_7, math_1, errors_4, resources_11, Dispatcher_1, easings_1, units_1, elements_1, animationPadding, unitOut, Animator;
     return {
         setters: [
             function (lists_3_1) {
@@ -3844,8 +3829,8 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
             function (units_1_1) {
                 units_1 = units_1_1;
             },
-            function (elements_2_1) {
-                elements_2 = elements_2_1;
+            function (elements_1_1) {
+                elements_1 = elements_1_1;
             }
         ],
         execute: function () {
@@ -3864,6 +3849,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     self._context = {};
                     self._duration = 0;
                     self._currentTime = resources_11.nil;
+                    self._currentIteration = resources_11.nil;
                     self._playState = 'idle';
                     self._playbackRate = 1;
                     self._events = [];
@@ -3946,8 +3932,32 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     self._dispatcher.trigger(resources_11.pause, [self]);
                     return self;
                 };
-                Animator.prototype.play = function () {
+                Animator.prototype.play = function (options) {
                     var self = this;
+                    var totalIterations;
+                    var direction;
+                    if (options) {
+                        if (!type_7.isNumber(options)) {
+                            var playOptions = options;
+                            if (playOptions.iterations) {
+                                totalIterations = playOptions.iterations;
+                            }
+                            if (playOptions.direction) {
+                                direction = playOptions.direction;
+                            }
+                        }
+                        else {
+                            totalIterations = options;
+                        }
+                    }
+                    if (!totalIterations) {
+                        totalIterations = 1;
+                    }
+                    if (!direction) {
+                        direction = 'normal';
+                    }
+                    self._totalIterations = totalIterations;
+                    self._direction = direction;
                     if (!(self._playState === 'running' || self._playState === 'pending')) {
                         self._playState = 'pending';
                         self._timeLoop.on(self._onTick);
@@ -3993,8 +4003,9 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     for (var _i = 0, _a = self._plugins; _i < _a.length; _i++) {
                         var plugin = _a[_i];
                         if (plugin.canHandle(event)) {
-                            var targets = elements_2.queryElements(event.targets);
-                            for (var i = 0, len = targets.length; i < len; i++) {
+                            var targets = elements_1.queryElements(event.targets);
+                            var targetLength = targets.length;
+                            for (var i = 0, len = targetLength; i < len; i++) {
                                 var target = targets[i];
                                 var animator = plugin.handle({
                                     index: i,
@@ -4018,6 +4029,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                 Animator.prototype._onCancel = function (self) {
                     self._timeLoop.off(self._onTick);
                     self._currentTime = 0;
+                    self._currentIteration = resources_11.nil;
                     self._playState = 'idle';
                     for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
                         var evt = _a[_i];
@@ -4026,7 +4038,8 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                 };
                 Animator.prototype._onFinish = function (self) {
                     self._timeLoop.off(self._onTick);
-                    self._currentTime = 0;
+                    self._currentTime = resources_11.nil;
+                    self._currentIteration = resources_11.nil;
                     self._playState = 'finished';
                     for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
                         var evt = _a[_i];
@@ -4068,16 +4081,27 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                     var duration1 = self._duration;
                     var startTime = isReversed ? duration1 : 0;
                     var endTime = isReversed ? 0 : duration1;
+                    var totalIterations = self._totalIterations;
+                    var startIteration = isReversed ? totalIterations : 0;
+                    var endIteration = isReversed ? 0 : totalIterations;
                     if (self._playState === 'pending') {
-                        var currentTime_1 = self._currentTime;
-                        self._currentTime = currentTime_1 === resources_11.nil || currentTime_1 === endTime ? startTime : currentTime_1;
+                        var currentTime2 = self._currentTime;
+                        var currentIteration_1 = self._currentIteration;
+                        self._currentTime = currentTime2 === resources_11.nil || currentTime2 === endTime ? startTime : currentTime2;
+                        self._currentIteration = currentIteration_1 === resources_11.nil || currentIteration_1 === endIteration ? startIteration : currentIteration_1;
                         self._playState = 'running';
                     }
                     // calculate currentTime from delta
                     var currentTime = self._currentTime + delta * playbackRate;
-                    self._currentTime = currentTime;
+                    var currentIteration = self._currentIteration;
                     // check if animation has finished
                     if (!math_1.inRange(currentTime, startTime, endTime)) {
+                        currentIteration += isReversed ? -1 : 1;
+                        currentTime = isReversed ? duration1 + (duration1 % currentTime) : duration1 % currentTime;
+                    }
+                    self._currentIteration = currentIteration;
+                    self._currentTime = currentTime;
+                    if (endIteration === currentIteration) {
                         dispatcher.trigger(resources_11.finish, [self]);
                         return;
                     }
@@ -4114,6 +4138,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                                 context.target = evt.target;
                                 context.targets = evt.targets;
                                 context.index = evt.index;
+                                context.iterations = currentIteration;
                                 animator.onupdate(context);
                             }
                         }
@@ -4125,15 +4150,12 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
         }
     };
 });
-System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-animate/common/random", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function (exports_94, context_94) {
+System.register("just-animate/JustAnimate", ["just-animate/common/random", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function (exports_94, context_94) {
     "use strict";
     var __moduleName = context_94 && context_94.id;
-    var lists_4, random_1, Animator_1, TimeLoop_1, MixinService_1, JustAnimate;
+    var random_1, Animator_1, TimeLoop_1, MixinService_1, JustAnimate;
     return {
         setters: [
-            function (lists_4_1) {
-                lists_4 = lists_4_1;
-            },
             function (random_1_1) {
                 random_1 = random_1_1;
             },
@@ -4205,7 +4227,10 @@ System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-
                  */
                 JustAnimate.inject = function (animations) {
                     var resolver = new MixinService_1.MixinService();
-                    lists_4.each(animations, function (a) { return resolver.registerAnimation(a, true); });
+                    for (var _i = 0, animations_1 = animations; _i < animations_1.length; _i++) {
+                        var a = animations_1[_i];
+                        resolver.registerAnimation(a, true);
+                    }
                 };
                 /**
                  * Returns a new timeline of animation(s) using the options provided
@@ -4261,7 +4286,10 @@ System.register("just-animate/JustAnimate", ["just-animate/common/lists", "just-
                  */
                 JustAnimate.prototype.inject = function (animations) {
                     var resolver = this._resolver;
-                    lists_4.each(animations, function (a) { return resolver.registerAnimation(a, true); });
+                    for (var _i = 0, animations_2 = animations; _i < animations_2.length; _i++) {
+                        var a = animations_2[_i];
+                        resolver.registerAnimation(a, true);
+                    }
                 };
                 return JustAnimate;
             }());
@@ -4275,8 +4303,8 @@ System.register("just-animate/index", ["just-animate/animations", "just-animate/
     var animations;
     return {
         setters: [
-            function (animations_1) {
-                animations = animations_1;
+            function (animations_3) {
+                animations = animations_3;
             },
             function (JustAnimate_1_1) {
                 exports_95({
@@ -4618,8 +4646,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         if (keyframes.length < 1) {
             return;
         }
-        var first = lists_5.head(keyframes, function (k) { return k.offset === 0; })
-            || lists_5.head(keyframes, function (k) { return k.offset === resources_13.nil; });
+        var first = lists_4.head(keyframes, function (k) { return k.offset === 0; })
+            || lists_4.head(keyframes, function (k) { return k.offset === resources_13.nil; });
         if (first === resources_13.nil) {
             first = {};
             keyframes.splice(0, 0, first);
@@ -4627,8 +4655,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         if (first.offset !== 0) {
             first.offset = 0;
         }
-        var last = lists_5.tail(keyframes, function (k) { return k.offset === 1; })
-            || lists_5.tail(keyframes, function (k) { return k.offset === resources_13.nil; });
+        var last = lists_4.tail(keyframes, function (k) { return k.offset === 1; })
+            || lists_4.tail(keyframes, function (k) { return k.offset === resources_13.nil; });
         if (last === resources_13.nil) {
             last = {};
             keyframes.push(last);
@@ -4647,8 +4675,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         if (keyframes.length < 1) {
             return;
         }
-        var first = lists_5.head(keyframes);
-        var last = lists_5.tail(keyframes);
+        var first = lists_4.head(keyframes);
+        var last = lists_4.tail(keyframes);
         // fill initial keyframe with missing props
         var len = keyframes.length;
         for (var i = 1; i < len; i++) {
@@ -4711,7 +4739,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 .reduce(function (c, n) { return c + (" " + n[0] + "(" + n[1] + ")"); }, '');
         }
     }
-    var type_8, strings_2, easings_2, lists_5, units_2, objects_2, errors_5, resources_13, propertyAliases, transforms;
+    var type_8, strings_2, easings_2, lists_4, units_2, objects_2, errors_5, resources_13, propertyAliases, transforms;
     exports_97("initAnimator", initAnimator);
     exports_97("addTransition", addTransition);
     exports_97("expandOffsets", expandOffsets);
@@ -4734,8 +4762,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             function (easings_2_1) {
                 easings_2 = easings_2_1;
             },
-            function (lists_5_1) {
-                lists_5 = lists_5_1;
+            function (lists_4_1) {
+                lists_4 = lists_4_1;
             },
             function (units_2_1) {
                 units_2 = units_2_1;

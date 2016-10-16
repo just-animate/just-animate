@@ -1,6 +1,13 @@
 (function () {
 'use strict';
 
+function shuffle(choices) {
+    return choices[Math.floor(Math.random() * choices.length)];
+}
+function random(first, last) {
+    return Math.floor(first + (Math.random() * (last - first)));
+}
+
 var nada = null;
 var nil = undefined;
 var animate = 'animate';
@@ -90,10 +97,9 @@ function head(indexed, predicate) {
     if (predicate === nil) {
         return indexed[0];
     }
-    for (var i = 0; i < len; i++) {
-        var item = indexed[i];
-        var result = predicate(item);
-        if (result === true) {
+    for (var _i = 0, _a = indexed; _i < _a.length; _i++) {
+        var item = _a[_i];
+        if (predicate(item)) {
             return item;
         }
     }
@@ -110,10 +116,9 @@ function tail(indexed, predicate) {
     if (predicate === nil) {
         return indexed[len - 1];
     }
-    for (var i = len - 1; i > -1; --i) {
-        var item = indexed[i];
-        var result = predicate(item);
-        if (result === true) {
+    for (var _i = 0, _a = indexed; _i < _a.length; _i++) {
+        var item = _a[_i];
+        if (predicate(item)) {
             return item;
         }
     }
@@ -125,29 +130,17 @@ function toArray(indexed, index) {
 function chain(indexed) {
     return isArray(indexed) ? indexed : [indexed];
 }
-function each(items, fn) {
-    for (var i = 0, len = items.length; i < len; i++) {
-        fn(items[i]);
-    }
-}
 
 function maxBy(items, predicate) {
     var max = '';
-    for (var i = 0, len = items.length; i < len; i++) {
-        var item = items[i];
+    for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
+        var item = items_2[_i];
         var prop = predicate(item);
         if (max < prop) {
             max = prop;
         }
     }
     return max;
-}
-
-function shuffle(choices) {
-    return choices[Math.floor(Math.random() * choices.length)];
-}
-function random(first, last) {
-    return Math.floor(first + (Math.random() * (last - first)));
 }
 
 function deepCopyObject(origin, dest) {
@@ -228,9 +221,8 @@ Dispatcher.prototype = {
         if (!listeners) {
             return;
         }
-        var len = listeners.length;
-        for (var i = 0; i < len; i++) {
-            var listener = listeners[i];
+        for (var _i = 0, listeners_1 = listeners; _i < listeners_1.length; _i++) {
+            var listener = listeners_1[_i];
             listener.apply(nil, args);
         }
     },
@@ -491,12 +483,13 @@ function queryElements(source) {
         return queryElements(result);
     }
     if (isArray(source)) {
-        var elements_1 = [];
-        each(source, function (i) {
+        var elements = [];
+        for (var _i = 0, _a = source; _i < _a.length; _i++) {
+            var i = _a[_i];
             var innerElements = queryElements(i);
-            elements_1.push.apply(elements_1, innerElements);
-        });
-        return elements_1;
+            elements.push.apply(elements, innerElements);
+        }
+        return elements;
     }
     return [];
 }
@@ -512,6 +505,7 @@ var Animator = (function () {
         self._context = {};
         self._duration = 0;
         self._currentTime = nil;
+        self._currentIteration = nil;
         self._playState = 'idle';
         self._playbackRate = 1;
         self._events = [];
@@ -593,8 +587,32 @@ var Animator = (function () {
         self._dispatcher.trigger(pause, [self]);
         return self;
     };
-    Animator.prototype.play = function () {
+    Animator.prototype.play = function (options) {
         var self = this;
+        var totalIterations;
+        var direction;
+        if (options) {
+            if (!isNumber(options)) {
+                var playOptions = options;
+                if (playOptions.iterations) {
+                    totalIterations = playOptions.iterations;
+                }
+                if (playOptions.direction) {
+                    direction = playOptions.direction;
+                }
+            }
+            else {
+                totalIterations = options;
+            }
+        }
+        if (!totalIterations) {
+            totalIterations = 1;
+        }
+        if (!direction) {
+            direction = 'normal';
+        }
+        self._totalIterations = totalIterations;
+        self._direction = direction;
         if (!(self._playState === 'running' || self._playState === 'pending')) {
             self._playState = 'pending';
             self._timeLoop.on(self._onTick);
@@ -638,7 +656,8 @@ var Animator = (function () {
             var plugin = _a[_i];
             if (plugin.canHandle(event)) {
                 var targets = queryElements(event.targets);
-                for (var i = 0, len = targets.length; i < len; i++) {
+                var targetLength = targets.length;
+                for (var i = 0, len = targetLength; i < len; i++) {
                     var target = targets[i];
                     var animator = plugin.handle({
                         index: i,
@@ -662,6 +681,7 @@ var Animator = (function () {
     Animator.prototype._onCancel = function (self) {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
+        self._currentIteration = nil;
         self._playState = 'idle';
         for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
             var evt = _a[_i];
@@ -670,7 +690,8 @@ var Animator = (function () {
     };
     Animator.prototype._onFinish = function (self) {
         self._timeLoop.off(self._onTick);
-        self._currentTime = 0;
+        self._currentTime = nil;
+        self._currentIteration = nil;
         self._playState = 'finished';
         for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
             var evt = _a[_i];
@@ -707,14 +728,25 @@ var Animator = (function () {
         var duration1 = self._duration;
         var startTime = isReversed ? duration1 : 0;
         var endTime = isReversed ? 0 : duration1;
+        var totalIterations = self._totalIterations;
+        var startIteration = isReversed ? totalIterations : 0;
+        var endIteration = isReversed ? 0 : totalIterations;
         if (self._playState === 'pending') {
-            var currentTime_1 = self._currentTime;
-            self._currentTime = currentTime_1 === nil || currentTime_1 === endTime ? startTime : currentTime_1;
+            var currentTime2 = self._currentTime;
+            var currentIteration_1 = self._currentIteration;
+            self._currentTime = currentTime2 === nil || currentTime2 === endTime ? startTime : currentTime2;
+            self._currentIteration = currentIteration_1 === nil || currentIteration_1 === endIteration ? startIteration : currentIteration_1;
             self._playState = 'running';
         }
         var currentTime = self._currentTime + delta * playbackRate;
-        self._currentTime = currentTime;
+        var currentIteration = self._currentIteration;
         if (!inRange(currentTime, startTime, endTime)) {
+            currentIteration += isReversed ? -1 : 1;
+            currentTime = isReversed ? duration1 + (duration1 % currentTime) : duration1 % currentTime;
+        }
+        self._currentIteration = currentIteration;
+        self._currentTime = currentTime;
+        if (endIteration === currentIteration) {
             dispatcher.trigger(finish, [self]);
             return;
         }
@@ -748,6 +780,7 @@ var Animator = (function () {
                     context.target = evt.target;
                     context.targets = evt.targets;
                     context.index = evt.index;
+                    context.iterations = currentIteration;
                     animator.onupdate(context);
                 }
             }
@@ -923,7 +956,10 @@ var JustAnimate = (function () {
     }
     JustAnimate.inject = function (animations) {
         var resolver = new MixinService();
-        each(animations, function (a) { return resolver.registerAnimation(a, true); });
+        for (var _i = 0, animations_1 = animations; _i < animations_1.length; _i++) {
+            var a = animations_1[_i];
+            resolver.registerAnimation(a, true);
+        }
     };
     JustAnimate.prototype.animate = function (options) {
         return new Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
@@ -939,7 +975,10 @@ var JustAnimate = (function () {
     };
     JustAnimate.prototype.inject = function (animations) {
         var resolver = this._resolver;
-        each(animations, function (a) { return resolver.registerAnimation(a, true); });
+        for (var _i = 0, animations_2 = animations; _i < animations_2.length; _i++) {
+            var a = animations_2[_i];
+            resolver.registerAnimation(a, true);
+        }
     };
     return JustAnimate;
 }());

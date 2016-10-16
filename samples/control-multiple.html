@@ -134,9 +134,13 @@
         (function() {
             var button = document.getElementById('animate-button');
             var index = -1;
+            var player;
 
             button.addEventListener('click', function() {
-                just.animate({ 
+                if (player) {
+                    player.cancel();
+                }
+                player = just.animate({ 
                         targets: '.badger',                     
                         mixins: 'bounceIn', 
                         to: '1.4s',
