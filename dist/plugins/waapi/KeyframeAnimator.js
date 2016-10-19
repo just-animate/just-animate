@@ -1,5 +1,12 @@
 "use strict";
 var resources_1 = require("../../common/resources");
+/**
+ * Implements the IAnimationController interface for the Web Animation API
+ *
+ * @export
+ * @class KeyframeAnimator
+ * @implements {ja.IAnimationController}
+ */
 var KeyframeAnimator = (function () {
     function KeyframeAnimator(init) {
         this._init = init;
@@ -51,8 +58,8 @@ var KeyframeAnimator = (function () {
     };
     KeyframeAnimator.prototype._ensureInit = function () {
         var self = this;
-        if (this._init) {
-            var init = self._init;
+        var init = self._init;
+        if (init) {
             self._init = resources_1.nil;
             self._initialized = false;
             self._animator = init();

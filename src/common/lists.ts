@@ -88,26 +88,6 @@ export function chain<T>(indexed: IList<T> | T): T[] {
  * @param {string} propertyName property to evaluate
  * @returns {*} max value of the property provided
  */
-export function max<T1>(items: T1[], propertyName: string): any {
-    let max: any = '';
-    for (const item of items) {
-        const prop = item[propertyName] as any;
-        if (max < prop) {
-            max = prop;
-        }
-    }
-    return max;
-}
-
-/**
- * Returns the max value of a given property in a list
- * 
- * @export
- * @template T1
- * @param {T1[]} items list of objects
- * @param {string} propertyName property to evaluate
- * @returns {*} max value of the property provided
- */
 export function maxBy<T1, T2>(items: T1[], predicate: ja.Mapper<T1, T2>): T2 {
     let max: any = '';
     for (const item of items)  {
@@ -117,38 +97,4 @@ export function maxBy<T1, T2>(items: T1[], predicate: ja.Mapper<T1, T2>): T2 {
         }
     }
     return max;
-}
-
-/**
- * Maps one list of objects to another.
- * Returning undefined skips the item (effectively filtering it)
- * 
- * @export
- * @template T1
- * @template T2
- * @param {T1[]} items list of objects to map
- * @param {ja.IMapper<T1, T2>} fn function that maps all objects
- * @returns {T2[]} new list of objects
- */
-export function map<T1, T2>(items: IList<T1>, fn: ja.Mapper<T1, T2>): T2[] {
-    const results = [] as T2[];
-    for (const item of items as T1[]) {
-        const result = fn(item);
-        if (result !== nil) {
-            results.push(result);
-        }
-    }
-    return results;
-}
-
-/**
- * Pushes each item in target into source and returns source
- * 
- * @export
- * @template T
- * @param {T[]} source
- * @param {T[]} target
- */
-export function pushAll<T>(source: T[], target: T[]): void {
-    push.apply(source, target);
 }

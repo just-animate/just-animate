@@ -1,6 +1,5 @@
 import { KeyframeAnimator } from '../waapi/KeyframeAnimator';
 import { resolveTimeExpression } from '../../common/units';
-import { isFunction } from '../../common/type';
 import { getEasingString } from '../core/easings';
 import { resolve } from '../../common/objects';
 import { nil, nada } from '../../common/resources';
@@ -38,11 +37,6 @@ export class KeyframePlugin implements ja.IPlugin {
 
         const animator = new KeyframeAnimator(initAnimator.bind(nada, timings, ctx));
         animator.totalDuration = totalTime;
-
-        if (isFunction(options.update)) {
-            animator.onupdate = options.update;
-        }
-
         return animator;
     }
 }

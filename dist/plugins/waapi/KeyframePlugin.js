@@ -1,7 +1,6 @@
 "use strict";
 var KeyframeAnimator_1 = require("../waapi/KeyframeAnimator");
 var units_1 = require("../../common/units");
-var type_1 = require("../../common/type");
 var easings_1 = require("../core/easings");
 var objects_1 = require("../../common/objects");
 var resources_1 = require("../../common/resources");
@@ -36,9 +35,6 @@ var KeyframePlugin = (function () {
         };
         var animator = new KeyframeAnimator_1.KeyframeAnimator(KeyframeTransformers_1.initAnimator.bind(resources_1.nada, timings, ctx));
         animator.totalDuration = totalTime;
-        if (type_1.isFunction(options.update)) {
-            animator.onupdate = options.update;
-        }
         return animator;
     };
     return KeyframePlugin;

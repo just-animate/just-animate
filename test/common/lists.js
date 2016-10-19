@@ -55,47 +55,4 @@ describe('lists', function () {
     });
   });
 
-  describe('each()', function () {
-    it('iterates over each item', function () {
-      var initial = [1, 2, 3];
-      var result = [];
-      lists.each(initial, (i) => result.push(i));
-      expect(result).to.deep.equal(initial);
-    });
-  });
-
-  describe('max()', function () {
-    it('returns the max value for a property in an array of items', function () {
-      var source = [
-        { value: 10 },
-        { value: 6078 },
-        { value: -30 }
-      ];
-      assert(6078, lists.max(source, 'value'));
-    });
-  });
-
-  describe('map()', function () {
-    it('maps an array of items', function () {
-      var source = [
-        { letter: 't' },
-        { letter: 'e' },
-        { letter: 's' },
-        { letter: undefined },
-        { letter: 't' }
-      ];
-      assert.equal('test', lists.map(source, i => i.letter).join(''));
-    });
-  });
-
-  describe('pushALl()', function () {
-    it('pushes a array of items into an existing array', function () {
-      var target = [];
-      var source = [1, 2, 3, 4];
-
-      lists.pushAll(target, source);
-
-      assert.equal(source.length, target.length, true);
-    });
-  });
 });

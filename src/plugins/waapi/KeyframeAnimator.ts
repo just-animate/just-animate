@@ -1,9 +1,14 @@
 import { finished, paused, running, idle, nil } from '../../common/resources';
 
+/**
+ * Implements the IAnimationController interface for the Web Animation API
+ * 
+ * @export
+ * @class KeyframeAnimator
+ * @implements {ja.IAnimationController}
+ */
 export class KeyframeAnimator implements ja.IAnimationController {
     public totalDuration: number;
-    public onupdate: { (context: ja.IAnimationTimeContext): void };
-
     private _initialized: boolean;
     private _init: ja.Resolvable<waapi.IAnimation>;
     private _animator: waapi.IAnimation;
@@ -61,8 +66,8 @@ export class KeyframeAnimator implements ja.IAnimationController {
 
     private _ensureInit(): void {
         const self = this;
-        if (this._init) {
-            const init = self._init as ja.Resolver<waapi.IAnimation>;
+        const init = self._init as ja.Resolver<waapi.IAnimation>;
+        if (init) {
             self._init = nil;
             self._initialized = false;
             self._animator = init();

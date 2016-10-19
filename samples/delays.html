@@ -55,31 +55,27 @@
             var button = document.getElementById('animate-button');
 
             var player = just.animate({ 
-                    targets: '.element',     
-                    css: [
-                        {
-                            backgroundColor: 'white',
-                            color: function(target, index, targets) {
-                                return 'hsl(' + (360 * (index / targets.length)) + ', 50%, 30%)'
-                            }
-                        },
-                        {
-                            backgroundColor: function(target, index, targets) {
-                                return 'hsl(' + (360 * (index / targets.length)) + ', 35%, 55%)'
-                            },                  
-                            color: 'white'
-                        },
-                    ],
-                    to: '900ms',
+                    targets: '.element',    
+                    to: '900ms',   
                     fill: 'both',
                     delay: '+=120ms',
-                    easing: 'ease-in'
+                    easing: 'ease-in',                 
+                    css: {
+                        backgroundColor: function(target, index, targets) {
+                            return ['hsl(' + (360 * (index / targets.length)) + ', 35%, 55%)', 'white'];
+                        },
+                        color: function(target, index, targets) {
+                            return ['white', 'hsl(' + (360 * (index / targets.length)) + ', 50%, 30%)'];
+                        }
+                    }
                 })
-                .pause()
-                .reverse();
+                .pause();
 
             button.addEventListener('click', function() {
-                player.reverse().play();
+                player.play({
+                    iterations: 2,
+                    direction: 'alternate'
+                });
             });
         })();
     </script>

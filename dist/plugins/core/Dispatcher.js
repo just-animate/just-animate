@@ -11,11 +11,12 @@ function Dispatcher() {
 exports.Dispatcher = Dispatcher;
 Dispatcher.prototype = {
     _fn: resources_1.nil,
-    trigger: function (eventName, args) {
+    trigger: function (eventName, resolvable) {
         var listeners = this._fn[eventName];
         if (!listeners) {
             return;
         }
+        var args = type_1.isFunction(resolvable) ? resolvable() : resolvable;
         for (var _i = 0, listeners_1 = listeners; _i < listeners_1.length; _i++) {
             var listener = listeners_1[_i];
             listener.apply(resources_1.nil, args);

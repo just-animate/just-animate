@@ -2957,30 +2957,10 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
      * @param {string} propertyName property to evaluate
      * @returns {*} max value of the property provided
      */
-    function max(items, propertyName) {
+    function maxBy(items, predicate) {
         var max = '';
         for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
             var item = items_1[_i];
-            var prop = item[propertyName];
-            if (max < prop) {
-                max = prop;
-            }
-        }
-        return max;
-    }
-    /**
-     * Returns the max value of a given property in a list
-     *
-     * @export
-     * @template T1
-     * @param {T1[]} items list of objects
-     * @param {string} propertyName property to evaluate
-     * @returns {*} max value of the property provided
-     */
-    function maxBy(items, predicate) {
-        var max = '';
-        for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
-            var item = items_2[_i];
             var prop = predicate(item);
             if (max < prop) {
                 max = prop;
@@ -2988,48 +2968,12 @@ System.register("just-animate/common/lists", ["just-animate/common/resources", "
         }
         return max;
     }
-    /**
-     * Maps one list of objects to another.
-     * Returning undefined skips the item (effectively filtering it)
-     *
-     * @export
-     * @template T1
-     * @template T2
-     * @param {T1[]} items list of objects to map
-     * @param {ja.IMapper<T1, T2>} fn function that maps all objects
-     * @returns {T2[]} new list of objects
-     */
-    function map(items, fn) {
-        var results = [];
-        for (var _i = 0, _a = items; _i < _a.length; _i++) {
-            var item = _a[_i];
-            var result = fn(item);
-            if (result !== resources_2.nil) {
-                results.push(result);
-            }
-        }
-        return results;
-    }
-    /**
-     * Pushes each item in target into source and returns source
-     *
-     * @export
-     * @template T
-     * @param {T[]} source
-     * @param {T[]} target
-     */
-    function pushAll(source, target) {
-        push.apply(source, target);
-    }
     var resources_2, type_1, slice, push;
     exports_80("head", head);
     exports_80("tail", tail);
     exports_80("toArray", toArray);
     exports_80("chain", chain);
-    exports_80("max", max);
     exports_80("maxBy", maxBy);
-    exports_80("map", map);
-    exports_80("pushAll", pushAll);
     return {
         setters: [
             function (resources_2_1) {
@@ -3475,11 +3419,12 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
         execute: function () {
             Dispatcher.prototype = {
                 _fn: resources_7.nil,
-                trigger: function (eventName, args) {
+                trigger: function (eventName, resolvable) {
                     var listeners = this._fn[eventName];
                     if (!listeners) {
                         return;
                     }
+                    var args = type_6.isFunction(resolvable) ? resolvable() : resolvable;
                     for (var _i = 0, listeners_1 = listeners; _i < listeners_1.length; _i++) {
                         var listener = listeners_1[_i];
                         listener.apply(resources_7.nil, args);
@@ -4075,53 +4020,67 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                         return;
                     }
                     // running/pending
-                    var playbackRate = self._playbackRate;
-                    var isReversed = playbackRate < 0;
                     // calculate running range
                     var duration1 = self._duration;
+                    var totalIterations = self._totalIterations;
+                    var playbackRate = self._playbackRate;
+                    var isReversed = playbackRate < 0;
                     var startTime = isReversed ? duration1 : 0;
                     var endTime = isReversed ? 0 : duration1;
-                    var totalIterations = self._totalIterations;
-                    var startIteration = isReversed ? totalIterations : 0;
-                    var endIteration = isReversed ? 0 : totalIterations;
                     if (self._playState === 'pending') {
                         var currentTime2 = self._currentTime;
                         var currentIteration_1 = self._currentIteration;
                         self._currentTime = currentTime2 === resources_11.nil || currentTime2 === endTime ? startTime : currentTime2;
-                        self._currentIteration = currentIteration_1 === resources_11.nil || currentIteration_1 === endIteration ? startIteration : currentIteration_1;
+                        self._currentIteration = currentIteration_1 === resources_11.nil || currentIteration_1 === totalIterations ? 0 : currentIteration_1;
                         self._playState = 'running';
                     }
                     // calculate currentTime from delta
                     var currentTime = self._currentTime + delta * playbackRate;
                     var currentIteration = self._currentIteration;
-                    // check if animation has finished
                     var isLastFrame = false;
+                    // check if animation has finished
                     if (!math_1.inRange(currentTime, startTime, endTime)) {
                         isLastFrame = true;
-                        currentIteration += isReversed ? -1 : 1;
+                        if (self._direction === 'alternate') {
+                            playbackRate = self._playbackRate * -1;
+                            self._playbackRate = playbackRate;
+                            isReversed = playbackRate < 0;
+                            startTime = isReversed ? duration1 : 0;
+                            endTime = isReversed ? 0 : duration1;
+                        }
+                        currentIteration++;
                         currentTime = startTime;
+                        context.currentTime = currentTime;
+                        context.delta = delta;
+                        context.duration = endTime - startTime;
+                        context.playbackRate = playbackRate;
+                        context.iterations = currentIteration;
+                        context.offset = resources_11.nil;
+                        context.computedOffset = resources_11.nil;
+                        context.target = resources_11.nil;
+                        context.targets = resources_11.nil;
+                        context.index = resources_11.nil;
+                        self._dispatcher.trigger('iteration', [context]);
                     }
                     self._currentIteration = currentIteration;
                     self._currentTime = currentTime;
-                    if (endIteration === currentIteration) {
-                        dispatcher.trigger(resources_11.finish, [self]);
+                    if (totalIterations === currentIteration) {
+                        dispatcher.trigger('finish', [self]);
                         return;
                     }
-                    // start animations if should be active and currently aren't   
-                    for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
-                        var evt = _a[_i];
+                    var _loop_1 = function (evt) {
                         var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
                         var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
                         var shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
                         var animator = evt.animator;
                         if (!shouldBeActive) {
-                            continue;
+                            return "continue";
                         }
                         var controllerState = animator.playState();
                         // cancel animation if there was a fatal error
                         if (controllerState === 'fatal') {
                             dispatcher.trigger(resources_11.cancel, [self]);
-                            return;
+                            return { value: void 0 };
                         }
                         if (isLastFrame) {
                             animator.restart();
@@ -4131,8 +4090,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                             animator.playState('running');
                         }
                         animator.playbackRate(playbackRate);
-                        if (animator.onupdate) {
-                            // calculate relative timing properties
+                        self._dispatcher.trigger('update', function () {
                             var relativeDuration = evt.endTimeMs - evt.startTimeMs;
                             var relativeCurrentTime = currentTime - evt.startTimeMs;
                             var timeOffset = relativeCurrentTime / relativeDuration;
@@ -4142,13 +4100,20 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                             context.duration = relativeDuration;
                             context.offset = timeOffset;
                             context.playbackRate = playbackRate;
+                            context.iterations = currentIteration;
                             context.computedOffset = evt.easingFn(timeOffset);
                             context.target = evt.target;
                             context.targets = evt.targets;
                             context.index = evt.index;
-                            context.iterations = currentIteration;
-                            animator.onupdate(context);
-                        }
+                            return [context];
+                        });
+                    };
+                    // start animations if should be active and currently aren't   
+                    for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
+                        var evt = _a[_i];
+                        var state_1 = _loop_1(evt);
+                        if (typeof state_1 === "object")
+                            return state_1.value;
                     }
                 };
                 return Animator;
@@ -4335,6 +4300,13 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
             }
         ],
         execute: function () {
+            /**
+             * Implements the IAnimationController interface for the Web Animation API
+             *
+             * @export
+             * @class KeyframeAnimator
+             * @implements {ja.IAnimationController}
+             */
             KeyframeAnimator = (function () {
                 function KeyframeAnimator(init) {
                     this._init = init;
@@ -4386,8 +4358,8 @@ System.register("just-animate/plugins/waapi/KeyframeAnimator", ["just-animate/co
                 };
                 KeyframeAnimator.prototype._ensureInit = function () {
                     var self = this;
-                    if (this._init) {
-                        var init = self._init;
+                    var init = self._init;
+                    if (init) {
                         self._init = resources_12.nil;
                         self._initialized = false;
                         self._animator = init();
@@ -4824,10 +4796,10 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
         }
     };
 });
-System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/common/type", "just-animate/plugins/core/easings", "just-animate/common/objects", "just-animate/common/resources", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_98, context_98) {
+System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plugins/waapi/KeyframeAnimator", "just-animate/common/units", "just-animate/plugins/core/easings", "just-animate/common/objects", "just-animate/common/resources", "just-animate/plugins/waapi/KeyframeTransformers"], function (exports_98, context_98) {
     "use strict";
     var __moduleName = context_98 && context_98.id;
-    var KeyframeAnimator_1, units_3, type_9, easings_3, objects_3, resources_14, KeyframeTransformers_1, KeyframePlugin;
+    var KeyframeAnimator_1, units_3, easings_3, objects_3, resources_14, KeyframeTransformers_1, KeyframePlugin;
     return {
         setters: [
             function (KeyframeAnimator_1_1) {
@@ -4835,9 +4807,6 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plug
             },
             function (units_3_1) {
                 units_3 = units_3_1;
-            },
-            function (type_9_1) {
-                type_9 = type_9_1;
             },
             function (easings_3_1) {
                 easings_3 = easings_3_1;
@@ -4883,9 +4852,6 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plug
                     };
                     var animator = new KeyframeAnimator_1.KeyframeAnimator(KeyframeTransformers_1.initAnimator.bind(resources_14.nada, timings, ctx));
                     animator.totalDuration = totalTime;
-                    if (type_9.isFunction(options.update)) {
-                        animator.onupdate = options.update;
-                    }
                     return animator;
                 };
                 return KeyframePlugin;

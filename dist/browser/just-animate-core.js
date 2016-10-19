@@ -84,7 +84,6 @@ function getTypeString(val) {
 }
 
 var slice = Array.prototype.slice;
-var push = Array.prototype.push;
 
 function head(indexed, predicate) {
     if (!indexed) {
@@ -130,11 +129,10 @@ function toArray(indexed, index) {
 function chain(indexed) {
     return isArray(indexed) ? indexed : [indexed];
 }
-
 function maxBy(items, predicate) {
     var max = '';
-    for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
-        var item = items_2[_i];
+    for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+        var item = items_1[_i];
         var prop = predicate(item);
         if (max < prop) {
             max = prop;
@@ -216,11 +214,12 @@ function Dispatcher() {
 }
 Dispatcher.prototype = {
     _fn: nil,
-    trigger: function (eventName, args) {
+    trigger: function (eventName, resolvable) {
         var listeners = this._fn[eventName];
         if (!listeners) {
             return;
         }
+        var args = isFunction(resolvable) ? resolvable() : resolvable;
         for (var _i = 0, listeners_1 = listeners; _i < listeners_1.length; _i++) {
             var listener = listeners_1[_i];
             listener.apply(nil, args);
@@ -723,19 +722,17 @@ var Animator = (function () {
             dispatcher.trigger(pause, [self]);
             return;
         }
+        var duration1 = self._duration;
+        var totalIterations = self._totalIterations;
         var playbackRate = self._playbackRate;
         var isReversed = playbackRate < 0;
-        var duration1 = self._duration;
         var startTime = isReversed ? duration1 : 0;
         var endTime = isReversed ? 0 : duration1;
-        var totalIterations = self._totalIterations;
-        var startIteration = isReversed ? totalIterations : 0;
-        var endIteration = isReversed ? 0 : totalIterations;
         if (self._playState === 'pending') {
             var currentTime2 = self._currentTime;
             var currentIteration_1 = self._currentIteration;
             self._currentTime = currentTime2 === nil || currentTime2 === endTime ? startTime : currentTime2;
-            self._currentIteration = currentIteration_1 === nil || currentIteration_1 === endIteration ? startIteration : currentIteration_1;
+            self._currentIteration = currentIteration_1 === nil || currentIteration_1 === totalIterations ? 0 : currentIteration_1;
             self._playState = 'running';
         }
         var currentTime = self._currentTime + delta * playbackRate;
@@ -743,28 +740,45 @@ var Animator = (function () {
         var isLastFrame = false;
         if (!inRange(currentTime, startTime, endTime)) {
             isLastFrame = true;
-            currentIteration += isReversed ? -1 : 1;
+            if (self._direction === 'alternate') {
+                playbackRate = self._playbackRate * -1;
+                self._playbackRate = playbackRate;
+                isReversed = playbackRate < 0;
+                startTime = isReversed ? duration1 : 0;
+                endTime = isReversed ? 0 : duration1;
+            }
+            currentIteration++;
             currentTime = startTime;
+            context.currentTime = currentTime;
+            context.delta = delta;
+            context.duration = endTime - startTime;
+            context.playbackRate = playbackRate;
+            context.iterations = currentIteration;
+            context.offset = nil;
+            context.computedOffset = nil;
+            context.target = nil;
+            context.targets = nil;
+            context.index = nil;
+            self._dispatcher.trigger('iteration', [context]);
         }
         self._currentIteration = currentIteration;
         self._currentTime = currentTime;
-        if (endIteration === currentIteration) {
-            dispatcher.trigger(finish, [self]);
+        if (totalIterations === currentIteration) {
+            dispatcher.trigger('finish', [self]);
             return;
         }
-        for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
-            var evt = _a[_i];
+        var _loop_1 = function (evt) {
             var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
             var shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
             var animator = evt.animator;
             if (!shouldBeActive) {
-                continue;
+                return "continue";
             }
             var controllerState = animator.playState();
             if (controllerState === 'fatal') {
                 dispatcher.trigger(cancel, [self]);
-                return;
+                return { value: void 0 };
             }
             if (isLastFrame) {
                 animator.restart();
@@ -774,7 +788,7 @@ var Animator = (function () {
                 animator.playState('running');
             }
             animator.playbackRate(playbackRate);
-            if (animator.onupdate) {
+            self._dispatcher.trigger('update', function () {
                 var relativeDuration = evt.endTimeMs - evt.startTimeMs;
                 var relativeCurrentTime = currentTime - evt.startTimeMs;
                 var timeOffset = relativeCurrentTime / relativeDuration;
@@ -783,13 +797,19 @@ var Animator = (function () {
                 context.duration = relativeDuration;
                 context.offset = timeOffset;
                 context.playbackRate = playbackRate;
+                context.iterations = currentIteration;
                 context.computedOffset = evt.easingFn(timeOffset);
                 context.target = evt.target;
                 context.targets = evt.targets;
                 context.index = evt.index;
-                context.iterations = currentIteration;
-                animator.onupdate(context);
-            }
+                return [context];
+            });
+        };
+        for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
+            var evt = _a[_i];
+            var state_1 = _loop_1(evt);
+            if (typeof state_1 === "object")
+                return state_1.value;
         }
     };
     return Animator;
@@ -1040,8 +1060,8 @@ var KeyframeAnimator = (function () {
     };
     KeyframeAnimator.prototype._ensureInit = function () {
         var self = this;
-        if (this._init) {
-            var init = self._init;
+        var init = self._init;
+        if (init) {
             self._init = nil;
             self._initialized = false;
             self._animator = init();
@@ -1400,9 +1420,6 @@ var KeyframePlugin = (function () {
         };
         var animator = new KeyframeAnimator(initAnimator.bind(nada, timings, ctx));
         animator.totalDuration = totalTime;
-        if (isFunction(options.update)) {
-            animator.onupdate = options.update;
-        }
         return animator;
     };
     return KeyframePlugin;

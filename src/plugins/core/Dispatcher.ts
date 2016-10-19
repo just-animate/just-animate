@@ -11,11 +11,12 @@ export function Dispatcher(): IDispatcher {
 
 Dispatcher.prototype = {
     _fn: nil as ICallbackMap,
-    trigger(eventName: string, args?: any[]): void {
+    trigger(eventName: string, resolvable: any[] | { (): any[]; }): void {
         const listeners = this._fn[eventName];
         if (!listeners) {
             return;
         }
+        const args = isFunction(resolvable) ? (resolvable as Function)() : resolvable as any[];
         for (const listener of listeners) {
             listener.apply(nil, args);
         }
@@ -47,7 +48,7 @@ Dispatcher.prototype = {
 };
 
 export interface IDispatcher {
-    trigger(eventName: string, args?: any[]): void;
+    trigger(eventName: string, args?: any[] | { (): any[]; }): void;
     on(eventName: string, listener: Function): void;
     off(eventName: string, listener: Function): void;
 }

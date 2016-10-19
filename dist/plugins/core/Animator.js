@@ -250,53 +250,67 @@ var Animator = (function () {
             return;
         }
         // running/pending
-        var playbackRate = self._playbackRate;
-        var isReversed = playbackRate < 0;
         // calculate running range
         var duration1 = self._duration;
+        var totalIterations = self._totalIterations;
+        var playbackRate = self._playbackRate;
+        var isReversed = playbackRate < 0;
         var startTime = isReversed ? duration1 : 0;
         var endTime = isReversed ? 0 : duration1;
-        var totalIterations = self._totalIterations;
-        var startIteration = isReversed ? totalIterations : 0;
-        var endIteration = isReversed ? 0 : totalIterations;
         if (self._playState === 'pending') {
             var currentTime2 = self._currentTime;
             var currentIteration_1 = self._currentIteration;
             self._currentTime = currentTime2 === resources_1.nil || currentTime2 === endTime ? startTime : currentTime2;
-            self._currentIteration = currentIteration_1 === resources_1.nil || currentIteration_1 === endIteration ? startIteration : currentIteration_1;
+            self._currentIteration = currentIteration_1 === resources_1.nil || currentIteration_1 === totalIterations ? 0 : currentIteration_1;
             self._playState = 'running';
         }
         // calculate currentTime from delta
         var currentTime = self._currentTime + delta * playbackRate;
         var currentIteration = self._currentIteration;
-        // check if animation has finished
         var isLastFrame = false;
+        // check if animation has finished
         if (!math_1.inRange(currentTime, startTime, endTime)) {
             isLastFrame = true;
-            currentIteration += isReversed ? -1 : 1;
+            if (self._direction === 'alternate') {
+                playbackRate = self._playbackRate * -1;
+                self._playbackRate = playbackRate;
+                isReversed = playbackRate < 0;
+                startTime = isReversed ? duration1 : 0;
+                endTime = isReversed ? 0 : duration1;
+            }
+            currentIteration++;
             currentTime = startTime;
+            context.currentTime = currentTime;
+            context.delta = delta;
+            context.duration = endTime - startTime;
+            context.playbackRate = playbackRate;
+            context.iterations = currentIteration;
+            context.offset = resources_1.nil;
+            context.computedOffset = resources_1.nil;
+            context.target = resources_1.nil;
+            context.targets = resources_1.nil;
+            context.index = resources_1.nil;
+            self._dispatcher.trigger('iteration', [context]);
         }
         self._currentIteration = currentIteration;
         self._currentTime = currentTime;
-        if (endIteration === currentIteration) {
-            dispatcher.trigger(resources_1.finish, [self]);
+        if (totalIterations === currentIteration) {
+            dispatcher.trigger('finish', [self]);
             return;
         }
-        // start animations if should be active and currently aren't   
-        for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
-            var evt = _a[_i];
+        var _loop_1 = function (evt) {
             var startTimeMs = playbackRate < 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             var endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
             var shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
             var animator = evt.animator;
             if (!shouldBeActive) {
-                continue;
+                return "continue";
             }
             var controllerState = animator.playState();
             // cancel animation if there was a fatal error
             if (controllerState === 'fatal') {
                 dispatcher.trigger(resources_1.cancel, [self]);
-                return;
+                return { value: void 0 };
             }
             if (isLastFrame) {
                 animator.restart();
@@ -306,8 +320,7 @@ var Animator = (function () {
                 animator.playState('running');
             }
             animator.playbackRate(playbackRate);
-            if (animator.onupdate) {
-                // calculate relative timing properties
+            self._dispatcher.trigger('update', function () {
                 var relativeDuration = evt.endTimeMs - evt.startTimeMs;
                 var relativeCurrentTime = currentTime - evt.startTimeMs;
                 var timeOffset = relativeCurrentTime / relativeDuration;
@@ -317,13 +330,20 @@ var Animator = (function () {
                 context.duration = relativeDuration;
                 context.offset = timeOffset;
                 context.playbackRate = playbackRate;
+                context.iterations = currentIteration;
                 context.computedOffset = evt.easingFn(timeOffset);
                 context.target = evt.target;
                 context.targets = evt.targets;
                 context.index = evt.index;
-                context.iterations = currentIteration;
-                animator.onupdate(context);
-            }
+                return [context];
+            });
+        };
+        // start animations if should be active and currently aren't   
+        for (var _i = 0, _a = self._events; _i < _a.length; _i++) {
+            var evt = _a[_i];
+            var state_1 = _loop_1(evt);
+            if (typeof state_1 === "object")
+                return state_1.value;
         }
     };
     return Animator;

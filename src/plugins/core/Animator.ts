@@ -290,44 +290,62 @@ export class Animator implements ja.IAnimator {
             return;
         }
         // running/pending
-        const playbackRate = self._playbackRate;
-        const isReversed = playbackRate < 0;
 
         // calculate running range
         const duration1 = self._duration;
-        const startTime = isReversed ? duration1 : 0;
-        const endTime = isReversed ? 0 : duration1;
         const totalIterations = self._totalIterations;
-        const startIteration = isReversed ? totalIterations : 0;
-        const endIteration = isReversed ? 0 : totalIterations;
-
+        
+        let playbackRate = self._playbackRate;
+        let isReversed = playbackRate < 0;
+        let startTime = isReversed ? duration1 : 0;
+        let endTime = isReversed ? 0 : duration1;
      
         if (self._playState === 'pending') {
             const currentTime2 = self._currentTime;
             const currentIteration = self._currentIteration;
             self._currentTime = currentTime2 === nil || currentTime2 === endTime ? startTime : currentTime2;
-            self._currentIteration = currentIteration === nil || currentIteration === endIteration ? startIteration : currentIteration;
+            self._currentIteration = currentIteration === nil || currentIteration === totalIterations ? 0 : currentIteration;
             self._playState = 'running';
-
         } 
         
         // calculate currentTime from delta
         let currentTime = self._currentTime + delta * playbackRate;
         let currentIteration = self._currentIteration;
 
+        let isLastFrame = false;        
         // check if animation has finished
-        let isLastFrame = false;
         if (!inRange(currentTime, startTime, endTime)) {
             isLastFrame = true;
-            currentIteration += isReversed ? -1 : 1;
+            if (self._direction === 'alternate') {
+                playbackRate = self._playbackRate * -1;
+                self._playbackRate = playbackRate;
+
+                isReversed = playbackRate < 0;
+                startTime = isReversed ? duration1 : 0;
+                endTime = isReversed ? 0 : duration1;
+            }
+            
+            currentIteration++;
             currentTime = startTime;
+
+            context.currentTime = currentTime;
+            context.delta = delta;
+            context.duration = endTime - startTime;
+            context.playbackRate = playbackRate;
+            context.iterations = currentIteration;            
+            context.offset = nil;
+            context.computedOffset = nil;
+            context.target = nil;
+            context.targets = nil;
+            context.index = nil;
+            self._dispatcher.trigger('iteration', [context]);
         }
 
         self._currentIteration = currentIteration;        
         self._currentTime = currentTime;
 
-        if (endIteration === currentIteration) {
-            dispatcher.trigger(finish, [self]);
+        if (totalIterations === currentIteration) {
+            dispatcher.trigger('finish', [self]);
             return;
         }
 
@@ -360,8 +378,8 @@ export class Animator implements ja.IAnimator {
             }
 
             animator.playbackRate(playbackRate);
-            if (animator.onupdate) {
-                // calculate relative timing properties
+            
+            self._dispatcher.trigger('update', () => {
                 const relativeDuration = evt.endTimeMs - evt.startTimeMs;
                 const relativeCurrentTime = currentTime - evt.startTimeMs;
                 const timeOffset = relativeCurrentTime / relativeDuration;
@@ -372,32 +390,23 @@ export class Animator implements ja.IAnimator {
                 context.duration = relativeDuration;
                 context.offset = timeOffset;
                 context.playbackRate = playbackRate;
+                context.iterations = currentIteration;                
                 context.computedOffset = evt.easingFn(timeOffset);
                 context.target = evt.target;
                 context.targets = evt.targets;
                 context.index = evt.index;
-                context.iterations = currentIteration;
-
-                animator.onupdate(context);
-            }
+                return [context];
+            });
         }
     }
 }
 
 
 interface IAnimationContext {
-    _direction: string;
-    _totalIterations: number;
     _currentIteration: number;
     _currentTime: number;
-    _dispatcher: IDispatcher;
-    _duration: number;
     _events: ja.ITimelineEvent[];
     _onTick: { (delta: number, runningTime: number): void; };
     _playState: ja.AnimationPlaybackState;
-    _playbackRate: number;
-    _resolver: MixinService;
     _timeLoop: ITimeLoop;
 }
-
-
