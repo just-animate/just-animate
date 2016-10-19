@@ -76,17 +76,8 @@ var JustAnimate = (function () {
     JustAnimate.prototype.animate = function (options) {
         return new Animator_1.Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
     };
-    /**
-     * Generates a random number between the first and last number (exclusive)
-     *
-     * @param {number} first number; start of range
-     * @param {number} last number: end of range
-     * @returns {number} at or between the first number until the last number
-     *
-     * @memberOf JustAnimate
-     */
-    JustAnimate.prototype.random = function (first, last) {
-        return random_1.random(first, last);
+    JustAnimate.prototype.random = function (first, last, unit, wholeNumbersOnly) {
+        return random_1.random(first, last, unit, wholeNumbersOnly);
     };
     /**
      * Registers a mixin to this instance of JustAnimate.

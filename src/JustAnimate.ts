@@ -97,8 +97,11 @@ export class JustAnimate {
      * 
      * @memberOf JustAnimate
      */
-    public random(first: number, last: number): number {
-        return random(first, last);
+    public random(first: number, last: number): number;
+    public random(first: number, last: number, unit: string): string;
+    public random(first: number, last: number, unit: undefined, wholeNumbersOnly: boolean): number;
+    public random(first: number, last: number, unit?: string, wholeNumbersOnly?: boolean): number|string {
+        return random(first, last, unit, wholeNumbersOnly);
     }
     /**
      * Registers a mixin to this instance of JustAnimate.

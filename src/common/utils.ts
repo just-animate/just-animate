@@ -1,14 +1,10 @@
-const global = window;
-const requestAnimationFrame = global.requestAnimationFrame;
+export function now(): number {
+    return performance && performance.now ? performance.now() : Date.now();
+}
 
-export const now = (performance && performance.now)
-    ? () => performance.now()
-    : () => Date.now();
-
-export const raf = (requestAnimationFrame)
-    ? (ctx: any, fn: Function) => {
-        requestAnimationFrame(() => { fn(ctx); });
-    }
-    : (ctx: any, fn: Function) => {
-        setTimeout(() => { fn(ctx); }, 16.66);
-    };
+export function raf(ctx: any, fn: Function): any {
+    const callback = () => { fn(ctx); };
+    return requestAnimationFrame
+        ? requestAnimationFrame(callback)
+        : setTimeout(callback, 16.66);
+}

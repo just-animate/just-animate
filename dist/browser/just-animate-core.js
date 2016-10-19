@@ -4,8 +4,15 @@
 function shuffle(choices) {
     return choices[Math.floor(Math.random() * choices.length)];
 }
-function random(first, last) {
-    return Math.floor(first + (Math.random() * (last - first)));
+function random(first, last, unit, wholeNumbersOnly) {
+    var val = first + (Math.random() * (last - first));
+    if (wholeNumbersOnly === true) {
+        val = Math.floor(val);
+    }
+    if (!unit) {
+        return val;
+    }
+    return val + unit;
 }
 
 var nada = null;
@@ -815,18 +822,15 @@ var Animator = (function () {
     return Animator;
 }());
 
-var global = window;
-var requestAnimationFrame = global.requestAnimationFrame;
-var now = (performance && performance.now)
-    ? function () { return performance.now(); }
-    : function () { return Date.now(); };
-var raf = (requestAnimationFrame)
-    ? function (ctx, fn) {
-        requestAnimationFrame(function () { fn(ctx); });
-    }
-    : function (ctx, fn) {
-        setTimeout(function () { fn(ctx); }, 16.66);
-    };
+function now() {
+    return performance && performance.now ? performance.now() : Date.now();
+}
+function raf(ctx, fn) {
+    var callback = function () { fn(ctx); };
+    return requestAnimationFrame
+        ? requestAnimationFrame(callback)
+        : setTimeout(callback, 16.66);
+}
 
 function TimeLoop() {
     var self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
@@ -990,8 +994,8 @@ var JustAnimate = (function () {
     JustAnimate.prototype.animate = function (options) {
         return new Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
     };
-    JustAnimate.prototype.random = function (first, last) {
-        return random(first, last);
+    JustAnimate.prototype.random = function (first, last, unit, wholeNumbersOnly) {
+        return random(first, last, unit, wholeNumbersOnly);
     };
     JustAnimate.prototype.register = function (preset) {
         this._resolver.registerAnimation(preset, false);

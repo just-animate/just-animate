@@ -3189,8 +3189,15 @@ System.register("just-animate/common/random", [], function (exports_85, context_
     function shuffle(choices) {
         return choices[Math.floor(Math.random() * choices.length)];
     }
-    function random(first, last) {
-        return Math.floor(first + (Math.random() * (last - first)));
+    function random(first, last, unit, wholeNumbersOnly) {
+        var val = first + (Math.random() * (last - first));
+        if (wholeNumbersOnly === true) {
+            val = Math.floor(val);
+        }
+        if (!unit) {
+            return val;
+        }
+        return val + unit;
     }
     exports_85("shuffle", shuffle);
     exports_85("random", random);
@@ -3374,22 +3381,20 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
 System.register("just-animate/common/utils", [], function (exports_88, context_88) {
     "use strict";
     var __moduleName = context_88 && context_88.id;
-    var global, requestAnimationFrame, now, raf;
+    function now() {
+        return performance && performance.now ? performance.now() : Date.now();
+    }
+    function raf(ctx, fn) {
+        var callback = function () { fn(ctx); };
+        return requestAnimationFrame
+            ? requestAnimationFrame(callback)
+            : setTimeout(callback, 16.66);
+    }
+    exports_88("now", now);
+    exports_88("raf", raf);
     return {
         setters: [],
         execute: function () {
-            global = window;
-            requestAnimationFrame = global.requestAnimationFrame;
-            exports_88("now", now = (performance && performance.now)
-                ? function () { return performance.now(); }
-                : function () { return Date.now(); });
-            exports_88("raf", raf = (requestAnimationFrame)
-                ? function (ctx, fn) {
-                    requestAnimationFrame(function () { fn(ctx); });
-                }
-                : function (ctx, fn) {
-                    setTimeout(function () { fn(ctx); }, 16.66);
-                });
         }
     };
 });
@@ -4215,17 +4220,8 @@ System.register("just-animate/JustAnimate", ["just-animate/common/random", "just
                 JustAnimate.prototype.animate = function (options) {
                     return new Animator_1.Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
                 };
-                /**
-                 * Generates a random number between the first and last number (exclusive)
-                 *
-                 * @param {number} first number; start of range
-                 * @param {number} last number: end of range
-                 * @returns {number} at or between the first number until the last number
-                 *
-                 * @memberOf JustAnimate
-                 */
-                JustAnimate.prototype.random = function (first, last) {
-                    return random_1.random(first, last);
+                JustAnimate.prototype.random = function (first, last, unit, wholeNumbersOnly) {
+                    return random_1.random(first, last, unit, wholeNumbersOnly);
                 };
                 /**
                  * Registers a mixin to this instance of JustAnimate.
