@@ -1,6 +1,6 @@
 import { isDefined, isNumber } from './type';
-import { distanceExpression, genericUnitExpression, percentageExpression, timeExpression, nil } from './resources';
-import { invalidArg } from './errors';
+import { measureExpression, unitExpression, nil } from './resources';
+import { random } from './random';
 
 export const stepNone: string = '=';
 export const stepForward: string = '+=';
@@ -25,119 +25,64 @@ export const percent: string = '%';
 export const millisecond: string = 'ms';
 export const second: string = 's';
 
-export interface IUnit {
-    step: string;
-    unit: string;
-    value: number;
-    values(value: number, unit: string, step: string): IUnit;
-    toString(): string;
-}
 
-export function Unit(): IUnit {
-    const self = this instanceof Unit ? this : Object.create(Unit.prototype);
-    return self;
-}
-
-Unit.prototype = {
-    step: nil as string,
-    unit: nil as string,
-    value: nil as number,
-    values(value: number, unit: string, step: string): IUnit {
-        const self = this;
-        self.value = value;
-        self.unit = unit;
-        self.step = step;
-        return self;
-    },
-    toString(): string {
-        return String(this.value) + this.unit;
-    }
-};
-
-const sharedUnit = Unit();
-
-
-export function fromAnyUnit(val: string | number, unit?: IUnit): IUnit {
+export function createUnitResolver(val: string | number): UnitResolver {
     if (!isDefined(val)) {
-        return nil;
-    }
-
-    const returnUnit = unit || Unit();    
+        return () => nil;
+    } 
     if (isNumber(val)) {
-        return returnUnit.values(Number(val), undefined, stepNone);
+        return () => val;
     }
 
-    const match = genericUnitExpression.exec(val as string);
-    const unitType = match[2];
-    const value = parseFloat(match[1]);
+    const match = unitExpression.exec(val as string);
+    const stepTypeString = match[1];
+    const startString = match[2];    
+    const toOperator = match[3];  
+    const endValueString = match[4];
+    const unitTypeString = match[5];    
 
-    return returnUnit.values(value, unitType, stepNone);
+    const startCo = startString ? parseFloat(startString) : nil;
+    const endCo = endValueString ? parseFloat(endValueString) : nil; 
+    const sign = stepTypeString === stepBackward ? -1 : 1;
+    const isIndexed = !!stepTypeString;
+    const isRange = toOperator === 'to';
+    const isUnitLess = !isDefined(unitTypeString);
+
+    return (index?: number) => {
+        const index2 = isIndexed && isDefined(index) ? index + 1 : 1;
+        const value = isRange
+            ? random(startCo * (index2) * sign, (endCo - startCo) * index2 * sign) as number
+            : startCo * index2 * sign;
+        return isUnitLess ? value : value + unitTypeString;
+    };
 }
 
-export function fromDistance(val: string | number, unit?: IUnit): IUnit {
+export function parseUnit(val: string | number, output?: Unit): Unit {
+    output = output || {} as Unit;
+
     if (!isDefined(val)) {
-        return nil;
-    }
-
-    const returnUnit = unit || Unit();    
-    if (isNumber(val)) {
-        return returnUnit.values(Number(val), px, stepNone);
-    }
-
-    const match = distanceExpression.exec(val as string);
-    const unitType = match[2];
-    const value = parseFloat(match[1]);
-
-    return returnUnit.values(value, unitType, stepNone);
-}
-
-export function fromPercentage(val: string | number, unit?: IUnit): IUnit {
-    if (!isDefined(val)) {
-        return nil;
-    }
-
-    const returnUnit = unit || Unit();
-    if (isNumber(val)) {
-        return returnUnit.values(Number(val), percent, stepNone);
-    }
-
-    const match = percentageExpression.exec(val as string);
-    const value = parseFloat(match[1]);
-
-    return returnUnit.values(value, percent, stepNone);
-}
-
-
-export function fromTime(val: string | number, unit?: IUnit): IUnit {
-    const returnUnit = unit || Unit();
-    if (isNumber(val)) {
-        return returnUnit.values(Number(val), millisecond, stepNone);
-    }
-
-    const match = timeExpression.exec(val as string);
-    const step = match[1] || stepNone;
-    const unitType = match[3];
-    const value = parseFloat(match[2]);
-
-    let valueMs: number;
-    if (unitType === nil || unitType === millisecond) {
-        valueMs = value;
-    } else if (unitType === second) {
-        valueMs = value * 1000;
+        output.unit = undefined;
+        output.value = nil;
+    } else if (isNumber(val)) {
+        output.unit = undefined;        
+        output.value = val as number;
     } else {
-        throw invalidArg('format');
+        const match = measureExpression.exec(val as string);
+        const startString = match[1];    
+        const unitTypeString = match[2];  
+        
+        output.unit = unitTypeString || nil;
+        output.value = startString ? parseFloat(startString) : nil;
     }
-    return returnUnit.values(valueMs, millisecond, step);
+    
+    return output;
 }
 
-export function resolveTimeExpression(val: string | number, index: number): number {
-    fromTime(val, sharedUnit);
-    if (sharedUnit.step === stepForward) {
-        return sharedUnit.value * index;
-    }
-    if (sharedUnit.step === stepBackward) {
-        return sharedUnit.value * index * -1;
-    }
-    return sharedUnit.value;
+export type Unit = {
+    value: number;
+    unit: string;
 }
 
+export type UnitResolver = {
+    (index: number): number | string;
+};

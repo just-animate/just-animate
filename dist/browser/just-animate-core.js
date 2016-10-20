@@ -62,10 +62,8 @@ var numberString = 'number';
 var objectString = 'object';
 var stringString = 'string';
 var camelCaseRegex = /([a-z])[- ]([a-z])/ig;
-var distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/;
-var percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/;
-var timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/;
-var genericUnitExpression = /([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}([a-z%]+){0,1}/i;
+var measureExpression = /^[ ]*([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}[ ]*([a-z%]+){0,1}$/i;
+var unitExpression = /^([+-][=]){0,1}[ ]*([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){0,1}[ ]*(to){0,1}[ ]*([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*)[ ]*([a-z%]+){0,1}[ ]*$/i;
 
 var ostring = Object.prototype.toString;
 function isArray(a) {
@@ -384,8 +382,6 @@ function steps$1(count, pos) {
     return function (x$$1) { return x$$1 >= 1 ? 1 : (p * ratio + x$$1) - (p * ratio + x$$1) % ratio; };
 }
 
-var stepNone = '=';
-var stepForward = '+=';
 var stepBackward = '-=';
 
 
@@ -395,81 +391,61 @@ var stepBackward = '-=';
 
 
 
-var px = 'px';
 
 
 
 
 
 
-var percent = '%';
-var millisecond = 'ms';
-var second = 's';
-function Unit() {
-    var self = this instanceof Unit ? this : Object.create(Unit.prototype);
-    return self;
-}
-Unit.prototype = {
-    step: nil,
-    unit: nil,
-    value: nil,
-    values: function (value, unit, step) {
-        var self = this;
-        self.value = value;
-        self.unit = unit;
-        self.step = step;
-        return self;
-    },
-    toString: function () {
-        return String(this.value) + this.unit;
-    }
-};
-var sharedUnit = Unit();
-function fromAnyUnit(val, unit) {
+
+
+
+
+function createUnitResolver(val) {
     if (!isDefined(val)) {
-        return nil;
+        return function () { return nil; };
     }
-    var returnUnit = unit || Unit();
     if (isNumber(val)) {
-        return returnUnit.values(Number(val), undefined, stepNone);
+        return function () { return val; };
     }
-    var match = genericUnitExpression.exec(val);
-    var unitType = match[2];
-    var value = parseFloat(match[1]);
-    return returnUnit.values(value, unitType, stepNone);
+    var match = unitExpression.exec(val);
+    var stepTypeString = match[1];
+    var startString = match[2];
+    var toOperator = match[3];
+    var endValueString = match[4];
+    var unitTypeString = match[5];
+    var startCo = startString ? parseFloat(startString) : nil;
+    var endCo = endValueString ? parseFloat(endValueString) : nil;
+    var sign = stepTypeString === stepBackward ? -1 : 1;
+    var isIndexed = !!stepTypeString;
+    var isRange = toOperator === 'to';
+    var isUnitLess = !isDefined(unitTypeString);
+    return function (index) {
+        var index2 = isIndexed && isDefined(index) ? index + 1 : 1;
+        var value = isRange
+            ? random(startCo * (index2) * sign, endCo * index2 * sign)
+            : startCo * index2 * sign;
+        return isUnitLess ? value : value + unitTypeString;
+    };
 }
-
-
-function fromTime(val, unit) {
-    var returnUnit = unit || Unit();
-    if (isNumber(val)) {
-        return returnUnit.values(Number(val), millisecond, stepNone);
+function parseUnit(val, output) {
+    output = output || {};
+    if (!isDefined(val)) {
+        output.unit = undefined;
+        output.value = nil;
     }
-    var match = timeExpression.exec(val);
-    var step = match[1] || stepNone;
-    var unitType = match[3];
-    var value = parseFloat(match[2]);
-    var valueMs;
-    if (unitType === nil || unitType === millisecond) {
-        valueMs = value;
-    }
-    else if (unitType === second) {
-        valueMs = value * 1000;
+    else if (isNumber(val)) {
+        output.unit = undefined;
+        output.value = val;
     }
     else {
-        throw invalidArg('format');
+        var match = measureExpression.exec(val);
+        var startString = match[1];
+        var unitTypeString = match[2];
+        output.unit = unitTypeString || nil;
+        output.value = startString ? parseFloat(startString) : nil;
     }
-    return returnUnit.values(valueMs, millisecond, step);
-}
-function resolveTimeExpression(val, index) {
-    fromTime(val, sharedUnit);
-    if (sharedUnit.step === stepForward) {
-        return sharedUnit.value * index;
-    }
-    if (sharedUnit.step === stepBackward) {
-        return sharedUnit.value * index * -1;
-    }
-    return sharedUnit.value;
+    return output;
 }
 
 function queryElements(source) {
@@ -501,7 +477,10 @@ function queryElements(source) {
 }
 
 var animationPadding = 1.0 / 30;
-var unitOut = Unit();
+var unitOut = {
+    unit: nil,
+    value: nil
+};
 var Animator = (function () {
     function Animator(resolver, timeloop, plugins) {
         var self = this;
@@ -652,9 +631,9 @@ var Animator = (function () {
         else {
             event = options;
         }
-        fromTime(event.from || 0, unitOut);
+        parseUnit(event.from || 0, unitOut);
         event.from = unitOut.value + self._duration;
-        fromTime(event.to || 0, unitOut);
+        parseUnit(event.to || 0, unitOut);
         event.to = unitOut.value + self._duration;
         var easingFn = getEasingFunction(event.easing);
         event.easing = getEasingString(event.easing);
@@ -1222,7 +1201,10 @@ function propsToKeyframes(css, keyframes, ctx) {
         .keys(keyframesByOffset)
         .map(function (s) { return Number(s); })
         .sort();
-    var unit = Unit();
+    var parseOutput = {
+        unit: nil,
+        value: nil
+    };
     for (var i = offsets.length - 2; i > -1; --i) {
         var offset = offsets[i];
         var keyframe = keyframesByOffset[offset];
@@ -1233,9 +1215,9 @@ function propsToKeyframes(css, keyframes, ctx) {
             }
             var endOffset = offsets[i + 1];
             var endKeyframe = keyframesByOffset[endOffset];
-            fromAnyUnit(endKeyframe[transform_1], unit);
-            var endValue = unit.value;
-            var endUnitType = unit.unit;
+            parseUnit(endKeyframe[transform_1], parseOutput);
+            var endValue = parseOutput.value;
+            var endUnitType = parseOutput.unit;
             var startIndex = 0;
             var startValue = endValue;
             var startOffset = 0;
@@ -1244,9 +1226,9 @@ function propsToKeyframes(css, keyframes, ctx) {
                 var offset1 = offsets[j];
                 var keyframe1 = keyframesByOffset[offset1];
                 if (isDefined(keyframe1[transform_1])) {
-                    fromAnyUnit(keyframe1[transform_1], unit);
-                    startValue = unit.value;
-                    startUnit = unit.unit;
+                    parseUnit(keyframe1[transform_1], parseOutput);
+                    startValue = parseOutput.value;
+                    startUnit = parseOutput.unit;
                     startIndex = j;
                     startOffset = offsets[j];
                     break;
@@ -1403,8 +1385,8 @@ var KeyframePlugin = (function () {
     };
     KeyframePlugin.prototype.handle = function (ctx) {
         var options = ctx.options;
-        var delay = resolveTimeExpression(resolve(options.delay, ctx) || 0, ctx.index);
-        var endDelay = resolveTimeExpression(resolve(options.endDelay, ctx) || 0, ctx.index);
+        var delay = createUnitResolver(resolve(options.delay, ctx) || 0)(ctx.index);
+        var endDelay = createUnitResolver(resolve(options.endDelay, ctx) || 0)(ctx.index);
         var iterations = resolve(options.iterations, ctx) || 1;
         var iterationStart = resolve(options.iterationStart, ctx) || 0;
         var direction = resolve(options.direction, ctx) || nil;

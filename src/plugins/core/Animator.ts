@@ -9,7 +9,7 @@ import { Dispatcher, IDispatcher } from './Dispatcher';
 import { MixinService } from './MixinService';
 import { ITimeLoop } from './TimeLoop';
 import { getEasingFunction, getEasingString } from './easings';
-import { fromTime, Unit } from '../../common/units';
+import { parseUnit } from '../../common/units';
 import { queryElements } from '../../common/elements';
 
 // todo: remove these imports as soon as possible
@@ -18,7 +18,10 @@ import { queryElements } from '../../common/elements';
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 const animationPadding = 1.0 / 30;
-const unitOut = Unit();
+const unitOut = {
+    unit: nil as string,
+    value: nil as number
+};
 
 export class Animator implements ja.IAnimator {
     private _currentIteration: number;
@@ -206,10 +209,10 @@ export class Animator implements ja.IAnimator {
         }
 
         // set from and to relative to existing duration    
-        fromTime(event.from || 0, unitOut);
+        parseUnit(event.from || 0, unitOut);
         event.from = unitOut.value + self._duration;
 
-        fromTime(event.to || 0, unitOut);
+        parseUnit(event.to || 0, unitOut);
         event.to = unitOut.value + self._duration;
 
         // set easing to linear by default     

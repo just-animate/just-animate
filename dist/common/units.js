@@ -1,7 +1,7 @@
 "use strict";
 var type_1 = require("./type");
 var resources_1 = require("./resources");
-var errors_1 = require("./errors");
+var random_1 = require("./random");
 exports.stepNone = '=';
 exports.stepForward = '+=';
 exports.stepBackward = '-=';
@@ -23,98 +23,51 @@ exports.pica = 'pc';
 exports.percent = '%';
 exports.millisecond = 'ms';
 exports.second = 's';
-function Unit() {
-    var self = this instanceof Unit ? this : Object.create(Unit.prototype);
-    return self;
-}
-exports.Unit = Unit;
-Unit.prototype = {
-    step: resources_1.nil,
-    unit: resources_1.nil,
-    value: resources_1.nil,
-    values: function (value, unit, step) {
-        var self = this;
-        self.value = value;
-        self.unit = unit;
-        self.step = step;
-        return self;
-    },
-    toString: function () {
-        return String(this.value) + this.unit;
-    }
-};
-var sharedUnit = Unit();
-function fromAnyUnit(val, unit) {
+function createUnitResolver(val) {
     if (!type_1.isDefined(val)) {
-        return resources_1.nil;
+        return function () { return resources_1.nil; };
     }
-    var returnUnit = unit || Unit();
     if (type_1.isNumber(val)) {
-        return returnUnit.values(Number(val), undefined, exports.stepNone);
+        return function () { return val; };
     }
-    var match = resources_1.genericUnitExpression.exec(val);
-    var unitType = match[2];
-    var value = parseFloat(match[1]);
-    return returnUnit.values(value, unitType, exports.stepNone);
+    var match = resources_1.unitExpression.exec(val);
+    var stepTypeString = match[1];
+    var startString = match[2];
+    var toOperator = match[3];
+    var endValueString = match[4];
+    var unitTypeString = match[5];
+    var startCo = startString ? parseFloat(startString) : resources_1.nil;
+    var endCo = endValueString ? parseFloat(endValueString) : resources_1.nil;
+    var sign = stepTypeString === exports.stepBackward ? -1 : 1;
+    var isIndexed = !!stepTypeString;
+    var isRange = toOperator === 'to';
+    var isUnitLess = !type_1.isDefined(unitTypeString);
+    return function (index) {
+        var index2 = isIndexed && type_1.isDefined(index) ? index + 1 : 1;
+        var value = isRange
+            ? random_1.random(startCo * (index2) * sign, endCo * index2 * sign)
+            : startCo * index2 * sign;
+        return isUnitLess ? value : value + unitTypeString;
+    };
 }
-exports.fromAnyUnit = fromAnyUnit;
-function fromDistance(val, unit) {
+exports.createUnitResolver = createUnitResolver;
+function parseUnit(val, output) {
+    output = output || {};
     if (!type_1.isDefined(val)) {
-        return resources_1.nil;
+        output.unit = undefined;
+        output.value = resources_1.nil;
     }
-    var returnUnit = unit || Unit();
-    if (type_1.isNumber(val)) {
-        return returnUnit.values(Number(val), exports.px, exports.stepNone);
-    }
-    var match = resources_1.distanceExpression.exec(val);
-    var unitType = match[2];
-    var value = parseFloat(match[1]);
-    return returnUnit.values(value, unitType, exports.stepNone);
-}
-exports.fromDistance = fromDistance;
-function fromPercentage(val, unit) {
-    if (!type_1.isDefined(val)) {
-        return resources_1.nil;
-    }
-    var returnUnit = unit || Unit();
-    if (type_1.isNumber(val)) {
-        return returnUnit.values(Number(val), exports.percent, exports.stepNone);
-    }
-    var match = resources_1.percentageExpression.exec(val);
-    var value = parseFloat(match[1]);
-    return returnUnit.values(value, exports.percent, exports.stepNone);
-}
-exports.fromPercentage = fromPercentage;
-function fromTime(val, unit) {
-    var returnUnit = unit || Unit();
-    if (type_1.isNumber(val)) {
-        return returnUnit.values(Number(val), exports.millisecond, exports.stepNone);
-    }
-    var match = resources_1.timeExpression.exec(val);
-    var step = match[1] || exports.stepNone;
-    var unitType = match[3];
-    var value = parseFloat(match[2]);
-    var valueMs;
-    if (unitType === resources_1.nil || unitType === exports.millisecond) {
-        valueMs = value;
-    }
-    else if (unitType === exports.second) {
-        valueMs = value * 1000;
+    else if (type_1.isNumber(val)) {
+        output.unit = undefined;
+        output.value = val;
     }
     else {
-        throw errors_1.invalidArg('format');
+        var match = resources_1.measureExpression.exec(val);
+        var startString = match[1];
+        var unitTypeString = match[2];
+        output.unit = unitTypeString || resources_1.nil;
+        output.value = startString ? parseFloat(startString) : resources_1.nil;
     }
-    return returnUnit.values(valueMs, exports.millisecond, step);
+    return output;
 }
-exports.fromTime = fromTime;
-function resolveTimeExpression(val, index) {
-    fromTime(val, sharedUnit);
-    if (sharedUnit.step === exports.stepForward) {
-        return sharedUnit.value * index;
-    }
-    if (sharedUnit.step === exports.stepBackward) {
-        return sharedUnit.value * index * -1;
-    }
-    return sharedUnit.value;
-}
-exports.resolveTimeExpression = resolveTimeExpression;
+exports.parseUnit = parseUnit;

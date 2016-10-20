@@ -178,7 +178,10 @@ function propsToKeyframes(css, keyframes, ctx) {
         .keys(keyframesByOffset)
         .map(function (s) { return Number(s); })
         .sort();
-    var unit = units_1.Unit();
+    var parseOutput = {
+        unit: resources_1.nil,
+        value: resources_1.nil
+    };
     // if prop not present calculate each transform property in list
     // a keyframe at offset 1 should be guaranteed for each property, so skip that one
     for (var i = offsets.length - 2; i > -1; --i) {
@@ -194,9 +197,9 @@ function propsToKeyframes(css, keyframes, ctx) {
             var endOffset = offsets[i + 1];
             var endKeyframe = keyframesByOffset[endOffset];
             // parse out unit values of next keyframe       
-            units_1.fromAnyUnit(endKeyframe[transform_1], unit);
-            var endValue = unit.value;
-            var endUnitType = unit.unit;
+            units_1.parseUnit(endKeyframe[transform_1], parseOutput);
+            var endValue = parseOutput.value;
+            var endUnitType = parseOutput.unit;
             // search downward for the previous value or use defaults  
             var startIndex = 0;
             var startValue = endValue;
@@ -206,9 +209,9 @@ function propsToKeyframes(css, keyframes, ctx) {
                 var offset1 = offsets[j];
                 var keyframe1 = keyframesByOffset[offset1];
                 if (type_1.isDefined(keyframe1[transform_1])) {
-                    units_1.fromAnyUnit(keyframe1[transform_1], unit);
-                    startValue = unit.value;
-                    startUnit = unit.unit;
+                    units_1.parseUnit(keyframe1[transform_1], parseOutput);
+                    startValue = parseOutput.value;
+                    startUnit = parseOutput.unit;
                     startIndex = j;
                     startOffset = offsets[j];
                     break;

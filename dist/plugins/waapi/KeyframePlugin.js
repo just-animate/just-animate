@@ -13,8 +13,8 @@ var KeyframePlugin = (function () {
     };
     KeyframePlugin.prototype.handle = function (ctx) {
         var options = ctx.options;
-        var delay = units_1.resolveTimeExpression(objects_1.resolve(options.delay, ctx) || 0, ctx.index);
-        var endDelay = units_1.resolveTimeExpression(objects_1.resolve(options.endDelay, ctx) || 0, ctx.index);
+        var delay = units_1.createUnitResolver(objects_1.resolve(options.delay, ctx) || 0)(ctx.index);
+        var endDelay = units_1.createUnitResolver(objects_1.resolve(options.endDelay, ctx) || 0)(ctx.index);
         var iterations = objects_1.resolve(options.iterations, ctx) || 1;
         var iterationStart = objects_1.resolve(options.iterationStart, ctx) || 0;
         var direction = objects_1.resolve(options.direction, ctx) || resources_1.nil;

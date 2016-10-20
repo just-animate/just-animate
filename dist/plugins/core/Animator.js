@@ -14,7 +14,10 @@ var elements_1 = require("../../common/elements");
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 var animationPadding = 1.0 / 30;
-var unitOut = units_1.Unit();
+var unitOut = {
+    unit: resources_1.nil,
+    value: resources_1.nil
+};
 var Animator = (function () {
     function Animator(resolver, timeloop, plugins) {
         var self = this;
@@ -168,9 +171,9 @@ var Animator = (function () {
             event = options;
         }
         // set from and to relative to existing duration    
-        units_1.fromTime(event.from || 0, unitOut);
+        units_1.parseUnit(event.from || 0, unitOut);
         event.from = unitOut.value + self._duration;
-        units_1.fromTime(event.to || 0, unitOut);
+        units_1.parseUnit(event.to || 0, unitOut);
         event.to = unitOut.value + self._duration;
         // set easing to linear by default     
         var easingFn = easings_1.getEasingFunction(event.easing);

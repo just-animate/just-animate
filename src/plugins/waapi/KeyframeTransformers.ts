@@ -2,7 +2,7 @@ import { isDefined, isNumber, isArray } from '../../common/type';
 import { toCamelCase } from '../../common/strings';
 import { getEasingString } from '../core/easings';
 import { head, tail } from '../../common/lists';
-import { fromAnyUnit, Unit } from '../../common/units';
+import { parseUnit } from '../../common/units';
 import { listProps, resolve, deepCopyObject } from '../../common/objects';
 import { unsupported } from '../../common/errors';
 
@@ -238,7 +238,10 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
         .map((s: ja.ICssKeyframeOptions) => Number(s))
         .sort();
     
-    const unit = Unit();
+    const parseOutput = {
+        unit: nil as string,
+        value: nil as number
+    };
 
     // if prop not present calculate each transform property in list
     // a keyframe at offset 1 should be guaranteed for each property, so skip that one
@@ -256,9 +259,9 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             const endKeyframe = keyframesByOffset[endOffset];
 
             // parse out unit values of next keyframe       
-            fromAnyUnit(endKeyframe[transform], unit);
-            const endValue = unit.value;
-            const endUnitType = unit.unit;
+            parseUnit(endKeyframe[transform], parseOutput);
+            const endValue = parseOutput.value;
+            const endUnitType = parseOutput.unit;
 
             // search downward for the previous value or use defaults  
             let startIndex = 0;
@@ -270,9 +273,9 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
                 const offset1 = offsets[j];
                 const keyframe1 = keyframesByOffset[offset1];
                 if (isDefined(keyframe1[transform])) {
-                    fromAnyUnit(keyframe1[transform], unit);
-                    startValue = unit.value;
-                    startUnit = unit.unit;
+                    parseUnit(keyframe1[transform], parseOutput);
+                    startValue = parseOutput.value;
+                    startUnit = parseOutput.unit;
                     startIndex = j;
                     startOffset = offsets[j]; 
                     break;

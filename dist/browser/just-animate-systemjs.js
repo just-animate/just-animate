@@ -2749,7 +2749,7 @@ System.register("just-animate/animations", ["just-animate/animations/bounce", "j
 System.register("just-animate/common/resources", [], function (exports_78, context_78) {
     "use strict";
     var __moduleName = context_78 && context_78.id;
-    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, steps, transform, translate, translate3d, translateX, translateY, translateZ, update, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, distanceExpression, percentageExpression, timeExpression, genericUnitExpression;
+    var nada, nil, animate, easingString, call, cancel, cubicBezier, duration, finish, finished, idle, offsetString, pause, paused, pending, play, reverse, rotate, rotate3d, rotateX, rotateY, rotateZ, running, scale, scale3d, scaleX, scaleY, scaleZ, skew, skewX, skewY, steps, transform, translate, translate3d, translateX, translateY, translateZ, update, x, y, z, functionTypeString, numberString, objectString, stringString, camelCaseRegex, measureExpression, unitExpression;
     return {
         setters: [],
         execute: function () {
@@ -2800,10 +2800,8 @@ System.register("just-animate/common/resources", [], function (exports_78, conte
             exports_78("objectString", objectString = 'object');
             exports_78("stringString", stringString = 'string');
             exports_78("camelCaseRegex", camelCaseRegex = /([a-z])[- ]([a-z])/ig);
-            exports_78("distanceExpression", distanceExpression = /(-{0,1}[0-9.]+)(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|q|cm|in|pt|pc|\%){0,1}/);
-            exports_78("percentageExpression", percentageExpression = /(-{0,1}[0-9.]+)%{0,1}/);
-            exports_78("timeExpression", timeExpression = /([+-][=]){0,1}([\-]{0,1}[0-9]+[\.]{0,1}[0-9]*){1}(s|ms){0,1}/);
-            exports_78("genericUnitExpression", genericUnitExpression = /([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}([a-z%]+){0,1}/i);
+            exports_78("measureExpression", measureExpression = /^[ ]*([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}[ ]*([a-z%]+){0,1}$/i);
+            exports_78("unitExpression", unitExpression = /^([+-][=]){0,1}[ ]*([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){0,1}[ ]*(to){0,1}[ ]*([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*)[ ]*([a-z%]+){0,1}[ ]*$/i);
         }
     };
 });
@@ -3242,89 +3240,58 @@ System.register("just-animate/common/strings", ["just-animate/common/type", "jus
         }
     };
 });
-System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/errors"], function (exports_87, context_87) {
+System.register("just-animate/common/units", ["just-animate/common/type", "just-animate/common/resources", "just-animate/common/random"], function (exports_87, context_87) {
     "use strict";
     var __moduleName = context_87 && context_87.id;
-    function Unit() {
-        var self = this instanceof Unit ? this : Object.create(Unit.prototype);
-        return self;
-    }
-    function fromAnyUnit(val, unit) {
+    function createUnitResolver(val) {
         if (!type_5.isDefined(val)) {
-            return resources_6.nil;
+            return function () { return resources_6.nil; };
         }
-        var returnUnit = unit || Unit();
         if (type_5.isNumber(val)) {
-            return returnUnit.values(Number(val), undefined, stepNone);
+            return function () { return val; };
         }
-        var match = resources_6.genericUnitExpression.exec(val);
-        var unitType = match[2];
-        var value = parseFloat(match[1]);
-        return returnUnit.values(value, unitType, stepNone);
+        var match = resources_6.unitExpression.exec(val);
+        var stepTypeString = match[1];
+        var startString = match[2];
+        var toOperator = match[3];
+        var endValueString = match[4];
+        var unitTypeString = match[5];
+        var startCo = startString ? parseFloat(startString) : resources_6.nil;
+        var endCo = endValueString ? parseFloat(endValueString) : resources_6.nil;
+        var sign = stepTypeString === stepBackward ? -1 : 1;
+        var isIndexed = !!stepTypeString;
+        var isRange = toOperator === 'to';
+        var isUnitLess = !type_5.isDefined(unitTypeString);
+        return function (index) {
+            var index2 = isIndexed && type_5.isDefined(index) ? index + 1 : 1;
+            var value = isRange
+                ? random_1.random(startCo * (index2) * sign, endCo * index2 * sign)
+                : startCo * index2 * sign;
+            return isUnitLess ? value : value + unitTypeString;
+        };
     }
-    function fromDistance(val, unit) {
+    function parseUnit(val, output) {
+        output = output || {};
         if (!type_5.isDefined(val)) {
-            return resources_6.nil;
+            output.unit = undefined;
+            output.value = resources_6.nil;
         }
-        var returnUnit = unit || Unit();
-        if (type_5.isNumber(val)) {
-            return returnUnit.values(Number(val), px, stepNone);
-        }
-        var match = resources_6.distanceExpression.exec(val);
-        var unitType = match[2];
-        var value = parseFloat(match[1]);
-        return returnUnit.values(value, unitType, stepNone);
-    }
-    function fromPercentage(val, unit) {
-        if (!type_5.isDefined(val)) {
-            return resources_6.nil;
-        }
-        var returnUnit = unit || Unit();
-        if (type_5.isNumber(val)) {
-            return returnUnit.values(Number(val), percent, stepNone);
-        }
-        var match = resources_6.percentageExpression.exec(val);
-        var value = parseFloat(match[1]);
-        return returnUnit.values(value, percent, stepNone);
-    }
-    function fromTime(val, unit) {
-        var returnUnit = unit || Unit();
-        if (type_5.isNumber(val)) {
-            return returnUnit.values(Number(val), millisecond, stepNone);
-        }
-        var match = resources_6.timeExpression.exec(val);
-        var step = match[1] || stepNone;
-        var unitType = match[3];
-        var value = parseFloat(match[2]);
-        var valueMs;
-        if (unitType === resources_6.nil || unitType === millisecond) {
-            valueMs = value;
-        }
-        else if (unitType === second) {
-            valueMs = value * 1000;
+        else if (type_5.isNumber(val)) {
+            output.unit = undefined;
+            output.value = val;
         }
         else {
-            throw errors_2.invalidArg('format');
+            var match = resources_6.measureExpression.exec(val);
+            var startString = match[1];
+            var unitTypeString = match[2];
+            output.unit = unitTypeString || resources_6.nil;
+            output.value = startString ? parseFloat(startString) : resources_6.nil;
         }
-        return returnUnit.values(valueMs, millisecond, step);
+        return output;
     }
-    function resolveTimeExpression(val, index) {
-        fromTime(val, sharedUnit);
-        if (sharedUnit.step === stepForward) {
-            return sharedUnit.value * index;
-        }
-        if (sharedUnit.step === stepBackward) {
-            return sharedUnit.value * index * -1;
-        }
-        return sharedUnit.value;
-    }
-    var type_5, resources_6, errors_2, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second, sharedUnit;
-    exports_87("Unit", Unit);
-    exports_87("fromAnyUnit", fromAnyUnit);
-    exports_87("fromDistance", fromDistance);
-    exports_87("fromPercentage", fromPercentage);
-    exports_87("fromTime", fromTime);
-    exports_87("resolveTimeExpression", resolveTimeExpression);
+    var type_5, resources_6, random_1, stepNone, stepForward, stepBackward, em, ex, ch, rem, vh, vw, vmin, vmax, px, mm, q, cm, inch, point, pica, percent, millisecond, second;
+    exports_87("createUnitResolver", createUnitResolver);
+    exports_87("parseUnit", parseUnit);
     return {
         setters: [
             function (type_5_1) {
@@ -3333,8 +3300,8 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
             function (resources_6_1) {
                 resources_6 = resources_6_1;
             },
-            function (errors_2_1) {
-                errors_2 = errors_2_1;
+            function (random_1_1) {
+                random_1 = random_1_1;
             }
         ],
         execute: function () {
@@ -3359,22 +3326,6 @@ System.register("just-animate/common/units", ["just-animate/common/type", "just-
             exports_87("percent", percent = '%');
             exports_87("millisecond", millisecond = 'ms');
             exports_87("second", second = 's');
-            Unit.prototype = {
-                step: resources_6.nil,
-                unit: resources_6.nil,
-                value: resources_6.nil,
-                values: function (value, unit, step) {
-                    var self = this;
-                    self.value = value;
-                    self.unit = unit;
-                    self.step = step;
-                    return self;
-                },
-                toString: function () {
-                    return String(this.value) + this.unit;
-                }
-            };
-            sharedUnit = Unit();
         }
     };
 });
@@ -3407,15 +3358,15 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
         self._fn = {};
         return self;
     }
-    var type_6, errors_3, resources_7;
+    var type_6, errors_2, resources_7;
     exports_89("Dispatcher", Dispatcher);
     return {
         setters: [
             function (type_6_1) {
                 type_6 = type_6_1;
             },
-            function (errors_3_1) {
-                errors_3 = errors_3_1;
+            function (errors_2_1) {
+                errors_2 = errors_2_1;
             },
             function (resources_7_1) {
                 resources_7 = resources_7_1;
@@ -3437,7 +3388,7 @@ System.register("just-animate/plugins/core/Dispatcher", ["just-animate/common/ty
                 },
                 on: function (eventName, listener) {
                     if (!type_6.isFunction(listener)) {
-                        throw errors_3.invalidArg('listener');
+                        throw errors_2.invalidArg('listener');
                     }
                     var fn = this._fn;
                     var listeners = fn[eventName];
@@ -3749,7 +3700,7 @@ System.register("just-animate/plugins/core/easings", ["just-animate/common/strin
 System.register("just-animate/plugins/core/Animator", ["just-animate/common/lists", "just-animate/common/objects", "just-animate/common/type", "just-animate/common/math", "just-animate/common/errors", "just-animate/common/resources", "just-animate/plugins/core/Dispatcher", "just-animate/plugins/core/easings", "just-animate/common/units", "just-animate/common/elements"], function (exports_93, context_93) {
     "use strict";
     var __moduleName = context_93 && context_93.id;
-    var lists_3, objects_1, type_7, math_1, errors_4, resources_11, Dispatcher_1, easings_1, units_1, elements_1, animationPadding, unitOut, Animator;
+    var lists_3, objects_1, type_7, math_1, errors_3, resources_11, Dispatcher_1, easings_1, units_1, elements_1, animationPadding, unitOut, Animator;
     return {
         setters: [
             function (lists_3_1) {
@@ -3764,8 +3715,8 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
             function (math_1_1) {
                 math_1 = math_1_1;
             },
-            function (errors_4_1) {
-                errors_4 = errors_4_1;
+            function (errors_3_1) {
+                errors_3 = errors_3_1;
             },
             function (resources_11_1) {
                 resources_11 = resources_11_1;
@@ -3789,12 +3740,15 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
             // on individual animation and calls finish.  If an animation plays after its time, it looks
             // like it restarts and that causes jank
             animationPadding = 1.0 / 30;
-            unitOut = units_1.Unit();
+            unitOut = {
+                unit: resources_11.nil,
+                value: resources_11.nil
+            };
             Animator = (function () {
                 function Animator(resolver, timeloop, plugins) {
                     var self = this;
                     if (!type_7.isDefined(resources_11.duration)) {
-                        throw errors_4.invalidArg(resources_11.duration);
+                        throw errors_3.invalidArg(resources_11.duration);
                     }
                     self._context = {};
                     self._duration = 0;
@@ -3932,7 +3886,7 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                             .map(function (mixin) {
                             var def = self._resolver.findAnimation(mixin);
                             if (!type_7.isDefined(def)) {
-                                throw errors_4.invalidArg('mixin');
+                                throw errors_3.invalidArg('mixin');
                             }
                             return def;
                         })
@@ -3943,9 +3897,9 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
                         event = options;
                     }
                     // set from and to relative to existing duration    
-                    units_1.fromTime(event.from || 0, unitOut);
+                    units_1.parseUnit(event.from || 0, unitOut);
                     event.from = unitOut.value + self._duration;
-                    units_1.fromTime(event.to || 0, unitOut);
+                    units_1.parseUnit(event.to || 0, unitOut);
                     event.to = unitOut.value + self._duration;
                     // set easing to linear by default     
                     var easingFn = easings_1.getEasingFunction(event.easing);
@@ -4130,11 +4084,11 @@ System.register("just-animate/plugins/core/Animator", ["just-animate/common/list
 System.register("just-animate/JustAnimate", ["just-animate/common/random", "just-animate/plugins/core/Animator", "just-animate/plugins/core/TimeLoop", "just-animate/plugins/core/MixinService"], function (exports_94, context_94) {
     "use strict";
     var __moduleName = context_94 && context_94.id;
-    var random_1, Animator_1, TimeLoop_1, MixinService_1, JustAnimate;
+    var random_2, Animator_1, TimeLoop_1, MixinService_1, JustAnimate;
     return {
         setters: [
-            function (random_1_1) {
-                random_1 = random_1_1;
+            function (random_2_1) {
+                random_2 = random_2_1;
             },
             function (Animator_1_1) {
                 Animator_1 = Animator_1_1;
@@ -4221,7 +4175,7 @@ System.register("just-animate/JustAnimate", ["just-animate/common/random", "just
                     return new Animator_1.Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
                 };
                 JustAnimate.prototype.random = function (first, last, unit, wholeNumbersOnly) {
-                    return random_1.random(first, last, unit, wholeNumbersOnly);
+                    return random_2.random(first, last, unit, wholeNumbersOnly);
                 };
                 /**
                  * Registers a mixin to this instance of JustAnimate.
@@ -4243,7 +4197,7 @@ System.register("just-animate/JustAnimate", ["just-animate/common/random", "just
                  * @memberOf JustAnimate
                  */
                 JustAnimate.prototype.shuffle = function (choices) {
-                    return random_1.shuffle(choices);
+                    return random_2.shuffle(choices);
                 };
                 /**
                  * Registers a list of mixins across all instances of JustAnimate.  Same as register in a browser environment
@@ -4508,7 +4462,10 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             .keys(keyframesByOffset)
             .map(function (s) { return Number(s); })
             .sort();
-        var unit = units_2.Unit();
+        var parseOutput = {
+            unit: resources_13.nil,
+            value: resources_13.nil
+        };
         // if prop not present calculate each transform property in list
         // a keyframe at offset 1 should be guaranteed for each property, so skip that one
         for (var i = offsets.length - 2; i > -1; --i) {
@@ -4524,9 +4481,9 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 var endOffset = offsets[i + 1];
                 var endKeyframe = keyframesByOffset[endOffset];
                 // parse out unit values of next keyframe       
-                units_2.fromAnyUnit(endKeyframe[transform_1], unit);
-                var endValue = unit.value;
-                var endUnitType = unit.unit;
+                units_2.parseUnit(endKeyframe[transform_1], parseOutput);
+                var endValue = parseOutput.value;
+                var endUnitType = parseOutput.unit;
                 // search downward for the previous value or use defaults  
                 var startIndex = 0;
                 var startValue = endValue;
@@ -4536,16 +4493,16 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                     var offset1 = offsets[j];
                     var keyframe1 = keyframesByOffset[offset1];
                     if (type_8.isDefined(keyframe1[transform_1])) {
-                        units_2.fromAnyUnit(keyframe1[transform_1], unit);
-                        startValue = unit.value;
-                        startUnit = unit.unit;
+                        units_2.parseUnit(keyframe1[transform_1], parseOutput);
+                        startValue = parseOutput.value;
+                        startUnit = parseOutput.unit;
                         startIndex = j;
                         startOffset = offsets[j];
                         break;
                     }
                 }
                 if (startValue !== 0 && type_8.isDefined(startUnit) && type_8.isDefined(endUnitType) && startUnit !== endUnitType) {
-                    throw errors_5.unsupported('Mixed transform property units');
+                    throw errors_4.unsupported('Mixed transform property units');
                 }
                 // iterate forward
                 for (var j = startIndex; j < i + 1; j++) {
@@ -4719,7 +4676,7 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
                 .reduce(function (c, n) { return c + (" " + n[0] + "(" + n[1] + ")"); }, '');
         }
     }
-    var type_8, strings_2, easings_2, lists_4, units_2, objects_2, errors_5, resources_13, propertyAliases, transforms;
+    var type_8, strings_2, easings_2, lists_4, units_2, objects_2, errors_4, resources_13, propertyAliases, transforms;
     exports_97("initAnimator", initAnimator);
     exports_97("addTransition", addTransition);
     exports_97("expandOffsets", expandOffsets);
@@ -4751,8 +4708,8 @@ System.register("just-animate/plugins/waapi/KeyframeTransformers", ["just-animat
             function (objects_2_1) {
                 objects_2 = objects_2_1;
             },
-            function (errors_5_1) {
-                errors_5 = errors_5_1;
+            function (errors_4_1) {
+                errors_4 = errors_4_1;
             },
             function (resources_13_1) {
                 resources_13 = resources_13_1;
@@ -4826,8 +4783,8 @@ System.register("just-animate/plugins/waapi/KeyframePlugin", ["just-animate/plug
                 };
                 KeyframePlugin.prototype.handle = function (ctx) {
                     var options = ctx.options;
-                    var delay = units_3.resolveTimeExpression(objects_3.resolve(options.delay, ctx) || 0, ctx.index);
-                    var endDelay = units_3.resolveTimeExpression(objects_3.resolve(options.endDelay, ctx) || 0, ctx.index);
+                    var delay = units_3.createUnitResolver(objects_3.resolve(options.delay, ctx) || 0)(ctx.index);
+                    var endDelay = units_3.createUnitResolver(objects_3.resolve(options.endDelay, ctx) || 0)(ctx.index);
                     var iterations = objects_3.resolve(options.iterations, ctx) || 1;
                     var iterationStart = objects_3.resolve(options.iterationStart, ctx) || 0;
                     var direction = objects_3.resolve(options.direction, ctx) || resources_14.nil;
