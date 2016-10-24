@@ -1,8 +1,7 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "rootDir": "src",
-        "outDir": "dist",
+        "rootDir": "test",
         "module": "commonjs",
         "preserveConstEnums": false,
         "removeComments": false,
@@ -11,12 +10,12 @@
         "declaration": false,
         "noImplicitAny": true,
         "noImplicitReturns": true,
+        "noEmit": true,
         "suppressImplicitAnyIndexErrors": true,
         "forceConsistentCasingInFileNames": true,
         "newLine": "LF",
         "noFallthroughCasesInSwitch": true,
-        "sourceMap": true,
-        "watch": true
+        "sourceMap": true
     },
     "exclude": [
         "node_modules", 

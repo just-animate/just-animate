@@ -1,5 +1,5 @@
 import { isDefined, isNumber } from './type';
-import { measureExpression, unitExpression, nil } from './resources';
+import { measureExpression, unitExpression } from './resources';
 import { random } from './random';
 
 export const stepNone: string = '=';
@@ -28,10 +28,10 @@ export const second: string = 's';
 
 export function createUnitResolver(val: string | number): UnitResolver {
     if (!isDefined(val)) {
-        return () => nil;
+        return () => undefined;
     } 
     if (isNumber(val)) {
-        return () => val;
+        return () => ({ unit: undefined, value: val as number });
     }
 
     const match = unitExpression.exec(val as string);
@@ -41,20 +41,25 @@ export function createUnitResolver(val: string | number): UnitResolver {
     const endValueString = match[4];
     const unitTypeString = match[5];    
 
-    const startCo = startString ? parseFloat(startString) : nil;
-    const endCo = endValueString ? parseFloat(endValueString) : nil; 
+    const startCo = startString ? parseFloat(startString) : undefined;
+    const endCo = endValueString ? parseFloat(endValueString) : undefined; 
     const sign = stepTypeString === stepBackward ? -1 : 1;
     const isIndexed = !!stepTypeString;
     const isRange = toOperator === 'to';
-    const isUnitLess = !isDefined(unitTypeString);
 
-    return (index?: number) => {
+    const resolver = (index?: number) => {
         const index2 = isIndexed && isDefined(index) ? index + 1 : 1;
         const value = isRange
             ? random(startCo * (index2) * sign, (endCo - startCo) * index2 * sign) as number
             : startCo * index2 * sign;
-        return isUnitLess ? value : value + unitTypeString;
+        
+        return {
+            unit: unitTypeString || undefined,
+            value: value
+        };
     };
+
+    return resolver;
 }
 
 export function parseUnit(val: string | number, output?: Unit): Unit {
@@ -62,7 +67,7 @@ export function parseUnit(val: string | number, output?: Unit): Unit {
 
     if (!isDefined(val)) {
         output.unit = undefined;
-        output.value = nil;
+        output.value = undefined;
     } else if (isNumber(val)) {
         output.unit = undefined;        
         output.value = val as number;
@@ -71,11 +76,18 @@ export function parseUnit(val: string | number, output?: Unit): Unit {
         const startString = match[1];    
         const unitTypeString = match[2];  
         
-        output.unit = unitTypeString || nil;
-        output.value = startString ? parseFloat(startString) : nil;
+        output.unit = unitTypeString || undefined;
+        output.value = startString ? parseFloat(startString) : undefined;
     }
     
     return output;
+}
+
+export function getCanonicalTime(unit: Unit): number {
+    if (unit.unit === 's') {
+        return unit.value * 1000;
+    }
+    return unit.value;
 }
 
 export type Unit = {
@@ -84,5 +96,5 @@ export type Unit = {
 }
 
 export type UnitResolver = {
-    (index: number): number | string;
+    (index: number): Unit;
 };

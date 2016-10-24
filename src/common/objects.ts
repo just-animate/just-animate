@@ -1,5 +1,4 @@
 import { isArray, isDefined, isFunction, isObject, getTypeString } from './type';
-import { nil } from './resources';
 
 export function deepCopyObject<T1, T2>(origin: {}, dest?: {}): any {
     dest = dest || {};
@@ -18,7 +17,7 @@ export function deepCopyProperty(prop: string|number, origin: {}, dest: {}): voi
     const destType = getTypeString(destProp);
 
     if (originType !== destType) {
-        destProp = nil;
+        destProp = undefined;
     }
     
     if (isArray(originProp)) {

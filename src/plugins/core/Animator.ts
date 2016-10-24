@@ -1,15 +1,14 @@
 import { chain, maxBy } from '../../common/lists';
-import { deepCopyObject, inherit } from '../../common/objects';
+import { deepCopyObject, inherit, resolve } from '../../common/objects';
 import { isArray, isDefined, isNumber } from '../../common/type';
 import { inRange } from '../../common/math';
 import { invalidArg } from '../../common/errors';
-import { duration, finish, cancel, pause, nil } from '../../common/resources';
-
+import { duration, finish, cancel, pause } from '../../common/resources';
 import { Dispatcher, IDispatcher } from './Dispatcher';
 import { MixinService } from './MixinService';
 import { ITimeLoop } from './TimeLoop';
 import { getEasingFunction, getEasingString } from './easings';
-import { parseUnit } from '../../common/units';
+import { parseUnit, createUnitResolver, getCanonicalTime } from '../../common/units';
 import { queryElements } from '../../common/elements';
 
 // todo: remove these imports as soon as possible
@@ -19,8 +18,8 @@ import { queryElements } from '../../common/elements';
 // like it restarts and that causes jank
 const animationPadding = 1.0 / 30;
 const unitOut = {
-    unit: nil as string,
-    value: nil as number
+    unit: undefined as string,
+    value: undefined as number
 };
 
 export class Animator implements ja.IAnimator {
@@ -46,8 +45,8 @@ export class Animator implements ja.IAnimator {
 
         self._context = {} as ja.IAnimationTimeContext;
         self._duration = 0;
-        self._currentTime = nil;
-        self._currentIteration = nil;
+        self._currentTime = undefined;
+        self._currentIteration = undefined;
         self._playState = 'idle';
         self._playbackRate = 1;
         self._events = [];
@@ -210,28 +209,38 @@ export class Animator implements ja.IAnimator {
 
         // set from and to relative to existing duration    
         parseUnit(event.from || 0, unitOut);
-        event.from = unitOut.value + self._duration;
+        event.from = (unitOut.value * (unitOut.unit === 's' ? 1000 : 1)) + self._duration;
 
         parseUnit(event.to || 0, unitOut);
-        event.to = unitOut.value + self._duration;
+        event.to = (unitOut.value * (unitOut.unit === 's' ? 1000 : 1)) + self._duration;
 
         // set easing to linear by default     
         const easingFn = getEasingFunction(event.easing);
         event.easing = getEasingString(event.easing);
+        
+        const delay = event.delay;
+        const endDelay = event.endDelay;
 
-        for (let plugin of self._plugins) {
-            if (plugin.canHandle(event)) {
-                const targets = queryElements(event.targets) as HTMLElement[];
-                const targetLength = targets.length;
+        const targets = queryElements(event.targets) as HTMLElement[];
+        const targetLength = targets.length;
+        for (let i = 0, len = targetLength; i < len; i++) {
+            const target = targets[i];          
+            
+            const ctx = {
+                index: i,
+                options: event,
+                target: target,
+                targets: targets
+            };
+            
+            const delayUnit = createUnitResolver(resolve(delay, ctx) || 0)(i);
+            const endDelayUnit = createUnitResolver(resolve(endDelay, ctx) || 0)(i);
+            event.delay = getCanonicalTime(delayUnit) as number;
+            event.endDelay = getCanonicalTime(endDelayUnit) as number;
 
-                for (let i = 0, len = targetLength; i < len; i++) {
-                    const target = targets[i];
-                    const animator = plugin.handle({
-                        index: i,
-                        options: event,
-                        target: target,
-                        targets: targets
-                    });
+            for (let plugin of self._plugins) {
+                if (plugin.canHandle(event)) {
+                    const animator = plugin.handle(ctx);
 
                     self._events.push({
                         animator: animator,
@@ -249,7 +258,7 @@ export class Animator implements ja.IAnimator {
     private _onCancel(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
-        self._currentIteration = nil;
+        self._currentIteration = undefined;
         self._playState = 'idle';
         for (let evt of self._events) {
             evt.animator.playState('idle');
@@ -257,8 +266,8 @@ export class Animator implements ja.IAnimator {
     }
     private _onFinish(self: ja.IAnimator & IAnimationContext): void {
         self._timeLoop.off(self._onTick);
-        self._currentTime = nil;
-        self._currentIteration = nil;        
+        self._currentTime = undefined;
+        self._currentIteration = undefined;        
         self._playState = 'finished';
         for (let evt of self._events) {
             evt.animator.playState('finished');
@@ -306,8 +315,8 @@ export class Animator implements ja.IAnimator {
         if (self._playState === 'pending') {
             const currentTime2 = self._currentTime;
             const currentIteration = self._currentIteration;
-            self._currentTime = currentTime2 === nil || currentTime2 === endTime ? startTime : currentTime2;
-            self._currentIteration = currentIteration === nil || currentIteration === totalIterations ? 0 : currentIteration;
+            self._currentTime = currentTime2 === undefined || currentTime2 === endTime ? startTime : currentTime2;
+            self._currentIteration = currentIteration === undefined || currentIteration === totalIterations ? 0 : currentIteration;
             self._playState = 'running';
         } 
         
@@ -336,11 +345,11 @@ export class Animator implements ja.IAnimator {
             context.duration = endTime - startTime;
             context.playbackRate = playbackRate;
             context.iterations = currentIteration;            
-            context.offset = nil;
-            context.computedOffset = nil;
-            context.target = nil;
-            context.targets = nil;
-            context.index = nil;
+            context.offset = undefined;
+            context.computedOffset = undefined;
+            context.target = undefined;
+            context.targets = undefined;
+            context.index = undefined;
             self._dispatcher.trigger('iteration', [context]);
         }
 

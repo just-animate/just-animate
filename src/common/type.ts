@@ -1,4 +1,4 @@
-import { nil, nada, functionTypeString, numberString, objectString, stringString } from './resources';
+import { functionTypeString, numberString, objectString, stringString } from './resources';
 
 const ostring = Object.prototype.toString;
 
@@ -15,7 +15,7 @@ export function isArray(a: any): boolean {
 }
 
 export function isDefined(a: any): boolean {
-    return a !== nil && a !== nada && a !== '';
+    return a !== undefined && a !== null && a !== '';
 }
 
 /**
@@ -41,7 +41,7 @@ export function isNumber(a: any): boolean {
 }
 
 export function isObject(a: any): boolean {
-    return typeof a === objectString && a !== nada;
+    return typeof a === objectString && a !== null;
 }
 
 /**

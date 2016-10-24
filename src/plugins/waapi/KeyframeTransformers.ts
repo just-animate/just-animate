@@ -9,7 +9,6 @@ import { unsupported } from '../../common/errors';
 import {
     animate,
     easingString,
-    nil,
     offsetString,
     scale3d,
     scale,
@@ -239,8 +238,8 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
         .sort();
     
     const parseOutput = {
-        unit: nil as string,
-        value: nil as number
+        unit: undefined as string,
+        value: undefined as number
     };
 
     // if prop not present calculate each transform property in list
@@ -267,7 +266,7 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             let startIndex = 0;
             let startValue = endValue;
             let startOffset = 0;
-            let startUnit = nil;
+            let startUnit = undefined;
 
             for (let j = i - 1; j > -1; --j) {
                 const offset1 = offsets[j];
@@ -384,9 +383,9 @@ export function arrangeKeyframes(keyframes: waapi.IKeyframe[]): void {
 
     let first: waapi.IKeyframe =
         head(keyframes, (k: waapi.IKeyframe) => k.offset === 0)
-        || head(keyframes, (k: waapi.IKeyframe) => k.offset === nil);
+        || head(keyframes, (k: waapi.IKeyframe) => k.offset === undefined);
 
-    if (first === nil) {
+    if (first === undefined) {
         first = {};
         keyframes.splice(0, 0, first);
     }
@@ -396,9 +395,9 @@ export function arrangeKeyframes(keyframes: waapi.IKeyframe[]): void {
 
     let last: waapi.IKeyframe =
         tail(keyframes, (k: waapi.IKeyframe) => k.offset === 1)
-        || tail(keyframes, (k: waapi.IKeyframe) => k.offset === nil);
+        || tail(keyframes, (k: waapi.IKeyframe) => k.offset === undefined);
 
-    if (last === nil) {
+    if (last === undefined) {
         last = {};
         keyframes.push(last);
     }
@@ -461,12 +460,12 @@ export function normalizeProperties(keyframe: waapi.IKeyframe): void {
     for (let prop in keyframe) {
         const value = keyframe[prop];
         if (!isDefined(value)) {
-            keyframe[prop] = nil;
+            keyframe[prop] = undefined;
             continue;
         }
 
         // nullify properties so shorthand and handled properties don't end up in the result
-        keyframe[prop] = nil;
+        keyframe[prop] = undefined;
 
         // get the final property name
         const propAlias = propertyAliases[prop] || prop;

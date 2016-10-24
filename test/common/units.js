@@ -1,4 +1,6 @@
-var assert = require('chai').assert;
+var chai = require('chai');
+var assert = chai.assert;
+var expect = chai.expect;
 var units = require('../../dist/common/units');
 var parseUnit = units.parseUnit;
 var createUnitResolver = units.createUnitResolver;
@@ -255,55 +257,55 @@ describe('units', function () {
     describe('createUnitResolver()', function () {
         it('returns 1s when passed 1s', function () {
             var resolver = units.createUnitResolver('1s');
-            assert.equal('1s', resolver(0));
-            assert.equal('1s', resolver(1));
-            assert.equal('1s', resolver(2));
+            expect({ unit: 's', value: 1 }).to.deep.equal(resolver(0));
+            expect({ unit: 's', value: 1 }).to.deep.equal(resolver(1));
+            expect({ unit: 's', value: 1 }).to.deep.equal(resolver(2));
         });
 
         it('returns x += 1.1 when passed += 1.1', function () {
             var resolver = units.createUnitResolver('+=1.1');
-            assert.approximately(resolver(0), 1.1, 0.0001);
-            assert.approximately(resolver(1), 2.2, 0.0001);
-            assert.approximately(resolver(2), 3.3, 0.0001);
+            assert.approximately(resolver(0).value, 1.1, 0.0001);
+            assert.approximately(resolver(1).value, 2.2, 0.0001);
+            assert.approximately(resolver(2).value, 3.3, 0.0001);
         });
 
         it('returns x -= 1.1 when passed -= 1.1', function () {
             var resolver = units.createUnitResolver('-=1.1');
-            assert.approximately(resolver(0), -1.1, 0.0001);
-            assert.approximately(resolver(1), -2.2, 0.0001);
-            assert.approximately(resolver(2), -3.3, 0.0001);
+            assert.approximately(resolver(0).value, -1.1, 0.0001);
+            assert.approximately(resolver(1).value, -2.2, 0.0001);
+            assert.approximately(resolver(2).value, -3.3, 0.0001);
             assert.approximately
         });
 
         it('returns x += 1 when passed +=1s', function () {
             var resolver = units.createUnitResolver('+=1s');
-            assert.equal('1s', resolver(0));
-            assert.equal('2s', resolver(1));
-            assert.equal('3s', resolver(2));
+            expect({ unit: 's', value: 1 }).to.deep.equal(resolver(0));
+            expect({ unit: 's', value: 2 }).to.deep.equal(resolver(1));
+            expect({ unit: 's', value: 3 }).to.deep.equal(resolver(2));
         });
 
         it('returns x -= 1s when passed -=1s', function () {
             var resolver = units.createUnitResolver('-=1s');
-            assert.equal('-1s', resolver(0));
-            assert.equal('-2s', resolver(1));
-            assert.equal('-3s', resolver(2));
+            expect({ unit: 's', value: -1 }).to.deep.equal(resolver(0));
+            expect({ unit: 's', value: -2 }).to.deep.equal(resolver(1));
+            expect({ unit: 's', value: -3 }).to.deep.equal(resolver(2));
         });
 
 
         it('returns 100 when passed 0to1', function () {
             var resolver = units.createUnitResolver('0 to 1');
-            var random1 = resolver(0);
+            var random1 = resolver(0).value;
             assert.isAbove(random1, -.000001);            
             assert.isBelow(random1, 1);
         });
         
         it('returns 100 to 200 when passed 100to200', function () {
             var resolver = units.createUnitResolver('+= 100 to 200');
-            var random1 = resolver(0);
+            var random1 = resolver(0).value;
             assert.isAbove(random1, 99);            
             assert.isBelow(random1, 200);
 
-            var random2 = resolver(1);
+            var random2 = resolver(1).value;
             assert.isAbove(random2, 199);            
             assert.isBelow(random2, 300);
         });

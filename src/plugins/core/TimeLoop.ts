@@ -1,12 +1,11 @@
-import {nil} from '../../common/resources';
 import {raf, now} from '../../common/utils';
 
 export function TimeLoop(): ITimeLoop {
     const self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
     self.active = [];
     self.elapses = [];
-    self.isActive = nil;
-    self.lastTime = nil;
+    self.isActive = undefined;
+    self.lastTime = undefined;
     self.offs = [];
     self.ons = [];
     return self;
@@ -62,11 +61,11 @@ function update(self: ITimeLoopContext): void {
     const thisTime = now();
     const delta = thisTime - lastTime;
 
-    // if nil is subscribed, kill the cycle
+    // if undefined is subscribed, kill the cycle
     if (!len) {
         // end recursion
-        self.isActive = nil;
-        self.lastTime = nil;
+        self.isActive = undefined;
+        self.lastTime = undefined;
         return;
     }
 

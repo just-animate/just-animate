@@ -1,5 +1,3 @@
-import { nil } from './resources';
-
 /**
  * Clamps a number between the min and max
  * 
@@ -10,7 +8,7 @@ import { nil } from './resources';
  * @returns {number} val if between min-max, min if lesser, max if greater
  */
 export function clamp(val: number, min: number, max: number): number {
-    return val === nil ? nil : val < min ? min : val > max ? max : val;
+    return val === undefined ? undefined : val < min ? min : val > max ? max : val;
 }
 
 export function inRange(val: number, min: number, max: number): boolean {

@@ -1,6 +1,3 @@
-export const nada = null as any;
-export const nil = undefined as any;
-
 export const animate = 'animate';
 export const easingString = 'easing';
 export const call = 'call';

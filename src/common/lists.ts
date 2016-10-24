@@ -1,8 +1,6 @@
-import { nil } from './resources';
 import { isArray } from './type';
 
 const slice = Array.prototype.slice;
-const push = Array.prototype.push;
 
 export interface IList<T> {
     [key: number]: T;
@@ -14,14 +12,14 @@ export interface IList<T> {
  */
 export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T {
     if (!indexed) {
-        return nil;
+        return undefined;
     }
 
     const len = indexed.length;
     if (len < 1) {
-        return nil;
+        return undefined;
     }
-    if (predicate === nil) {
+    if (predicate === undefined) {
         return indexed[0];
     }
     for (const item of indexed as T[]) {
@@ -29,21 +27,21 @@ export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
             return item;
         }
     }
-    return nil;
+    return undefined;
 }
 /**
  * Returns the last object in the list or undefined
  */
 export function tail<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T {
     if (!indexed) {
-        return nil;
+        return undefined;
     }
 
     const len = indexed.length;
     if (len < 1) {
-        return nil;
+        return undefined;
     }
-    if (predicate === nil) {
+    if (predicate === undefined) {
         return indexed[len - 1];
     }
     for (const item of indexed as T[]) {
@@ -51,7 +49,7 @@ export function tail<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
             return item;
         }
     }
-    return nil;
+    return undefined;
 }
 
 /**

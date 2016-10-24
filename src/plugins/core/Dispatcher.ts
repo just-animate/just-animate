@@ -1,6 +1,5 @@
 import {isFunction} from '../../common/type';
 import {invalidArg} from '../../common/errors';
-import {nil} from '../../common/resources';
 
 export function Dispatcher(): IDispatcher {
     let self = this;
@@ -10,7 +9,7 @@ export function Dispatcher(): IDispatcher {
 }
 
 Dispatcher.prototype = {
-    _fn: nil as ICallbackMap,
+    _fn: undefined as ICallbackMap,
     trigger(eventName: string, resolvable: any[] | { (): any[]; }): void {
         const listeners = this._fn[eventName];
         if (!listeners) {
@@ -18,7 +17,7 @@ Dispatcher.prototype = {
         }
         const args = isFunction(resolvable) ? (resolvable as Function)() : resolvable as any[];
         for (const listener of listeners) {
-            listener.apply(nil, args);
+            listener.apply(undefined, args);
         }
     },
     on(eventName: string, listener: Function): void {

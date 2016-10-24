@@ -1,9 +1,9 @@
-node_modules
-.vscode
 .alm
+.vscode
 .idea
 .vs
 npm-debug.log*
 **/*.map
-dist/package.json
-dist/README.md
+node_modules
+dist
+typings

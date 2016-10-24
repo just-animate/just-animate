@@ -1,5 +1,5 @@
 import { cssFunction, startsWith, toCamelCase } from '../../common/strings';
-import { cubicBezier as cb, steps as st, nil } from '../../common/resources';
+import { cubicBezier as cb, steps as st } from '../../common/resources';
 
 const SUBDIVISION_EPSILON = 0.0001;
 const cssFunctionRegex = /([a-z-]+)\(([^\)]+)\)/ig;
@@ -57,10 +57,10 @@ export function getEasingString(easingString: string): ja.Easing {
         // get name as camel case
         const def = easings[toCamelCase(easingString)];
         if (def) {
-            return cssFunction.apply(nil, def);
+            return cssFunction.apply(undefined, def);
         }
     }
-    return cssFunction.apply(nil, defaultEasing);
+    return cssFunction.apply(undefined, defaultEasing);
 }
 
 export function getEasingFunction(easingString: string): ja.Func<number> {

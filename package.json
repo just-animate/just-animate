@@ -13,10 +13,11 @@
     "tslint": "^3.15.1",
     "typescript": "^2.1.0-dev.20160929",
     "typescript-formatter": "^2.3.0",
+    "typings": "^1.4.0",
     "uglify": "^0.1.5"
   },
   "license": "MIT",
-  "version": "1.0.0-beta.20161011a",
+  "version": "1.0.0",
   "main": "./dist/index.js",
   "name": "just-animate",
   "repository": {

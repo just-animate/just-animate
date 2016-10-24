@@ -1,13 +1,13 @@
 import { isString } from './type';
 import { toArray } from './lists';
-import { nil, camelCaseRegex } from './resources';
+import { camelCaseRegex } from './resources';
 
 function camelCaseReplacer(match: string, p1: string, p2: string): string {
     return p1 + p2.toUpperCase();
 }
 
 export function toCamelCase(value: string): string {
-    return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : nil;
+    return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : undefined;
 }
 
 export function startsWith(value: string, pattern: string): boolean {
