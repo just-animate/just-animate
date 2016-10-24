@@ -9,8 +9,8 @@ import { finished, paused, running, idle } from '../../common/resources';
  */
 export class KeyframeAnimator implements ja.IAnimationController {
     public totalDuration: number;
-    private _initialized: boolean;
-    private _init: ja.Resolvable<waapi.IAnimation>;
+    private _initialized: boolean | undefined;
+    private _init: ja.Resolvable<waapi.IAnimation> | undefined;
     private _animator: waapi.IAnimation;
 
     constructor(init: ja.Resolvable<waapi.IAnimation>) {

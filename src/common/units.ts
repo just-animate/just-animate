@@ -28,13 +28,13 @@ export const second: string = 's';
 
 export function createUnitResolver(val: string | number): UnitResolver {
     if (!isDefined(val)) {
-        return () => undefined;
+        return () => ({ unit: undefined, value: 0 });
     } 
     if (isNumber(val)) {
         return () => ({ unit: undefined, value: val as number });
     }
 
-    const match = unitExpression.exec(val as string);
+    const match = unitExpression.exec(val as string) as RegExpExecArray;
     const stepTypeString = match[1];
     const startString = match[2];    
     const toOperator = match[3];  
@@ -72,7 +72,7 @@ export function parseUnit(val: string | number, output?: Unit): Unit {
         output.unit = undefined;        
         output.value = val as number;
     } else {
-        const match = measureExpression.exec(val as string);
+        const match = measureExpression.exec(val as string) as RegExpExecArray;
         const startString = match[1];    
         const unitTypeString = match[2];  
         
@@ -83,7 +83,7 @@ export function parseUnit(val: string | number, output?: Unit): Unit {
     return output;
 }
 
-export function getCanonicalTime(unit: Unit): number {
+export function getCanonicalTime(unit: Unit): number | undefined {
     if (unit.unit === 's') {
         return unit.value * 1000;
     }
@@ -91,8 +91,8 @@ export function getCanonicalTime(unit: Unit): number {
 }
 
 export type Unit = {
-    value: number;
-    unit: string;
+    value: number | undefined;
+    unit: string | undefined;
 }
 
 export type UnitResolver = {

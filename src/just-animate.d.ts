@@ -105,16 +105,16 @@ declare module ja {
         restart(): void;
     }
     export interface IAnimationTimeContext {
-        currentTime: number;
-        delta: number;
-        duration: number;
-        offset: number;
-        computedOffset: number;
-        playbackRate: number;
-        target: any;
-        targets: any[];
-        index: number;
-        iterations: number;
+        currentTime: number | undefined;
+        delta: number | undefined;
+        duration: number | undefined;
+        offset: number | undefined;
+        computedOffset: number | undefined;
+        playbackRate: number | undefined;
+        target: any | undefined;
+        targets: any[] | undefined;
+        index: number | undefined;
+        iterations: number | undefined;
     }
     export interface IAnimator {
         animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator;

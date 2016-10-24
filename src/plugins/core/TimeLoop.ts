@@ -121,8 +121,8 @@ export interface ITimeLoop {
 }
 
 interface ITimeLoopContext {
-    isActive: boolean;
-    lastTime: number;
+    isActive: boolean | undefined;
+    lastTime: number | undefined;
     ons: ITimeLoopCallback[];
     offs: ITimeLoopCallback[];
     active: ITimeLoopCallback[];

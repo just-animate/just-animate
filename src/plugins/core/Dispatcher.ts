@@ -9,7 +9,7 @@ export function Dispatcher(): IDispatcher {
 }
 
 Dispatcher.prototype = {
-    _fn: undefined as ICallbackMap,
+    _fn: undefined as ICallbackMap | undefined,
     trigger(eventName: string, resolvable: any[] | { (): any[]; }): void {
         const listeners = this._fn[eventName];
         if (!listeners) {

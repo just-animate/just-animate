@@ -72,8 +72,8 @@ const transforms = [
 
 export function initAnimator(timings: waapi.IEffectTiming, ctx: ja.CreateAnimationContext<HTMLElement>): waapi.IAnimation {
     // process css as either keyframes or calculate what those keyframes should be   
-    const options = ctx.options;
-    const target = ctx.target;
+    const options = ctx.options!;
+    const target = ctx.target as HTMLElement;
     const css = options.css;
 
     let sourceKeyframes: ja.ICssKeyframeOptions[];
@@ -236,11 +236,6 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
         .keys(keyframesByOffset)
         .map((s: ja.ICssKeyframeOptions) => Number(s))
         .sort();
-    
-    const parseOutput = {
-        unit: undefined as string,
-        value: undefined as number
-    };
 
     // if prop not present calculate each transform property in list
     // a keyframe at offset 1 should be guaranteed for each property, so skip that one
@@ -258,9 +253,9 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             const endKeyframe = keyframesByOffset[endOffset];
 
             // parse out unit values of next keyframe       
-            parseUnit(endKeyframe[transform], parseOutput);
-            const endValue = parseOutput.value;
-            const endUnitType = parseOutput.unit;
+            const envValueUnit = parseUnit(endKeyframe[transform]);
+            const endValue = envValueUnit.value;
+            const endUnitType = envValueUnit.unit;
 
             // search downward for the previous value or use defaults  
             let startIndex = 0;
@@ -272,9 +267,10 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
                 const offset1 = offsets[j];
                 const keyframe1 = keyframesByOffset[offset1];
                 if (isDefined(keyframe1[transform])) {
-                    parseUnit(keyframe1[transform], parseOutput);
-                    startValue = parseOutput.value;
-                    startUnit = parseOutput.unit;
+
+                    const startValueUnit = parseUnit(keyframe1[transform]);
+                    startValue = startValueUnit.value;
+                    startUnit = startValueUnit.unit;
                     startIndex = j;
                     startOffset = offsets[j]; 
                     break;
@@ -381,7 +377,7 @@ export function arrangeKeyframes(keyframes: waapi.IKeyframe[]): void {
         return;
     }
 
-    let first: waapi.IKeyframe =
+    let first: waapi.IKeyframe | undefined =
         head(keyframes, (k: waapi.IKeyframe) => k.offset === 0)
         || head(keyframes, (k: waapi.IKeyframe) => k.offset === undefined);
 
@@ -393,7 +389,7 @@ export function arrangeKeyframes(keyframes: waapi.IKeyframe[]): void {
         first.offset = 0;
     }
 
-    let last: waapi.IKeyframe =
+    let last: waapi.IKeyframe | undefined =
         tail(keyframes, (k: waapi.IKeyframe) => k.offset === 1)
         || tail(keyframes, (k: waapi.IKeyframe) => k.offset === undefined);
 
@@ -418,8 +414,8 @@ export function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
         return;
     }
 
-    const first = head(keyframes);
-    const last = tail(keyframes);
+    const first = head(keyframes)!;
+    const last = tail(keyframes)!;
 
     // fill initial keyframe with missing props
     const len = keyframes.length;

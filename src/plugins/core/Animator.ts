@@ -17,21 +17,17 @@ import { queryElements } from '../../common/elements';
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 const animationPadding = 1.0 / 30;
-const unitOut = {
-    unit: undefined as string,
-    value: undefined as number
-};
 
 export class Animator implements ja.IAnimator {
-    private _currentIteration: number;
-    private _currentTime: number;
+    private _currentIteration: number | undefined;
+    private _currentTime: number | undefined;
     private _context: ja.IAnimationTimeContext;
-    private _direction: ja.AnimationDirection;
+    private _direction: ja.AnimationDirection | undefined;
     private _dispatcher: IDispatcher;
     private _duration: number;
     private _events: ja.ITimelineEvent[];
-    private _playState: ja.AnimationPlaybackState;
-    private _playbackRate: number;
+    private _playState: ja.AnimationPlaybackState | undefined;
+    private _playbackRate: number | undefined;
     private _resolver: MixinService;
     private _timeLoop: ITimeLoop;
     private _totalIterations: number;
@@ -90,7 +86,7 @@ export class Animator implements ja.IAnimator {
     public currentTime(value?: number): number | ja.IAnimator {
         const self = this;
         if (!isDefined(value)) {
-            return self._currentTime;
+            return self._currentTime as number;
         }
         self._currentTime = value;
         return self;
@@ -105,7 +101,7 @@ export class Animator implements ja.IAnimator {
     public playbackRate(value?: number): number | ja.IAnimator {
         const self = this;
         if (!isDefined(value)) {
-            return self._playbackRate;
+            return self._playbackRate as number;
         }
         self._playbackRate = value;
         return self;
@@ -115,7 +111,7 @@ export class Animator implements ja.IAnimator {
     public playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState | ja.IAnimator {
         const self = this;
         if (!isDefined(value)) {
-            return self._playState;
+            return self._playState as ja.AnimationPlaybackState;
         }
         self._playState = value;
         self._dispatcher.trigger('set', ['playbackState', value]);
@@ -143,8 +139,8 @@ export class Animator implements ja.IAnimator {
     public play(options?: number | ja.IPlayOptions): ja.IAnimator {     
         const self = this;
 
-        let totalIterations: number;
-        let direction: ja.AnimationDirection;
+        let totalIterations: number = 0;
+        let direction: ja.AnimationDirection = 'normal';
         if (options) {
             if (!isNumber(options)) {
                 const playOptions = options as ja.IPlayOptions;
@@ -208,20 +204,17 @@ export class Animator implements ja.IAnimator {
         }
 
         // set from and to relative to existing duration    
-        parseUnit(event.from || 0, unitOut);
-        event.from = (unitOut.value * (unitOut.unit === 's' ? 1000 : 1)) + self._duration;
-
-        parseUnit(event.to || 0, unitOut);
-        event.to = (unitOut.value * (unitOut.unit === 's' ? 1000 : 1)) + self._duration;
+        event.from = getCanonicalTime(parseUnit(event.from || 0)) + self._duration;
+        event.to = getCanonicalTime(parseUnit(event.to || 0)) + self._duration;
 
         // set easing to linear by default     
-        const easingFn = getEasingFunction(event.easing);
-        event.easing = getEasingString(event.easing);
+        const easingFn = getEasingFunction(event.easing as string);
+        event.easing = getEasingString(event.easing as string);
         
-        const delay = event.delay;
-        const endDelay = event.endDelay;
+        const delay = event.delay || 0;
+        const endDelay = event.endDelay || 0;
 
-        const targets = queryElements(event.targets) as HTMLElement[];
+        const targets = queryElements(event.targets!) as HTMLElement[];
         const targetLength = targets.length;
         for (let i = 0, len = targetLength; i < len; i++) {
             const target = targets[i];          
@@ -307,7 +300,7 @@ export class Animator implements ja.IAnimator {
         const duration1 = self._duration;
         const totalIterations = self._totalIterations;
         
-        let playbackRate = self._playbackRate;
+        let playbackRate = self._playbackRate as number;
         let isReversed = playbackRate < 0;
         let startTime = isReversed ? duration1 : 0;
         let endTime = isReversed ? 0 : duration1;
@@ -343,7 +336,7 @@ export class Animator implements ja.IAnimator {
             context.currentTime = currentTime;
             context.delta = delta;
             context.duration = endTime - startTime;
-            context.playbackRate = playbackRate;
+            context.playbackRate = playbackRate as number;
             context.iterations = currentIteration;            
             context.offset = undefined;
             context.computedOffset = undefined;
@@ -415,10 +408,10 @@ export class Animator implements ja.IAnimator {
 
 
 interface IAnimationContext {
-    _currentIteration: number;
-    _currentTime: number;
+    _currentIteration: number | undefined;
+    _currentTime: number | undefined;
     _events: ja.ITimelineEvent[];
     _onTick: { (delta: number, runningTime: number): void; };
-    _playState: ja.AnimationPlaybackState;
+    _playState: ja.AnimationPlaybackState | undefined;
     _timeLoop: ITimeLoop;
 }

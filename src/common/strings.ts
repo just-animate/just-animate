@@ -7,7 +7,7 @@ function camelCaseReplacer(match: string, p1: string, p2: string): string {
 }
 
 export function toCamelCase(value: string): string {
-    return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : undefined;
+    return isString(value) ? value.replace(camelCaseRegex, camelCaseReplacer) : '';
 }
 
 export function startsWith(value: string, pattern: string): boolean {

@@ -10,7 +10,7 @@ export interface IList<T> {
 /**
  * Returns the first object in the list or undefined
  */
-export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T {
+export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T | undefined {
     if (!indexed) {
         return undefined;
     }
@@ -32,7 +32,7 @@ export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
 /**
  * Returns the last object in the list or undefined
  */
-export function tail<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T {
+export function tail<T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T | undefined {
     if (!indexed) {
         return undefined;
     }

@@ -4,10 +4,10 @@ var strings = require('../../dist/common/strings');
 describe('strings', function () {
     describe('hyphenatedToCamelCase()', function () {
         it('returns undefined if not a string', function () {
-            assert.equal(undefined, strings.toCamelCase(undefined));
-            assert.equal(undefined, strings.toCamelCase(null));
-            assert.equal(undefined, strings.toCamelCase({}));
-            assert.equal(undefined, strings.toCamelCase([]));
+            assert.equal('', strings.toCamelCase(undefined));
+            assert.equal('', strings.toCamelCase(null));
+            assert.equal('', strings.toCamelCase({}));
+            assert.equal('', strings.toCamelCase([]));
         });
 
         it('returns the original if no changes are needed ', function () {

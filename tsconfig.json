@@ -10,6 +10,8 @@
         "declaration": false,
         "noImplicitAny": true,
         "noImplicitReturns": true,
+        "noImplicitUseStrict": true,
+        "strictNullChecks": true,
         "noEmit": true,
         "suppressImplicitAnyIndexErrors": true,
         "forceConsistentCasingInFileNames": true,
