@@ -1,4 +1,4 @@
-# JustAnimate
+# Just Animate
 
 *Just Animate creates beautiful animations using the latest browser standards*
 
