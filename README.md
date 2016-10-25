@@ -53,8 +53,8 @@
        },
 
     // delay: '0ms',
-    // delay: function(target, index, targets) {
-    //     return 10 * index;
+    // delay: function(ctx) {
+    //     return 10 * ctx.index;
     // },
 
     // direction: 'normal',

@@ -33,7 +33,7 @@ export const headShake: ja.IAnimationMixin = {
             translateX: '0'
         }
     ],
-    to: 1000,
+    to: '1s',
     easing: 'ease-out',
     name: 'headShake'
 };

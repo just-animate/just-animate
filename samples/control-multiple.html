@@ -129,7 +129,7 @@
 
     <script src="./web-animations.min.js"></script>
     <script src="../dist/browser/just-animate-core.js"></script>
-    <script src="../dist/browser/just-animate-animations.min.js"></script>
+    <script src="../dist/browser/just-animate-animations.js"></script>
     <script>
         (function() {
             var button = document.getElementById('animate-button');
@@ -146,7 +146,7 @@
                         to: '1.4s',
                         fill: 'forwards',
                         delay: function() {
-                            return Math.random() * 1000;
+                            return just.random(0, 1000);
                         }
                     })
                     .animate({ 

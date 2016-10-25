@@ -22,7 +22,7 @@ export const flip: ja.IAnimationMixin = {
         }
     ],
 
-    to: 1000
+    to: '1s'
     ,
     name: 'flip'
 };

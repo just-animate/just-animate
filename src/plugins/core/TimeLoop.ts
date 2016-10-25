@@ -1,18 +1,28 @@
 import {raf, now} from '../../common/utils';
 
-export function TimeLoop(): ITimeLoop {
-    const self = this instanceof TimeLoop ? this : Object.create(TimeLoop.prototype);
-    self.active = [];
-    self.elapses = [];
-    self.isActive = undefined;
-    self.lastTime = undefined;
-    self.offs = [];
-    self.ons = [];
-    return self;
+type TimeLoopCallback = {
+    (delta: number, elapsed: number): any;
 }
 
-TimeLoop.prototype = {
-    on(fn: ITimeLoopCallback): void {
+export class TimeLoop {
+    public isActive: boolean | undefined;
+    public lastTime: number | undefined;
+    public ons: TimeLoopCallback[];
+    public offs: TimeLoopCallback[];
+    public active: TimeLoopCallback[];
+    public elapses: number[];
+
+    constructor() {
+        const self = this;
+        self.active = [];
+        self.elapses = [];
+        self.isActive = undefined;
+        self.lastTime = undefined;
+        self.offs = [];
+        self.ons = [];
+    }
+
+    public on(fn: TimeLoopCallback): void {
         const self = this;
         const offs = self.offs;
         const ons = self.ons;
@@ -28,8 +38,8 @@ TimeLoop.prototype = {
             self.isActive = true;
             raf(self, update);
         }
-    },
-    off(fn: ITimeLoopCallback): void {
+    }
+    public off(fn: TimeLoopCallback): void {
         const self = this;
         const offs = self.offs;
         const ons = self.ons;
@@ -46,10 +56,9 @@ TimeLoop.prototype = {
             raf(self, update);
         }
     }
-};
+}
 
-
-function update(self: ITimeLoopContext): void {
+function update(self: TimeLoop): void {
     updateOffs(self);
     updateOns(self);
 
@@ -85,7 +94,7 @@ function update(self: ITimeLoopContext): void {
     }
 }
 
-function updateOffs(self: ITimeLoopContext): void {
+function updateOffs(self: TimeLoop): void {
     const len = self.offs.length;
     const active = self.active;
 
@@ -98,7 +107,7 @@ function updateOffs(self: ITimeLoopContext): void {
         }
     }
 }
-function updateOns(self: ITimeLoopContext): void {
+function updateOns(self: TimeLoop): void {
     const len = self.ons.length;
     const active = self.active;
 
@@ -109,22 +118,4 @@ function updateOns(self: ITimeLoopContext): void {
             self.elapses.push(0);
         }
     }
-}
-
-export interface ITimeLoopCallback {
-    (delta: number, elapsed: number): any;
-}
-
-export interface ITimeLoop {
-    on(fn: ITimeLoopCallback): void;
-    off(fn: ITimeLoopCallback): void;
-}
-
-interface ITimeLoopContext {
-    isActive: boolean | undefined;
-    lastTime: number | undefined;
-    ons: ITimeLoopCallback[];
-    offs: ITimeLoopCallback[];
-    active: ITimeLoopCallback[];
-    elapses: number[];
 }

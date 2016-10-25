@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "rootDir": "test",
+        "rootDir": "src",
         "module": "commonjs",
         "preserveConstEnums": false,
         "removeComments": false,
@@ -17,7 +17,8 @@
         "forceConsistentCasingInFileNames": true,
         "newLine": "LF",
         "noFallthroughCasesInSwitch": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "noUnusedLocals": true
     },
     "exclude": [
         "node_modules", 

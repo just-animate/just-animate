@@ -10,7 +10,7 @@ export const slideInDown: ja.IAnimationMixin = {
         }
     ],
 
-    to: 1000
+    to: '1s'
     ,
     name: 'slideInDown'
 };

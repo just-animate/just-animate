@@ -6,26 +6,10 @@ export const stepNone: string = '=';
 export const stepForward: string = '+=';
 export const stepBackward: string = '-=';
 
-export const em: string = 'em';
-export const ex: string = 'ex';
-export const ch: string = 'ch';
-export const rem: string = 'rem';
-export const vh: string = 'vh';
-export const vw: string = 'vw';
-export const vmin: string = 'vmin';
-export const vmax: string = 'vmax';
-export const px: string = 'px';
-export const mm: string = 'mm';
-export const q: string = 'q';
-export const cm: string = 'cm';
-export const inch: string = 'in';
-export const point: string = 'pt';
-export const pica: string = 'pc';
-export const percent: string = '%';
-export const millisecond: string = 'ms';
-export const second: string = 's';
-
-
+/**
+ * Returns a unit resolver.  The unit resolver returns what the unit should be
+ * at a given index.  for instance +=200 should be 200 at 0, 400 at 1, and 600 at 2
+ */
 export function createUnitResolver(val: string | number): UnitResolver {
     if (!isDefined(val)) {
         return () => ({ unit: undefined, value: 0 });
@@ -62,6 +46,9 @@ export function createUnitResolver(val: string | number): UnitResolver {
     return resolver;
 }
 
+/**
+ * Parses a string or number and returns the unit and numeric value
+ */
 export function parseUnit(val: string | number, output?: Unit): Unit {
     output = output || {} as Unit;
 
@@ -83,6 +70,9 @@ export function parseUnit(val: string | number, output?: Unit): Unit {
     return output;
 }
 
+/**
+ * returns the unit as a number (resolves seconds to milliseconds)
+ */
 export function getCanonicalTime(unit: Unit): number | undefined {
     if (unit.unit === 's') {
         return unit.value * 1000;

@@ -29,7 +29,7 @@ export const flipInX: ja.IAnimationMixin = {
         }
     ],
 
-    to: 750
+    to: '750ms'
     ,
     name: 'flipInX'
 };

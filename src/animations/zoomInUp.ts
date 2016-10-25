@@ -17,7 +17,7 @@ export const zoomInUp: ja.IAnimationMixin = {
         }
     ],
 
-    to: 1000,
+    to: '1s',
     easing: 'elegantSlowStartEnd'
     ,
     name: 'zoomInUp'

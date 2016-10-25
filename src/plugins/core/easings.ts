@@ -1,5 +1,4 @@
 import { cssFunction, startsWith, toCamelCase } from '../../common/strings';
-import { cubicBezier as cb, steps as st } from '../../common/resources';
 
 const SUBDIVISION_EPSILON = 0.0001;
 const cssFunctionRegex = /([a-z-]+)\(([^\)]+)\)/ig;
@@ -9,6 +8,9 @@ const stepAliases = {
     end: 0,
     start: 1
 };
+
+const cb = 'cubic-bezier';
+const st = 'steps';
 
 const easings = {
     ease: [cb, .25, .1, .25, 1],

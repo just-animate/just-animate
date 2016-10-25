@@ -49,7 +49,7 @@
 
     <script src="./web-animations.min.js"></script>
     <script src="../dist/browser/just-animate-core.js"></script>
-    <script src="../dist/browser/just-animate-animations.min.js"></script>
+    <script src="../dist/browser/just-animate-animations.js"></script>
     <script>
         (function() {
             var button = document.getElementById('animate-button');
@@ -61,12 +61,20 @@
                     delay: '+=120ms',
                     easing: 'ease-in',                 
                     css: {
-                        backgroundColor: function(target, index, targets) {
-                            return ['hsl(' + (360 * (index / targets.length)) + ', 35%, 55%)', 'white'];
+                        backgroundColor: function(ctx) {
+                            return ['hsl(' + (360 * (ctx.index / ctx.targets.length)) + ', 35%, 55%)', 'white'];
                         },
-                        color: function(target, index, targets) {
-                            return ['white', 'hsl(' + (360 * (index / targets.length)) + ', 50%, 30%)'];
+                        color: function(ctx) {
+                            return ['white', 'hsl(' + (360 * (ctx.index / ctx.targets.length)) + ', 50%, 30%)'];
                         }
+                    }
+                })
+                .on({
+                    play: function() {
+                        button.setAttribute('disabled', 'disabled');
+                    },
+                    finish: function() {
+                        button.removeAttribute('disabled');
                     }
                 })
                 .pause();

@@ -20,7 +20,7 @@ describe('objects', function () {
                 index: 2,
                 targets: [undefined, undefined, target],
             }
-            var initial = function (t, i, ts) { return i * 100; };
+            var initial = function (ctx) { return ctx.index * 100; };
             var result = objects.resolve(initial, context);
 
             expect(result).to.equal(200);
@@ -50,8 +50,8 @@ describe('objects', function () {
             var level1 = { x: level2 };
             var result = objects.deepCopyObject(level1);
          
-            expect(result).to.deep.equal(level1);            
-            expect(result.x.y).to.not.equal(level3);
+            expect(result).to.deep.equal(level1);       
+            assert.isTrue(result.x.y !== level3);
         });
 
         it('creates a copy of an array inside a property', function () {

@@ -10,7 +10,7 @@ export const slideOutRight: ja.IAnimationMixin = {
         }
     ],
 
-    to: 1000
+    to: '1s'
     ,
     name: 'slideOutRight'
 };

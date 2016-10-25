@@ -9,7 +9,7 @@ export const fadeInRight: ja.IAnimationMixin = {
             transform: 'none'
         }
     ],
-    to: 650,
+    to: '1s',
     fill: 'both',
     easing: 'ease-in',
     name: 'fadeInRight'

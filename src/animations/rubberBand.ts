@@ -30,5 +30,5 @@ export const rubberBand: ja.IAnimationMixin = {
         }
     ],
     name: 'rubberBand',
-    to: 1000
+    to: '1s'
 };

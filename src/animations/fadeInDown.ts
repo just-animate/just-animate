@@ -5,5 +5,5 @@ export const fadeInDown: ja.IAnimationMixin = {
     },
     fill: 'both',
     name: 'fadeInDown',
-    to: 650
+    to: '1s'
 };

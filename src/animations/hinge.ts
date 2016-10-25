@@ -27,8 +27,6 @@ export const hinge: ja.IAnimationMixin = {
             opacity: 0
         }
     ],
-
-    to: 2000
-    ,
-    name: 'hinge'
+    name: 'hinge',
+    to: '2s'   
 };

@@ -17,7 +17,7 @@ export const flipOutX: ja.IAnimationMixin = {
         }
     ],
 
-    to: 750
+    to: '750ms'
     ,
     name: 'flipOutX'
 };

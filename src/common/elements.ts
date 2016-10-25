@@ -1,5 +1,5 @@
 import { toArray } from './lists';
-import { isArray, isFunction, isString } from './type';
+import { isArray, isElement, isFunction, isObject, isString } from './type';
 import { invalidArg } from './errors';
 
 /**
@@ -8,45 +8,39 @@ import { invalidArg } from './errors';
  * @param {ja.ElementSource} source from which to locate elements
  * @returns {Element[]} array of elements found
  */
-export function queryElements(source: ja.AnimationTarget): Element[] {
-    if (!source) {
+export function getTargets(target: ja.AnimationTarget): (Element | {})[] {
+    if (!target) {
         throw invalidArg('source');
     }
-    if (isString(source)) {
+    if (isString(target)) {
         // if query selector, search for elements 
-        const nodeResults = document.querySelectorAll(source as string);
-        return toArray(nodeResults);
+        return toArray(document.querySelectorAll(target as string));
     }
-    if (typeof source['tagName'] === 'string') {
+    if (isElement(target)) {
         // if a single element, wrap in array 
-        return [source] as Element[];
+        return [target] as Element[];
     }
-    if (isFunction(source)) {
+    if (isFunction(target)) {
         // if function, call it and call this function
-        const provider = source as { (): ja.AnimationTarget; };
+        const provider = target as { (): ja.AnimationTarget; };
         const result = provider();
-        return queryElements(result);
+        return getTargets(result);
     }
-    if (isArray(source)) {
+    if (isArray(target)) {
         // if array or jQuery object, flatten to an array
         const elements: Element[] = [];
-        for (const i of source as ja.AnimationTarget[]) {
+        for (const i of target as ja.AnimationTarget[]) {
             // recursively call this function in case of nested elements
-            const innerElements = queryElements(i);
+            const innerElements = getTargets(i);
             elements.push.apply(elements, innerElements);
         }
         return elements;
     }
+    if (isObject(target)) {
+        // if it is an actual object at this point, handle it
+        return [target] as {}[];
+    }
 
     // otherwise return empty    
     return [];
-}
-
-export function getEmSize(el: HTMLElement): number {
-    return parseFloat(getComputedStyle(el).fontSize!);
-}
-
-
-export function getRemSize(): number {
-    return parseFloat(getComputedStyle(document.body).fontSize!);
 }

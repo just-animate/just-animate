@@ -20,7 +20,7 @@ export const swing: ja.IAnimationMixin = {
         }
     ],
 
-    to: 1000
+    to: '1s'
     ,
     name: 'swing'
 };

@@ -27,7 +27,7 @@ export const bounceInUp: ja.IAnimationMixin = {
         }
     ],
 
-    to: 900,
+    to: '1s',
     fill: 'both',
     easing: 'easeOutCubic'
     ,

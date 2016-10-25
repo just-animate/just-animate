@@ -27,5 +27,5 @@ export const bounceOut: ja.IAnimationMixin = {
     ],
     fill: 'both',
     name: 'bounceOut',
-    to: 900
+    to: '1s'
 };

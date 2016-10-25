@@ -41,7 +41,7 @@ export const jello: ja.IAnimationMixin = {
             transform: 'none'
         }
     ],
-    to: 1000,
+    to: '1s',
     fill: 'both',
     easing: 'ease-in-out',
     name: 'jello'

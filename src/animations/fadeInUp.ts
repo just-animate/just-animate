@@ -9,7 +9,7 @@ export const fadeInUp: ja.IAnimationMixin = {
             transform: 'none'
         }
     ],
-    to: 650,
+    to: '1s',
     fill: 'both',
     easing: 'ease-in',
     name: 'fadeInUp'

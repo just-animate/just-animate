@@ -35,7 +35,7 @@ export const shake: ja.IAnimationMixin = {
         }
     ],
 
-    to: 1000
+    to: '1s'
     ,
     name: 'shake'
 };

@@ -82,19 +82,26 @@ declare module ja {
         stepEnd: 'stepEnd';
         stepStart: 'stepStart';
     }
-    export interface IPlugin {
-        handle(ctx: CreateAnimationContext<HTMLElement>): ja.IAnimationController;
-        canHandle(options: ja.IAnimationOptions): boolean;
+    export interface IPlugin<T> {
+        canHandle(ctx: AnimationTargetContext<T>): boolean;
+        
+        handle(timings: ja.IAnimationTiming, ctx: AnimationTargetContext<T>): ja.IAnimationController;
     }
-    export interface ITimelineEvent {
-        animator: IAnimationController;        
-        easingFn: Func<number>;
-        endTimeMs: number;        
-        index: number;
-        startTimeMs: number;
-        target: any;
-        targets: any[];
+
+
+    export interface IAnimationTiming {
+        direction?: string;
+        delay?: number;
+        duration?: number;
+        easing?: string;
+        endDelay?: number;
+        fill?: string;
+        iterationStart?: number;
+        iterations?: number;
+        totalTime: number;        
     }
+
+
     export interface IAnimationController {
         seek(value: number): void;
         totalDuration: number;
@@ -105,16 +112,16 @@ declare module ja {
         restart(): void;
     }
     export interface IAnimationTimeContext {
-        currentTime: number | undefined;
-        delta: number | undefined;
-        duration: number | undefined;
-        offset: number | undefined;
-        computedOffset: number | undefined;
-        playbackRate: number | undefined;
+        currentTime?: number | undefined;
+        delta?: number | undefined;
+        duration?: number | undefined;
+        offset?: number | undefined;
+        computedOffset?: number | undefined;
+        playbackRate?: number | undefined;
         target: any | undefined;
         targets: any[] | undefined;
         index: number | undefined;
-        iterations: number | undefined;
+        iterations?: number | undefined;
     }
     export interface IAnimator {
         animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator;
@@ -131,9 +138,16 @@ declare module ja {
         pause(): IAnimator;
         reverse(): IAnimator;
         cancel(): IAnimator;
-        on(eventName: string, listener: Function): IAnimator;
-        off(eventName: string, listener: Function): IAnimator;
+        on(eventConfig: ja.IAnimationEvent): ja.IAnimator;
+        on(eventName: string, listener: ja.IAnimationEventListener): ja.IAnimator;
+        on(event: string | IAnimationEvent, listener: IAnimationEventListener | undefined): ja.IAnimator;
+        off(eventConfig: ja.IAnimationEvent): ja.IAnimator;
+        off(eventName: string, listener: ja.IAnimationEventListener): ja.IAnimator;
+        off(event: string | IAnimationEvent, listener: IAnimationEventListener | undefined): ja.IAnimator;
     }
+
+    export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'update' | 'iteration';
+
     export interface IPlayOptions {
         direction?: AnimationDirection;
         iterations?: number;
@@ -143,22 +157,52 @@ declare module ja {
     }
     export interface IAnimation {
         css?: ICssPropertyOptions | ICssKeyframeOptions[];
-        delay?: Resolvable<number>;  
+        delay?: Resolvable<number>;   
         direction?: Resolvable<string>;        
         easing?: Easing;
         endDelay?: Resolvable<number>;
         fill?: Resolvable<FillMode>;
         iterations?: Resolvable<number>;
         iterationStart?: Resolvable<number>;
-        to: number;
+        to: number|string;
+    }
+    export interface IAnimationEvent {
+        cancel?: IAnimationEventListener;
+        finish?: IAnimationEventListener;
+        pause?: IAnimationEventListener;
+        play?: IAnimationEventListener;
+        update?: IAnimationEventListener;
+        iteration?: IAnimationEventListener;
+
+        [key: string]: IAnimationEventListener | undefined;
+    }
+    export interface IAnimationOptionEvent {
+        cancel?: IAnimationEventListener;
+        
+        create?: IAnimationEventListener;
+     
+        update?: IAnimationEventListener;
+
+        pause?: IAnimationEventListener;
+
+        play?: IAnimationEventListener;
+
+
+        finish?: IAnimationEventListener;
+
+        [key: string]: IAnimationEventListener | undefined;
+    }
+    export interface IAnimationEventListener {
+        (ctx: IAnimationTimeContext): void;
     }
     export interface IAnimationOptions extends IAnimation {
         targets?: AnimationTarget;
-        from?: number;
+        from?: number | string;
         mixins?: string | string[];
-        isTransition: boolean;
-        update?: { (): void|any };
+        isTransition?: boolean;
+        on?: IAnimationOptionEvent;
     }
+    
     export interface ICssPropertyOptions {
         backdropFilter?: Resolvable<string | (string)[]>;
         background?: Resolvable<string | (string)[]>;
@@ -425,7 +469,7 @@ declare module ja {
         zIndex?: Resolvable<number>;
     }
 
-    export type CreateAnimationContext<T> = {
+    export type AnimationTargetContext<T> = {
         options?: ja.IAnimationOptions;
         target?: T;
         index?: number;
@@ -440,6 +484,6 @@ declare module ja {
         (mapable: T1): T1;
     }
     export type Resolver<T> = {
-        (target?: any, index?: number, targets?: any[]): T;
+        (ctx: AnimationTargetContext<Element | {}>): T;
     }
 }

@@ -1,6 +1,6 @@
 import { random, shuffle } from './common/random';
 import { Animator } from './plugins/core/Animator';
-import { TimeLoop, ITimeLoop } from './plugins/core/TimeLoop';
+import { TimeLoop } from './plugins/core/TimeLoop';
 import { MixinService } from './plugins/core/MixinService';
 
 export class JustAnimate {
@@ -10,7 +10,7 @@ export class JustAnimate {
      * @type {ja.IPlugin[]}
      * @memberOf JustAnimate
      */
-    public plugins: ja.IPlugin[];
+    public plugins: ja.IPlugin<{}>[];
 
     /**
      * List of supported easing functions
@@ -54,7 +54,7 @@ export class JustAnimate {
     };
 
     private _resolver: MixinService;
-    private _timeLoop: ITimeLoop;
+    private _timeLoop: TimeLoop;
 
     /**
      * Register a list of mixins across all instances of JustAnimate
@@ -74,7 +74,7 @@ export class JustAnimate {
     constructor() {
         const self = this;
         self._resolver = new MixinService();
-        self._timeLoop = TimeLoop();
+        self._timeLoop = new TimeLoop();
         self.plugins = [];
     }
     /**

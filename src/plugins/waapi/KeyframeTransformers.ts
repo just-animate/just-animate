@@ -6,71 +6,39 @@ import { parseUnit } from '../../common/units';
 import { listProps, resolve, deepCopyObject } from '../../common/objects';
 import { unsupported } from '../../common/errors';
 
-import {
-    animate,
-    easingString,
-    offsetString,
-    scale3d,
-    scale,
-    scaleX,
-    scaleY,
-    scaleZ,
-    skew,
-    skewX,
-    skewY,
-    rotate3d,
-    rotate,
-    rotateX,
-    rotateY,
-    rotateZ,
-    translate,
-    translate3d,
-    x,
-    y,
-    z,
-    translateY,
-    translateX,
-    translateZ,
-    transform
-} from '../../common/resources';
-
 const propertyAliases = {
-    x: translateX,
-    y: translateY,
-    z: translateZ
+    x: 'translateX',
+    y: 'translateY',
+    z: 'translateZ'
 };
 
 const transforms = [
     'perspective',
     'matrix',
-
-    translateX,
-    translateY,
-    translateZ,
-    translate,
-    translate3d,
-    x,
-    y,
-    z,
-
-    skew,
-    skewX,
-    skewY,
-
-    rotateX,
-    rotateY,
-    rotateZ,
-    rotate,
-    rotate3d,
-
-    scaleX,
-    scaleY,
-    scaleZ,
-    scale,
-    scale3d
+    'translateX',
+    'translateY',
+    'translateZ',
+    'translate',
+    'translate3d',
+    'x',
+    'y',
+    'z',
+    'skew',
+    'skewX',
+    'skewY',
+    'rotateX',
+    'rotateY',
+    'rotateZ',
+    'rotate',
+    'rotate3d',
+    'scaleX',
+    'scaleY',
+    'scaleZ',
+    'scale',
+    'scale3d'
 ];
 
-export function initAnimator(timings: waapi.IEffectTiming, ctx: ja.CreateAnimationContext<HTMLElement>): waapi.IAnimation {
+export function initAnimator(timings: waapi.IEffectTiming, ctx: ja.AnimationTargetContext<Element>): waapi.IAnimation {
     // process css as either keyframes or calculate what those keyframes should be   
     const options = ctx.options!;
     const target = ctx.target as HTMLElement;
@@ -98,7 +66,7 @@ export function initAnimator(timings: waapi.IEffectTiming, ctx: ja.CreateAnimati
     arrangeKeyframes(targetKeyframes);
     fixPartialKeyframes(targetKeyframes);
 
-    const animator = target[animate](targetKeyframes, timings);
+    const animator = target['animate'](targetKeyframes, timings);
     animator.cancel();
     return animator;
 }
@@ -118,11 +86,11 @@ export function addTransition(keyframes: waapi.IKeyframe[], target: HTMLElement)
 
     properties.forEach((property: string) => {
         // skip offset property
-        if (property === offsetString) {
+        if (property === 'offset') {
             return;
         }
 
-        const alias = transforms.indexOf(property) !== -1 ? transform : property;
+        const alias = transforms.indexOf(property) !== -1 ? 'transform' : property;
         const val = style[alias];
 
         if (isDefined(val)) {
@@ -162,8 +130,10 @@ export function expandOffsets(keyframes: ja.ICssKeyframeOptions[]): void {
     keyframes.sort(keyframeOffsetComparer);
 }
 
-
-export function resolvePropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: ja.ICssKeyframeOptions[], ctx: ja.CreateAnimationContext<HTMLElement>): void {
+/**
+ * This calls all keyframe properties that are functions and sets their values
+ */
+export function resolvePropertiesInKeyframes(source: ja.ICssKeyframeOptions[], target: ja.ICssKeyframeOptions[], ctx: ja.AnimationTargetContext<Element>): void {
     const len = source.length;
     for (let i = 0; i < len; i++) {
         const sourceKeyframe = source[i];
@@ -185,7 +155,7 @@ export function resolvePropertiesInKeyframes(source: ja.ICssKeyframeOptions[], t
     }
 }
 
-export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICssKeyframeOptions[], ctx: ja.CreateAnimationContext<HTMLElement>): void {
+export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICssKeyframeOptions[], ctx: ja.AnimationTargetContext<Element>): void {
     // create a map to capture each keyframe by offset
     const keyframesByOffset: { [key: number]: ja.ICssKeyframeOptions } = {};
     const cssProps = css as ja.ICssPropertyOptions;
@@ -261,7 +231,7 @@ export function propsToKeyframes(css: ja.ICssPropertyOptions, keyframes: ja.ICss
             let startIndex = 0;
             let startValue = endValue;
             let startOffset = 0;
-            let startUnit = undefined;
+            let startUnit = undefined as string | undefined;
 
             for (let j = i - 1; j > -1; --j) {
                 const offset1 = offsets[j];
@@ -422,7 +392,7 @@ export function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
     for (let i = 1; i < len; i++) {
         const keyframe = keyframes[i];
         for (let prop in keyframe) {
-            if (prop !== offsetString && !isDefined(first[prop])) {
+            if (prop !== 'offset' && !isDefined(first[prop])) {
                 first[prop] = keyframe[prop];
             }
         }
@@ -432,7 +402,7 @@ export function fixPartialKeyframes(keyframes: waapi.IKeyframe[]): void {
     for (let i = len - 2; i > -1; i--) {
         const keyframe = keyframes[i];
         for (let prop in keyframe) {
-            if (prop !== offsetString && !isDefined(last[prop])) {
+            if (prop !== 'offset' && !isDefined(last[prop])) {
                 last[prop] = keyframe[prop];
             }
         }
@@ -472,9 +442,9 @@ export function normalizeProperties(keyframe: waapi.IKeyframe): void {
         if (transformIndex !== -1) {
             // handle transforms
             cssTransforms.push([propAlias, value]);
-        } else if (propAlias === easingString) {
+        } else if (propAlias === 'easing') {
             // handle easings
-            keyframe[easingString] = getEasingString(value);
+            keyframe.easing = getEasingString(value);
         } else {
             // handle others (change background-color and the like to backgroundColor)
             keyframe[toCamelCase(propAlias)] = value;
@@ -482,7 +452,7 @@ export function normalizeProperties(keyframe: waapi.IKeyframe): void {
     }
 
     if (cssTransforms.length) {
-        keyframe[transform] = cssTransforms
+        keyframe.transform = cssTransforms
             .sort(transformPropertyComparer)
             .reduce((c: string, n: string[]) => c + ` ${n[0]}(${n[1]})`, '');
     }

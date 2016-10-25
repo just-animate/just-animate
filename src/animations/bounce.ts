@@ -23,5 +23,5 @@ export const bounce: ja.IAnimationMixin = {
     ],
     fill: 'both',
     name: 'bounce',
-    to: 1000
+    to: '1s'
 };

@@ -7,12 +7,12 @@ var expect = chai.expect;
 
 describe('elements', function () {
 
-    describe('queryElements()', function () {
+    describe('getTargets()', function () {
         jsdom();
 
         it('resolves element as element[]', function () {
             var element = document.createElement('div');
-            assert.equal(1, elements.queryElements(element).length);
+            assert.equal(1, elements.getTargets(element).length);
         });
 
         it('resolves elements by selector', function () {
@@ -26,7 +26,7 @@ describe('elements', function () {
                 parent.appendChild(child);
             }
 
-            assert.equal(20, elements.queryElements('#elementBySelector .child').length);
+            assert.equal(20, elements.getTargets('#elementBySelector .child').length);
             document.body.removeChild(parent);
         });
 
@@ -41,7 +41,7 @@ describe('elements', function () {
                 parent.appendChild(child);
             }
 
-            assert.equal(20, elements.queryElements(document.querySelectorAll('#elementBySelector .child')).length);
+            assert.equal(20, elements.getTargets(document.querySelectorAll('#elementBySelector .child')).length);
             document.body.removeChild(parent);
         });
 
@@ -49,7 +49,7 @@ describe('elements', function () {
             var targets = function () {
                 return document.createElement('i');
             };
-            assert.equal(1, elements.queryElements(targets).length);
+            assert.equal(1, elements.getTargets(targets).length);
         });
 
         it('flattens element list', function () {
@@ -65,7 +65,7 @@ describe('elements', function () {
                     ]
                 ]
             ];
-            assert.equal(6, elements.queryElements(targets).length);
+            assert.equal(6, elements.getTargets(targets).length);
         });
 
         it('handles general ridiculousness', function () {
@@ -89,7 +89,7 @@ describe('elements', function () {
                     document.querySelectorAll('#byId3')
                 ];
             };
-            assert.equal(4, elements.queryElements(targets).length);
+            assert.equal(4, elements.getTargets(targets).length);
         });
     });
 

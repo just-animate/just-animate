@@ -1,61 +1,50 @@
-import { functionTypeString, numberString, objectString, stringString } from './resources';
-
-const ostring = Object.prototype.toString;
-
-
 /**
- * Tests if object is a list
- * 
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if is not a string and length property is a number
+ * Tests if object is an array
  */
 export function isArray(a: any): boolean {
     return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length);
 }
 
 export function isDefined(a: any): boolean {
-    return a !== undefined && a !== null && a !== '';
+    return !!a || a === 0 || a === false;
+}
+
+/**
+ * Returns true if the target appears to be an element.  This helper is looking for a value tagName
+ * This is more useful than doing instanceof Element since WAAPI should support virtual elements
+ */
+export function isElement(target: Element | {}): boolean {
+    return !!target && typeof target['tagName'] === 'string';
 }
 
 /**
  * Tests if object is a function
- * 
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if object.toString reports it as a Function
  */
 export function isFunction(a: any): boolean {
-    return getTypeString(a) === functionTypeString;
+    return getTypeString(a) === '[object Function]';
 }
 
 /**
  * Tests if object is a number
- * 
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if the object is typeof number
  */
 export function isNumber(a: any): boolean {
-    return typeof a === numberString;
+    return typeof a === 'number';
 }
 
 export function isObject(a: any): boolean {
-    return typeof a === objectString && a !== null;
+    return typeof a === 'object' && !!a;
 }
 
 /**
  * Tests if object is a string
- * 
- * @export
- * @param {*} a object to test
- * @returns {boolean} true if object is typeof string
  */
 export function isString(a: any): boolean {
-    return typeof a === stringString;
+    return typeof a === 'string';
 }
 
-
+/**
+ * Calls the native object.toString for real type comparisons
+ */
 export function getTypeString(val: any): string {
-    return ostring.call(val);
+    return Object.prototype.toString.call(val);
 }

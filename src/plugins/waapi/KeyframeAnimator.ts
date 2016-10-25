@@ -1,5 +1,3 @@
-import { finished, paused, running, idle } from '../../common/resources';
-
 /**
  * Implements the IAnimationController interface for the Web Animation API
  * 
@@ -10,14 +8,13 @@ import { finished, paused, running, idle } from '../../common/resources';
 export class KeyframeAnimator implements ja.IAnimationController {
     public totalDuration: number;
     private _initialized: boolean | undefined;
-    private _init: ja.Resolvable<waapi.IAnimation> | undefined;
+    private _init: { (): waapi.IAnimation; } | undefined;
     private _animator: waapi.IAnimation;
 
-    constructor(init: ja.Resolvable<waapi.IAnimation>) {
+    constructor(init: { (): waapi.IAnimation; }) {
         this._init = init;
         this._initialized = undefined;
     }
-
     public seek(value: number): void {
         this._ensureInit();
         if (this._animator.currentTime !== value) {
@@ -41,32 +38,35 @@ export class KeyframeAnimator implements ja.IAnimationController {
     }
     public playState(): ja.AnimationPlaybackState;
     public playState(value: ja.AnimationPlaybackState): void;
-    public playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState | void {
+    public playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState | undefined {
         const self = this;
         self._ensureInit();
 
         const animator = self._animator;
         const playState = !animator || self._initialized === false ? 'fatal' : animator.playState;
         if (value === undefined) {
-            return playState;
+            return playState as ja.AnimationPlaybackState;
         }
 
-        if (playState === 'fatal') {
-            // do nothing
-        } else if (value === finished) {
-            animator.finish();
-        } else if (value === idle) {
+        if (playState === value) {
+            /* do nothing */
+        } else if (playState === 'fatal') {
             animator.cancel();
-        } else if (value === paused) {
+        } else if (value === 'finished') {
+            animator.finish();
+        } else if (value === 'idle') {
+            animator.cancel();
+        } else if (value === 'paused') {
             animator.pause();
-        } else if (value === running) {
+        } else if (value === 'running') {
             animator.play();
         }
+        return undefined;
     }
 
     private _ensureInit(): void {
         const self = this;
-        const init = self._init as ja.Resolver<waapi.IAnimation>;
+        const init = self._init as { (): waapi.IAnimation; };
         if (init) {
             self._init = undefined;
             self._initialized = false;
@@ -75,4 +75,3 @@ export class KeyframeAnimator implements ja.IAnimationController {
         }
     }
 }
-

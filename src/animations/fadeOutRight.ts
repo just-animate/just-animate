@@ -10,7 +10,7 @@ export const fadeOutRight: ja.IAnimationMixin = {
         }
     ],
 
-    to: 650
+    to: '1s'
     ,
     name: 'fadeOutRight'
 };

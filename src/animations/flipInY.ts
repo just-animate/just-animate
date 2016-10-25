@@ -29,7 +29,7 @@ export const flipInY: ja.IAnimationMixin = {
         }
     ],
 
-    to: 750
+    to: '750ms'
     ,
     name: 'flipInY'
 };

@@ -1,41 +1,40 @@
 import {isFunction} from '../../common/type';
 import {invalidArg} from '../../common/errors';
 
-export function Dispatcher(): IDispatcher {
-    let self = this;
-    self = self instanceof Dispatcher ? self : Object.create(Dispatcher.prototype);
-    self._fn = {};
-    return self;
-}
+export class Dispatcher<TContext, TEventType extends string> {
+    private _fn: { [key: string]: { (ctx: TContext): void }[] };
+    constructor() {
+        this._fn = {};
+    }
 
-Dispatcher.prototype = {
-    _fn: undefined as ICallbackMap | undefined,
-    trigger(eventName: string, resolvable: any[] | { (): any[]; }): void {
-        const listeners = this._fn[eventName];
+    public trigger(eventName: TEventType, resolvable: ja.IAnimationTimeContext | { (): ja.IAnimationTimeContext; }): void {
+        const listeners = this._fn[eventName as string];
         if (!listeners) {
             return;
         }
-        const args = isFunction(resolvable) ? (resolvable as Function)() : resolvable as any[];
+        const ctx: TContext = isFunction(resolvable)
+            ? (resolvable as Function)()
+            : resolvable;
         for (const listener of listeners) {
-            listener.apply(undefined, args);
+            listener(ctx);
         }
-    },
-    on(eventName: string, listener: Function): void {
+    }
+    public on(eventName: TEventType, listener: { (ctx: TContext): void }): void {
         if (!isFunction(listener)) {
             throw invalidArg('listener');
         }
         const fn = this._fn;
-        const listeners = fn[eventName];
+        const listeners = fn[eventName as string];
         if (!listeners) {
-            fn[eventName] = [listener];
+            fn[eventName as string] = [listener];
             return;
         }
         if (listeners.indexOf(listener) !== -1) {
             return;
         }
         listeners.push(listener);
-    },
-    off(eventName: string, listener: Function): void {
+    }
+    public off(eventName: string, listener: { (ctx: TContext): void }): void {
         const listeners = this._fn[eventName];
         if (listeners) {
             const indexOfListener = listeners.indexOf(listener);
@@ -44,14 +43,4 @@ Dispatcher.prototype = {
             }
         }
     }
-};
-
-export interface IDispatcher {
-    trigger(eventName: string, args?: any[] | { (): any[]; }): void;
-    on(eventName: string, listener: Function): void;
-    off(eventName: string, listener: Function): void;
 }
-
-interface ICallbackMap {
-    [eventName: string]: Function[];
-} 

@@ -30,7 +30,7 @@ export const wobble: ja.IAnimationMixin = {
         }
     ],
 
-    to: 1000
+    to: '1s'
     ,
     name: 'wobble'
 };

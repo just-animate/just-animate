@@ -1,5 +1,4 @@
 export const bounceIn: ja.IAnimationMixin = {
-    name: 'bounceIn',
     css: [
         {
             opacity: 0,
@@ -23,7 +22,8 @@ export const bounceIn: ja.IAnimationMixin = {
             scale: 1
         }
     ],
-    to: 900,
-    fill: 'both',
-    easing: 'easeOutCubic'
+    easing: 'easeOutCubic',    
+    fill: 'both',    
+    name: 'bounceIn',
+    to: '1s'
 };

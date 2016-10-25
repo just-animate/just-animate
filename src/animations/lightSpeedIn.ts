@@ -21,7 +21,7 @@ export const lightSpeedIn: ja.IAnimationMixin = {
             opacity: 1
         }
     ],
-    to: 1000,
+    to: '1s',
     fill: 'both',
     easing: 'ease-out',
     name: 'lightSpeedIn'
