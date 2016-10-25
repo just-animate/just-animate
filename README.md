@@ -31,7 +31,7 @@
 |property|type|description|
 |:-------------|:-------------|:-------------|
 |css|CSSKeyframe[] or CSSProperty|An array of keyframes or an object of properties to animate|
-|delay|Time or Function|Time before animation starts as '2s', '2000ms', 2000, or function() { return 2000; }|
+|delay|Time or Function|Time before animation starts as '2s', '2000ms', 2000, '+=2s', '100 to 200 ms', or function() { return 2000; }|
 |direction|string|Direction of the animation (normal, reverse, alternate)|
 |easing|AnimationTimingFunction|Animation timing function (ease, ease-in, easeOutCubic, step(1,end))|
 |fill|string|Animation fill mode (none, both, forwards, backwards)|
