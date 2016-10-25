@@ -134,8 +134,9 @@ just.animate({
       to: '2s',
       delay() {
         // delay animation for a random # of ms between 0 and 1000
-        return Math.random() * 1000;
+        return just.random(0, 1000);
       }
+      // delay: '0 to 1000'
     },
     {
       mixins: 'fadeOutRight',
@@ -152,19 +153,18 @@ just.animate({
 just.animate({
     targets: '#first',
     to: '2s',
-    update: function(ctx) {
-        console.log(ctx.delta);            // delta time since the last update
-        console.log(ctx.currentTime);      // current time of animation
-        console.log(ctx.relativeDuration); // total duration of the animation (to - from)
-        console.log(ctx.offset);           // absolute offset (time) of the animation from 0 to 1
-        console.log(ctx.playbackRate);     // current playback rate
-
-        /* COMING SOON! */
-        console.log(ctx.computedOffset);   // relative offset (progress) of the animation from 0 to 1
-        console.log(ctx.target);           // target of this animation
-        console.log(ctx.targetIndex);      // target index of this animation
-        console.log(ctx.targets);          // all targets of this animation
-        /* COMING SOON! */
+    on: {
+        update: function(ctx) {
+            console.log(ctx.delta);            // delta time since the last update
+            console.log(ctx.currentTime);      // current time of animation
+            console.log(ctx.relativeDuration); // total duration of the animation (to - from)
+            console.log(ctx.offset);           // absolute offset (time) of the animation from 0 to 1
+            console.log(ctx.playbackRate);     // current playback rate
+            console.log(ctx.computedOffset);   // relative offset (progress) of the animation from 0 to 1
+            console.log(ctx.target);           // target of this animation
+            console.log(ctx.index);            // target index of this animation
+            console.log(ctx.targets);          // all targets of this animation
+        }
     }
 });
 
@@ -214,20 +214,37 @@ just.animate({
 var player = just.animate(/* ... */);
 
 // event listeners
-player.on('finish', function() { }); // fired when the animation finishes or .finish() is called
-player.on('cancel', function() { }); // fired when .cancel() is called
-player.on('pause',  function() { }); // fired when .pause() is called
-player.on('update', function() { }); // fired each update cycle
+player.on('finish', function(ctx) { }); // fired when the animation finishes or .finish() is called
+player.on('cancel', function(ctx) { }); // fired when .cancel() is called
+player.on('pause',  function(ctx) { }); // fired when .pause() is called
+player.on('update', function(ctx) { }); // fired each update cycle
+player.on('iteration', function(ctx) { }); // fired each time the entire timeline is repeated
+player.off('finish', function(ctx) { } ) // unregisteres a function from .on()
 
-player.off('finish', function() { } ) // unregisteres a function from .on()
+// or pass an object with all event listeners
+player.on({
+    finish(ctx) {},
+    cancel(ctx) {},
+    pause(ctx) {},
+    update(ctx) {},
+    iteration(ctx) {}
+})
 
 player.cancel();         // cancels animation and resets all properties
 player.duration();       // returns duration of the animation (to-from) in milliseconds
 player.finish();         // pauses animation and seeks to the end when moving forwards and the beginning when backwards
-player.play();           // plays the animation
 player.pause();          // pauses the animation
 player.playState();      // returns the current play state 'playing', 'paused', etc.
 player.reverse();        // reverses the direction of the animation
+
+player.play();           // plays the animation
+player.play(Infinity);   // plays the animation until canceled
+
+// plays the timeline once forwards and then once backwards
+player.play({ 
+    iterations: 2, 
+    direction: 'alternate' 
+})
 
 player.currentTime();    // returns the current time of the animations
 player.currentTime(500); // seeks to 500 milliseconds
