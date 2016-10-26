@@ -258,7 +258,7 @@ player.animate([ ]);      // appends a set of animations to this player
 ```
 
 ### Easings / Timing Functions
-For convenience, Just Animate has the majority of the easings on http://easings.net/ built right in.  By default, the "ease" function is used just like in CSS.
+For convenience, Just Animate has the majority of the easings on http://easings.net/ built right in.  By default, the "ease" function is used just like in CSS.  If one of these included easings doesn't cut it, a string with a CSS timing function can be used instead as the easing property.
 
 | Name        | Timing Function                           |
 | ------------- |:-----------------------------------:|
