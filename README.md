@@ -292,8 +292,8 @@ For convenience, Just Animate has the majority of the easings on http://easings.
 |easeOutSine    | cubic-bezier(.39, .575, .565, 1)          |
 |elegantSlowStartEnd | cubic-bezier(.175, .885, .32, 1.275) |
 |linear         | cubic-bezier(0, 0, 1, 1)                  |
-|stepEnd        | steps(1, 'end')                           |
-|stepStart      | steps(1, 'start')                         | 
+|stepEnd        | steps(1, end)                             |
+|stepStart      | steps(1, start)                           | 
 
 ### Utilities
 
