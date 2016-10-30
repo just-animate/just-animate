@@ -49,7 +49,7 @@ export function createUnitResolver(val: string | number): UnitResolver {
 /**
  * Parses a string or number and returns the unit and numeric value
  */
-export function parseUnit(val: string | number, output?: Unit): Unit {
+export function parseUnit(val: string | number | undefined, output?: Unit): Unit {
     output = output || {} as Unit;
 
     if (!isDefined(val)) {

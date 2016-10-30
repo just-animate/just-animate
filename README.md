@@ -13,19 +13,34 @@
 - full animation control (reverse, pause, cancel, and seek)
 
 ## Getting Started
-### Setting up the environment
+
+### Setup from CDN
  - For support in Internet Explorer, Edge, or Safari, include this script. Just Animate uses the Web Animation API and is not yet supported in these browsers.
-  ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
-  ```
+    ```html
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
+    ```
 
  - Include the core script and (optionally) the animations script for ready to use animation presets.
-  ```html
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.1/just-animate-core.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.1/just-animate-animations.min.js"></script>
-  ```
+    ```html
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.1/just-animate-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.1/just-animate-animations.min.js"></script>
+    ```
  - That's it!
-  
+
+### Setup for Webpack/Rollup/Browserify
+
+Just Animate can also be installed through NPM for bundling.
+
+```bash
+npm i just-animate --save
+```
+
+Then it can be used like all other NPM libraries:
+
+```TypeScript
+import { just } from 'just-animate';
+```
+
 ## Usage
 
 |property|type|description|
