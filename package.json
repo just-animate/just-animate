@@ -40,7 +40,7 @@
     "compress:systemjs": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/browser/just-animate-systemjs.min.js dist/browser/just-animate-systemjs.js",
     "clean": "node_modules/.bin/del-cli -f dist",
     "format": "cd src && tsfmt -r **/*.ts",
-    "pubish:prod": "npm run rebuild && node scripts/copy-npm-resources.js && cd dist && npm publish",
+    "publish:prod": "npm run rebuild && node scripts/copy-npm-resources.js && cd dist && npm publish",
     "publish:next": "npm run rebuild && node scripts/copy-npm-resources.js && cd dist && npm publish --tag next",
     "postinstall": "npm run rebuild",
     "rebuild": "npm run clean && npm run build && npm run compress",
