@@ -1,8 +1,8 @@
 {
   "author": "christopher.j.wallis@gmail.com",
   "devDependencies": {
-    "@types/mocha": "^2.2.32",
     "@types/chai": "^3.4.34",
+    "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.46",
     "chai": "^3.5.0",
     "concurrently": "^2.2.0",
@@ -46,10 +46,7 @@
     "rebuild": "npm run clean && npm run build && npm run compress",
     "start": "npm run rebuild && npm run watch",
     "test": "node_modules/.bin/mocha --reporter spec",
-    "watch": "concurrently \"npm run watch:core\" \"npm run watch:animations\" \"npm run watch:commonjs\"",
-    "watch:animations": "rollup -w -c rollup-animations.config.js",
-    "watch:core": "rollup -w -c rollup-core.config.js",
-    "watch:commonjs": "tsc -w -p tsconfig-commonjs.json",
+    "debug": "concurrently \"node_modules/.bin/mocha --watch --reporter dot\"  \"tsc -w\"",
     "tsversion": "tsc --version"
   }
 }

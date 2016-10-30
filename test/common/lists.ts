@@ -12,7 +12,7 @@ describe('lists', () => {
     });
 
     it('should return the first item if array is not empty', () => {
-      assert.equal("1", head(["1"]));
+      assert.equal('1', head(['1']));
     });
   });
 
@@ -22,7 +22,7 @@ describe('lists', () => {
     });
 
     it('should return the last item if array is not empty', () => {
-      assert.equal("1", tail(["0", "1"]));
+      assert.equal('1', tail(['0', '1']));
     });
   });
 

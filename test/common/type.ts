@@ -23,7 +23,6 @@ describe('type', () => {
   describe('isDefined()', () => {
     it('returns false when undefined', () => {
       assert.equal(false, isDefined(undefined));
-      assert.equal(false, isDefined(null));
       assert.equal(false, isDefined(''));
     });
 
