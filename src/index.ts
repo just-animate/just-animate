@@ -1,3 +1,4 @@
+/// <reference path="just-animate.d.ts" />
 import { JustAnimate } from './JustAnimate';
 import { KeyframePlugin } from './plugins/waapi/KeyframePlugin';
 import { ANIMATE_CSS } from './animations';

@@ -1,7 +1,15 @@
-src/
-examples/
 node_modules/
+scripts/
+test/
+.alm
+.vscode
+.editorconfig
+.gitignore
+alm.json
+rollup.all.config.js
+rollup.common.config.js
 rollup.core.config.js
 rollup.animations.config.js
 tsconfig.json
+tsconfig-systemjs.json
 tslint.json
