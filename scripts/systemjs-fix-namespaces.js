@@ -17,7 +17,7 @@ function replaceInFile(relativeFileName, actions) {
 }
 
 // replace "src/ with "just-animate/, replace just-animate/index with just-animate
-replaceInFile('/../dist/browser/just-animate-systemjs.js', [
+replaceInFile('/../dist/just-animate-systemjs.js', [
     {
         pattern: /\"src\//g,
         replacement: '"just-animate/'

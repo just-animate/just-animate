@@ -8,7 +8,7 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "suppressImplicitAnyIndexErrors": true,
-    "outFile": "./dist/browser/just-animate-systemjs.js",
+    "outFile": "./dist/just-animate-systemjs.js",
     "declaration": false,
     "rootDir": "."
   },

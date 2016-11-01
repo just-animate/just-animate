@@ -1,10 +1,9 @@
 var typescript = require('rollup-plugin-typescript');
 
 module.exports = {
-    entry: './src/just-animate-animations.ts',
-    dest: './dist/browser/just-animate-animations.js',
+    entry: './src/just-animate-all.ts',
+    dest: './dist/just-animate-all.js',
     format: 'iife',
-    moduleName: 'Just',
     plugins: [
         typescript({
             target: "es5",
