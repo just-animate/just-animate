@@ -44,7 +44,7 @@
     "postversion": "git push --follow-tags && npm publish",
     "rebuild": "npm run clean && npm run build && npm run compress",
     "start": "npm run rebuild && npm run watch",
-    "test": "node_modules/.bin/mocha --reporter spec",
+    "test": "tsc && node_modules/.bin/mocha --reporter spec",
     "debug": "concurrently \"node_modules/.bin/mocha --watch --reporter dot\"  \"tsc -w\"",
     "tsversion": "tsc --version"
   }

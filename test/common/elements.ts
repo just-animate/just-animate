@@ -2,12 +2,12 @@ import * as chai from 'chai';
 const assert = chai.assert;
 const jsdom = require('mocha-jsdom');
 
-import { getTargets } from '../../src/common/elements';
+import { getTargets, splitText } from '../../src/common/elements';
 
 describe('elements', () => {
-
+    jsdom();
+    
     describe('getTargets()', () => {
-        jsdom();
 
         it('resolves element as element[]', () => {
             const element = document.createElement('div');
@@ -92,4 +92,47 @@ describe('elements', () => {
         });
     });
 
+
+    describe('splitText()', () => {
+        it('splits innerText characters into individual spans', () => {
+            const element = document.createElement('h2');
+            element.innerHTML = 'Hello World!';
+            
+            const letters = splitText(element)[0];
+            assert(letters.length === 12, 'Wrong number of elements');
+            assert(letters[0].textContent === 'H');
+            assert(letters[1].textContent === 'e');
+            assert(letters[2].textContent === 'l');
+            assert(letters[3].textContent === 'l');
+            assert(letters[4].textContent === 'o');
+            assert(letters[5].textContent === ' ');
+            assert(letters[6].textContent === 'W');
+            assert(letters[7].textContent === 'o');
+            assert(letters[8].textContent === 'r');
+            assert(letters[9].textContent === 'l');
+            assert(letters[10].textContent === 'd');
+            assert(letters[11].textContent === '!');
+        });
+
+        it('it removes double spaces and newlines', () => {
+            const element = document.createElement('h2');
+            element.innerHTML = 's  \n\ts';
+            const letters = splitText(element)[0];
+            console.log(letters.length);
+
+            assert(letters.length === 3, 'Wrong number of elements');
+            assert(letters[0].textContent = 's');
+            assert(letters[1].textContent = ' ');
+            assert(letters[2].textContent = 's');
+        });
+
+        it('it removes whitespace before and after', () => {
+            const element = document.createElement('h2');
+            element.innerHTML = '  t  ';
+            const letters = splitText(element)[0];
+
+            assert(letters.length === 1, 'Wrong number of elements');
+            assert(letters[0].textContent = 't');
+        });
+    });
 });
