@@ -1,6 +1,7 @@
 node_modules/
 scripts/
 test/
+docs/
 .alm
 .vscode
 .editorconfig

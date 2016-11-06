@@ -112,6 +112,8 @@ import { just } from 'just-animate';
 
 ### Animate multiple targets by using an html selector, JQuery, or an array of targets
 
+<img src="./docs/resources/targets-demonstration.gif" />
+
  ```javascript
 just.animate({
        mixins: 'fadeIn',
