@@ -2,6 +2,8 @@
 
 *Just Animate creates beautiful animations using the latest browser standards*
 
+<img src="./docs/resources/main-demonstration.gif" />
+
 ## Features
 
 - over 75 preset animations
@@ -31,15 +33,15 @@
 
 Just Animate can also be installed through NPM for bundling.
 
+<img src="./docs/resources/npm-demonstration.gif" />
+
 ```bash
 npm i just-animate --save
 ```
 
 Then it can be used like all other NPM libraries:
 
-```TypeScript
-import { just } from 'just-animate';
-```
+<img src="./docs/resources/import-demonstration.gif" />
 
 ## Usage
 
@@ -129,6 +131,8 @@ just.animate({
 
 ### Animate multiple targets in sequence by chaining .animate() calls
 
+<img src="./docs/resources/sequence-demonstration.gif" />
+
  ```javascript
 just.animate({
       mixins: 'fadeIn',
@@ -143,6 +147,8 @@ just.animate({
 
 
 ### Use multiple animations at the same time by passing in an array of animation options
+
+<img src="./docs/resources/timeline-demonstration.gif" />
 
   ```javascript
   just.animate([
@@ -315,6 +321,9 @@ For convenience, Just Animate has the majority of the easings on http://easings.
 ### Utilities
 
 #### random()
+
+<img src="./docs/resources/random-demonstration.gif" />
+
 ```javascript
 // returns a number (including decimals) between 0 and 100
 just.random(0, 100)
@@ -331,6 +340,9 @@ just.random(start, end, unit, onlyWholeNumbers);
 ```
 
 #### shuffle()
+
+<img src="./docs/resources/shuffle-demonstration.gif" />
+
 ```javascript
 // randomly returns fadeIn, bounceIn, or zoomIn
 just.shuffle(['fadeIn', 'bounceIn', 'zoomIn']);
