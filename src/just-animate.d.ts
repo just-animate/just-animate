@@ -2,7 +2,7 @@ declare const just: ja.JustAnimate;
 declare module ja {
     export type FillMode = 'none' | 'forwards' | 'backwards' | 'both' | 'auto';
     export type AnimationPlaybackState = 'fatal' | 'idle' | 'pending' | 'running' | 'paused' | 'finished';
-    export type AnimationTarget = Node | Node[] | NodeList | string | { (): AnimationTarget };
+    export type AnimationTarget = Node | NodeList | string | (Node | NodeList | string)[] | { (): AnimationTarget };
     export type AnimationDirection = 'normal' | 'alternate';
     export type Angle = string | number;
     export type Color = string;
