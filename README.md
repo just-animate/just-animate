@@ -22,7 +22,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
     ```
 
- - Include this script
+ - Include this script (change 1.0.5 to the current version to get the latest)
     ```html
     <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.5/just-animate-all.min.js"></script>
     ```
