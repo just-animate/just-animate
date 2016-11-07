@@ -352,6 +352,8 @@ just.shuffle(['fadeIn', 'bounceIn', 'zoomIn']);
 
 Splits the text of an element into words and characters so each word or character can be animated separately. Formatting should be preversed, but each character and word is wrapped in its own element.
 
+<img src="./docs/resources/splittext-demonstration.gif" />
+
 ```javascript
 var characterElements = just.splitText('#element1').characters;
 var wordElements = just.splitText('#element1').words;
