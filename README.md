@@ -22,10 +22,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.2.2/web-animations.min.js"></script>
     ```
 
- - Include this script (change 1.0.5 to the current version to get the latest)
+ - Include this script (change 1.0.7 to the current version to get the latest)
     ```html
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.5/just-animate-all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.0.7/just-animate-all.min.js"></script>
     ```
+ - ```just``` is available from
  - That's it!
 
 ### Setup for Webpack/Rollup/Browserify
@@ -345,6 +346,15 @@ just.random(start, end, unit, onlyWholeNumbers);
 ```javascript
 // randomly returns fadeIn, bounceIn, or zoomIn
 just.shuffle(['fadeIn', 'bounceIn', 'zoomIn']);
+```
+
+#### splitText()
+
+Splits the text of an element into words and characters so each word or character can be animated separately. Formatting should be preversed, but each character and word is wrapped in its own element.
+
+```javascript
+var characterElements = just.splitText('#element1').characters;
+var wordElements = just.splitText('#element1').words;
 ```
 
 ## Demos
