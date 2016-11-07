@@ -89,28 +89,29 @@ export function splitText(target: ja.AnimationTarget): ja.SplitTextResult {
             const w = ws[i];
             // create new div for word/run"
             const word = document.createElement('div');
-            word.style.display = 'inline-block';
-            word.style.position = 'relative';
-            word.style.textAlign = 'start';
+            applySplitStyles(word);
 
             // mark element as a word                    
             word.setAttribute('ja-word', w);
             // add to the result  
             words.push(word);
-            // add to the paragraph  
-            element.appendChild(word);
 
+            // if not the first word, add a space            
             if (i > 0) {
-                const space = document.createTextNode(' ');
+                const space = document.createElement('div');
+                applySplitStyles(space);
+                space.innerHTML = '&nbsp;';
+                space.setAttribute('ja-space', '');
                 element.appendChild(space);
             }
+
+            // add to the paragraph  
+            element.appendChild(word);
 
             for (const c of w) {
                 // create new div for character"
                 const char = document.createElement('div');
-                char.style.display = 'inline-block';
-                char.style.position = 'relative';
-                char.style.textAlign = 'start';
+                applySplitStyles(char);
                 char.textContent = c;
 
                 // mark element as a character                    
@@ -127,4 +128,10 @@ export function splitText(target: ja.AnimationTarget): ja.SplitTextResult {
         characters: characters,
         words: words
     };
+}
+
+function applySplitStyles(element: HTMLElement): void {
+    element.style.display = 'inline-block';
+    element.style.position = 'relative';
+    element.style.textAlign = 'start';
 }
