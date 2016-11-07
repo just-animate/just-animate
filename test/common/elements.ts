@@ -94,45 +94,82 @@ describe('elements', () => {
 
 
     describe('splitText()', () => {
-        it('splits innerText characters into individual spans', () => {
+        it('splits innerText characters into individual divs', () => {
             const element = document.createElement('h2');
             element.innerHTML = 'Hello World!';
             
-            const letters = splitText(element)[0];
-            assert(letters.length === 12, 'Wrong number of elements');
+            const letters = splitText(element).characters;
+            assert(letters.length === 11, 'Wrong number of elements');
             assert(letters[0].textContent === 'H');
             assert(letters[1].textContent === 'e');
             assert(letters[2].textContent === 'l');
             assert(letters[3].textContent === 'l');
             assert(letters[4].textContent === 'o');
-            assert(letters[5].textContent === ' ');
-            assert(letters[6].textContent === 'W');
-            assert(letters[7].textContent === 'o');
-            assert(letters[8].textContent === 'r');
-            assert(letters[9].textContent === 'l');
-            assert(letters[10].textContent === 'd');
-            assert(letters[11].textContent === '!');
+            assert(letters[5].textContent === 'W');
+            assert(letters[6].textContent === 'o');
+            assert(letters[7].textContent === 'r');
+            assert(letters[8].textContent === 'l');
+            assert(letters[9].textContent === 'd');
+            assert(letters[10].textContent === '!');
         });
 
         it('it removes double spaces and newlines', () => {
             const element = document.createElement('h2');
             element.innerHTML = 's  \n\ts';
-            const letters = splitText(element)[0];
+            const letters = splitText(element).characters;
             console.log(letters.length);
 
-            assert(letters.length === 3, 'Wrong number of elements');
+            assert(letters.length === 2, 'Wrong number of elements');
             assert(letters[0].textContent = 's');
-            assert(letters[1].textContent = ' ');
-            assert(letters[2].textContent = 's');
+            assert(letters[1].textContent = 's');
         });
 
         it('it removes whitespace before and after', () => {
             const element = document.createElement('h2');
             element.innerHTML = '  t  ';
-            const letters = splitText(element)[0];
+            const letters = splitText(element).characters;
 
             assert(letters.length === 1, 'Wrong number of elements');
             assert(letters[0].textContent = 't');
+        });
+
+        it('splits words by space and removes empty parts', () => {
+            const element = document.createElement('h2');
+            element.innerHTML = 'Hello  World!';
+            
+            const words = splitText(element).words;
+            assert(words.length === 2);
+            assert(words[0].textContent === 'Hello');
+            assert(words[1].textContent === 'World!');
+        });
+
+        it('splits words and trims words', () => {
+            const element = document.createElement('h2');
+            element.innerHTML = '   Hello! ';
+            
+            const words = splitText(element).words;
+            assert(words.length === 1);
+            assert(words[0].textContent === 'Hello!');
+        });
+
+        it('splits words and trims words', () => {
+            const element = document.createElement('h2');
+            element.innerHTML = '   Hello! ';
+            
+            const words = splitText(element).words;
+            assert(words.length === 1);
+            assert(words[0].textContent === 'Hello!');
+        });
+
+        it('returns the same words and elements if splitText is called twice on the same element', () => {
+            const element = document.createElement('h2');
+            element.innerHTML = 'H W';
+            
+            const result1 = splitText(element);
+            const result2 = splitText(element);
+            assert(result1.characters.length === result2.characters.length);
+            assert(result1.characters[0].textContent === result2.characters[0].textContent);
+            assert(result1.characters[1].textContent === result2.characters[1].textContent);
         });
     });
 });

@@ -1,4 +1,5 @@
 import { random, shuffle } from './common/random';
+import { splitText } from './common/elements';
 import { Animator } from './plugins/core/Animator';
 import { TimeLoop } from './plugins/core/TimeLoop';
 import { MixinService } from './plugins/core/MixinService';
@@ -125,6 +126,21 @@ export class JustAnimate {
     public shuffle<T>(choices: T[]): T {
         return shuffle(choices);
     }
+
+    /**
+     * Detects words and characters from a target or a list of targets.
+     * Note: if multiple targets are detected, they will return as a single
+     * list of characters and numbers
+     * 
+     * @param {ja.AnimationDomTarget} target
+     * @returns {ja.SplitTextResult}
+     * 
+     * @memberOf JustAnimate
+     */    
+    public splitText(target: ja.AnimationDomTarget): ja.SplitTextResult {
+        return splitText(target);
+    }
+
     /**
      * Registers a list of mixins across all instances of JustAnimate.  Same as register in a browser environment
      * 

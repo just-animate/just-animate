@@ -45,48 +45,86 @@ export function getTargets(target: ja.AnimationTarget): (Element | {})[] {
     return [];
 }
 
-export function splitText(target: ja.AnimationTarget): Element[][] {
-    return getTargets(target).map(splitTextFromElement);
-}
+export function splitText(target: ja.AnimationTarget): ja.SplitTextResult {
 
-function splitTextFromElement(element: Element): Element[] {
-    // if we have already split this element, check if it was already split
-    if (element.getAttribute('ja-split-text')) {
-        const letters = toArray(element.querySelectorAll('[ja-letter]'));
-        
-        // if split already return query result
-        if (letters.length) {
-            return letters;
+    // output parameters
+    const characters: HTMLElement[] = [];
+    const words: HTMLElement[] = [];
+
+    // acquiring targets ;)    
+    const elements = getTargets(target) as HTMLElement[];
+
+    // get paragraphs, words, and characters for each element
+    for (const element of elements) {
+
+        // if we have already split this element, check if it was already split
+        if (element.getAttribute('ja-split-text')) {
+            const ws = toArray(element.querySelectorAll('[ja-word]'));
+            const cs = toArray(element.querySelectorAll('[ja-character]'));
+
+            // if split already return query result
+            if (ws.length || cs.length) {
+                // apply found split elements
+                words.push.apply(words, ws);
+                characters.push.apply(characters, cs);
+                continue;
+            }
+            // otherwise split it!
         }
-        // otherwise split it!
+
+        // remove tabs, spaces, and newlines
+        const contents = element.textContent!.replace(/[\r\n\s\t]+/ig, ' ').trim();
+
+        // clear element
+        element.innerHTML = '';
+
+        // mark element as already being split
+        element.setAttribute('ja-split', '');
+
+        // split on spaces
+        const ws = contents.split(/[\s]+/ig);
+
+        // handle each word
+        for (let i = 0, len = ws.length; i < len; i++) {
+            const w = ws[i];
+            // create new div for word/run"
+            const word = document.createElement('div');
+            word.style.display = 'inline-block';
+            word.style.position = 'relative';
+            word.style.textAlign = 'start';
+
+            // mark element as a word                    
+            word.setAttribute('ja-word', w);
+            // add to the result  
+            words.push(word);
+            // add to the paragraph  
+            element.appendChild(word);
+
+            if (i > 0) {
+                const space = document.createTextNode(' ');
+                element.appendChild(space);
+            }
+
+            for (const c of w) {
+                // create new div for character"
+                const char = document.createElement('div');
+                char.style.display = 'inline-block';
+                char.style.position = 'relative';
+                char.style.textAlign = 'start';
+                char.textContent = c;
+
+                // mark element as a character                    
+                char.setAttribute('ja-character', c);
+                // add to the result                    
+                characters.push(char);
+                // append to the word                            
+                word.appendChild(char);
+            }
+        }
     }
 
-    // get letters without extra spaces
-    const contents = element.textContent!.replace(/[\s\t\r\n]+/ig, ' ').trim();
-    
-    // clear element
-    element.innerHTML = '';
-
-    const children: Element[] = [];    
-    for (const c of contents) {
-        // create new div style="postion: relative; text-align: start;"
-        const letter = document.createElement('div');
-        letter.style.position = 'relative';
-        letter.style.textAlign = 'start';
-        letter.textContent = c;
-
-        // mark element as a letter
-        letter.setAttribute('ja-letter', '');
-
-        // add to the result
-        children.push(letter);
-
-        // append to the element        
-        element.appendChild(letter);
-    }
-
-    // mark element as already being split
-    element.setAttribute('ja-split', '');
-
-    return children;
+    return {
+        characters: characters,
+        words: words
+    };
 }

@@ -2,7 +2,10 @@ declare const just: ja.JustAnimate;
 declare module ja {
     export type FillMode = 'none' | 'forwards' | 'backwards' | 'both' | 'auto';
     export type AnimationPlaybackState = 'fatal' | 'idle' | 'pending' | 'running' | 'paused' | 'finished';
-    export type AnimationTarget = Node | NodeList | string | (Node | NodeList | string)[] | { (): AnimationTarget };
+    
+    export type AnimationDomTarget = Node | NodeList | string;
+    export type AnimationTarget = AnimationDomTarget | AnimationDomTarget[] | { (): AnimationTarget };
+    
     export type AnimationDirection = 'normal' | 'alternate';
     export type Angle = string | number;
     export type Color = string;
@@ -467,6 +470,11 @@ declare module ja {
         width?: Resolvable<string | number>;
         wordSpacing?: Resolvable<string>;
         zIndex?: Resolvable<number>;
+    }
+
+    export type SplitTextResult = {
+        words: Element[];
+        characters: Element[];
     }
 
     export type AnimationTargetContext<T> = {
