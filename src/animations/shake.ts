@@ -1,4 +1,4 @@
-export const shake: ja.IAnimationMixin = {
+export const shake: ja.AnimationMixin = {
     css: [
         {
             transform: 'translate3d(0, 0, 0)'

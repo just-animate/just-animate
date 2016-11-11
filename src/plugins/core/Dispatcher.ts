@@ -7,7 +7,7 @@ export class Dispatcher<TContext, TEventType extends string> {
         this._fn = {};
     }
 
-    public trigger(eventName: TEventType, resolvable: ja.IAnimationTimeContext | { (): ja.IAnimationTimeContext; }): void {
+    public trigger(eventName: TEventType, resolvable: ja.AnimationTimeContext | { (): ja.AnimationTimeContext; }): void {
         const listeners = this._fn[eventName as string];
         if (!listeners) {
             return;

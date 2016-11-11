@@ -1,4 +1,4 @@
-export const zoomOut: ja.IAnimationMixin = {
+export const zoomOut: ja.AnimationMixin = {
     css: [
         {
             opacity: 1,

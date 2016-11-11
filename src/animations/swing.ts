@@ -1,4 +1,4 @@
-export const swing: ja.IAnimationMixin = {
+export const swing: ja.AnimationMixin = {
     css: [
         {
             transform: 'none'

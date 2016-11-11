@@ -1,4 +1,4 @@
-export const bounceInLeft: ja.IAnimationMixin = {
+export const bounceInLeft: ja.AnimationMixin = {
     css: [
         {
             offset: 0,

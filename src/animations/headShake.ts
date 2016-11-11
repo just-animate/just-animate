@@ -1,4 +1,4 @@
-export const headShake: ja.IAnimationMixin = {
+export const headShake: ja.AnimationMixin = {
     css: [
         {
             offset: 0,

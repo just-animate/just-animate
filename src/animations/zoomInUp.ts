@@ -1,4 +1,4 @@
-export const zoomInUp: ja.IAnimationMixin = {
+export const zoomInUp: ja.AnimationMixin = {
     css: [
         {
             offset: 0,

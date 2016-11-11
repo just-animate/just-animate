@@ -1,4 +1,4 @@
-export const slideOutRight: ja.IAnimationMixin = {
+export const slideOutRight: ja.AnimationMixin = {
     css: [
         {
             visibility: 'visible',

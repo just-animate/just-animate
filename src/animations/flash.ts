@@ -1,4 +1,4 @@
-export const flash: ja.IAnimationMixin = {
+export const flash: ja.AnimationMixin = {
     css: [
         {
             opacity: 1

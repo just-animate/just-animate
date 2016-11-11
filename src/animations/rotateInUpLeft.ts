@@ -1,4 +1,4 @@
-export const rotateInUpLeft: ja.IAnimationMixin = {
+export const rotateInUpLeft: ja.AnimationMixin = {
     css: [
         {
             transformOrigin: 'left bottom',

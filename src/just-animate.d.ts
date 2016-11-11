@@ -2,10 +2,8 @@ declare const just: ja.JustAnimate;
 declare module ja {
     export type FillMode = 'none' | 'forwards' | 'backwards' | 'both' | 'auto';
     export type AnimationPlaybackState = 'fatal' | 'idle' | 'pending' | 'running' | 'paused' | 'finished';
-    
     export type AnimationDomTarget = Node | NodeList | string;
     export type AnimationTarget = AnimationDomTarget | AnimationDomTarget[] | { (): AnimationTarget };
-    
     export type AnimationDirection = 'normal' | 'alternate';
     export type Angle = string | number;
     export type Color = string;
@@ -43,15 +41,13 @@ declare module ja {
         | 'easeInOutBack'
         | 'elegantSlowStartEnd'
         | string;
-    
     export class JustAnimate {
         easings: EasingList;
-        animate(options: ja.IAnimationOptions | ja.IAnimationOptions): ja.IAnimator;
-        inject(animations: ja.IAnimationMixin[]): void;
-        register(preset: ja.IAnimationMixin): void;
+        animate(options: ja.AnimationOptions | ja.AnimationOptions): ja.IAnimator;
+        inject(animations: ja.AnimationMixin[]): void;
+        register(preset: ja.AnimationMixin): void;
     }
-
-    export class EasingList {
+    export type EasingList = {
         ease: 'ease';
         easeIn: 'easeIn';
         easeInBack: 'easeInBack';
@@ -87,12 +83,9 @@ declare module ja {
     }
     export interface IPlugin<T> {
         canHandle(ctx: AnimationTargetContext<T>): boolean;
-        
-        handle(timings: ja.IAnimationTiming, ctx: AnimationTargetContext<T>): ja.IAnimationController;
+        handle(timings: ja.AnimationTiming, ctx: AnimationTargetContext<T>): ja.IAnimationController;
     }
-
-
-    export interface IAnimationTiming {
+    export type AnimationTiming = {
         direction?: string;
         delay?: number;
         duration?: number;
@@ -101,10 +94,8 @@ declare module ja {
         fill?: string;
         iterationStart?: number;
         iterations?: number;
-        totalTime: number;        
+        totalTime: number;
     }
-
-
     export interface IAnimationController {
         seek(value: number): void;
         totalDuration: number;
@@ -114,7 +105,7 @@ declare module ja {
         reverse(): void;
         restart(): void;
     }
-    export interface IAnimationTimeContext {
+    export type AnimationTimeContext = {
         currentTime?: number | undefined;
         delta?: number | undefined;
         duration?: number | undefined;
@@ -127,7 +118,7 @@ declare module ja {
         iterations?: number | undefined;
     }
     export interface IAnimator {
-        animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator;
+        animate(options: ja.AnimationOptions | ja.AnimationOptions[]): ja.IAnimator;
         currentTime(): number;
         currentTime(value: number): IAnimator;
         playbackRate(): number;
@@ -137,76 +128,72 @@ declare module ja {
         finish(): IAnimator;
         play(iterations: number): IAnimator;
         play(options: IPlayOptions): IAnimator;
-        play(options?: number|IPlayOptions): IAnimator;        
+        play(options?: number | IPlayOptions): IAnimator;
         pause(): IAnimator;
         reverse(): IAnimator;
         cancel(): IAnimator;
-        on(eventConfig: ja.IAnimationEvent): ja.IAnimator;
-        on(eventName: string, listener: ja.IAnimationEventListener): ja.IAnimator;
-        on(event: string | IAnimationEvent, listener: IAnimationEventListener | undefined): ja.IAnimator;
-        off(eventConfig: ja.IAnimationEvent): ja.IAnimator;
-        off(eventName: string, listener: ja.IAnimationEventListener): ja.IAnimator;
-        off(event: string | IAnimationEvent, listener: IAnimationEventListener | undefined): ja.IAnimator;
+        on(eventConfig: ja.AnimationEvent): ja.IAnimator;
+        on(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
+        on(event: string | AnimationEvent, listener: AnimationEventListener | undefined): ja.IAnimator;
+        off(eventConfig: ja.AnimationEvent): ja.IAnimator;
+        off(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
+        off(event: string | AnimationEvent, listener: AnimationEventListener | undefined): ja.IAnimator;
     }
-
     export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'update' | 'iteration';
-
-    export interface IPlayOptions {
+    export type IPlayOptions = {
         direction?: AnimationDirection;
         iterations?: number;
     }
-    export interface IAnimationMixin extends IAnimation {
+    export type AnimationMixin = {
         name: string;
-    }
-    export interface IAnimation {
-        css?: ICssPropertyOptions | ICssKeyframeOptions[];
-        delay?: Resolvable<number>;   
-        direction?: Resolvable<string>;        
+        css?: CssPropertyOptions | CssKeyframeOptions[];
+        delay?: Resolvable<number>;
+        direction?: Resolvable<string>;
         easing?: Easing;
         endDelay?: Resolvable<number>;
         fill?: Resolvable<FillMode>;
         iterations?: Resolvable<number>;
         iterationStart?: Resolvable<number>;
-        to: number|string;
+        to: number | string;
     }
-    export interface IAnimationEvent {
-        cancel?: IAnimationEventListener;
-        finish?: IAnimationEventListener;
-        pause?: IAnimationEventListener;
-        play?: IAnimationEventListener;
-        update?: IAnimationEventListener;
-        iteration?: IAnimationEventListener;
-
-        [key: string]: IAnimationEventListener | undefined;
+    export type AnimationEvent = {
+        cancel?: AnimationEventListener;
+        finish?: AnimationEventListener;
+        pause?: AnimationEventListener;
+        play?: AnimationEventListener;
+        update?: AnimationEventListener;
+        iteration?: AnimationEventListener;
+        [key: string]: AnimationEventListener | undefined;
     }
-    export interface IAnimationOptionEvent {
-        cancel?: IAnimationEventListener;
-        
-        create?: IAnimationEventListener;
-     
-        update?: IAnimationEventListener;
-
-        pause?: IAnimationEventListener;
-
-        play?: IAnimationEventListener;
-
-
-        finish?: IAnimationEventListener;
-
-        [key: string]: IAnimationEventListener | undefined;
+    export type AnimationOptionEvent = {
+        cancel?: AnimationEventListener;
+        create?: AnimationEventListener;
+        update?: AnimationEventListener;
+        pause?: AnimationEventListener;
+        play?: AnimationEventListener;
+        finish?: AnimationEventListener;
+        [key: string]: AnimationEventListener | undefined;
     }
-    export interface IAnimationEventListener {
-        (ctx: IAnimationTimeContext): void;
+    export type AnimationEventListener = {
+        (ctx: AnimationTimeContext): void;
     }
-    export interface IAnimationOptions extends IAnimation {
+    export type AnimationOptions = {
         targets?: AnimationTarget;
         from?: number | string;
         mixins?: string | string[];
         isTransition?: boolean;
-        on?: IAnimationOptionEvent;
+        on?: AnimationOptionEvent;
+        css?: CssPropertyOptions | CssKeyframeOptions[];
+        delay?: Resolvable<number>;
+        direction?: Resolvable<string>;
+        easing?: Easing;
+        endDelay?: Resolvable<number>;
+        fill?: Resolvable<FillMode>;
+        iterations?: Resolvable<number>;
+        iterationStart?: Resolvable<number>;
+        to: number | string;
     }
-    
-    export interface ICssPropertyOptions {
+    export type CssPropertyOptions = {
         backdropFilter?: Resolvable<string | (string)[]>;
         background?: Resolvable<string | (string)[]>;
         backgroundColor?: Resolvable<Color | (Color)[]>;
@@ -337,8 +324,7 @@ declare module ja {
         wordSpacing?: Resolvable<string | (string)[]>;
         zIndex?: Resolvable<number | (number)[]>;
     }
-
-    export interface ICssKeyframeOptions {
+    export type CssKeyframeOptions = {
         offset?: number | number[];
         easing?: Resolvable<Easing>;
         backdropFilter?: Resolvable<string>;
@@ -471,23 +457,19 @@ declare module ja {
         wordSpacing?: Resolvable<string>;
         zIndex?: Resolvable<number>;
     }
-
     export type SplitTextResult = {
         words: Element[];
         characters: Element[];
     }
-
     export type AnimationTargetContext<T> = {
-        options?: ja.IAnimationOptions;
+        options?: ja.AnimationOptions;
         target?: T;
         index?: number;
         targets?: T[]
     }
-
     export type Mapper<T1, T2> = {
         (mapable: T1): T2;
     }
-
     export type Func<T1> = {
         (mapable: T1): T1;
     }

@@ -1,4 +1,4 @@
-export const flip: ja.IAnimationMixin = {
+export const flip: ja.AnimationMixin = {
     css: [
         {
             offset: 0,

@@ -1,4 +1,4 @@
-export const wobble: ja.IAnimationMixin = {
+export const wobble: ja.AnimationMixin = {
     css: [
         {
             offset: 0,

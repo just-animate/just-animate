@@ -1,4 +1,4 @@
-export const bounce: ja.IAnimationMixin = {
+export const bounce: ja.AnimationMixin = {
     css: [
         {
             easing: 'easeOutCubic',

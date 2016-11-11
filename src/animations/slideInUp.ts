@@ -1,4 +1,4 @@
-export const slideInUp: ja.IAnimationMixin = {
+export const slideInUp: ja.AnimationMixin = {
     css: [
         {
             transform: 'translate3d(0, 100%, 0)',

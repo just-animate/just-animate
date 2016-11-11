@@ -1,4 +1,4 @@
-export const lightSpeedOut: ja.IAnimationMixin = {
+export const lightSpeedOut: ja.AnimationMixin = {
     css: [
         {
             transform: 'none',

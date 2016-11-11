@@ -1,4 +1,4 @@
-export const lightSpeedIn: ja.IAnimationMixin = {
+export const lightSpeedIn: ja.AnimationMixin = {
     css: [
         {
             offset: 0,

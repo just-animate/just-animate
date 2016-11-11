@@ -1,4 +1,4 @@
-export const rubberBand: ja.IAnimationMixin = {
+export const rubberBand: ja.AnimationMixin = {
     css: [
         {
             offset: 0,

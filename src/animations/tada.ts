@@ -1,4 +1,4 @@
-export const tada: ja.IAnimationMixin = {
+export const tada: ja.AnimationMixin = {
     css: [
         {
             transform: 'scale3d(1, 1, 1)'

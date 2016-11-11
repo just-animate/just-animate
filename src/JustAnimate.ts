@@ -65,7 +65,7 @@ export class JustAnimate {
      * 
      * @memberOf JustAnimate
      */    
-    public static inject(animations: ja.IAnimationMixin[]): void {
+    public static inject(animations: ja.AnimationMixin[]): void {
         const resolver = new MixinService();
         for (const a of animations) {
             resolver.registerAnimation(a, true);
@@ -86,7 +86,7 @@ export class JustAnimate {
      * 
      * @memberOf JustAnimate
      */
-    public animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator {
+    public animate(options: ja.AnimationOptions | ja.AnimationOptions[]): ja.IAnimator {
         return new Animator(this._resolver, this._timeLoop, this.plugins).animate(options);
     }
     /**
@@ -111,7 +111,7 @@ export class JustAnimate {
      * 
      * @memberOf JustAnimate
      */
-    public register(preset: ja.IAnimationMixin): void {
+    public register(preset: ja.AnimationMixin): void {
         this._resolver.registerAnimation(preset, false);
     }
     /**
@@ -148,7 +148,7 @@ export class JustAnimate {
      * 
      * @memberOf JustAnimate
      */
-    public inject(animations: ja.IAnimationMixin[]): void {
+    public inject(animations: ja.AnimationMixin[]): void {
         const resolver = this._resolver;
         for (const a of animations) {
             resolver.registerAnimation(a, true);

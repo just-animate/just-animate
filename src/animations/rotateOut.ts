@@ -1,4 +1,4 @@
-export const rotateOut: ja.IAnimationMixin = {
+export const rotateOut: ja.AnimationMixin = {
     css: [
         {
             transformOrigin: 'center',

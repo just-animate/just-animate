@@ -1,4 +1,4 @@
-export const pulse: ja.IAnimationMixin = {
+export const pulse: ja.AnimationMixin = {
     css: [
         {
             transform: 'scale3d(1, 1, 1)'

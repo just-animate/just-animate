@@ -22,9 +22,9 @@ const animationPadding =  (1.0 / 60) + 7;
 export class Animator implements ja.IAnimator {
     private _currentIteration: number | undefined;
     private _currentTime: number | undefined;
-    private _context: ja.IAnimationTimeContext;
+    private _context: ja.AnimationTimeContext;
     private _direction: ja.AnimationDirection | undefined;
-    private _dispatcher: Dispatcher<ja.IAnimationTimeContext, ja.AnimationEventType>;
+    private _dispatcher: Dispatcher<ja.AnimationTimeContext, ja.AnimationEventType>;
     private _duration: number;
     private _events: TimelineEvent[];
     private _playState: ja.AnimationPlaybackState | undefined;
@@ -36,7 +36,7 @@ export class Animator implements ja.IAnimator {
 
     constructor(resolver: MixinService, timeloop: TimeLoop, plugins: ja.IPlugin<{}>[]) {
         const self = this;
-        self._context = {} as ja.IAnimationTimeContext;
+        self._context = {} as ja.AnimationTimeContext;
         self._duration = 0;
         self._currentTime = undefined;
         self._currentIteration = undefined;
@@ -49,9 +49,9 @@ export class Animator implements ja.IAnimator {
         self._dispatcher = new Dispatcher();
         self._onTick = self._onTick.bind(self);
 
-        self.on('finish', (ctx: ja.IAnimationTimeContext) => self._onFinish(ctx));
-        self.on('cancel', (ctx: ja.IAnimationTimeContext) => self._onCancel(ctx));
-        self.on('pause', (ctx: ja.IAnimationTimeContext) => self._onPause(ctx));
+        self.on('finish', (ctx: ja.AnimationTimeContext) => self._onFinish(ctx));
+        self.on('cancel', (ctx: ja.AnimationTimeContext) => self._onCancel(ctx));
+        self.on('pause', (ctx: ja.AnimationTimeContext) => self._onPause(ctx));
 
         // autoplay    
         self.play();
@@ -59,14 +59,14 @@ export class Animator implements ja.IAnimator {
         return self;
     }
 
-    public animate(options: ja.IAnimationOptions | ja.IAnimationOptions[]): ja.IAnimator {
+    public animate(options: ja.AnimationOptions | ja.AnimationOptions[]): ja.IAnimator {
         const self = this;
         if (isArray(options)) {
-            for (let e of options as ja.IAnimationOptions[]) {
+            for (let e of options as ja.AnimationOptions[]) {
                 self._addEvent(e);
             }
         } else {
-            self._addEvent(options as ja.IAnimationOptions);
+            self._addEvent(options as ja.AnimationOptions);
         }
         self._recalculate();
         return self;
@@ -115,15 +115,15 @@ export class Animator implements ja.IAnimator {
         return self;
     }
 
-    public off(eventConfig: ja.IAnimationEvent): ja.IAnimator;
+    public off(eventConfig: ja.AnimationEvent): ja.IAnimator;
     
-    public off(eventName: string, listener: ja.IAnimationEventListener): ja.IAnimator;
-    public off(event: string | ja.IAnimationEvent, listener: ja.IAnimationEventListener | undefined = undefined): ja.IAnimator {
+    public off(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
+    public off(event: string | ja.AnimationEvent, listener: ja.AnimationEventListener | undefined = undefined): ja.IAnimator {
         const self = this;
         if (typeof event === 'string' && listener !== undefined) {
             self._dispatcher.off(event, listener);
         } else {
-            const eventConfig = event as ja.IAnimationEvent;
+            const eventConfig = event as ja.AnimationEvent;
             for (const eventName in eventConfig) {
                 const listener1 = eventConfig[eventName];
                 if (listener1) {
@@ -134,15 +134,15 @@ export class Animator implements ja.IAnimator {
         return self;
     }
 
-    public on(eventConfig: ja.IAnimationEvent): ja.IAnimator;
+    public on(eventConfig: ja.AnimationEvent): ja.IAnimator;
     
-    public on(eventName: ja.AnimationEventType, listener: ja.IAnimationEventListener): ja.IAnimator;
-    public on(event: ja.AnimationEventType | ja.IAnimationEvent, listener: ja.IAnimationEventListener | undefined = undefined): ja.IAnimator {
+    public on(eventName: ja.AnimationEventType, listener: ja.AnimationEventListener): ja.IAnimator;
+    public on(event: ja.AnimationEventType | ja.AnimationEvent, listener: ja.AnimationEventListener | undefined = undefined): ja.IAnimator {
         const self = this;
         if (typeof event === 'string' && listener !== undefined) {
             self._dispatcher.on(event, listener);
         } else {
-            const eventConfig = event as ja.IAnimationEvent;
+            const eventConfig = event as ja.AnimationEvent;
             for (const eventName in eventConfig) {
                 const listener1 = eventConfig[eventName];
                 if (listener1) {
@@ -208,10 +208,10 @@ export class Animator implements ja.IAnimator {
         self._duration =  maxBy(self._events, (e: TimelineEvent) => e.startTimeMs + e.animator.totalDuration);
     }
 
-    private _resolveMixins(options: ja.IAnimationOptions): ja.IAnimationOptions {
+    private _resolveMixins(options: ja.AnimationOptions): ja.AnimationOptions {
         const self = this;
         // resolve mixin properties     
-        let event: ja.IAnimationOptions;
+        let event: ja.AnimationOptions;
         if (options.mixins) {
             const mixinTarget = chain(options.mixins)
                 .map((mixin: string) => {
@@ -221,7 +221,7 @@ export class Animator implements ja.IAnimator {
                     }
                     return def;
                 })
-                .reduce((c: ja.IAnimationMixin, n: ja.IAnimationMixin) => deepCopyObject(n, c));
+                .reduce((c: ja.AnimationMixin, n: ja.AnimationMixin) => deepCopyObject(n, c));
 
             event = inherit(options, mixinTarget);
         } else {
@@ -230,7 +230,7 @@ export class Animator implements ja.IAnimator {
         return event;
     }
 
-    private _addEvent(options: ja.IAnimationOptions): void {
+    private _addEvent(options: ja.AnimationOptions): void {
         const self = this;
         const event = self._resolveMixins(options);
 
@@ -256,18 +256,18 @@ export class Animator implements ja.IAnimator {
                 options: event,
                 target: target,
                 targets: targets
-            } as ja.IAnimationTimeContext;
+            } as ja.AnimationTimeContext;
             
             // fire create function if provided (allows for modifying the target prior to animating)
             if (event.on && isFunction(event.on.create)) {
                 event.on.create!(ctx);
             }
 
-            const playFunction = event.on && isFunction(event.on.play) ? event.on.play as ja.IAnimationEventListener : noop;  
-            const pauseFunction = event.on && isFunction(event.on.pause) ? event.on.pause  as ja.IAnimationEventListener : noop;  
-            const cancelFunction = event.on && isFunction(event.on.cancel) ? event.on.cancel  as ja.IAnimationEventListener : noop;  
-            const finishFunction = event.on && isFunction(event.on.finish) ? event.on.finish  as ja.IAnimationEventListener : noop;  
-            const updateFunction = event.on && isFunction(event.on.update) ? event.on.update as ja.IAnimationEventListener : noop;  
+            const playFunction = event.on && isFunction(event.on.play) ? event.on.play as ja.AnimationEventListener : noop;  
+            const pauseFunction = event.on && isFunction(event.on.pause) ? event.on.pause  as ja.AnimationEventListener : noop;  
+            const cancelFunction = event.on && isFunction(event.on.cancel) ? event.on.cancel  as ja.AnimationEventListener : noop;  
+            const finishFunction = event.on && isFunction(event.on.finish) ? event.on.finish  as ja.AnimationEventListener : noop;  
+            const updateFunction = event.on && isFunction(event.on.update) ? event.on.update as ja.AnimationEventListener : noop;  
             
             const delayUnit = createUnitResolver(resolve(delay, ctx) || 0)(i);
             event.delay = getCanonicalTime(delayUnit) as number;
@@ -285,7 +285,7 @@ export class Animator implements ja.IAnimator {
             // note: don't unwrap easings so we don't break this later with custom easings
             const easing = getEasingString(options.easing as string);
 
-            const timings: ja.IAnimationTiming = {
+            const timings: ja.AnimationTiming = {
                 delay: event.delay,
                 endDelay: event.endDelay,
                 duration,
@@ -320,7 +320,7 @@ export class Animator implements ja.IAnimator {
             }
         }
     }
-    private _onCancel(ctx: ja.IAnimationTimeContext): void {
+    private _onCancel(ctx: ja.AnimationTimeContext): void {
         const self = this;
         const context = self._context;
         
@@ -338,7 +338,7 @@ export class Animator implements ja.IAnimator {
             evt.cancel(self._context);
         }
     }
-    private _onFinish(ctx: ja.IAnimationTimeContext): void {
+    private _onFinish(ctx: ja.AnimationTimeContext): void {
         const self = this;        
         const context = self._context;
         self._timeLoop.off(self._onTick);
@@ -355,7 +355,7 @@ export class Animator implements ja.IAnimator {
             evt.finish(self._context);
         }
     }
-    private _onPause(ctx: ja.IAnimationTimeContext): void {
+    private _onPause(ctx: ja.AnimationTimeContext): void {
         const self = this;      
         const context = self._context;
         self._timeLoop.off(self._onTick);
@@ -526,15 +526,15 @@ export class Animator implements ja.IAnimator {
 
 type TimelineEvent = {
     animator: ja.IAnimationController;  
-    cancel: ja.IAnimationEventListener;
+    cancel: ja.AnimationEventListener;
     easingFn: ja.Func<number>;
     endTimeMs: number;        
-    finish: ja.IAnimationEventListener;        
+    finish: ja.AnimationEventListener;        
     index: number;
-    pause: ja.IAnimationEventListener;        
-    play: ja.IAnimationEventListener;        
+    pause: ja.AnimationEventListener;        
+    play: ja.AnimationEventListener;        
     startTimeMs: number;
     target: any;
     targets: any[];
-    update: ja.IAnimationEventListener;
+    update: ja.AnimationEventListener;
 }

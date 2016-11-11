@@ -1,4 +1,4 @@
-export const jello: ja.IAnimationMixin = {
+export const jello: ja.AnimationMixin = {
     css: [
         {
             offset: 0,

@@ -1,4 +1,4 @@
-export const fadeOut: ja.IAnimationMixin = {
+export const fadeOut: ja.AnimationMixin = {
     css: {
         opacity: [1, 0]
     },

@@ -1,4 +1,4 @@
-export const hinge: ja.IAnimationMixin = {
+export const hinge: ja.AnimationMixin = {
     css: [
         {
             transform: 'none',

@@ -1,3 +1,5 @@
+import * as waapi from './waapi';
+
 /**
  * Implements the IAnimationController interface for the Web Animation API
  * 
@@ -8,10 +10,10 @@
 export class KeyframeAnimator implements ja.IAnimationController {
     public totalDuration: number;
     private _initialized: boolean | undefined;
-    private _init: { (): waapi.IAnimation; } | undefined;
-    private _animator: waapi.IAnimation;
+    private _init: { (): waapi.Animation; } | undefined;
+    private _animator: waapi.Animation;
 
-    constructor(init: { (): waapi.IAnimation; }) {
+    constructor(init: { (): waapi.Animation; }) {
         this._init = init;
         this._initialized = undefined;
     }
@@ -66,7 +68,7 @@ export class KeyframeAnimator implements ja.IAnimationController {
 
     private _ensureInit(): void {
         const self = this;
-        const init = self._init as { (): waapi.IAnimation; };
+        const init = self._init as { (): waapi.Animation; };
         if (init) {
             self._init = undefined;
             self._initialized = false;

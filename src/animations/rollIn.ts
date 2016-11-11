@@ -1,4 +1,4 @@
-export const rollIn: ja.IAnimationMixin = {
+export const rollIn: ja.AnimationMixin = {
     css: [
         {
             opacity: 0,
