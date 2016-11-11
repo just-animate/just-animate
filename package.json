@@ -39,7 +39,7 @@
     "compress:core": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/just-animate-core.min.js dist/just-animate-core.js",
     "compress:systemjs": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/just-animate-systemjs.min.js dist/just-animate-systemjs.js",
     "clean": "node_modules/.bin/del-cli -f dist",
-    "format": "cd src && tsfmt -r **/*.ts",
+    "format": "tsfmt -r **/*.ts",
     "preversion": "npm run rebuild",
     "postversion": "git push --follow-tags && npm publish",
     "rebuild": "npm run clean && npm run build && npm run compress",
