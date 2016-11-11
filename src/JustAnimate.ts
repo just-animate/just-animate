@@ -18,7 +18,7 @@ export class JustAnimate {
      * 
      * @type {ja.EasingList}
      * @memberOf JustAnimate
-     */    
+     */
     public easings: ja.EasingList = {
         ease: 'ease',
         easeIn: 'easeIn',
@@ -64,7 +64,7 @@ export class JustAnimate {
      * @param {ja.IAnimationMixin[]} animations
      * 
      * @memberOf JustAnimate
-     */    
+     */
     public static inject(animations: ja.AnimationMixin[]): void {
         const resolver = new MixinService();
         for (const a of animations) {
@@ -101,7 +101,7 @@ export class JustAnimate {
     public random(first: number, last: number): number;
     public random(first: number, last: number, unit: string): string;
     public random(first: number, last: number, unit: undefined, wholeNumbersOnly: boolean): number;
-    public random(first: number, last: number, unit?: string, wholeNumbersOnly?: boolean): number|string {
+    public random(first: number, last: number, unit?: string, wholeNumbersOnly?: boolean): number | string {
         return random(first, last, unit, wholeNumbersOnly);
     }
     /**
@@ -136,7 +136,7 @@ export class JustAnimate {
      * @returns {ja.SplitTextResult}
      * 
      * @memberOf JustAnimate
-     */    
+     */
     public splitText(target: ja.AnimationDomTarget): ja.SplitTextResult {
         return splitText(target);
     }

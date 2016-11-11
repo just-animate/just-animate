@@ -26,10 +26,8 @@ export const bounceInUp: ja.AnimationMixin = {
             transform: 'translate3d(0, 0, 0)'
         }
     ],
-
     to: '1s',
     fill: 'both',
-    easing: 'easeOutCubic'
-    ,
+    easing: 'easeOutCubic',
     name: 'bounceInUp'
 };
