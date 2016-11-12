@@ -15,7 +15,7 @@
     "rollup-watch": "^2.5.0",
     "ts-node": "^1.7.0",
     "tslint": "^3.15.1",
-    "typescript": "^2.2.0-dev.20161111",
+    "typescript": "^2.2.0-dev.20161112",
     "typescript-formatter": "^4.0.0",
     "uglify": "^0.1.5"
   },

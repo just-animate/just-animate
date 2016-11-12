@@ -1,4 +1,4 @@
-import * as waapi from './waapi';
+import * as waapi from '../waapi';
 
 /**
  * Implements the IAnimationController interface for the Web Animation API
