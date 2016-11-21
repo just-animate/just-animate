@@ -14,6 +14,8 @@
 - randomness and staggered timing through property resolvers
 - full animation control (reverse, pause, cancel, and seek)
 
+> When this project gets to 100 🌟s, I'm going to work on morphing SVGs,  [so ^ star it please](https://github.com/just-animate/just-animate/stargazers).
+
 ## Getting Started
 
 ### Setup from CDN
