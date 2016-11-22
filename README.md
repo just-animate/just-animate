@@ -364,6 +364,45 @@ var wordElements = just.splitText('#element1').words;
 - [All Mixins](http://codepen.io/notoriousb1t/full/vXZNvm/)
 - [CodePen Demos](http://codepen.io/collection/ANzZxb/)
 
+## Frameworks
+
+
+### Vue 2.0 Bindings
+Sometimes a little bit of framework integration can go a long way to making a project more livable.  Just Animate has bindings to Vue 2.0 that help make animating easy in your markup
+
+
+Include this additional script after both Just Animate and VueJS
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.2.0/just-animate-vue.min.js"></script>
+```
+
+Register Just Animate plugin with VueJS
+
+```typescript
+Vue.use(just.AnimateVue);
+```
+
+Use v-animate instead of v-on to directly use Just Animate mixins
+
+#### HTML
+
+```html
+<div id="app">
+    <button v-animate="{ click: 'headShake', mouseover: { mixins: 'jello' } }">{{ message }}</button>
+</div>
+```
+
+#### JavaScript
+
+```javascript
+var app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!'
+  }
+});
+```
 
 ## License
 
