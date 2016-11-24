@@ -1,7 +1,7 @@
 var typescript = require('rollup-plugin-typescript');
 
 module.exports = {
-    entry: './src/lib/vue.ts',
+    entry: './src/just-animate-vue.ts',
     dest: './dist/just-animate-vue.js',
     format: 'iife',
     moduleName: 'just',
