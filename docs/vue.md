@@ -7,7 +7,7 @@ Just Animate has bindings to Vue 2.0 that help make animating easy in your marku
 **Include this additional script after both Just Animate and VueJS**
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.2.0/just-animate-vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/just-animate/1.2.1/just-animate-vue.min.js"></script>
 ```
 
 **Register Just Animate plugin with VueJS before creating a Vue**
