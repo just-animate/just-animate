@@ -39,13 +39,15 @@ export function deepCopyProperty(prop: string|number, origin: {}, dest: {}): voi
 /**
  * Copies the value from source to target if the source does not already have a value
  */
-export function inherit<T1, T2>(target: T1, source: T2): T1&T2 {
+export function inherit<T1, T2>(target: T1, source: T2): T1 & T2 {
+    // escape typing here, since there doesn't seem to be a sensible way to make this work
+    const result = target as any;
     for (let propName in source) {
-        if (!isDefined(target[propName])) {
-            target[propName] = source[propName];
+        if (!isDefined(result[propName])) {
+            result[propName] = source[propName];
         }
     }
-    return target as T1&T2;
+    return result as T1 & T2;
 };
 
 /**

@@ -12,12 +12,12 @@ const animateVue = {
         vue.directive<{}>('animate', {
             bind(el: Element, binding: {}): void {
                 const events = binding['value'];
-                const eventListeners = [];
+                const eventListeners: { eventName: string, eventListener: { (event: Event): void }}[] = [];
                 let player: ja.IAnimator;
 
                 for (let e in events) {
                     const eventName = e;
-                    let options = events[eventName];
+                    let options = events[eventName] as string | { mixins: {}, fill: string; };
                     if (typeof options === 'string') {
                         options = {
                             mixins: options,
