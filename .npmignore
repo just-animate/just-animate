@@ -7,10 +7,10 @@ docs/
 .editorconfig
 .gitignore
 alm.json
-rollup.all.config.js
-rollup.common.config.js
-rollup.core.config.js
-rollup.animations.config.js
+rollup-all.config.js
+rollup-common.config.js
+rollup-core.config.js
+rollup-vue.config.js
 tsconfig.json
 tsconfig-systemjs.json
 tslint.json

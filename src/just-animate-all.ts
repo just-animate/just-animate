@@ -1,7 +1,7 @@
 /// <reference path="./just-animate.d.ts" />
 import { JustAnimate } from './JustAnimate';
 import { KeyframePlugin } from './plugins/waapi/KeyframePlugin';
-import { ANIMATE_CSS } from './animations';
+import * as animations from './animations';
 
 declare var window: Window & { just: ja.JustAnimate };
 declare var angular: any;
@@ -12,7 +12,7 @@ if (typeof angular !== 'undefined') {
 }
 
 const just = new JustAnimate();
-just.inject(ANIMATE_CSS);
+just.inject(Object.keys(animations).map((k: string) => animations[k]));
 just.plugins.push(new KeyframePlugin());
 
 window.just = just;
