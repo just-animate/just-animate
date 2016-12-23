@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const assert = chai.assert;
 const jsdom = require('mocha-jsdom');
 
-import {random} from '../../src/common/random';
+import {random} from '../../src/common';
     
 describe('random', () => {
     describe('random()', () => {

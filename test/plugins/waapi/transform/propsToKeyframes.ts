@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 const jsdom = require('mocha-jsdom');
 
-import { propsToKeyframes } from '../../../../src/plugins/waapi/transform/index';
+import { propsToKeyframes } from '../../../../src/plugins/waapi/transform';
 
 describe('propsToKeyframes', () => {
     jsdom();

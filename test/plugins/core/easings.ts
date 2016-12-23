@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 const assert = chai.assert;
 
-import { cubic, steps, getEasingFunction, getEasingString } from '../../../src/plugins/core/easings';
+import { cubic, steps, getEasingFunction, getEasingString } from '../../../src/plugins/core';
 
 describe('easings', () => {
 

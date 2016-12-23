@@ -1,9 +1,7 @@
-import { propertyAliases, transforms } from './resources';
+import { isDefined, resolve, toCamelCase } from '../../../common';
+import { getEasingString } from '../../core';
 import { Keyframe } from '../waapi';
-import { toCamelCase } from '../../../common/strings';
-import { isDefined } from '../../../common/type';
-import { getEasingString } from '../../core/easings';
-import { resolve } from '../../../common/objects';
+import { propertyAliases, transforms } from './resources';
 
 /**
  * This calls all keyframe properties that are functions and sets their values

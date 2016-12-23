@@ -1,6 +1,6 @@
 /// <reference path="./just-animate.d.ts" />
 import { JustAnimate } from './JustAnimate';
-import { KeyframePlugin } from './plugins/waapi/KeyframePlugin';
+import { KeyframePlugin } from './plugins/waapi';
 
 declare var window: Window & { just: ja.JustAnimate };
 declare var angular: any;

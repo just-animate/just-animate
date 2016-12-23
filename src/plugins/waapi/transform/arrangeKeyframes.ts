@@ -1,5 +1,5 @@
 import { Keyframe } from '../waapi';
-import { tail, head } from '../../../common/lists';
+import { tail, head } from '../../../common';
 
 
 export function arrangeKeyframes(keyframes: Keyframe[]): void {

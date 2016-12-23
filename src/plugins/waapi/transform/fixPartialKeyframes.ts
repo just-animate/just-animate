@@ -1,6 +1,5 @@
+import { head, isDefined, tail } from '../../../common';
 import { Keyframe } from '../waapi';
-import { head, tail } from '../../../common/lists';
-import { isDefined } from '../../../common/type';
 
 /**
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
@@ -11,8 +10,8 @@ export function fixPartialKeyframes(keyframes: Keyframe[]): void {
         return;
     }
 
-    const first = head(keyframes)!;
-    const last = tail(keyframes)!;
+    const first = head(keyframes) !;
+    const last = tail(keyframes) !;
 
     // fill initial keyframe with missing props
     const len = keyframes.length;

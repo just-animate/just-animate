@@ -1,7 +1,6 @@
-import { isDefined } from '../../../common/type';
-import { listProps } from '../../../common/objects';
-import { transforms } from './resources';
+import { isDefined, listProps } from '../../../common';
 import { Keyframe } from '../waapi';
+import { transforms } from './resources';
 
 export function addTransition(keyframes: Keyframe[], target: HTMLElement): void {
     // detect properties to transition

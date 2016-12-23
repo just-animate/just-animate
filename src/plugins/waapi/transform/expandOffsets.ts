@@ -1,5 +1,4 @@
-import { isArray } from '../../../common/type';
-import { deepCopyObject } from '../../../common/objects';
+import { deepCopyObject, isArray } from '../../../common';
 import { keyframeOffsetComparer } from './keyframeOffsetComparer';
 
 /**
@@ -22,7 +21,7 @@ export function expandOffsets(keyframes: ja.CssKeyframeOptions[]): void {
 
         // copy frame for each offset        
         const offsets = (keyframe.offset as number[]);
-        
+
         // perform ascending sort so offsets are in order in place
         // this is important when calculating the distance between known offsets
         offsets.sort();

@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 const assert = chai.assert;
 
-import { isArray, isDefined, isFunction, isNumber, isString } from '../../src/common/type';
+import { isArray, isDefined, isFunction, isNumber, isString } from '../../src/common';
 
 describe('type', () => {
   describe('isArray()', () => {

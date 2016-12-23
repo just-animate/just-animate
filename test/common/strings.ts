@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 const assert = chai.assert;
 
-import { toCamelCase } from '../../src/common/strings';
+import { toCamelCase } from '../../src/common';
 
 describe('strings', () => {
     describe('hyphenatedToCamelCase()', () => {

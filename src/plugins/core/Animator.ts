@@ -1,14 +1,25 @@
-import { chain, maxBy } from '../../common/lists';
-import { deepCopyObject, inherit, resolve } from '../../common/objects';
-import { isArray, isDefined, isFunction, isNumber } from '../../common/type';
-import { inRange } from '../../common/math';
-import { invalidArg } from '../../common/errors';
+import {
+    chain,
+    createUnitResolver,
+    deepCopyObject,
+    getCanonicalTime,
+    getTargets,
+    inherit,
+    inRange,
+    invalidArg,
+    isArray,
+    isDefined,
+    isFunction,
+    isNumber,
+    maxBy,
+    parseUnit,
+    resolve
+} from '../../common';
 import { Dispatcher } from './Dispatcher';
+import { getEasingFunction, getEasingString } from './easings';
 import { MixinService } from './MixinService';
 import { TimeLoop } from './TimeLoop';
-import { getEasingFunction, getEasingString } from './easings';
-import { parseUnit, createUnitResolver, getCanonicalTime } from '../../common/units';
-import { getTargets } from '../../common/elements';
+
 
 const noop = function (): void { /* no operation */ };
 
@@ -17,7 +28,7 @@ const noop = function (): void { /* no operation */ };
 // fixme!: this controls the amount of time left before the timeline gives up 
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
-const animationPadding =  (1.0 / 60) + 7;
+const animationPadding = (1.0 / 60) + 7;
 
 export class Animator implements ja.IAnimator {
     private _currentIteration: number | undefined;
@@ -33,6 +44,7 @@ export class Animator implements ja.IAnimator {
     private _timeLoop: TimeLoop;
     private _totalIterations: number;
     private _plugins: ja.IPlugin<{}>[];
+    private _onTick: { (delta: number, runningTime: number): void };
 
     constructor(resolver: MixinService, timeloop: TimeLoop, plugins: ja.IPlugin<{}>[]) {
         const self = this;
@@ -47,7 +59,7 @@ export class Animator implements ja.IAnimator {
         self._timeLoop = timeloop;
         self._plugins = plugins;
         self._dispatcher = new Dispatcher();
-        self._onTick = self._onTick.bind(self);
+        self._onTick = (delta: number, runningTime: number): void => tick(self as any as AnimationContext, delta, runningTime);
 
         self.on('finish', (ctx: ja.AnimationTimeContext) => self._onFinish(ctx));
         self.on('cancel', (ctx: ja.AnimationTimeContext) => self._onCancel(ctx));
@@ -62,7 +74,7 @@ export class Animator implements ja.IAnimator {
     public animate(options: ja.AnimationOptions | ja.AnimationOptions[]): ja.IAnimator {
         const self = this;
         if (isArray(options)) {
-            for (let e of options as ja.AnimationOptions[]) {
+            for (const e of options as ja.AnimationOptions[]) {
                 self._addEvent(e);
             }
         } else {
@@ -116,7 +128,7 @@ export class Animator implements ja.IAnimator {
     }
 
     public off(eventConfig: ja.AnimationEvent): ja.IAnimator;
-    
+
     public off(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
     public off(event: string | ja.AnimationEvent, listener: ja.AnimationEventListener | undefined = undefined): ja.IAnimator {
         const self = this;
@@ -135,7 +147,7 @@ export class Animator implements ja.IAnimator {
     }
 
     public on(eventConfig: ja.AnimationEvent): ja.IAnimator;
-    
+
     public on(eventName: ja.AnimationEventType, listener: ja.AnimationEventListener): ja.IAnimator;
     public on(event: ja.AnimationEventType | ja.AnimationEvent, listener: ja.AnimationEventListener | undefined = undefined): ja.IAnimator {
         const self = this;
@@ -161,7 +173,7 @@ export class Animator implements ja.IAnimator {
     public play(): ja.IAnimator;
     public play(iterations: number): ja.IAnimator;
     public play(options: ja.IPlayOptions): ja.IAnimator;
-    public play(options?: number | ja.IPlayOptions): ja.IAnimator {     
+    public play(options?: number | ja.IPlayOptions): ja.IAnimator {
         const self = this;
 
         let totalIterations: number = 0;
@@ -173,10 +185,10 @@ export class Animator implements ja.IAnimator {
                     totalIterations = playOptions.iterations;
                 }
                 if (playOptions.direction) {
-                    direction = playOptions.direction;                    
-                }   
+                    direction = playOptions.direction;
+                }
             } else {
-                totalIterations = options as number;                            
+                totalIterations = options as number;
             }
         }
 
@@ -187,7 +199,7 @@ export class Animator implements ja.IAnimator {
             direction = 'normal';
         }
 
-        self._totalIterations = totalIterations;        
+        self._totalIterations = totalIterations;
         self._direction = direction;
 
         if (!(self._playState === 'running' || self._playState === 'pending')) {
@@ -205,7 +217,7 @@ export class Animator implements ja.IAnimator {
 
     private _recalculate(): void {
         const self = this;
-        self._duration =  maxBy(self._events, (e: TimelineEvent) => e.startTimeMs + e.animator.totalDuration);
+        self._duration = maxBy(self._events, (e: TimelineEvent) => e.startTimeMs + e.animator.totalDuration);
     }
 
     private _resolveMixins(options: ja.AnimationOptions): ja.AnimationOptions {
@@ -241,7 +253,7 @@ export class Animator implements ja.IAnimator {
         // set easing to linear by default     
         const easingFn = getEasingFunction(event.easing as string);
         event.easing = getEasingString(event.easing as string);
-        
+
         const delay = event.delay || 0;
         const endDelay = event.endDelay || 0;
 
@@ -249,30 +261,30 @@ export class Animator implements ja.IAnimator {
         const targetLength = targets.length;
 
         for (let i = 0, len = targetLength; i < len; i++) {
-            const target = targets[i];          
-            
+            const target = targets[i];
+
             const ctx = {
                 index: i,
                 options: event,
                 target: target,
                 targets: targets
             } as ja.AnimationTimeContext;
-            
+
             // fire create function if provided (allows for modifying the target prior to animating)
             if (event.on && isFunction(event.on.create)) {
                 event.on.create!(ctx);
             }
 
-            const playFunction = event.on && isFunction(event.on.play) ? event.on.play as ja.AnimationEventListener : noop;  
-            const pauseFunction = event.on && isFunction(event.on.pause) ? event.on.pause  as ja.AnimationEventListener : noop;  
-            const cancelFunction = event.on && isFunction(event.on.cancel) ? event.on.cancel  as ja.AnimationEventListener : noop;  
-            const finishFunction = event.on && isFunction(event.on.finish) ? event.on.finish  as ja.AnimationEventListener : noop;  
-            const updateFunction = event.on && isFunction(event.on.update) ? event.on.update as ja.AnimationEventListener : noop;  
-            
+            const playFunction = event.on && isFunction(event.on.play) ? event.on.play as ja.AnimationEventListener : noop;
+            const pauseFunction = event.on && isFunction(event.on.pause) ? event.on.pause as ja.AnimationEventListener : noop;
+            const cancelFunction = event.on && isFunction(event.on.cancel) ? event.on.cancel as ja.AnimationEventListener : noop;
+            const finishFunction = event.on && isFunction(event.on.finish) ? event.on.finish as ja.AnimationEventListener : noop;
+            const updateFunction = event.on && isFunction(event.on.update) ? event.on.update as ja.AnimationEventListener : noop;
+
             const delayUnit = createUnitResolver(resolve(delay, ctx) || 0)(i);
             event.delay = getCanonicalTime(delayUnit) as number;
 
-            const endDelayUnit = createUnitResolver(resolve(endDelay, ctx) || 0)(i);            
+            const endDelayUnit = createUnitResolver(resolve(endDelay, ctx) || 0)(i);
             event.endDelay = getCanonicalTime(endDelayUnit) as number;
 
             const iterations = resolve(options.iterations as number, ctx) || 1;
@@ -297,7 +309,7 @@ export class Animator implements ja.IAnimator {
                 totalTime
             };
 
-            for (let plugin of self._plugins) {
+            for (const plugin of self._plugins) {
                 if (!plugin.canHandle(ctx)) {
                     continue;
                 }
@@ -305,12 +317,12 @@ export class Animator implements ja.IAnimator {
 
                 self._events.push({
                     animator: animator,
-                    cancel: cancelFunction,                    
+                    cancel: cancelFunction,
                     easingFn: easingFn,
                     endTimeMs: event.from + animator.totalDuration,
-                    finish: finishFunction,                    
+                    finish: finishFunction,
                     index: i,
-                    pause: pauseFunction,                        
+                    pause: pauseFunction,
                     play: playFunction,
                     startTimeMs: event.from,
                     target: target,
@@ -323,15 +335,15 @@ export class Animator implements ja.IAnimator {
     private _onCancel(ctx: ja.AnimationTimeContext): void {
         const self = this;
         const context = self._context;
-        
+
         self._timeLoop.off(self._onTick);
         self._currentTime = 0;
         self._currentIteration = undefined;
         self._playState = 'idle';
-        for (let evt of self._events) {
+        for (const evt of self._events) {
             evt.animator.playState('idle');
         }
-        for (let evt of self._events) {
+        for (const evt of self._events) {
             context.target = evt.target;
             context.targets = evt.targets;
             context.index = evt.index;
@@ -339,16 +351,16 @@ export class Animator implements ja.IAnimator {
         }
     }
     private _onFinish(ctx: ja.AnimationTimeContext): void {
-        const self = this;        
+        const self = this;
         const context = self._context;
         self._timeLoop.off(self._onTick);
         self._currentTime = undefined;
-        self._currentIteration = undefined;        
+        self._currentIteration = undefined;
         self._playState = 'finished';
-        for (let evt of self._events) {
+        for (const evt of self._events) {
             evt.animator.playState('finished');
         }
-        for (let evt of self._events) {
+        for (const evt of self._events) {
             context.target = evt.target;
             context.targets = evt.targets;
             context.index = evt.index;
@@ -356,22 +368,54 @@ export class Animator implements ja.IAnimator {
         }
     }
     private _onPause(ctx: ja.AnimationTimeContext): void {
-        const self = this;      
+        const self = this;
         const context = self._context;
         self._timeLoop.off(self._onTick);
         self._playState = 'paused';
-        for (let evt of self._events) {
+        for (const evt of self._events) {
             evt.animator.playState('paused');
         }
-        for (let evt of self._events) {
+        for (const evt of self._events) {
             context.target = evt.target;
             context.targets = evt.targets;
             context.index = evt.index;
             evt.pause(self._context);
         }
     }
-    private _onTick(delta: number, runningTime: number): void {
-        const self = this;
+    
+}
+
+type TimelineEvent = {
+    animator: ja.IAnimationController;
+    cancel: ja.AnimationEventListener;
+    easingFn: ja.Func<number>;
+    endTimeMs: number;
+    finish: ja.AnimationEventListener;
+    index: number;
+    pause: ja.AnimationEventListener;
+    play: ja.AnimationEventListener;
+    startTimeMs: number;
+    target: any;
+    targets: any[];
+    update: ja.AnimationEventListener;
+};
+
+type AnimationContext = {
+    _currentIteration: number | undefined;
+    _currentTime: number | undefined;
+    _context: ja.AnimationTimeContext;
+    _direction: ja.AnimationDirection | undefined;
+    _dispatcher: Dispatcher<ja.AnimationTimeContext, ja.AnimationEventType>;
+    _duration: number;
+    _events: TimelineEvent[];
+    _playState: ja.AnimationPlaybackState | undefined;
+    _playbackRate: number | undefined;
+    _resolver: MixinService;
+    _timeLoop: TimeLoop;
+    _totalIterations: number;
+}
+
+function tick(self: AnimationContext, delta: number, runningTime: number): void {
         const dispatcher = self._dispatcher;
         const playState = self._playState;
         const context = self._context;
@@ -396,25 +440,25 @@ export class Animator implements ja.IAnimator {
         // calculate running range
         const duration1 = self._duration;
         const totalIterations = self._totalIterations;
-        
+
         let playbackRate = self._playbackRate as number;
         let isReversed = playbackRate < 0;
         let startTime = isReversed ? duration1 : 0;
         let endTime = isReversed ? 0 : duration1;
-     
+
         if (self._playState === 'pending') {
             const currentTime2 = self._currentTime;
             const currentIteration = self._currentIteration;
             self._currentTime = currentTime2 === undefined || currentTime2 === endTime ? startTime : currentTime2;
             self._currentIteration = currentIteration === undefined || currentIteration === totalIterations ? 0 : currentIteration;
             self._playState = 'running';
-        } 
-        
+        }
+
         // calculate currentTime from delta
         let currentTime = self._currentTime + delta * playbackRate;
         let currentIteration = self._currentIteration;
 
-        let isLastFrame = false;        
+        let isLastFrame = false;
         // check if animation has finished
         if (!inRange(currentTime, startTime, endTime)) {
             isLastFrame = true;
@@ -426,7 +470,7 @@ export class Animator implements ja.IAnimator {
                 startTime = isReversed ? duration1 : 0;
                 endTime = isReversed ? 0 : duration1;
             }
-            
+
             currentIteration++;
             currentTime = startTime;
 
@@ -434,7 +478,7 @@ export class Animator implements ja.IAnimator {
             context.delta = delta;
             context.duration = endTime - startTime;
             context.playbackRate = playbackRate as number;
-            context.iterations = currentIteration;            
+            context.iterations = currentIteration;
             context.offset = undefined;
             context.computedOffset = undefined;
             context.target = undefined;
@@ -443,7 +487,7 @@ export class Animator implements ja.IAnimator {
             self._dispatcher.trigger('iteration', context);
         }
 
-        self._currentIteration = currentIteration;        
+        self._currentIteration = currentIteration;
         self._currentTime = currentTime;
 
         dispatcher.trigger('update', context);
@@ -454,7 +498,7 @@ export class Animator implements ja.IAnimator {
         }
 
         // start animations if should be active and currently aren't   
-        for (let evt of self._events) {
+        for (const evt of self._events) {
             const startTimeMs = playbackRate >= 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
             const endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
             const shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
@@ -462,10 +506,10 @@ export class Animator implements ja.IAnimator {
 
             if (!shouldBeActive) {
                 continue;
-            }   
-            
+            }
+
             const controllerState = animator.playState();
-            
+
             // cancel animation if there was a fatal error
             if (controllerState === 'fatal') {
                 dispatcher.trigger('cancel', context);
@@ -476,7 +520,7 @@ export class Animator implements ja.IAnimator {
                 animator.restart();
             }
 
-            let playedThisFrame = false;         
+            let playedThisFrame = false;
             if (controllerState !== 'running' || isLastFrame) {
                 animator.playbackRate(playbackRate);
                 animator.playState('running');
@@ -485,9 +529,9 @@ export class Animator implements ja.IAnimator {
 
             animator.playbackRate(playbackRate);
 
-            const shouldTriggerPlay = evt.play !== noop && playedThisFrame;            
-            const shouldTriggerUpdate = evt.update !== noop;   
-            
+            const shouldTriggerPlay = evt.play !== noop && playedThisFrame;
+            const shouldTriggerUpdate = evt.update !== noop;
+
             if (shouldTriggerPlay || shouldTriggerUpdate) {
                 context.target = evt.target;
                 context.targets = evt.targets;
@@ -497,7 +541,7 @@ export class Animator implements ja.IAnimator {
                 context.duration = undefined;
                 context.offset = undefined;
                 context.playbackRate = undefined;
-                context.iterations = undefined;                
+                context.iterations = undefined;
                 context.computedOffset = undefined;
             }
 
@@ -508,33 +552,17 @@ export class Animator implements ja.IAnimator {
             if (shouldTriggerUpdate) {
                 const relativeDuration = evt.endTimeMs - evt.startTimeMs;
                 const relativeCurrentTime = currentTime - evt.startTimeMs;
-                const timeOffset = relativeCurrentTime / relativeDuration;                
+                const timeOffset = relativeCurrentTime / relativeDuration;
                 // set context object values for this update cycle            
                 context.currentTime = relativeCurrentTime;
                 context.delta = delta;
                 context.duration = relativeDuration;
                 context.offset = timeOffset;
                 context.playbackRate = playbackRate;
-                context.iterations = currentIteration;                
+                context.iterations = currentIteration;
                 context.computedOffset = evt.easingFn(timeOffset);
 
                 evt.update(context);
             }
         }
     }
-}
-
-type TimelineEvent = {
-    animator: ja.IAnimationController;  
-    cancel: ja.AnimationEventListener;
-    easingFn: ja.Func<number>;
-    endTimeMs: number;        
-    finish: ja.AnimationEventListener;        
-    index: number;
-    pause: ja.AnimationEventListener;        
-    play: ja.AnimationEventListener;        
-    startTimeMs: number;
-    target: any;
-    targets: any[];
-    update: ja.AnimationEventListener;
-}

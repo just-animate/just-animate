@@ -1,8 +1,3 @@
-
-export interface IElementAnimate {
-    animate(keyframes: Keyframe[], timings: EffectTiming): Animation;
-}
-
 export type Animation = {
     id: string;
     startTime: number;
@@ -20,6 +15,10 @@ export type Animation = {
 
     addEventListener(eventName: string, listener: Function): void;
     removeEventListener(eventName: string, listener: Function): void;
+};
+
+export interface IElementAnimate {
+    animate(keyframes: Keyframe[], timings: EffectTiming): Animation;
 }
 
 export type EffectTiming = {
@@ -31,11 +30,11 @@ export type EffectTiming = {
     fill?: string;
     iterationStart?: number;
     iterations?: number;
-}
+};
 
 export type Keyframe = {
     offset?: number;
     easing?: string;
     transform?: string;
     [val: string]: any;
-}
+};

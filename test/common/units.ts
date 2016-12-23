@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 const assert = chai.assert;
 
-import { createUnitResolver, parseUnit } from '../../src/common/units';
+import { createUnitResolver, parseUnit } from '../../src/common';
 
 describe('parseUnit', () => {
     describe('parseUnit()', () => {

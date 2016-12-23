@@ -80,15 +80,15 @@ export function getEasingFunction(easingString: string): ja.Func<number> {
         );
 }
 
-function getEasingDef(easingString: string): (number | string)[] { 
+function getEasingDef(easingString: string): (number | string)[] {
     if (!easingString) {
         return defaultEasing;
     }
-    const def: any[] = easings[toCamelCase(easingString)]; 
+    const def: any[] = easings[toCamelCase(easingString)];
     if (def && def.length) {
         return def;
     }
-    const matches = cssFunctionRegex.exec(easingString); 
+    const matches = cssFunctionRegex.exec(easingString);
     if (matches && matches.length) {
         return [matches[1]].concat(matches[2].split(','));
     }

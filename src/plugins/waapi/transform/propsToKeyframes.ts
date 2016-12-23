@@ -1,9 +1,6 @@
-import { parseUnit } from '../../../common/units';
-import { unsupported } from '../../../common/errors';
-import { resolve } from '../../../common/objects';
-import { transforms } from './resources';
-import { isDefined, isArray } from '../../../common/type';
+import { isArray, isDefined, parseUnit, resolve, unsupported } from '../../../common';
 import { keyframeOffsetComparer } from './keyframeOffsetComparer';
+import { transforms } from './resources';
 
 export function propsToKeyframes(css: ja.CssPropertyOptions, keyframes: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext<Element>): void {
     // create a map to capture each keyframe by offset
@@ -28,7 +25,7 @@ export function propsToKeyframes(css: ja.CssPropertyOptions, keyframes: ja.CssKe
                 const offset = i === 0 ? 0
                     : i === valLength - 1 ? 1
                         : i / (valLength - 1.0);
-                
+
                 let keyframe = keyframesByOffset[offset];
                 if (!keyframe) {
                     keyframe = {};
@@ -62,9 +59,9 @@ export function propsToKeyframes(css: ja.CssPropertyOptions, keyframes: ja.CssKe
     for (let i = offsets.length - 2; i > -1; --i) {
         const offset = offsets[i];
         const keyframe = keyframesByOffset[offset];
-        
+
         // foreach keyframe if has transform property
-        for (let transform of includedTransforms) {
+        for (const transform of includedTransforms) {
             if (isDefined(keyframe[transform])) {
                 continue;
             }
@@ -92,7 +89,7 @@ export function propsToKeyframes(css: ja.CssPropertyOptions, keyframes: ja.CssKe
                     startValue = startValueUnit.value;
                     startUnit = startValueUnit.unit;
                     startIndex = j;
-                    startOffset = offsets[j]; 
+                    startOffset = offsets[j];
                     break;
                 }
             }
@@ -100,7 +97,7 @@ export function propsToKeyframes(css: ja.CssPropertyOptions, keyframes: ja.CssKe
             if (startValue !== 0 && isDefined(startUnit) && isDefined(endUnitType) && startUnit !== endUnitType) {
                 throw unsupported('Mixed transform property units');
             }
-      
+
             // iterate forward
             for (let j = startIndex; j < i + 1; j++) {
                 const currentOffset = offsets[j];

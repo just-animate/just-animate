@@ -1,14 +1,23 @@
-import { KeyframeAnimator } from './animator/KeyframeAnimator';
-import { isArray, isElement } from '../../common/type'; 
+import { isArray, isElement } from '../../common';
+import { KeyframeAnimator } from './animator';
+import {
+    addTransition,
+    arrangeKeyframes,
+    expandOffsets,
+    fixPartialKeyframes,
+    keyframeOffsetComparer,
+    propsToKeyframes,
+    resolvePropertiesInKeyframes,
+    spaceKeyframes
+} from './transform';
 import { Animation, EffectTiming, Keyframe } from './waapi';
-import * as transform from './transform/index';
 
 
 export class KeyframePlugin implements ja.IPlugin<Element> {
     public canHandle(ctx: ja.AnimationTargetContext<Element>): boolean {
         return !!(ctx.options!.css) && isElement(ctx.target!);
     }
-    
+
     public handle(timings: ja.AnimationTiming, ctx: ja.AnimationTargetContext<Element>): ja.IAnimationController {
         const animator = new KeyframeAnimator(() => initAnimator(timings, ctx));
         animator.totalDuration = timings.totalTime;
@@ -27,27 +36,27 @@ export function initAnimator(timings: EffectTiming, ctx: ja.AnimationTargetConte
     if (isArray(css)) {
         // if an array, no processing has to occur
         sourceKeyframes = css as ja.CssKeyframeOptions[];
-        transform.expandOffsets(sourceKeyframes);
+        expandOffsets(sourceKeyframes);
     } else {
         sourceKeyframes = [];
-        transform.propsToKeyframes(css as ja.CssPropertyOptions, sourceKeyframes, ctx);
+        propsToKeyframes(css as ja.CssPropertyOptions, sourceKeyframes, ctx);
     }
 
     const targetKeyframes: Keyframe[] = [];
 
-    transform.resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
+    resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
 
     if (options.isTransition === true) {
-        transform.addTransition(targetKeyframes, target);
+        addTransition(targetKeyframes, target);
     }
 
-    transform.spaceKeyframes(targetKeyframes);
-    transform.arrangeKeyframes(targetKeyframes);
+    spaceKeyframes(targetKeyframes);
+    arrangeKeyframes(targetKeyframes);
 
     // sort by offset (should have all offsets assigned)
-    targetKeyframes.sort(transform.keyframeOffsetComparer);    
+    targetKeyframes.sort(keyframeOffsetComparer);
 
-    transform.fixPartialKeyframes(targetKeyframes);
+    fixPartialKeyframes(targetKeyframes);
 
     const animator = target['animate'](targetKeyframes, timings);
     animator.cancel();

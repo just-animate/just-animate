@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 const assert = chai.assert;
 
-import { resolve, deepCopyObject } from '../../src/common/objects';
+import { resolve, deepCopyObject } from '../../src/common';
 
 describe('objects', () => {
 

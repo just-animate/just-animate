@@ -1,5 +1,4 @@
-import {isFunction} from '../../common/type';
-import {invalidArg} from '../../common/errors';
+import { invalidArg, isFunction } from '../../common';
 
 export class Dispatcher<TContext, TEventType extends string> {
     private _fn: { [key: string]: { (ctx: TContext): void }[] };

@@ -1,8 +1,5 @@
-import { random, shuffle } from './common/random';
-import { splitText } from './common/elements';
-import { Animator } from './plugins/core/Animator';
-import { TimeLoop } from './plugins/core/TimeLoop';
-import { MixinService } from './plugins/core/MixinService';
+import { random, shuffle, splitText } from './common';
+import { Animator, MixinService, TimeLoop } from './plugins/core';
 
 export class JustAnimate {
     /**

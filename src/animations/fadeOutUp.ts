@@ -9,8 +9,6 @@ export const fadeOutUp: ja.AnimationMixin = {
             transform: 'translate3d(0, -100%, 0)'
         }
     ],
-
-    to: '1s'
-    ,
+    to: '1s',
     name: 'fadeOutUp'
 };

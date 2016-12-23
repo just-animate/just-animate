@@ -1,4 +1,4 @@
-import {raf, now} from '../../common/utils';
+import {raf, now} from '../../common';
 
 type TimeLoopCallback = {
     (delta: number, elapsed: number): any;

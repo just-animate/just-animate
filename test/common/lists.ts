@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 const assert = chai.assert;
 
-import { head, tail, toArray, chain } from '../../src/common/lists';
+import { head, tail, toArray, chain } from '../../src/common';
 
 describe('lists', () => {
 

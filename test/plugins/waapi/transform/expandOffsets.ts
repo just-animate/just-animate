@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 const jsdom = require('mocha-jsdom');
 
-import { expandOffsets } from '../../../../src/plugins/waapi/transform/index';
+import { expandOffsets } from '../../../../src/plugins/waapi/transform';
 
 describe('expandOffsets', () => {
     jsdom();

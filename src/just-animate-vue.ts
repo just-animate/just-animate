@@ -1,4 +1,4 @@
-import { deepCopyObject } from './common/objects';
+import { deepCopyObject } from './common';
 
 declare var window: Window & {
     just: ja.JustAnimate & {

@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const assert = chai.assert;
 const jsdom = require('mocha-jsdom');
 
-import { getTargets, splitText } from '../../src/common/elements';
+import { getTargets, splitText } from '../../src/common';
 
 describe('elements', () => {
     jsdom();
