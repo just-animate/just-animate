@@ -1,5 +1,5 @@
 import { random, shuffle, splitText } from './common';
-import { Animator, MixinService, TimeLoop } from './plugins/core';
+import { Animator, mixins, IMixinService, TimeLoop } from './plugins/core';
 
 export class JustAnimate {
     /**
@@ -51,7 +51,7 @@ export class JustAnimate {
         stepStart: 'stepStart'
     };
 
-    private _resolver: MixinService;
+    private _resolver: IMixinService;
     private _timeLoop: TimeLoop;
 
     /**
@@ -63,7 +63,7 @@ export class JustAnimate {
      * @memberOf JustAnimate
      */
     public static inject(animations: ja.AnimationMixin[]): void {
-        const resolver = new MixinService();
+        const resolver = mixins();
         for (const a of animations) {
             resolver.registerAnimation(a, true);
         }
@@ -71,7 +71,7 @@ export class JustAnimate {
 
     constructor() {
         const self = this;
-        self._resolver = new MixinService();
+        self._resolver = mixins();
         self._timeLoop = new TimeLoop();
         self.plugins = [];
     }

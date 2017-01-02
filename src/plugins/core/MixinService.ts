@@ -1,18 +1,22 @@
-type presetMap = { [key: string]: ja.AnimationMixin };
+type PresetMap = { [key: string]: ja.AnimationMixin };
+const presets: PresetMap = {};
 
-const presets: presetMap = {};
+export const mixins = (): IMixinService => {
+    const defs: PresetMap = {};
 
-export class MixinService {
-    private defs: presetMap = {};
-    public findAnimation(name: string): ja.AnimationMixin {
-        return this.defs[name] || presets[name] || undefined;
-    }
-    public registerAnimation(animationOptions: ja.AnimationMixin, isGlobal: boolean): void {
-        const name = animationOptions.name;
-        if (isGlobal) {
-            presets[name] = animationOptions;
-            return;
+    const self = {
+        findAnimation(name: string): ja.AnimationMixin {
+            return defs[name] || presets[name];
+        },
+        registerAnimation(options: ja.AnimationMixin, isGlobal: boolean): void {
+            (isGlobal ? presets : defs)[options.name] = options;
         }
-        this.defs[name] = animationOptions;
-    }
-}
+    };
+
+    return self;
+};
+
+export type IMixinService = {
+    findAnimation(name: string): ja.AnimationMixin;
+    registerAnimation(animationOptions: ja.AnimationMixin, isGlobal: boolean): void;
+};
