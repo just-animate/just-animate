@@ -1,16 +1,10 @@
 /// <reference path="./just-animate.d.ts" />
-import { JustAnimate } from './JustAnimate';
-import { KeyframePlugin } from './plugins/waapi';
+import { justAnimate } from './JustAnimate';
+import { keyframePlugin } from './plugins/waapi';
 
 declare var window: Window & { just: ja.JustAnimate };
-declare var angular: any;
 
-// register with angular if it is present
-if (typeof angular !== 'undefined') {
-    angular.module('just.animate', []).service('just', JustAnimate);
-}
-
-const just = new JustAnimate();
-just.plugins.push(new KeyframePlugin());
+const just = justAnimate();
+just.plugin(keyframePlugin());
 
 window.just = just;

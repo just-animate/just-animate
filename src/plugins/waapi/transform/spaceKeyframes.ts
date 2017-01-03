@@ -1,6 +1,6 @@
 import { Keyframe } from '../waapi';
 
-export function spaceKeyframes(keyframes: Keyframe[]): void {
+export const spaceKeyframes = (keyframes: Keyframe[]): void => {
     // don't attempt to fill animation if less than 2 keyframes
     if (keyframes.length < 2) {
         return;
@@ -53,4 +53,4 @@ export function spaceKeyframes(keyframes: Keyframe[]): void {
             break;
         }
     }
-}
+};

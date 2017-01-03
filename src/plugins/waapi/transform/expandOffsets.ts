@@ -7,7 +7,7 @@ import { keyframeOffsetComparer } from './keyframeOffsetComparer';
  * @export
  * @param {waapi.IKeyframe[]} keyframes
  */
-export function expandOffsets(keyframes: ja.CssKeyframeOptions[]): void {
+export const expandOffsets = (keyframes: ja.CssKeyframeOptions[]): void => {
     for (let i = keyframes.length - 1; i > -1; --i) {
         const keyframe = keyframes[i];
 
@@ -43,4 +43,4 @@ export function expandOffsets(keyframes: ja.CssKeyframeOptions[]): void {
 
     // resort by offset    
     keyframes.sort(keyframeOffsetComparer);
-}
+};

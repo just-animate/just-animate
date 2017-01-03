@@ -2,7 +2,7 @@ import { Keyframe } from '../waapi';
 import { tail, head } from '../../../common';
 
 
-export function arrangeKeyframes(keyframes: Keyframe[]): void {
+export const arrangeKeyframes = (keyframes: Keyframe[]): void => {
     // don't arrange frames if there aren't any
     if (keyframes.length < 1) {
         return;
@@ -31,4 +31,4 @@ export function arrangeKeyframes(keyframes: Keyframe[]): void {
     if (last.offset !== 1) {
         last.offset = 0;
     }
-}
+};

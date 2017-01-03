@@ -9,9 +9,8 @@ export function now(): number {
 /**
  * Wrapper for raf with fallback to setTimeout
  */
-export function raf(ctx: any, fn: Function): any {
-    const callback = () => { fn(ctx); };
+export function raf(fn: Function): any {
     return requestAnimationFrame
-        ? requestAnimationFrame(callback)
-        : setTimeout(callback, 16.66);
+        ? requestAnimationFrame(fn as FrameRequestCallback)
+        : setTimeout(fn, 16.66);
 }

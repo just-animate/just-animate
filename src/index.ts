@@ -1,11 +1,10 @@
 /// <reference path="just-animate.d.ts" />
 import * as animations from './animations';
-import { JustAnimate } from './JustAnimate';
-import { KeyframePlugin } from './plugins/waapi';
+import { justAnimate } from './JustAnimate';
+import { keyframePlugin } from './plugins/waapi';
 
-
-const just = new JustAnimate();
+const just = justAnimate();
 just.inject(Object.keys(animations).map((k: string) => animations[k]));
-just.plugins.push(new KeyframePlugin());
+just.plugin(keyframePlugin());
 
-export { animations, JustAnimate, just };
+export { animations, just };

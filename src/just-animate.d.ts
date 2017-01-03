@@ -46,6 +46,7 @@ declare module ja {
         animate(options: ja.AnimationOptions | ja.AnimationOptions): ja.IAnimator;
         inject(animations: ja.AnimationMixin[]): void;
         register(preset: ja.AnimationMixin): void;
+        plugin<T>(plugin: IPlugin<T>): void;
     }
     export type EasingList = {
         ease: 'ease';
@@ -100,8 +101,7 @@ declare module ja {
         seek(value: number): void;
         totalDuration: number;
         playbackRate(value: number): void;
-        playState(): AnimationPlaybackState;
-        playState(value: AnimationPlaybackState): void;
+        playState(value?: AnimationPlaybackState): void | AnimationPlaybackState;
         reverse(): void;
         restart(): void;
     }
@@ -119,24 +119,16 @@ declare module ja {
     }
     export interface IAnimator {
         animate(options: ja.AnimationOptions | ja.AnimationOptions[]): ja.IAnimator;
-        currentTime(): number;
-        currentTime(value: number): IAnimator;
-        playbackRate(): number;
-        playbackRate(value: number): IAnimator;
+        currentTime(value?: number): number | ja.IAnimator;
+        playbackRate(value?: number): number | ja.IAnimator;
         duration(): number;
-        playState(): AnimationPlaybackState;
+        playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState | ja.IAnimator;
         finish(): IAnimator;
-        play(iterations: number): IAnimator;
-        play(options: IPlayOptions): IAnimator;
         play(options?: number | IPlayOptions): IAnimator;
         pause(): IAnimator;
         reverse(): IAnimator;
         cancel(): IAnimator;
-        on(eventConfig: ja.AnimationEvent): ja.IAnimator;
-        on(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
         on(event: string | AnimationEvent, listener: AnimationEventListener | undefined): ja.IAnimator;
-        off(eventConfig: ja.AnimationEvent): ja.IAnimator;
-        off(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
         off(event: string | AnimationEvent, listener: AnimationEventListener | undefined): ja.IAnimator;
     }
     export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'update' | 'iteration';

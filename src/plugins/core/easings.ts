@@ -49,6 +49,10 @@ const easings = {
 
 const defaultEasing = easings.ease;
 
+export const easingList = Object.keys(easings).reduce(
+    (p: ja.EasingList, c: string) => { p[c] = c; return p; },
+    {} as ja.EasingList);
+
 export function getEasingString(easingString: string): ja.Easing {
     // if no function supplied return linear as cubic
     if (easingString) {
