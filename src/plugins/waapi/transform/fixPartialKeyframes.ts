@@ -4,7 +4,7 @@ import { Keyframe } from '../waapi';
 /**
  * If a property is missing at the start or end keyframe, the first or last instance of it is moved to the end.
  */
-export const fixPartialKeyframes = (keyframes: Keyframe[]): void => {
+export function fixPartialKeyframes(keyframes: Keyframe[]): void {
     // don't attempt to fill animation if less than 1 keyframes
     if (keyframes.length < 1) {
         return;
@@ -33,4 +33,4 @@ export const fixPartialKeyframes = (keyframes: Keyframe[]): void => {
             }
         }
     }
-};
+}

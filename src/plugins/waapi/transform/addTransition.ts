@@ -2,7 +2,7 @@ import { isDefined, listProps } from '../../../common';
 import { Keyframe } from '../waapi';
 import { transforms } from './resources';
 
-export const addTransition = (keyframes: Keyframe[], target: HTMLElement): void => {
+export function addTransition(keyframes: Keyframe[], target: HTMLElement): void {
     // detect properties to transition
     const properties = listProps(keyframes);
 
@@ -27,4 +27,4 @@ export const addTransition = (keyframes: Keyframe[], target: HTMLElement): void 
             firstFrame[alias] = val;
         }
     });
-};
+}
