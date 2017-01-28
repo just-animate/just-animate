@@ -1,3 +1,4 @@
+import { css, cssFunction } from 'just-curves';
 import {
     chain,
     createUnitResolver,
@@ -13,15 +14,15 @@ import {
     isNumber,
     maxBy,
     parseUnit,
-    resolve
+    resolve,
+    toCamelCase
 } from '../../common';
-import { Dispatcher } from './Dispatcher';
-import { getEasingFunction, getEasingString } from './easings';
-import { MixinService } from './MixinService';
-import { TimeLoop } from './TimeLoop';
 
+import { findAnimation, timeloop, Dispatcher } from './index';
 
-const noop = function (): void { /* no operation */ };
+export const plugins: ja.IPlugin<{}>[] = []; 
+
+const noop = () => void { /* no operation */ };
 
 // todo: remove these imports as soon as possible
 
@@ -29,6 +30,180 @@ const noop = function (): void { /* no operation */ };
 // on individual animation and calls finish.  If an animation plays after its time, it looks
 // like it restarts and that causes jank
 const animationPadding = (1.0 / 60) + 7;
+
+
+const tick = (self: AnimationContext, delta: number, runningTime: number): void => {
+    const dispatcher = self._dispatcher;
+    const playState = self._playState;
+    const context = self._context;
+
+    // canceled
+    if (playState === 'idle') {
+        dispatcher.trigger('cancel', context);
+        return;
+    }
+    // finished
+    if (playState === 'finished') {
+        dispatcher.trigger('finish', context);
+        return;
+    }
+    // paused
+    if (playState === 'paused') {
+        dispatcher.trigger('pause', context);
+        return;
+    }
+    // running/pending
+
+    // calculate running range
+    const duration1 = self._duration;
+    const totalIterations = self._totalIterations;
+
+    let playbackRate = self._playbackRate as number;
+    let isReversed = playbackRate < 0;
+    let startTime = isReversed ? duration1 : 0;
+    let endTime = isReversed ? 0 : duration1;
+
+    if (self._playState === 'pending') {
+        const currentTime2 = self._currentTime;
+        const currentIteration = self._currentIteration;
+        self._currentTime = currentTime2 === undefined || currentTime2 === endTime ? startTime : currentTime2;
+        self._currentIteration = currentIteration === undefined || currentIteration === totalIterations ? 0 : currentIteration;
+        self._playState = 'running';
+    }
+
+    // calculate currentTime from delta
+    let currentTime = self._currentTime + delta * playbackRate;
+    let currentIteration = self._currentIteration;
+
+    let isLastFrame = false;
+    // check if animation has finished
+    if (!inRange(currentTime, startTime, endTime)) {
+        isLastFrame = true;
+        if (self._direction === 'alternate') {
+            playbackRate = self._playbackRate * -1;
+            self._playbackRate = playbackRate;
+
+            isReversed = playbackRate < 0;
+            startTime = isReversed ? duration1 : 0;
+            endTime = isReversed ? 0 : duration1;
+        }
+
+        currentIteration++;
+        currentTime = startTime;
+
+        context.currentTime = currentTime;
+        context.delta = delta;
+        context.duration = endTime - startTime;
+        context.playbackRate = playbackRate as number;
+        context.iterations = currentIteration;
+        context.offset = undefined;
+        context.computedOffset = undefined;
+        context.target = undefined;
+        context.targets = undefined;
+        context.index = undefined;
+        self._dispatcher.trigger('iteration', context);
+    }
+
+    self._currentIteration = currentIteration;
+    self._currentTime = currentTime;
+
+    dispatcher.trigger('update', context);
+
+    if (totalIterations === currentIteration) {
+        dispatcher.trigger('finish', context);
+        return;
+    }
+
+    // start animations if should be active and currently aren't   
+    for (const evt of self._events) {
+        const startTimeMs = playbackRate >= 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
+        const endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
+        const shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
+        const animator = evt.animator;
+
+        if (!shouldBeActive) {
+            continue;
+        }
+
+        const controllerState = animator.playState();
+
+        // cancel animation if there was a fatal error
+        if (controllerState === 'fatal') {
+            dispatcher.trigger('cancel', context);
+            return;
+        }
+
+        if (isLastFrame) {
+            animator.restart();
+        }
+
+        let playedThisFrame = false;
+        if (controllerState !== 'running' || isLastFrame) {
+            animator.playbackRate(playbackRate);
+            animator.playState('running');
+            playedThisFrame = true;
+        }
+
+        animator.playbackRate(playbackRate);
+
+        const shouldTriggerPlay = evt.play !== noop && playedThisFrame;
+        const shouldTriggerUpdate = evt.update !== noop;
+
+        if (shouldTriggerPlay || shouldTriggerUpdate) {
+            context.target = evt.target;
+            context.targets = evt.targets;
+            context.index = evt.index;
+            context.currentTime = undefined;
+            context.delta = undefined;
+            context.duration = undefined;
+            context.offset = undefined;
+            context.playbackRate = undefined;
+            context.iterations = undefined;
+            context.computedOffset = undefined;
+        }
+
+        if (shouldTriggerPlay) {
+            evt.play(context);
+        }
+
+        if (shouldTriggerUpdate) {
+            const relativeDuration = evt.endTimeMs - evt.startTimeMs;
+            const relativeCurrentTime = currentTime - evt.startTimeMs;
+            const timeOffset = relativeCurrentTime / relativeDuration;
+            // set context object values for this update cycle            
+            context.currentTime = relativeCurrentTime;
+            context.delta = delta;
+            context.duration = relativeDuration;
+            context.offset = timeOffset;
+            context.playbackRate = playbackRate;
+            context.iterations = currentIteration;
+            context.computedOffset = evt.easingFn(timeOffset);
+
+            evt.update(context);
+        }
+    }
+};
+
+const resolveMixins = (options: ja.AnimationOptions): ja.AnimationOptions => {
+    // resolve mixin properties     
+    let event: ja.AnimationOptions;
+    if (options.mixins) {
+        const mixinTarget = chain(options.mixins)
+            .map((mixin: string) => {
+                const def = findAnimation(mixin);
+                if (!isDefined(def)) {
+                    throw invalidArg('mixin');
+                }
+                return def;
+            })
+            .reduce((c: ja.AnimationMixin, n: ja.AnimationMixin) => deepCopyObject(n, c));
+
+        event = inherit(options, mixinTarget);
+    } else {
+        event = options;
+    }
+    return event;
+};
 
 export class Animator implements ja.IAnimator {
     private _currentIteration: number | undefined;
@@ -40,13 +215,10 @@ export class Animator implements ja.IAnimator {
     private _events: TimelineEvent[];
     private _playState: ja.AnimationPlaybackState | undefined;
     private _playbackRate: number | undefined;
-    private _resolver: MixinService;
-    private _timeLoop: TimeLoop;
-    private _totalIterations: number;
-    private _plugins: ja.IPlugin<{}>[];
+    private _totalIterations: number; 
     private _onTick: { (delta: number, runningTime: number): void };
 
-    constructor(resolver: MixinService, timeloop: TimeLoop, plugins: ja.IPlugin<{}>[]) {
+    constructor() {
         const self = this;
         self._context = {} as ja.AnimationTimeContext;
         self._duration = 0;
@@ -54,10 +226,7 @@ export class Animator implements ja.IAnimator {
         self._currentIteration = undefined;
         self._playState = 'idle';
         self._playbackRate = 1;
-        self._events = [];
-        self._resolver = resolver;
-        self._timeLoop = timeloop;
-        self._plugins = plugins;
+        self._events = []; 
         self._dispatcher = new Dispatcher();
         self._onTick = (delta: number, runningTime: number): void => tick(self as any as AnimationContext, delta, runningTime);
 
@@ -204,7 +373,7 @@ export class Animator implements ja.IAnimator {
 
         if (!(self._playState === 'running' || self._playState === 'pending')) {
             self._playState = 'pending';
-            self._timeLoop.on(self._onTick);
+            timeloop.on(self._onTick);
             self._dispatcher.trigger('play', self._context);
         }
         return self;
@@ -220,39 +389,17 @@ export class Animator implements ja.IAnimator {
         self._duration = maxBy(self._events, (e: TimelineEvent) => e.startTimeMs + e.animator.totalDuration);
     }
 
-    private _resolveMixins(options: ja.AnimationOptions): ja.AnimationOptions {
-        const self = this;
-        // resolve mixin properties     
-        let event: ja.AnimationOptions;
-        if (options.mixins) {
-            const mixinTarget = chain(options.mixins)
-                .map((mixin: string) => {
-                    const def = self._resolver.findAnimation(mixin);
-                    if (!isDefined(def)) {
-                        throw invalidArg('mixin');
-                    }
-                    return def;
-                })
-                .reduce((c: ja.AnimationMixin, n: ja.AnimationMixin) => deepCopyObject(n, c));
-
-            event = inherit(options, mixinTarget);
-        } else {
-            event = options;
-        }
-        return event;
-    }
-
     private _addEvent(options: ja.AnimationOptions): void {
         const self = this;
-        const event = self._resolveMixins(options);
+        const event = resolveMixins(options);
 
         // set from and to relative to existing duration    
         event.from = getCanonicalTime(parseUnit(event.from || 0)) + self._duration;
         event.to = getCanonicalTime(parseUnit(event.to || 0)) + self._duration;
 
         // set easing to linear by default     
-        const easingFn = getEasingFunction(event.easing as string);
-        event.easing = getEasingString(event.easing as string);
+        const easingFn = cssFunction(options.easing || css.ease);
+        event.easing = css[toCamelCase(options.easing)] || options.easing || css.ease;
 
         const delay = event.delay || 0;
         const endDelay = event.endDelay || 0;
@@ -295,7 +442,7 @@ export class Animator implements ja.IAnimator {
             const totalTime = event.delay + ((iterations || 1) * duration) + event.endDelay;
 
             // note: don't unwrap easings so we don't break this later with custom easings
-            const easing = getEasingString(options.easing as string);
+            const easing = css[toCamelCase(options.easing)] || options.easing || css.ease;
 
             const timings: ja.AnimationTiming = {
                 delay: event.delay,
@@ -309,7 +456,7 @@ export class Animator implements ja.IAnimator {
                 totalTime
             };
 
-            for (const plugin of self._plugins) {
+            for (const plugin of plugins) {
                 if (!plugin.canHandle(ctx)) {
                     continue;
                 }
@@ -336,7 +483,7 @@ export class Animator implements ja.IAnimator {
         const self = this;
         const context = self._context;
 
-        self._timeLoop.off(self._onTick);
+        timeloop.off(self._onTick);
         self._currentTime = 0;
         self._currentIteration = undefined;
         self._playState = 'idle';
@@ -353,7 +500,7 @@ export class Animator implements ja.IAnimator {
     private _onFinish(ctx: ja.AnimationTimeContext): void {
         const self = this;
         const context = self._context;
-        self._timeLoop.off(self._onTick);
+        timeloop.off(self._onTick);
         self._currentTime = undefined;
         self._currentIteration = undefined;
         self._playState = 'finished';
@@ -370,7 +517,7 @@ export class Animator implements ja.IAnimator {
     private _onPause(ctx: ja.AnimationTimeContext): void {
         const self = this;
         const context = self._context;
-        self._timeLoop.off(self._onTick);
+        timeloop.off(self._onTick);
         self._playState = 'paused';
         for (const evt of self._events) {
             evt.animator.playState('paused');
@@ -409,160 +556,7 @@ type AnimationContext = {
     _duration: number;
     _events: TimelineEvent[];
     _playState: ja.AnimationPlaybackState | undefined;
-    _playbackRate: number | undefined;
-    _resolver: MixinService;
-    _timeLoop: TimeLoop;
+    _playbackRate: number | undefined; 
     _totalIterations: number;
-}
+};
 
-function tick(self: AnimationContext, delta: number, runningTime: number): void {
-        const dispatcher = self._dispatcher;
-        const playState = self._playState;
-        const context = self._context;
-
-        // canceled
-        if (playState === 'idle') {
-            dispatcher.trigger('cancel', context);
-            return;
-        }
-        // finished
-        if (playState === 'finished') {
-            dispatcher.trigger('finish', context);
-            return;
-        }
-        // paused
-        if (playState === 'paused') {
-            dispatcher.trigger('pause', context);
-            return;
-        }
-        // running/pending
-
-        // calculate running range
-        const duration1 = self._duration;
-        const totalIterations = self._totalIterations;
-
-        let playbackRate = self._playbackRate as number;
-        let isReversed = playbackRate < 0;
-        let startTime = isReversed ? duration1 : 0;
-        let endTime = isReversed ? 0 : duration1;
-
-        if (self._playState === 'pending') {
-            const currentTime2 = self._currentTime;
-            const currentIteration = self._currentIteration;
-            self._currentTime = currentTime2 === undefined || currentTime2 === endTime ? startTime : currentTime2;
-            self._currentIteration = currentIteration === undefined || currentIteration === totalIterations ? 0 : currentIteration;
-            self._playState = 'running';
-        }
-
-        // calculate currentTime from delta
-        let currentTime = self._currentTime + delta * playbackRate;
-        let currentIteration = self._currentIteration;
-
-        let isLastFrame = false;
-        // check if animation has finished
-        if (!inRange(currentTime, startTime, endTime)) {
-            isLastFrame = true;
-            if (self._direction === 'alternate') {
-                playbackRate = self._playbackRate * -1;
-                self._playbackRate = playbackRate;
-
-                isReversed = playbackRate < 0;
-                startTime = isReversed ? duration1 : 0;
-                endTime = isReversed ? 0 : duration1;
-            }
-
-            currentIteration++;
-            currentTime = startTime;
-
-            context.currentTime = currentTime;
-            context.delta = delta;
-            context.duration = endTime - startTime;
-            context.playbackRate = playbackRate as number;
-            context.iterations = currentIteration;
-            context.offset = undefined;
-            context.computedOffset = undefined;
-            context.target = undefined;
-            context.targets = undefined;
-            context.index = undefined;
-            self._dispatcher.trigger('iteration', context);
-        }
-
-        self._currentIteration = currentIteration;
-        self._currentTime = currentTime;
-
-        dispatcher.trigger('update', context);
-
-        if (totalIterations === currentIteration) {
-            dispatcher.trigger('finish', context);
-            return;
-        }
-
-        // start animations if should be active and currently aren't   
-        for (const evt of self._events) {
-            const startTimeMs = playbackRate >= 0 ? evt.startTimeMs : evt.startTimeMs + animationPadding;
-            const endTimeMs = playbackRate >= 0 ? evt.endTimeMs : evt.endTimeMs - animationPadding;
-            const shouldBeActive = startTimeMs <= currentTime && currentTime <= endTimeMs;
-            const animator = evt.animator;
-
-            if (!shouldBeActive) {
-                continue;
-            }
-
-            const controllerState = animator.playState();
-
-            // cancel animation if there was a fatal error
-            if (controllerState === 'fatal') {
-                dispatcher.trigger('cancel', context);
-                return;
-            }
-
-            if (isLastFrame) {
-                animator.restart();
-            }
-
-            let playedThisFrame = false;
-            if (controllerState !== 'running' || isLastFrame) {
-                animator.playbackRate(playbackRate);
-                animator.playState('running');
-                playedThisFrame = true;
-            }
-
-            animator.playbackRate(playbackRate);
-
-            const shouldTriggerPlay = evt.play !== noop && playedThisFrame;
-            const shouldTriggerUpdate = evt.update !== noop;
-
-            if (shouldTriggerPlay || shouldTriggerUpdate) {
-                context.target = evt.target;
-                context.targets = evt.targets;
-                context.index = evt.index;
-                context.currentTime = undefined;
-                context.delta = undefined;
-                context.duration = undefined;
-                context.offset = undefined;
-                context.playbackRate = undefined;
-                context.iterations = undefined;
-                context.computedOffset = undefined;
-            }
-
-            if (shouldTriggerPlay) {
-                evt.play(context);
-            }
-
-            if (shouldTriggerUpdate) {
-                const relativeDuration = evt.endTimeMs - evt.startTimeMs;
-                const relativeCurrentTime = currentTime - evt.startTimeMs;
-                const timeOffset = relativeCurrentTime / relativeDuration;
-                // set context object values for this update cycle            
-                context.currentTime = relativeCurrentTime;
-                context.delta = delta;
-                context.duration = relativeDuration;
-                context.offset = timeOffset;
-                context.playbackRate = playbackRate;
-                context.iterations = currentIteration;
-                context.computedOffset = evt.easingFn(timeOffset);
-
-                evt.update(context);
-            }
-        }
-    }

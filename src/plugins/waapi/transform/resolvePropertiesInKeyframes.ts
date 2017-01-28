@@ -1,41 +1,16 @@
-import { isDefined, resolve, toCamelCase } from '../../../common';
-import { getEasingString } from '../../core';
+import { css } from 'just-curves';
 import { Keyframe } from '../waapi';
+import { isDefined, resolve, toCamelCase } from '../../../common';
 import { propertyAliases, transforms } from './resources';
 
-/**
- * This calls all keyframe properties that are functions and sets their values
- */
-export function resolvePropertiesInKeyframes(source: ja.CssKeyframeOptions[], target: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext<Element>): void {
-    const len = source.length;
-    for (let i = 0; i < len; i++) {
-        const sourceKeyframe = source[i];
-        let targetKeyframe: Keyframe = {};
 
-        for (let propertyName in sourceKeyframe) {
-            if (!sourceKeyframe.hasOwnProperty(propertyName)) {
-                continue;
-            }
-            const sourceValue = sourceKeyframe[propertyName];
-            if (!isDefined(sourceValue)) {
-                continue;
-            }
-            targetKeyframe[propertyName] = resolve(sourceValue, ctx);
-        }
-
-        normalizeProperties(targetKeyframe);
-        target.push(targetKeyframe);
-    }
-}
-
-function transformPropertyComparer(a: string[], b: string[]): number {
-    return transforms.indexOf(a[0]) - transforms.indexOf(b[0]);
-}
+const transformPropertyComparer = (a: string[], b: string[]) =>
+    transforms.indexOf(a[0]) - transforms.indexOf(b[0]);
 
 /**
  * Handles transforming short hand key properties into their native form
  */
-function normalizeProperties(keyframe: Keyframe): void {
+const normalizeProperties = (keyframe: Keyframe): void => {
     let cssTransforms: string[][] = [];
 
     for (let prop in keyframe) {
@@ -59,7 +34,7 @@ function normalizeProperties(keyframe: Keyframe): void {
             cssTransforms.push([propAlias, value]);
         } else if (propAlias === 'easing') {
             // handle easings
-            keyframe.easing = getEasingString(value);
+            keyframe.easing = css[toCamelCase(value)] || value || css.ease;
         } else {
             // handle others (change background-color and the like to backgroundColor)
             keyframe[toCamelCase(propAlias)] = value;
@@ -71,4 +46,30 @@ function normalizeProperties(keyframe: Keyframe): void {
             .sort(transformPropertyComparer)
             .reduce((c: string, n: string[]) => c + ` ${n[0]}(${n[1]})`, '');
     }
-}
+};
+
+/**
+ * This calls all keyframe properties that are functions and sets their values
+ */
+export const resolvePropertiesInKeyframes = (source: ja.CssKeyframeOptions[], target: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext<Element>): void => {
+    const len = source.length;
+    for (let i = 0; i < len; i++) {
+        const sourceKeyframe = source[i];
+        let targetKeyframe: Keyframe = {};
+
+        for (let propertyName in sourceKeyframe) {
+            if (!sourceKeyframe.hasOwnProperty(propertyName)) {
+                continue;
+            }
+            const sourceValue = sourceKeyframe[propertyName];
+            if (!isDefined(sourceValue)) {
+                continue;
+            }
+            targetKeyframe[propertyName] = resolve(sourceValue, ctx);
+        }
+
+        normalizeProperties(targetKeyframe);
+        target.push(targetKeyframe);
+    }
+};
+

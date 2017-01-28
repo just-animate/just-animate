@@ -1,7 +1,8 @@
+/// <reference path="./just-animate.d.ts" />
 import { deepCopyObject } from './common';
 
 declare var window: Window & {
-    just: ja.JustAnimate & {
+    just: {
         AnimateVue: { install(vue: vuejs.VueStatic): void; }
     }
 };

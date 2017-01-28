@@ -1,4 +1,10 @@
-declare const just: ja.JustAnimate;
+declare const just: {
+    animate(options: ja.AnimationOptions | ja.AnimationOptions[]): ja.IAnimator;
+    random(first: number, last: number, unit?: string, wholeNumbersOnly?: boolean): number | string;
+    shuffle<T>(choices: T[]): T;
+    splitText(target: ja.AnimationTarget): ja.SplitTextResult;
+};
+
 declare module ja {
     export type FillMode = 'none' | 'forwards' | 'backwards' | 'both' | 'auto';
     export type AnimationPlaybackState = 'fatal' | 'idle' | 'pending' | 'running' | 'paused' | 'finished';
@@ -9,78 +15,7 @@ declare module ja {
     export type Color = string;
     export type Distance = string | number;
     export type Resolvable<T> = T | Resolver<T>;
-    export type Easing = 'ease'
-        | 'linear'
-        | 'initial'
-        | 'ease-in'
-        | 'ease-out'
-        | 'ease-in-out'
-        | 'easeInCubic'
-        | 'easeOutCubic'
-        | 'easeInOutCubic'
-        | 'easeInCirc'
-        | 'easeOutCirc'
-        | 'easeInOutCirc'
-        | 'easeInExpo'
-        | 'easeOutExpo'
-        | 'easeInOutExpo'
-        | 'easeInQuad'
-        | 'easeOutQuad'
-        | 'easeInOutQuad'
-        | 'easeInQuart'
-        | 'easeOutQuart'
-        | 'easeInOutQuart'
-        | 'easeInQuint'
-        | 'easeOutQuint'
-        | 'easeInOutQuint'
-        | 'easeInSine'
-        | 'easeOutSine'
-        | 'easeInOutSine'
-        | 'easeInBack'
-        | 'easeOutBack'
-        | 'easeInOutBack'
-        | 'elegantSlowStartEnd'
-        | string;
-    export class JustAnimate {
-        easings: EasingList;
-        animate(options: ja.AnimationOptions | ja.AnimationOptions): ja.IAnimator;
-        inject(animations: ja.AnimationMixin[]): void;
-        register(preset: ja.AnimationMixin): void;
-    }
-    export type EasingList = {
-        ease: 'ease';
-        easeIn: 'easeIn';
-        easeInBack: 'easeInBack';
-        easeInCirc: 'easeInCirc';
-        easeInCubic: 'easeInCubic';
-        easeInExpo: 'easeInExpo';
-        easeInOut: 'easeInOut';
-        easeInOutBack: 'easeInOutBack';
-        easeInOutCirc: 'easeInOutCirc';
-        easeInOutCubic: 'easeInOutCubic';
-        easeInOutExpo: 'easeInOutExpo';
-        easeInOutQuad: 'easeInOutQuad';
-        easeInOutQuart: 'easeInOutQuart';
-        easeInOutQuint: 'easeInOutQuint';
-        easeInOutSine: 'easeInOutSine';
-        easeInQuad: 'easeInQuad';
-        easeInQuart: 'easeInQuart';
-        easeInQuint: 'easeInQuint';
-        easeInSine: 'easeInSine';
-        easeOut: 'easeOut';
-        easeOutBack: 'easeOutBack';
-        easeOutCirc: 'easeOutCirc';
-        easeOutCubic: 'easeOutCubic';
-        easeOutExpo: 'easeOutExpo';
-        easeOutQuad: 'easeOutQuad';
-        easeOutQuart: 'easeOutQuart';
-        easeOutQuint: 'easeOutQuint';
-        easeOutSine: 'easeOutSine';
-        elegantSlowStartEnd: 'elegantSlowStartEnd';
-        linear: 'linear';
-        stepEnd: 'stepEnd';
-        stepStart: 'stepStart';
-    }
+
     export interface IPlugin<T> {
         canHandle(ctx: AnimationTargetContext<T>): boolean;
         handle(timings: ja.AnimationTiming, ctx: AnimationTargetContext<T>): ja.IAnimationController;
@@ -149,7 +84,7 @@ declare module ja {
         css?: CssPropertyOptions | CssKeyframeOptions[];
         delay?: Resolvable<number>;
         direction?: Resolvable<string>;
-        easing?: Easing;
+        easing?: string;
         endDelay?: Resolvable<number>;
         fill?: Resolvable<FillMode>;
         iterations?: Resolvable<number>;
@@ -186,7 +121,7 @@ declare module ja {
         css?: CssPropertyOptions | CssKeyframeOptions[];
         delay?: Resolvable<number>;
         direction?: Resolvable<string>;
-        easing?: Easing;
+        easing?: string;
         endDelay?: Resolvable<number>;
         fill?: Resolvable<FillMode>;
         iterations?: Resolvable<number>;
@@ -326,7 +261,7 @@ declare module ja {
     }
     export type CssKeyframeOptions = {
         offset?: number | number[];
-        easing?: Resolvable<Easing>;
+        easing?: Resolvable<string>;
         backdropFilter?: Resolvable<string>;
         background?: Resolvable<string>;
         backgroundColor?: Resolvable<Color>;

@@ -1,14 +1,16 @@
 /**
- * Randomly picks one of the choices provided
+ * Returns one of the supplied values at random
+ * 
+ * @template T
+ * @param {T[]} choices from which to choose
+ * @returns {T} a choice at random
+ * 
+ * @memberOf JustAnimate
  */
-
 export function shuffle<T>(choices: T[]): T {
     return choices[Math.floor(Math.random() * choices.length)];
 }
 
-/**
- * Returns a random number with unit
- */
 export function random(first: number, last: number, unit?: string, wholeNumbersOnly?: boolean): number | string {
     let val = first + (Math.random() * (last - first));
     if (wholeNumbersOnly === true) {

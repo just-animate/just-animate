@@ -2,13 +2,19 @@ import { toArray } from './lists';
 import { isArray, isElement, isFunction, isObject, isString } from './type';
 import { invalidArg } from './errors';
 
+const applySplitStyles = (element: HTMLElement): void => {
+    element.style.display = 'inline-block';
+    element.style.position = 'relative';
+    element.style.textAlign = 'start';
+};
+
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources
  * 
  * @param {ja.ElementSource} source from which to locate elements
  * @returns {Element[]} array of elements found
  */
-export function getTargets(target: ja.AnimationTarget): (Element | {})[] {
+export const getTargets = (target: ja.AnimationTarget): (Element | {})[] => {
     if (!target) {
         throw invalidArg('source');
     }
@@ -43,9 +49,19 @@ export function getTargets(target: ja.AnimationTarget): (Element | {})[] {
 
     // otherwise return empty    
     return [];
-}
+};
 
-export function splitText(target: ja.AnimationTarget): ja.SplitTextResult {
+/**
+ * Detects words and characters from a target or a list of targets.
+ * Note: if multiple targets are detected, they will return as a single
+ * list of characters and numbers
+ * 
+ * @param {ja.AnimationDomTarget} target
+ * @returns {ja.SplitTextResult}
+ * 
+ * @memberOf JustAnimate
+ */
+export const splitText = (target: ja.AnimationTarget): ja.SplitTextResult => {
 
     // output parameters
     const characters: HTMLElement[] = [];
@@ -128,10 +144,5 @@ export function splitText(target: ja.AnimationTarget): ja.SplitTextResult {
         characters: characters,
         words: words
     };
-}
+};
 
-function applySplitStyles(element: HTMLElement): void {
-    element.style.display = 'inline-block';
-    element.style.position = 'relative';
-    element.style.textAlign = 'start';
-}

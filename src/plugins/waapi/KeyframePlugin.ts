@@ -13,20 +13,18 @@ import {
 import { Animation, EffectTiming, Keyframe } from './waapi';
 
 
-export class KeyframePlugin implements ja.IPlugin<Element> {
-    public canHandle(ctx: ja.AnimationTargetContext<Element>): boolean {
+export const keyframePlugin = {
+    canHandle(ctx: ja.AnimationTargetContext<Element>): boolean {
         return !!(ctx.options!.css) && isElement(ctx.target!);
-    }
-
-    public handle(timings: ja.AnimationTiming, ctx: ja.AnimationTargetContext<Element>): ja.IAnimationController {
+    },
+    handle(timings: ja.AnimationTiming, ctx: ja.AnimationTargetContext<Element>): ja.IAnimationController {
         const animator = new KeyframeAnimator(() => initAnimator(timings, ctx));
         animator.totalDuration = timings.totalTime;
         return animator;
     }
-}
+};
 
-
-export function initAnimator(timings: EffectTiming, ctx: ja.AnimationTargetContext<Element>): Animation {
+export const initAnimator = (timings: EffectTiming, ctx: ja.AnimationTargetContext<Element>): Animation => {
     // process css as either keyframes or calculate what those keyframes should be   
     const options = ctx.options!;
     const target = ctx.target as HTMLElement;
@@ -61,4 +59,4 @@ export function initAnimator(timings: EffectTiming, ctx: ja.AnimationTargetConte
     const animator = target['animate'](targetKeyframes, timings);
     animator.cancel();
     return animator;
-}
+};

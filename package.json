@@ -12,6 +12,7 @@
     "mocha": "^3.2.0",
     "mocha-jsdom": "^1.1.0",
     "rollup": "^0.38.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-watch": "^2.5.0",
     "ts-node": "^1.7.2",
@@ -50,5 +51,8 @@
     "test": "node_modules/.bin/mocha --require ts-node/register --reporter spec ./test/**/**.ts",
     "debug": "node_modules/.bin/mocha --require ts-node/register --reporter spec --watch ./test/**/**.ts",
     "tsversion": "tsc --version"
+  },
+  "dependencies": {
+    "just-curves": "0.0.6"
   }
 }
