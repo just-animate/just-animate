@@ -2,6 +2,8 @@
 
 *Just Animate creates beautiful animations using the latest browser standards*
 
+[![Build Status](https://travis-ci.org/just-animate/just-animate.svg?branch=master)](https://travis-ci.org/just-animate/just-animate)
+
 <img src="./docs/resources/main-demonstration.gif" />
 
 ## Features
