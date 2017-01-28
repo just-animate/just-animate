@@ -2,7 +2,10 @@
 
 *Just Animate creates beautiful animations using the latest browser standards*
 
+
+[![npm version](https://badge.fury.io/js/just-animate.svg)](https://badge.fury.io/js/just-animate) 
 [![Build Status](https://travis-ci.org/just-animate/just-animate.svg?branch=master)](https://travis-ci.org/just-animate/just-animate)
+[![Downloads](https://img.shields.io/npm/dm/just-animate.svg)](https://www.npmjs.com/package/just-animate)
 
 <img src="./docs/resources/main-demonstration.gif" />
 
