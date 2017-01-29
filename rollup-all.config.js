@@ -8,6 +8,7 @@ module.exports = {
   moduleName: 'just',
   plugins: [
     typescript({
+      'tsconfig': false,
       'allowUnreachableCode': false,
       'allowUnusedLabels': false,
       'declaration': false,
