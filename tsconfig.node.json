@@ -6,6 +6,7 @@
         "forceConsistentCasingInFileNames": true,
         "inlineSourceMap": false,
         "newLine": "LF",
+        "module": "commonjs",
         "moduleResolution": "node",
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": false,

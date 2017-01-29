@@ -5,6 +5,7 @@
         "declaration": false,
         "forceConsistentCasingInFileNames": true,
         "inlineSourceMap": false,
+        "module": "es2015",
         "moduleResolution": "node",
         "newLine": "LF",
         "noFallthroughCasesInSwitch": true,
