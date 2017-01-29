@@ -2,7 +2,7 @@ import { isString } from './type';
 import { toArray } from './lists';
 import { camelCaseRegex } from './resources';
 
-function camelCaseReplacer(match: string, p1: string, p2: string): string {
+function camelCaseReplacer(_: string, p1: string, p2: string): string {
     return p1 + p2.toUpperCase();
 }
 

@@ -18,7 +18,7 @@ import {
     toCamelCase
 } from '../../common';
 
-import { findAnimation, timeloop, Dispatcher } from './index';
+import { findAnimation, timeloop, dispatcher, IDispatcher } from './index';
 
 export const plugins: ja.IPlugin<{}>[] = []; 
 
@@ -32,7 +32,7 @@ const noop = () => void { /* no operation */ };
 const animationPadding = (1.0 / 60) + 7;
 
 
-const tick = (self: AnimationContext, delta: number, runningTime: number): void => {
+const tick = (self: AnimationContext, delta: number): void => {
     const dispatcher = self._dispatcher;
     const playState = self._playState;
     const context = self._context;
@@ -210,7 +210,7 @@ export class Animator implements ja.IAnimator {
     private _currentTime: number | undefined;
     private _context: ja.AnimationTimeContext;
     private _direction: ja.AnimationDirection | undefined;
-    private _dispatcher: Dispatcher<ja.AnimationTimeContext, ja.AnimationEventType>;
+    private _dispatcher: IDispatcher<ja.AnimationTimeContext>;
     private _duration: number;
     private _events: TimelineEvent[];
     private _playState: ja.AnimationPlaybackState | undefined;
@@ -227,12 +227,12 @@ export class Animator implements ja.IAnimator {
         self._playState = 'idle';
         self._playbackRate = 1;
         self._events = []; 
-        self._dispatcher = new Dispatcher();
-        self._onTick = (delta: number, runningTime: number): void => tick(self as any as AnimationContext, delta, runningTime);
+        self._dispatcher = dispatcher();
+        self._onTick = (delta: number): void => tick(self as any as AnimationContext, delta);
 
-        self.on('finish', (ctx: ja.AnimationTimeContext) => self._onFinish(ctx));
-        self.on('cancel', (ctx: ja.AnimationTimeContext) => self._onCancel(ctx));
-        self.on('pause', (ctx: ja.AnimationTimeContext) => self._onPause(ctx));
+        self.on('finish', () => self._onFinish());
+        self.on('cancel', () => self._onCancel());
+        self.on('pause', () => self._onPause());
 
         // autoplay    
         self.play();
@@ -479,7 +479,7 @@ export class Animator implements ja.IAnimator {
             }
         }
     }
-    private _onCancel(ctx: ja.AnimationTimeContext): void {
+    private _onCancel(): void {
         const self = this;
         const context = self._context;
 
@@ -497,7 +497,7 @@ export class Animator implements ja.IAnimator {
             evt.cancel(self._context);
         }
     }
-    private _onFinish(ctx: ja.AnimationTimeContext): void {
+    private _onFinish(): void {
         const self = this;
         const context = self._context;
         timeloop.off(self._onTick);
@@ -514,7 +514,7 @@ export class Animator implements ja.IAnimator {
             evt.finish(self._context);
         }
     }
-    private _onPause(ctx: ja.AnimationTimeContext): void {
+    private _onPause(): void {
         const self = this;
         const context = self._context;
         timeloop.off(self._onTick);
@@ -552,7 +552,7 @@ type AnimationContext = {
     _currentTime: number | undefined;
     _context: ja.AnimationTimeContext;
     _direction: ja.AnimationDirection | undefined;
-    _dispatcher: Dispatcher<ja.AnimationTimeContext, ja.AnimationEventType>;
+    _dispatcher: IDispatcher<ja.AnimationTimeContext>;
     _duration: number;
     _events: TimelineEvent[];
     _playState: ja.AnimationPlaybackState | undefined;

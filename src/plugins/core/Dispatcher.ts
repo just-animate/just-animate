@@ -1,47 +1,54 @@
 import { invalidArg, isFunction } from '../../common';
 
-export class Dispatcher<TContext, TEventType extends string> {
-    private _fn: { [key: string]: { (ctx: TContext): void }[] };
-    constructor() {
-        this._fn = {};
-    }
+export interface IDispatcher<TContext> {
+    fns: { [key: string]: { (ctx: TContext): void }[] };
+    trigger(eventName: string, resolvable: ja.AnimationTimeContext | { (): ja.AnimationTimeContext; }): void;
+    on(eventName: string, listener: { (ctx: TContext): void }): void;
+    off(eventName: string, listener: { (ctx: TContext): void }): void;
+}
 
-    public trigger(eventName: TEventType, resolvable: ja.AnimationTimeContext | { (): ja.AnimationTimeContext; }): void {
-        const listeners = this._fn[eventName as string];
-        if (!listeners) {
-            return;
-        }
-        const ctx: TContext = isFunction(resolvable)
-            ? (resolvable as Function)()
-            : resolvable;
-        for (const listener of listeners) {
-            listener(ctx);
-        }
+export const dispatcher = <TContext>(): IDispatcher<TContext> => {
+    return {
+        fns: {} as { [key: string]: { (ctx: TContext): void }[] },
+        trigger,
+        on,
+        off
+    };
+};
+
+function trigger<TContext>(this: IDispatcher<TContext>, eventName: string, resolvable: ja.AnimationTimeContext | { (): ja.AnimationTimeContext; }): void {
+    const listeners = this.fns[eventName as string];
+    if (!listeners) {
+        return;
     }
-    public on(eventName: TEventType, listener: { (ctx: TContext): void }): void {
-        if (!isFunction(listener)) {
-            throw invalidArg('listener');
-        }
-        const fn = this._fn;
-        const listeners = fn[eventName as string];
-        if (!listeners) {
-            fn[eventName as string] = [listener];
-            return;
-        }
-        if (listeners.indexOf(listener) !== -1) {
-            return;
-        }
-        listeners.push(listener);
+    const ctx: TContext = isFunction(resolvable)
+        ? (resolvable as Function)()
+        : resolvable;
+    for (const listener of listeners) {
+        listener(ctx);
     }
-    public off(eventName: string, listener: { (ctx: TContext): void }): void {
-        const listeners = this._fn[eventName];
-        if (listeners) {
-            const indexOfListener = listeners.indexOf(listener);
-            if (indexOfListener !== -1) {
-                listeners.splice(indexOfListener, 1);
-            }
+}
+function on<TContext>(this: IDispatcher<TContext>, eventName: string, listener: { (ctx: TContext): void }): void {
+    if (!isFunction(listener)) {
+        throw invalidArg('listener');
+    }
+    const fn = this.fns;
+    const listeners = fn[eventName as string];
+    if (!listeners) {
+        fn[eventName as string] = [listener];
+        return;
+    }
+    if (listeners.indexOf(listener) !== -1) {
+        return;
+    }
+    listeners.push(listener);
+}
+function off<TContext>(this: IDispatcher<TContext>, eventName: string, listener: { (ctx: TContext): void }): void {
+    const listeners = this.fns[eventName];
+    if (listeners) {
+        const indexOfListener = listeners.indexOf(listener);
+        if (indexOfListener !== -1) {
+            listeners.splice(indexOfListener, 1);
         }
     }
 }
-
-

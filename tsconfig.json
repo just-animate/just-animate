@@ -1,28 +1,32 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
         "preserveConstEnums": false,
-        "removeComments": false,
-        "inlineSourceMap": false,
         "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
         "declaration": false,
+        "forceConsistentCasingInFileNames": true,        
+        "inlineSourceMap": false,    
+        "module": "commonjs",     
+        "moduleResolution": "node", 
+        "newLine": "LF",         
+        "noFallthroughCasesInSwitch": true,             
         "noImplicitAny": true,
+        "noUnusedParameters": true,
+        "noImplicitThis": true,
         "noImplicitReturns": true,
         "noImplicitUseStrict": true,
         "noEmit": true,
-        "strictNullChecks": true,
+        "noUnusedLocals": true,        
+        "removeComments": false,      
+        "sourceMap": true,          
+        "strictNullChecks": false,
         "suppressImplicitAnyIndexErrors": true,
-        "forceConsistentCasingInFileNames": true,
-        "newLine": "LF",
-        "noFallthroughCasesInSwitch": true,
-        "sourceMap": true,
-        "noUnusedLocals": true
+        "target": "es5"
     },
     "exclude": [
         "node_modules", 
-        "src/just-animate-core.ts",
-        "src/just-animate-animations.ts",
+        "lib",
+        "lib.es2015",
         "dist"
     ]
 }

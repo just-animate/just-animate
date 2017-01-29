@@ -6,6 +6,8 @@ npm-debug.log*
 **/*.map
 node_modules
 dist
+lib
+lib.es2015
 typings
 src/**/*.js
 src/**/*.map

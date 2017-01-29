@@ -1,5 +1,5 @@
-import typescript from 'rollup-plugin-typescript';
-import nodeResolve from 'rollup-plugin-node-resolve';
+import typescript from 'rollup-plugin-typescript'
+import nodeResolve from 'rollup-plugin-node-resolve'
 
 module.exports = {
   entry: './src/just-animate-all.ts',
@@ -8,22 +8,35 @@ module.exports = {
   moduleName: 'just',
   plugins: [
     typescript({
-      target: 'es5',
-      rootDir: 'src',
-      module: 'es2015',
-      preserveConstEnums: false,
-      removeComments: true,
-      declaration: false,
-      typescript: require('typescript'),
-      noImplicitAny: true
+      'allowUnreachableCode': false,
+      'allowUnusedLabels': false,
+      'declaration': false,
+      'forceConsistentCasingInFileNames': true,
+      'inlineSourceMap': false,
+      'module': 'es2015',
+      'moduleResolution': 'node',
+      'newLine': 'LF',
+      'noEmit': true,
+      'noFallthroughCasesInSwitch': true,
+      'noImplicitAny': true,
+      'noImplicitReturns': true,
+      'noImplicitUseStrict': true,
+      'noUnusedLocals': true,
+      'preserveConstEnums': false,
+      'removeComments': true,
+      'rootDir': 'src',
+      'sourceMap': false,
+      'strictNullChecks': true,
+      'suppressImplicitAnyIndexErrors': true,
+      'target': 'es5',
+      'typescript': require('typescript')
     }),
     nodeResolve({
-      module: true,
-      jsnext: true,
-      main: true,
+      jsnext: false,
+      main: false,
       browser: true,
-      extensions: [ '.js', '.json' ],
-      preferBuiltins: false 
+      extensions: ['.ts', '.js', '.json' ],
+      preferBuiltins: false
     })
   ]
 }

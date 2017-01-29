@@ -1,5 +1,8 @@
 {
   "author": "christopher.j.wallis@gmail.com",
+  "dependencies": {
+    "just-curves": "^0.0.8"
+  },
   "devDependencies": {
     "@types/chai": "^3.4.34",
     "@types/mocha": "^2.2.34",
@@ -12,47 +15,51 @@
     "mocha": "^3.2.0",
     "mocha-jsdom": "^1.1.0",
     "rollup": "^0.38.0",
+    "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-watch": "^2.5.0",
     "ts-node": "^1.7.2",
     "tslint": "^4.1.1",
-    "typescript": "^2.1.4",
+    "typescript": "^2.2.0-dev.20170128",
     "typescript-formatter": "^4.0.1",
     "uglify": "^0.1.5"
   },
+  "homepage": "http://just-animate.com",
+  "jsnext:main": "./lib.es2015/main.js",
   "license": "MIT",
-  "version": "1.2.3",
-  "main": "./dist/index.js",
+  "main": "./lib/main.js",
+  "module": "./lib.es2015/main.js",
   "name": "just-animate",
-  "typings": "./src/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/just-animate/just-animate"
   },
   "scripts": {
-    "build": "npm run build:systemjs && npm run build:commonjs && npm run build:all && npm run build:core && npm run build:vue",
+    "build": "concurrently \"npm run build:node\" \"npm run build:es2015\" \"npm run build:all\" \"npm run build:core\" \"npm run build:vue\" \"npm run build:systemjs\"",
     "build:all": "rollup -c rollup-all.config.js",
     "build:vue": "rollup -c rollup-vue.config.js",
     "build:core": "rollup -c rollup-core.config.js",
-    "build:commonjs": "rollup -c rollup-common.config.js",
+    "build:node": "tsc -p tsconfig.node.json",
+    "build:es2015": "tsc -p tsconfig.es2015.json",
     "build:systemjs": "tsc -p tsconfig-systemjs.json && node scripts/systemjs-fix-namespaces",
     "compress": "npm run compress:systemjs && npm run compress:all && npm run compress:core && npm run compress:vue",
     "compress:all": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/just-animate-all.min.js dist/just-animate-all.js",
     "compress:core": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/just-animate-core.min.js dist/just-animate-core.js",
     "compress:vue": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/just-animate-vue.min.js dist/just-animate-vue.js",
     "compress:systemjs": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/just-animate-systemjs.min.js dist/just-animate-systemjs.js",
-    "clean": "node_modules/.bin/del-cli -f dist",
-    "format": "tsfmt -r **/*.ts",
+    "clean": "node_modules/.bin/del-cli -f dist lib lib.es2015",
+    "format": "tsfmt -r src/**/*.ts",
     "preversion": "npm run rebuild",
     "postversion": "git push --follow-tags && npm publish",
     "rebuild": "npm run clean && npm run build && npm run compress",
     "start": "npm run rebuild && npm run debug",
-    "test": "node_modules/.bin/mocha --require ts-node/register --reporter spec ./test/**/**.ts",
-    "debug": "node_modules/.bin/mocha --require ts-node/register --reporter spec --watch ./test/**/**.ts",
-    "tsversion": "tsc --version"
+    "test": "node_modules/.bin/mocha --require ts-node/register --reporter spec ./tests/**/**.ts",
+    "debug": "node_modules/.bin/mocha --require ts-node/register --reporter spec --watch ./tests/**/**.ts"
   },
-  "dependencies": {
-    "just-curves": "0.0.6"
-  }
+  "typings": "./src/main",
+  "typeRoots": [
+    "node_modules/@types"
+  ],
+  "version": "1.2.3"
 }

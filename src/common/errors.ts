@@ -1,7 +1,7 @@
-export function invalidArg(name: string): Error {
+export const invalidArg = (name: string): Error => {
     return new Error(`Bad: ${name}`);
-}
+};
 
-export function unsupported(msg: string): Error {
+export const unsupported = (msg: string): Error => {
     return new Error(`Unsupported: ${msg}`);
-}
+};

@@ -1,0 +1,34 @@
+{
+    "compilerOptions": {
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "declaration": false,
+        "forceConsistentCasingInFileNames": true,
+        "inlineSourceMap": false,
+        "moduleResolution": "node",
+        "newLine": "LF",
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noImplicitUseStrict": true,
+        "noUnusedLocals": true,
+        "preserveConstEnums": false,
+        "removeComments": true,
+        "rootDir": "src",
+        "sourceMap": false,
+        "strictNullChecks": false,
+        "suppressImplicitAnyIndexErrors": true,
+        "target": "es2015",
+        "outDir": "lib.es2015"
+    },
+    "exclude": [
+        "dist",
+        "lib",
+        "lib.es2015",
+        "tests",
+        "node_modules",
+        "src/just-animate-all.ts",
+        "src/just-animate-core.ts",
+        "src/just-animate-vue.ts"
+    ]
+}
