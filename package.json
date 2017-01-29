@@ -55,11 +55,12 @@
     "rebuild": "npm run clean && npm run build && npm run compress",
     "start": "npm run rebuild && npm run debug",
     "test": "node_modules/.bin/mocha --require ts-node/register --reporter spec ./tests/**/**.ts",
-    "debug": "node_modules/.bin/mocha --require ts-node/register --reporter spec --watch ./tests/**/**.ts"
+    "debug": "node_modules/.bin/mocha --require ts-node/register --reporter spec --watch ./tests/**/**.ts",
+    "publish-alpha": "npm run rebuild && git push --follow-tags && npm publish --tag next"
   },
   "typings": "./src/main",
   "typeRoots": [
     "node_modules/@types"
   ],
-  "version": "1.2.3"
+  "version": "2.0.0-alpha-1"
 }
