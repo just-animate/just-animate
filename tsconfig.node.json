@@ -27,9 +27,8 @@
         "lib",
         "lib.es2015",
         "tests",
-        "node_modules",
-        "src/just-animate-all.ts",
-        "src/just-animate-core.ts",
+        "node_modules", 
+        "src/just-animate-umd.ts",
         "src/just-animate-vue.ts"
     ]
 }

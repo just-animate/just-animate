@@ -1,10 +1,13 @@
-/// <reference path="just-animate.d.ts" />
-import * as animations from './animations';
-import { animate } from './animate';
+import { Animator } from './core'; 
 
-animate.register.apply(
-    undefined,
-    Object.keys(animations).map((k: string) => animations[k])
-);
+/**
+ * Returns a new timeline of animation(s) using the options provided
+ * 
+ * @param {(ja.IAnimationOptions | ja.IAnimationOptions[])} options
+ * @returns {ja.IAnimator}
+ * 
+ * @memberOf JustAnimate
+ */
+export const animate = (options: ja.AnimationOptions | ja.AnimationOptions[]) => new Animator().animate(options);
 
-export { animations };
+export { random, shuffle, splitText } from './utils';

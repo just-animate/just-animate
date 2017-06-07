@@ -1,3 +1,44 @@
+interface AnimationEffectTiming {
+    direction?: string;
+    delay?: number;
+    duration?: number;
+    easing?: string;
+    endDelay?: number;
+    fill?: string;
+    iterationStart?: number;
+    iterations?: number;
+}
+
+interface Keyframe {
+    offset?: number;
+    easing?: string;
+    transform?: string;
+    [val: string]: string | number;
+}
+
+interface Animation {
+    id: string;
+    startTime: number;
+    currentTime: number;
+    playState: 'idle' | 'pending' | 'running' | 'paused' | 'finished';
+    playbackRate: number;
+    onfinish: Function;
+    oncancel: Function;
+
+    cancel(): void;
+    finish(): void;
+    play(): void;
+    pause(): void;
+    reverse(): void;
+
+    addEventListener(eventName: string, listener: Function): void;
+    removeEventListener(eventName: string, listener: Function): void;
+}
+
+interface Element {
+    animate(keyframes: Keyframe[], timings: AnimationEffectTiming): Animation;
+}
+
 declare const just: {
     animate(options: ja.AnimationOptions | ja.AnimationOptions[]): ja.IAnimator;
     random(first: number, last: number, unit?: string, wholeNumbersOnly?: boolean): number | string;
@@ -16,10 +57,6 @@ declare module ja {
     export type Distance = string | number;
     export type Resolvable<T> = T | Resolver<T>;
 
-    export interface IPlugin<T> {
-        canHandle(ctx: AnimationTargetContext<T>): boolean;
-        handle(timings: ja.AnimationTiming, ctx: AnimationTargetContext<T>): ja.IAnimationController;
-    }
     export type AnimationTiming = {
         direction?: string;
         delay?: number;
@@ -392,6 +429,7 @@ declare module ja {
         wordSpacing?: Resolvable<string>;
         zIndex?: Resolvable<number>;
     }
+
     export type SplitTextResult = {
         words: Element[];
         characters: Element[];
