@@ -1,5 +1,5 @@
 import { css } from 'just-curves';
-import { isDefined, resolve, toCamelCase } from '../utils';
+import { _, isDefined, resolve, toCamelCase } from '../utils';
 import { propertyAliases, transforms } from './resources';
 
 
@@ -15,12 +15,12 @@ const normalizeProperties = (keyframe: Keyframe): void => {
     for (let prop in keyframe) {
         const value = keyframe[prop];
         if (!isDefined(value)) {
-            keyframe[prop] = undefined;
+            keyframe[prop] = _;
             continue;
         }
 
         // nullify properties so shorthand and handled properties don't end up in the result
-        keyframe[prop] = undefined;
+        keyframe[prop] = _;
 
         // get the final property name
         const propAlias = propertyAliases[prop] || prop;

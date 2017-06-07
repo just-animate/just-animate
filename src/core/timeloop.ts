@@ -1,12 +1,12 @@
-import { raf, now } from '../utils';
+import { _, raf, now } from '../utils';
 
 const active: TimeLoopCallback[] = [];
 const elapses: number[] = [];
 const offs: TimeLoopCallback[] = [];
 const ons: TimeLoopCallback[] = [];
 
-let isActive: boolean | undefined = undefined;
-let lastTime: number | undefined = undefined;
+let isActive: boolean = _;
+let lastTime: number = _;
 
 type TimeLoopCallback = (delta: number, elapsed: number) => any;
 
@@ -43,11 +43,11 @@ const update = (): void => {
     const thisTime = now();
     const delta = thisTime - lastTime;
 
-    // if undefined is subscribed, kill the cycle
+    // if not is subscribed, kill the cycle
     if (!len) {
         // end recursion
-        isActive = undefined;
-        lastTime = undefined;
+        isActive = _;
+        lastTime = _;
         return;
     }
 

@@ -1,4 +1,5 @@
 import { isArray } from './type';
+import { _ } from '.';
 
 const slice = Array.prototype.slice;
 
@@ -10,11 +11,11 @@ export interface IList<T> {
 /**
  * Returns the first object in the list or undefined
  */
-export const head = <T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T | undefined => {
+export const head = <T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T => {
     if (!indexed || indexed.length < 1) {
-        return undefined;
+        return _;
     }
-    if (predicate === undefined) {
+    if (predicate === _) {
         return indexed[0];
     }
     for (const item of indexed as T[]) {
@@ -22,17 +23,17 @@ export const head = <T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
             return item;
         }
     }
-    return undefined;
+    return _;
 };
 
 /**
  * Returns the last object in the list or undefined
  */
-export const tail = <T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T | undefined => {
+export const tail = <T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T => {
     if (!indexed || indexed.length < 1) {
-        return undefined;
+        return _;
     }
-    if (predicate === undefined) {
+    if (predicate === _) {
         return indexed[indexed.length - 1];
     }
     for (const item of indexed as T[]) {
@@ -40,7 +41,7 @@ export const tail = <T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
             return item;
         }
     }
-    return undefined;
+    return _;
 };
 
 /**

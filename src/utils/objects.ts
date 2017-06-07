@@ -1,4 +1,5 @@
 import { isArray, isDefined, isFunction, isObject, getTypeString } from './type';
+import { _ } from '.';
 
 /**
  * Copies a single property from origin to destination
@@ -12,7 +13,7 @@ export const deepCopyProperty = (prop: string | number, origin: {}, dest: {}): v
     const destType = getTypeString(destProp);
 
     if (originType !== destType) {
-        destProp = undefined;
+        destProp = _;
     }
     
     if (isArray(originProp)) {

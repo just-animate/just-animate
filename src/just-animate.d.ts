@@ -78,16 +78,16 @@ declare module ja {
         restart(): void;
     }
     export type AnimationTimeContext = {
-        currentTime?: number | undefined;
-        delta?: number | undefined;
-        duration?: number | undefined;
-        offset?: number | undefined;
-        computedOffset?: number | undefined;
-        playbackRate?: number | undefined;
-        target: any | undefined;
-        targets: any[] | undefined;
-        index: number | undefined;
-        iterations?: number | undefined;
+        currentTime?: number;
+        delta?: number;
+        duration?: number;
+        offset?: number;
+        computedOffset?: number;
+        playbackRate?: number;
+        target: any;
+        targets: any[];
+        index: number;
+        iterations?: number;
     }
     export interface IAnimator {
         animate(options: ja.AnimationOptions | ja.AnimationOptions[]): ja.IAnimator;
@@ -106,10 +106,10 @@ declare module ja {
         cancel(): IAnimator;
         on(eventConfig: ja.AnimationEvent): ja.IAnimator;
         on(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
-        on(event: string | AnimationEvent, listener: AnimationEventListener | undefined): ja.IAnimator;
+        on(event: string | AnimationEvent, listener: AnimationEventListener): ja.IAnimator;
         off(eventConfig: ja.AnimationEvent): ja.IAnimator;
         off(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
-        off(event: string | AnimationEvent, listener: AnimationEventListener | undefined): ja.IAnimator;
+        off(event: string | AnimationEvent, listener: AnimationEventListener): ja.IAnimator;
     }
     export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'update' | 'iteration';
     export type IPlayOptions = {
@@ -135,7 +135,7 @@ declare module ja {
         play?: AnimationEventListener;
         update?: AnimationEventListener;
         iteration?: AnimationEventListener;
-        [key: string]: AnimationEventListener | undefined;
+        [key: string]: AnimationEventListener;
     }
     export type AnimationOptionEvent = {
         cancel?: AnimationEventListener;
@@ -144,7 +144,7 @@ declare module ja {
         pause?: AnimationEventListener;
         play?: AnimationEventListener;
         finish?: AnimationEventListener;
-        [key: string]: AnimationEventListener | undefined;
+        [key: string]: AnimationEventListener;
     }
     export type AnimationEventListener = {
         (ctx: AnimationTimeContext): void;

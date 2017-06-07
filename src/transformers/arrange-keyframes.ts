@@ -1,4 +1,4 @@
-import { tail, head } from '../utils';
+import { _, tail, head } from '../utils';
 
 export const arrangeKeyframes = (keyframes: Keyframe[]): void => {
     // don't arrange frames if there aren't any
@@ -6,11 +6,11 @@ export const arrangeKeyframes = (keyframes: Keyframe[]): void => {
         return;
     }
 
-    let first: Keyframe | undefined =
+    let first: Keyframe =
         head(keyframes, (k: Keyframe) => k.offset === 0)
-        || head(keyframes, (k: Keyframe) => k.offset === undefined);
+        || head(keyframes, (k: Keyframe) => k.offset === _);
 
-    if (first === undefined) {
+    if (first === _) {
         first = {};
         keyframes.splice(0, 0, first);
     }
@@ -18,11 +18,11 @@ export const arrangeKeyframes = (keyframes: Keyframe[]): void => {
         first.offset = 0;
     }
 
-    let last: Keyframe | undefined =
+    let last: Keyframe =
         tail(keyframes, (k: Keyframe) => k.offset === 1)
-        || tail(keyframes, (k: Keyframe) => k.offset === undefined);
+        || tail(keyframes, (k: Keyframe) => k.offset === _);
 
-    if (last === undefined) {
+    if (last === _) {
         last = {};
         keyframes.push(last);
     }

@@ -1,5 +1,6 @@
 import { css, cssFunction } from 'just-curves';
 import {
+    _,
     createUnitResolver,
     getCanonicalTime,
     getTargets,
@@ -60,8 +61,8 @@ const tick = (self: AnimationContext, delta: number): void => {
     if (self._playState === 'pending') {
         const currentTime2 = self._currentTime;
         const currentIteration = self._currentIteration;
-        self._currentTime = currentTime2 === undefined || currentTime2 === endTime ? startTime : currentTime2;
-        self._currentIteration = currentIteration === undefined || currentIteration === totalIterations ? 0 : currentIteration;
+        self._currentTime = currentTime2 === _ || currentTime2 === endTime ? startTime : currentTime2;
+        self._currentIteration = currentIteration === _ || currentIteration === totalIterations ? 0 : currentIteration;
         self._playState = 'running';
     }
 
@@ -90,11 +91,11 @@ const tick = (self: AnimationContext, delta: number): void => {
         context.duration = endTime - startTime;
         context.playbackRate = playbackRate as number;
         context.iterations = currentIteration;
-        context.offset = undefined;
-        context.computedOffset = undefined;
-        context.target = undefined;
-        context.targets = undefined;
-        context.index = undefined;
+        context.offset = _;
+        context.computedOffset = _;
+        context.target = _;
+        context.targets = _;
+        context.index = _;
         self._dispatcher.trigger('iteration', context);
     }
 
@@ -147,13 +148,13 @@ const tick = (self: AnimationContext, delta: number): void => {
             context.target = evt.target;
             context.targets = evt.targets;
             context.index = evt.index;
-            context.currentTime = undefined;
-            context.delta = undefined;
-            context.duration = undefined;
-            context.offset = undefined;
-            context.playbackRate = undefined;
-            context.iterations = undefined;
-            context.computedOffset = undefined;
+            context.currentTime = _;
+            context.delta = _;
+            context.duration = _;
+            context.offset = _;
+            context.playbackRate = _;
+            context.iterations = _;
+            context.computedOffset = _;
         }
 
         if (shouldTriggerPlay) {
@@ -179,15 +180,15 @@ const tick = (self: AnimationContext, delta: number): void => {
 };
 
 export class Animator implements ja.IAnimator {
-    private _currentIteration: number | undefined;
-    private _currentTime: number | undefined;
+    private _currentIteration: number;
+    private _currentTime: number;
     private _context: ja.AnimationTimeContext;
-    private _direction: ja.AnimationDirection | undefined;
+    private _direction: ja.AnimationDirection;
     private _dispatcher: IDispatcher<ja.AnimationTimeContext>;
     private _duration: number;
     private _events: TimelineEvent[];
-    private _playState: ja.AnimationPlaybackState | undefined;
-    private _playbackRate: number | undefined;
+    private _playState: ja.AnimationPlaybackState;
+    private _playbackRate: number;
     private _totalIterations: number;
     private _onTick: { (delta: number, runningTime: number): void };
 
@@ -195,8 +196,8 @@ export class Animator implements ja.IAnimator {
         const self = this;
         self._context = {} as ja.AnimationTimeContext;
         self._duration = 0;
-        self._currentTime = undefined;
-        self._currentIteration = undefined;
+        self._currentTime = _;
+        self._currentIteration = _;
         self._playState = 'idle';
         self._playbackRate = 1;
         self._events = [];
@@ -272,9 +273,9 @@ export class Animator implements ja.IAnimator {
     public off(eventConfig: ja.AnimationEvent): ja.IAnimator;
 
     public off(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
-    public off(event: string | ja.AnimationEvent, listener: ja.AnimationEventListener | undefined = undefined): ja.IAnimator {
+    public off(event: string | ja.AnimationEvent, listener: ja.AnimationEventListener = _): ja.IAnimator {
         const self = this;
-        if (typeof event === 'string' && listener !== undefined) {
+        if (typeof event === 'string' && listener !== _) {
             self._dispatcher.off(event, listener);
         } else {
             const eventConfig = event as ja.AnimationEvent;
@@ -291,9 +292,9 @@ export class Animator implements ja.IAnimator {
     public on(eventConfig: ja.AnimationEvent): ja.IAnimator;
 
     public on(eventName: ja.AnimationEventType, listener: ja.AnimationEventListener): ja.IAnimator;
-    public on(event: ja.AnimationEventType | ja.AnimationEvent, listener: ja.AnimationEventListener | undefined = undefined): ja.IAnimator {
+    public on(event: ja.AnimationEventType | ja.AnimationEvent, listener: ja.AnimationEventListener = _): ja.IAnimator {
         const self = this;
-        if (typeof event === 'string' && listener !== undefined) {
+        if (typeof event === 'string' && listener !== _) {
             self._dispatcher.on(event, listener);
         } else {
             const eventConfig = event as ja.AnimationEvent;
@@ -408,7 +409,7 @@ export class Animator implements ja.IAnimator {
 
             const iterations = resolve(event.iterations as number, ctx) || 1;
             const iterationStart = resolve(event.iterationStart as number, ctx) || 0;
-            const direction = resolve(event.direction as string, ctx) || undefined;
+            const direction = resolve(event.direction as string, ctx) || _;
             const duration = +event.to - +event.from;
             const fill = resolve(event.fill as string, ctx) || 'none';
             const totalTime = event.delay + ((iterations || 1) * duration) + event.endDelay;
@@ -429,7 +430,7 @@ export class Animator implements ja.IAnimator {
             };
 
             const animator = keyframePlugin.handle(timings, ctx);
-            
+
             self._events.push({
                 animator: animator,
                 cancel: cancelFunction,
@@ -452,7 +453,7 @@ export class Animator implements ja.IAnimator {
 
         timeloop.off(self._onTick);
         self._currentTime = 0;
-        self._currentIteration = undefined;
+        self._currentIteration = _;
         self._playState = 'idle';
         for (const evt of self._events) {
             evt.animator.playState('idle');
@@ -468,8 +469,8 @@ export class Animator implements ja.IAnimator {
         const self = this;
         const context = self._context;
         timeloop.off(self._onTick);
-        self._currentTime = undefined;
-        self._currentIteration = undefined;
+        self._currentTime = _;
+        self._currentIteration = _;
         self._playState = 'finished';
         for (const evt of self._events) {
             evt.animator.playState('finished');
@@ -515,15 +516,15 @@ type TimelineEvent = {
 };
 
 type AnimationContext = {
-    _currentIteration: number | undefined;
+    _currentIteration: number;
     _currentTime: number;
     _context: ja.AnimationTimeContext;
-    _direction: ja.AnimationDirection | undefined;
+    _direction: ja.AnimationDirection;
     _dispatcher: IDispatcher<ja.AnimationTimeContext>;
     _duration: number;
     _events: TimelineEvent[];
-    _playState: ja.AnimationPlaybackState | undefined;
-    _playbackRate: number | undefined;
+    _playState: ja.AnimationPlaybackState;
+    _playbackRate: number;
     _totalIterations: number;
 };
 

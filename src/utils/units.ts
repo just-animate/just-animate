@@ -1,6 +1,7 @@
 import { isDefined, isNumber } from './type';
 import { measureExpression, unitExpression } from './resources';
 import { random } from './random';
+import { _ } from '.';
 
 export const stepNone = '=';
 export const stepForward = '+=';
@@ -12,10 +13,10 @@ export const stepBackward = '-=';
  */
 export const createUnitResolver = (val: string | number): UnitResolver => {
     if (!isDefined(val)) {
-        return () => ({ unit: undefined, value: 0 });
+        return () => ({ unit: _, value: 0 });
     }
     if (isNumber(val)) {
-        return () => ({ unit: undefined, value: val as number });
+        return () => ({ unit: _, value: val as number });
     }
 
     const match = unitExpression.exec(val as string) as RegExpExecArray;
@@ -38,7 +39,7 @@ export const createUnitResolver = (val: string | number): UnitResolver => {
             : startCo * index2 * sign;
         
         return {
-            unit: unitTypeString || undefined,
+            unit: unitTypeString || _,
             value: value
         };
     };
@@ -49,22 +50,22 @@ export const createUnitResolver = (val: string | number): UnitResolver => {
 /**
  * Parses a string or number and returns the unit and numeric value
  */
-export const parseUnit = (val: string | number | undefined, output?: Unit): Unit => {
+export const parseUnit = (val: string | number, output?: Unit): Unit => {
     output = output || {} as Unit;
 
     if (!isDefined(val)) {
-        output.unit = undefined;
-        output.value = undefined;
+        output.unit = _;
+        output.value = _;
     } else if (isNumber(val)) {
-        output.unit = undefined;
+        output.unit = _;
         output.value = val as number;
     } else {
         const match = measureExpression.exec(val as string) as RegExpExecArray;
         const startString = match[1];
         const unitTypeString = match[2];
         
-        output.unit = unitTypeString || undefined;
-        output.value = startString ? parseFloat(startString) : undefined;
+        output.unit = unitTypeString || _;
+        output.value = startString ? parseFloat(startString) : _;
     }
     
     return output;
@@ -78,8 +79,8 @@ export const getCanonicalTime = (unit: Unit): number => {
 };
 
 export type Unit = {
-    value: number | undefined;
-    unit: string | undefined;
+    value: number;
+    unit?: string;
 };
 
 export type UnitResolver = {

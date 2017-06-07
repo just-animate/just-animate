@@ -1,4 +1,4 @@
-import { isArray, isDefined, parseUnit, resolve, unsupported } from '../utils';
+import { _, isArray, isDefined, parseUnit, resolve, unsupported } from '../utils';
 import { keyframeOffsetComparer } from './keyframe-offset-comparer';
 import { transforms } from './resources';
 
@@ -78,7 +78,7 @@ export const propsToKeyframes = (css: ja.CssPropertyOptions, keyframes: ja.CssKe
             let startIndex = 0;
             let startValue = endValue;
             let startOffset = 0;
-            let startUnit = undefined as string | undefined;
+            let startUnit: string = _;
 
             for (let j = i - 1; j > -1; --j) {
                 const offset1 = offsets[j];
