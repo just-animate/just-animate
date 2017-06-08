@@ -1,4 +1,4 @@
-import { Animator } from './core'; 
+import { JATimeline } from './core'; 
 
 /**
  * Returns a new timeline of animation(s) using the options provided
@@ -8,6 +8,6 @@ import { Animator } from './core';
  * 
  * @memberOf JustAnimate
  */
-export const animate = (options: ja.AnimationOptions | ja.AnimationOptions[]) => new Animator().animate(options);
+export const animate = (options: ja.AnimationOptions | ja.AnimationOptions[]) => new JATimeline().append(options);
 
 export { random, shuffle, splitText } from './utils';

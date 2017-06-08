@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 const assert = chai.assert;
 
-import { head, tail, toArray, chain } from '../../src/utils';
+import { head, tail, toArray, listify } from '../../src/utils';
 
 describe('lists', () => {
 
@@ -35,19 +35,19 @@ describe('lists', () => {
   describe('chain', () => {
     it('wraps an existing object in an array', () => {
       const input = { x: 2 };
-      const result = chain(input);
+      const result = listify(input);
       expect(result[0]).to.equal(input);
     });
 
     it('wraps an existing string in an array', () => {
       const input = 'a string';
-      const result = chain(input);
+      const result = listify(input);
       expect(result[0]).to.equal(input);
     });
 
     it('returns an array back if passed an array', () => {
       const input = [1, 2, 3];
-      const result = chain(input);
+      const result = listify(input);
       expect(result).to.equal(input);
     });
   });

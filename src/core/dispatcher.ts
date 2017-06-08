@@ -1,56 +1,47 @@
-import { invalidArg, isFunction } from '../utils';
+import { isFunction } from '../utils';
 
-type DispatcherCallback<T> = (ctx: T) => void;
+function trigger <TContext>(this: ja.IDispatcher<TContext>, eventName: string, resolvable: ja.AnimationTimeContext | { (): ja.AnimationTimeContext; }): ja.IDispatcher<TContext> {
+    const self = this;
+    const listeners = self._listeners[eventName as string];
+    if (listeners) {
+        const ctx: TContext = isFunction(resolvable)
+            ? (resolvable as Function)()
+            : resolvable;
 
-function trigger <TContext>(this: IDispatcher<TContext>, eventName: string, resolvable: ja.AnimationTimeContext | { (): ja.AnimationTimeContext; }): void {
-    const listeners = this.fns[eventName as string];
-    if (!listeners) {
-        return;
+        for (const listener of listeners) {
+            listener(ctx);
+        }
     }
-    const ctx: TContext = isFunction(resolvable)
-        ? (resolvable as Function)()
-        : resolvable;
-    for (const listener of listeners) {
-        listener(ctx);
-    }
+    return self;
 }
 
-function on <TContext>(this: IDispatcher<TContext>, eventName: string, listener: { (ctx: TContext): void }): void {
-    if (!isFunction(listener)) {
-        throw invalidArg('listener');
+function on <TContext>(this: ja.IDispatcher<TContext>, eventName: string, listener: { (ctx: TContext): void }): ja.IDispatcher<TContext> {
+    const self = this;
+    const { _listeners } = self;
+    
+    const listeners = _listeners[eventName] || (_listeners[eventName] = []);
+    if (listeners.indexOf(listener) === -1) {
+        listeners.push(listener);
     }
-    const fn = this.fns;
-    const listeners = fn[eventName as string];
-    if (!listeners) {
-        fn[eventName as string] = [listener];
-        return;
-    }
-    if (listeners.indexOf(listener) !== -1) {
-        return;
-    }
-    listeners.push(listener);
+    
+    return self;
 }
 
-function off <TContext>(this: IDispatcher<TContext>, eventName: string, listener: { (ctx: TContext): void }): void {
-    const listeners = this.fns[eventName];
+function off<TContext>(this: ja.IDispatcher<TContext>, eventName: string, listener: { (ctx: TContext): void }): ja.IDispatcher<TContext> {
+    const self = this;
+    const listeners = self._listeners[eventName];
     if (listeners) {
         const indexOfListener = listeners.indexOf(listener);
         if (indexOfListener !== -1) {
             listeners.splice(indexOfListener, 1);
         }
     }
+    return self;
 }
 
-export interface IDispatcher<TContext> {
-    fns: { [key: string]: { (ctx: TContext): void }[] };
-    trigger(eventName: string, resolvable: ja.AnimationTimeContext | { (): ja.AnimationTimeContext; }): void;
-    on(eventName: string, listener: { (ctx: TContext): void }): void;
-    off(eventName: string, listener: { (ctx: TContext): void }): void;
-}
-
-export const dispatcher = <T>(): IDispatcher<T> => {
+export const dispatcher = <T>(): ja.IDispatcher<T> => {
     return {
-        fns: {} as { [key: string]: DispatcherCallback<T>[] },
+        _listeners: {} as { [key: string]: { (ctx: T): void }[] },
         trigger,
         on,
         off

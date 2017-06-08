@@ -27,6 +27,14 @@ export const deepCopyProperty = (prop: string | number, origin: {}, dest: {}): v
     }
 };
 
+export const assign = <T1 extends {}, T2 extends {}>(target: T1, source: T2): T1 & T2 => {
+    const result = target as T1 & T2;
+    for (let prop in source) {
+        result[prop] = source[prop];
+    }
+    return result;
+};
+
 /**
  * performs a deep copy of properties from origin to destination
  */

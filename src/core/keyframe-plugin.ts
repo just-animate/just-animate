@@ -1,4 +1,4 @@
-import { _, isArray, isElement } from '../utils';
+import { _, isArray } from '../utils';
 
 import {
     addTransition,
@@ -10,15 +10,6 @@ import {
     resolvePropertiesInKeyframes,
     spaceKeyframes
 } from '../transformers';
-
-export const keyframePlugin = {
-    canHandle(ctx: ja.AnimationTargetContext<Element>): boolean {
-        return !!(ctx.options!.css) && isElement(ctx.target!);
-    },
-    handle(timings: ja.AnimationTiming, ctx: ja.AnimationTargetContext<Element>): ja.IAnimationController {
-        return new KeyframeAnimator(timings, ctx);
-    }
-};
 
 /**
  * Implements the IAnimationController interface for the Web Animation API
@@ -58,7 +49,7 @@ export class KeyframeAnimator {
 
         resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx);
 
-        if (options.isTransition === true) {
+        if (options.$transition === true) {
             addTransition(targetKeyframes, target);
         }
 
@@ -71,57 +62,57 @@ export class KeyframeAnimator {
         fixPartialKeyframes(targetKeyframes);
 
         const animator = target['animate'](targetKeyframes, timings);
-        animator.cancel();
-        self._animator = animator;
-        self.totalDuration = timings.totalTime;
+        animator.cancel()
+        self._animator = animator
+        self.totalDuration = timings.totalTime
 
-        return this._animator;
+        return this._animator
     }
 
     constructor(private timings: ja.AnimationTiming, private ctx: ja.AnimationTargetContext<Element>) { }
 
     public seek(value: number): void {
-        const { animator } = this;
+        const { animator } = this
         if (animator.currentTime !== value) {
-            animator.currentTime = value;
+            animator.currentTime = value
         }
     }
     public playbackRate(value: number): void {
-        const { animator } = this;
+        const { animator } = this
         if (animator.playbackRate !== value) {
-            animator.playbackRate = value;
+            animator.playbackRate = value
         }
     }
     public reverse(): void {
-        this.animator.playbackRate *= -1;
+        this.animator.playbackRate *= -1
     }
     public restart(): void {
-        const { animator } = this;
-        animator.cancel();
-        animator.play();
+        const { animator } = this
+        animator.cancel()
+        animator.play()
     }
-    public playState(): ja.AnimationPlaybackState;
-    public playState(value: ja.AnimationPlaybackState): void;
+    public playState(): ja.AnimationPlaybackState
+    public playState(value: ja.AnimationPlaybackState): void
     public playState(value?: ja.AnimationPlaybackState): ja.AnimationPlaybackState {
-        const { animator } = this;
-        const playState = !animator ? 'fatal' : animator.playState;
+        const { animator } = this
+        const playState = !animator ? 'fatal' : animator.playState
         if (value === _) {
-            return playState as ja.AnimationPlaybackState;
+            return playState as ja.AnimationPlaybackState
         }
 
         if (playState === value) {
             /* do nothing */
         } else if (playState === 'fatal') {
-            animator.cancel();
+            animator.cancel()
         } else if (value === 'finished') {
-            animator.finish();
+            animator.finish()
         } else if (value === 'idle') {
-            animator.cancel();
+            animator.cancel()
         } else if (value === 'paused') {
-            animator.pause();
+            animator.pause()
         } else if (value === 'running') {
-            animator.play();
+            animator.play()
         }
-        return _;
+        return _
     }
 }

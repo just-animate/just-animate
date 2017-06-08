@@ -11,7 +11,7 @@ export const stepBackward = '-=';
  * Returns a unit resolver.  The unit resolver returns what the unit should be
  * at a given index.  for instance +=200 should be 200 at 0, 400 at 1, and 600 at 2
  */
-export const createUnitResolver = (val: string | number): UnitResolver => {
+export const unitResolver = (val: string | number): UnitResolver => {
     if (!isDefined(val)) {
         return () => ({ unit: _, value: 0 });
     }
@@ -74,7 +74,7 @@ export const parseUnit = (val: string | number, output?: Unit): Unit => {
 /**
  * returns the unit as a number (resolves seconds to milliseconds)
  */
-export const getCanonicalTime = (unit: Unit): number => {
+export const convertToMs = (unit: Unit): number => {
     return (unit.value || 0) * (unit.unit === 's' ? 1000 : 1);
 };
 

@@ -124,7 +124,7 @@ export const propsToKeyframes = (css: ja.CssPropertyOptions, keyframes: ja.CssKe
     // reassemble as array
     for (let offset in keyframesByOffset) {
         const keyframe = keyframesByOffset[offset];
-        keyframe.offset = Number(offset);
+        keyframe.offset = +offset;
         keyframes.push(keyframe);
     }
 

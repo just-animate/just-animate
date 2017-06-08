@@ -98,9 +98,7 @@ declare module ja {
         duration(): number;
         playState(): AnimationPlaybackState;
         finish(): IAnimator;
-        play(iterations: number): IAnimator;
-        play(options: IPlayOptions): IAnimator;
-        play(options?: number | IPlayOptions): IAnimator;
+        play(iterations?: number): IAnimator;
         pause(): IAnimator;
         reverse(): IAnimator;
         cancel(): IAnimator;
@@ -111,11 +109,30 @@ declare module ja {
         off(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
         off(event: string | AnimationEvent, listener: AnimationEventListener): ja.IAnimator;
     }
-    export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'update' | 'iteration';
-    export type IPlayOptions = {
-        direction?: AnimationDirection;
-        iterations?: number;
+    
+    export interface IDispatcher<TContext> {
+        _listeners: { [key: string]: { (ctx: TContext): void }[] };
+        trigger(eventName: string, resolvable: AnimationTimeContext | { (): AnimationTimeContext; }): void;
+        on(eventName: string, listener: { (ctx: TContext): void }): void;
+        off(eventName: string, listener: { (ctx: TContext): void }): void;
     }
+    
+    export interface ITimeline extends IDispatcher<AnimationTimeContext> {
+        currentTime: number;
+        playbackRate: number; 
+        duration: number;
+        playState: AnimationPlaybackState;
+        
+        append(options: AnimationOptions | AnimationOptions[]): this;
+        finish(): this;
+        play(iterations?: number): this; 
+        pause(): this;
+        reverse(): this;
+        cancel(): this;
+    }
+    
+    export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'update' | 'iteration';
+
     export type AnimationMixin = {
         name: string;
         css?: CssPropertyOptions | CssKeyframeOptions[];
@@ -150,19 +167,19 @@ declare module ja {
         (ctx: AnimationTimeContext): void;
     }
     export type AnimationOptions = {
-        targets?: AnimationTarget;
-        from?: number | string;
-        mixins?: string | string[];
-        isTransition?: boolean;
-        on?: AnimationOptionEvent;
+        $transition?: boolean;        
         css?: CssPropertyOptions | CssKeyframeOptions[];
         delay?: Resolvable<number>;
         direction?: Resolvable<string>;
         easing?: string;
         endDelay?: Resolvable<number>;
         fill?: Resolvable<FillMode>;
+        from?: number | string;
         iterations?: Resolvable<number>;
         iterationStart?: Resolvable<number>;
+        mixins?: string | string[];
+        on?: AnimationOptionEvent;
+        targets?: AnimationTarget;
         to: number | string;
     }
     export type CssPropertyOptions = {

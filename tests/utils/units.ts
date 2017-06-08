@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 const assert = chai.assert;
 
-import { createUnitResolver, parseUnit } from '../../src/utils';
+import { unitResolver, parseUnit } from '../../src/utils';
 
 describe('parseUnit', () => {
     describe('parseUnit()', () => {
@@ -225,35 +225,35 @@ describe('parseUnit', () => {
 
     describe('createUnitResolver()', () => {
         it('returns 1s when passed 1s', () => {
-            const resolver = createUnitResolver('1s');
+            const resolver = unitResolver('1s');
             expect({ unit: 's', value: 1 }).to.deep.equal(resolver(0));
             expect({ unit: 's', value: 1 }).to.deep.equal(resolver(1));
             expect({ unit: 's', value: 1 }).to.deep.equal(resolver(2));
         });
 
         it('returns x += 1.1 when passed += 1.1', () => {
-            const resolver = createUnitResolver('+=1.1');
+            const resolver = unitResolver('+=1.1');
             assert.approximately(resolver(0).value as number, 1.1, 0.0001);
             assert.approximately(resolver(1).value as number, 2.2, 0.0001);
             assert.approximately(resolver(2).value as number, 3.3, 0.0001);
         });
 
         it('returns x -= 1.1 when passed -= 1.1', () => {
-            const resolver = createUnitResolver('-=1.1');
+            const resolver = unitResolver('-=1.1');
             assert.approximately(resolver(0).value as number, -1.1, 0.0001);
             assert.approximately(resolver(1).value as number, -2.2, 0.0001);
             assert.approximately(resolver(2).value as number, -3.3, 0.0001);
         });
 
         it('returns x += 1 when passed +=1s', () => {
-            const resolver = createUnitResolver('+=1s');
+            const resolver = unitResolver('+=1s');
             expect({ unit: 's', value: 1 }).to.deep.equal(resolver(0));
             expect({ unit: 's', value: 2 }).to.deep.equal(resolver(1));
             expect({ unit: 's', value: 3 }).to.deep.equal(resolver(2));
         });
 
         it('returns x -= 1s when passed -=1s', () => {
-            const resolver = createUnitResolver('-=1s');
+            const resolver = unitResolver('-=1s');
             expect({ unit: 's', value: -1 }).to.deep.equal(resolver(0));
             expect({ unit: 's', value: -2 }).to.deep.equal(resolver(1));
             expect({ unit: 's', value: -3 }).to.deep.equal(resolver(2));
@@ -261,14 +261,14 @@ describe('parseUnit', () => {
 
 
         it('returns 100 when passed 0to1', () => {
-            const resolver = createUnitResolver('0 to 1');
+            const resolver = unitResolver('0 to 1');
             const random1 = resolver(0).value as number;
             assert.isAbove(random1, -.000001);
             assert.isBelow(random1, 1);
         });
 
         it('returns 100 to 200 when passed 100to200', () => {
-            const resolver = createUnitResolver('+= 100 to 200');
+            const resolver = unitResolver('+= 100 to 200');
             const random1 = resolver(0).value as number;
             assert.isAbove(random1, 99);
             assert.isBelow(random1, 200);

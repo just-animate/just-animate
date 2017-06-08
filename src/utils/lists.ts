@@ -63,7 +63,7 @@ export const toArray = <T>(indexed: IList<T>, index?: number): T[] => slice.call
  * @param {(IList<T> | T)} indexed
  * @returns {T[]}
  */
-export const chain = <T>(indexed: IList<T> | T): T[] => {
+export const listify = <T>(indexed: IList<T> | T): T[] => {
     return isArray(indexed) ? indexed as T[] : [indexed as T];
 };
 
