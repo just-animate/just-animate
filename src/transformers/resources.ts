@@ -2,7 +2,7 @@ export const propertyAliases = {
     x: 'translateX',
     y: 'translateY',
     z: 'translateZ'
-};
+}
 
 export const transforms = [
     'perspective',
@@ -28,4 +28,4 @@ export const transforms = [
     'scaleZ',
     'scale',
     'scale3d'
-];
+]

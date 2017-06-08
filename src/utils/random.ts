@@ -8,13 +8,13 @@
  * @memberOf JustAnimate
  */
 export const shuffle = <T>(choices: T[]): T => {
-    return choices[Math.floor(Math.random() * choices.length)];
-};
+    return choices[Math.floor(Math.random() * choices.length)]
+}
 
 export const random = (first: number, last: number, unit?: string, wholeNumbersOnly?: boolean): number | string => {
-    let val = first + (Math.random() * (last - first));
+    let val = first + (Math.random() * (last - first))
     if (wholeNumbersOnly === true) {
-        val = Math.floor(val);
+        val = Math.floor(val)
     }
-    return !unit ? val : val + unit;
-};
+    return !unit ? val : val + unit
+}

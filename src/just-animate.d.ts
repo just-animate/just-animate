@@ -68,15 +68,7 @@ declare module ja {
         iterations?: number;
         totalTime: number;
     }
-    export interface IAnimationController {
-        seek(value: number): void;
-        totalDuration: number;
-        playbackRate(value: number): void;
-        playState(): AnimationPlaybackState;
-        playState(value: AnimationPlaybackState): void;
-        reverse(): void;
-        restart(): void;
-    }
+
     export type AnimationTimeContext = {
         currentTime?: number;
         delta?: number;
