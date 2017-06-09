@@ -93,23 +93,17 @@ declare module ja {
         play(iterations?: number): IAnimator;
         pause(): IAnimator;
         reverse(): IAnimator;
-        cancel(): IAnimator;
-        on(eventConfig: ja.AnimationEvent): ja.IAnimator;
-        on(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
-        on(event: string | AnimationEvent, listener: AnimationEventListener): ja.IAnimator;
-        off(eventConfig: ja.AnimationEvent): ja.IAnimator;
-        off(eventName: string, listener: ja.AnimationEventListener): ja.IAnimator;
-        off(event: string | AnimationEvent, listener: AnimationEventListener): ja.IAnimator;
+        cancel(): IAnimator; 
+        
+        onCancel?: AnimationEventListener;
+        onCreate?: AnimationEventListener;
+        onUpdate?: AnimationEventListener;
+        onPause?: AnimationEventListener;
+        onPlay?: AnimationEventListener;
+        onFinish?: AnimationEventListener;
     }
     
-    export interface IDispatcher<TContext> {
-        _listeners: { [key: string]: { (ctx: TContext): void }[] };
-        trigger(eventName: string, resolvable: AnimationTimeContext | { (): AnimationTimeContext; }): void;
-        on(eventName: string, listener: { (ctx: TContext): void }): void;
-        off(eventName: string, listener: { (ctx: TContext): void }): void;
-    }
-    
-    export interface ITimeline extends IDispatcher<AnimationTimeContext> {
+    export interface ITimeline {
         currentTime: number;
         playbackRate: number; 
         duration: number;
@@ -146,15 +140,6 @@ declare module ja {
         iteration?: AnimationEventListener;
         [key: string]: AnimationEventListener;
     }
-    export type AnimationOptionEvent = {
-        cancel?: AnimationEventListener;
-        create?: AnimationEventListener;
-        update?: AnimationEventListener;
-        pause?: AnimationEventListener;
-        play?: AnimationEventListener;
-        finish?: AnimationEventListener;
-        [key: string]: AnimationEventListener;
-    }
     export type AnimationEventListener = {
         (ctx: AnimationTimeContext): void;
     }
@@ -170,9 +155,15 @@ declare module ja {
         iterations?: Resolvable<number>;
         iterationStart?: Resolvable<number>;
         mixins?: string | string[];
-        on?: AnimationOptionEvent;
         targets?: AnimationTarget;
         to: number | string;
+        
+        onCancel?: AnimationEventListener;
+        onCreate?: AnimationEventListener;
+        onUpdate?: AnimationEventListener;
+        onPause?: AnimationEventListener;
+        onPlay?: AnimationEventListener;
+        onFinish?: AnimationEventListener;
     }
     export type CssPropertyOptions = {
         backdropFilter?: Resolvable<string | (string)[]>;
@@ -443,11 +434,11 @@ declare module ja {
         words: Element[];
         characters: Element[];
     }
-    export type AnimationTargetContext<T> = {
+    export type AnimationTargetContext = {
         options?: ja.AnimationOptions;
-        target?: T;
+        target?: AnimationTarget;
         index?: number;
-        targets?: T[]
+        targets?: AnimationTarget[]
     }
     export type Mapper<T1, T2> = {
         (mapable: T1): T2;
@@ -456,6 +447,6 @@ declare module ja {
         (mapable: T1): T1;
     }
     export type Resolver<T> = {
-        (ctx: AnimationTargetContext<Element | {}>): T;
+        (ctx: AnimationTargetContext): T;
     }
 }

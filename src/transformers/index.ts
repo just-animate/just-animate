@@ -1,6 +1,6 @@
 export * from './add-transition'
-export * from './arrange-keyframes'
 export * from './expand-offsets'
+export * from './fix-offsets'
 export * from './fix-partial-keyframes'
 export * from './keyframe-offset-comparer'
 export * from './props-to-keyframes'

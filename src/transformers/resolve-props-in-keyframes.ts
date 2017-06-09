@@ -1,3 +1,4 @@
+import { cssFunction } from '../utils/strings';
 import { css } from 'just-curves'
 import { _, isDefined, resolve, toCamelCase } from '../utils'
 import { propertyAliases, transforms } from './resources'
@@ -13,13 +14,13 @@ const normalizeProperties = (keyframe: Keyframe): void => {
 
     for (let prop in keyframe) {
         const value = keyframe[prop]
+        
+        // nullify properties so shorthand and handled properties don't end up in the result        
+        keyframe[prop] = _
+        
         if (!isDefined(value)) {
-            keyframe[prop] = _
             continue
         }
-
-        // nullify properties so shorthand and handled properties don't end up in the result
-        keyframe[prop] = _
 
         // get the final property name
         const propAlias = propertyAliases[prop] || prop
@@ -31,8 +32,8 @@ const normalizeProperties = (keyframe: Keyframe): void => {
             // handle transforms
             cssTransforms.push([propAlias, value])
         } else if (propAlias === 'easing') {
-            // handle easings
-            keyframe.easing = css[toCamelCase(value as string)] || value || css.ease
+            // handle easings, switch out for css function if available, default to ease
+            keyframe.easing = css[toCamelCase(value as string)] || value || css.linear
         } else {
             // handle others (change background-color and the like to backgroundColor)
             keyframe[toCamelCase(propAlias)] = value
@@ -42,16 +43,16 @@ const normalizeProperties = (keyframe: Keyframe): void => {
     if (cssTransforms.length) {
         keyframe.transform = cssTransforms
             .sort(transformPropertyComparer)
-            .reduce((c: string, n: string[]) => c + ` ${n[0]}(${n[1]})`, '')
+            .map(n => cssFunction(n[0], n[1]))
+            .join('')
     }
 }
 
 /**
  * This calls all keyframe properties that are functions and sets their values
  */
-export const resolvePropertiesInKeyframes = (source: ja.CssKeyframeOptions[], target: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext<Element>): void => {
-    const len = source.length
-    for (let i = 0; i < len; i++) {
+export const resolvePropertiesInKeyframes = (source: ja.CssKeyframeOptions[], target: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext) => {
+    for (let i = 0, ilen = source.length; i < ilen; i++) {
         const sourceKeyframe = source[i]
         let targetKeyframe: Keyframe = {}
 

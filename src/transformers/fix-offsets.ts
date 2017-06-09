@@ -1,6 +1,6 @@
 import { _, tail, head } from '../utils'
 
-const ensureFirstKeyframe = (keyframes: Keyframe[]) => {
+const fixOffset0 = (keyframes: Keyframe[]) => {
     // find offset 0 or first with no offset    
     let first: Keyframe =
         head(keyframes, (k: Keyframe) => k.offset === 0)
@@ -18,7 +18,7 @@ const ensureFirstKeyframe = (keyframes: Keyframe[]) => {
     }
 }
 
-const ensureLastKeyframe = (keyframes: Keyframe[]) => {
+const fixOffset1 = (keyframes: Keyframe[]) => {
     // find offset 1 or the last with no offset   
     let last: Keyframe =
         tail(keyframes, (k: Keyframe) => k.offset === 1)
@@ -35,9 +35,7 @@ const ensureLastKeyframe = (keyframes: Keyframe[]) => {
     }
 }
 
-export const arrangeKeyframes = (keyframes: Keyframe[]) => {
-    if (keyframes.length) {
-        ensureFirstKeyframe(keyframes)
-        ensureLastKeyframe(keyframes)
-    }
+export const fixOffsets = (keyframes: Keyframe[]) => {
+    fixOffset0(keyframes)
+    fixOffset1(keyframes)
 }

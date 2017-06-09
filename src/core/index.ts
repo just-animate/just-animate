@@ -1,4 +1,3 @@
-export * from './animator'
-export * from './dispatcher'
+export * from './animator' 
 export * from './timeline'
 export * from './timeloop'

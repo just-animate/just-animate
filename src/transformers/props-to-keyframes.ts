@@ -2,7 +2,7 @@ import { _, isArray, isDefined, parseUnit, resolve, unsupported } from '../utils
 import { keyframeOffsetComparer } from './keyframe-offset-comparer'
 import { transforms } from './resources'
 
-export const propsToKeyframes = (css: ja.CssPropertyOptions, keyframes: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext<Element>): void => {
+export const propsToKeyframes = (css: ja.CssPropertyOptions, keyframes: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext): void => {
     // create a map to capture each keyframe by offset
     const keyframesByOffset: { [key: number]: ja.CssKeyframeOptions } = {}
     const cssProps = css as ja.CssPropertyOptions

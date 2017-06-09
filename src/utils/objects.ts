@@ -49,6 +49,6 @@ export const deepCopyObject = <T1 extends {}, T2 extends {}>(origin: T1, dest?: 
 /**
  *  Resolves the property/value of an animation
  */
-export const resolve = <T1>(value: T1 | ja.Resolver<T1>, ctx: ja.AnimationTargetContext<Element | {}>): T1 => {
+export const resolve = <T1>(value: T1 | ja.Resolver<T1>, ctx: ja.AnimationTargetContext): T1 => {
     return isFunction(value) ? (value as ja.Resolver<T1>)(ctx) : value as T1
 }

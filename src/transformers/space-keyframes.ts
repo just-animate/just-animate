@@ -1,11 +1,6 @@
 export function spaceKeyframes(keyframes: Keyframe[]): void {
-    // don't attempt to fill animation if less than 2 keyframes
-    if (keyframes.length < 2) {
-        return
-    }
-
     const first = keyframes[0]
-    // ensure first offset    
+    // ensure first offset 
     if (first.offset !== 0) {
         first.offset = 0
     }
