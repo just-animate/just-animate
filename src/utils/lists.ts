@@ -1,3 +1,4 @@
+import { Mapper } from '../types'
 import { isArray } from './type'
 import { _ } from '.'
 
@@ -76,7 +77,7 @@ export const listify = <T>(indexed: IList<T> | T): T[] => {
  * @param {string} propertyName property to evaluate
  * @returns {*} max value of the property provided
  */
-export const maxBy = <T1, T2>(items: T1[], predicate: ja.Mapper<T1, T2>): T2 => {
+export const maxBy = <T1, T2>(items: T1[], predicate: Mapper<T1, T2>): T2 => {
     let max: any = ''
     for (const item of items) {
         const prop = predicate(item)

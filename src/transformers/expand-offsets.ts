@@ -1,3 +1,4 @@
+import { CssKeyframeOptions } from '../types'
 import { deepCopyObject, isArray } from '../utils'
 import { keyframeOffsetComparer } from './keyframe-offset-comparer'
 
@@ -7,7 +8,7 @@ import { keyframeOffsetComparer } from './keyframe-offset-comparer'
  * @export
  * @param {waapi.IKeyframe[]} keyframes
  */
-export const expandOffsets = (keyframes: ja.CssKeyframeOptions[]): void => {
+export const expandOffsets = (keyframes: CssKeyframeOptions[]): void => {
     for (let i = keyframes.length - 1; i > -1; --i) {
         const keyframe = keyframes[i]
 

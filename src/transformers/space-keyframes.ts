@@ -1,3 +1,4 @@
+import { Keyframe } from '../types'
 export function spaceKeyframes(keyframes: Keyframe[]): void {
     const first = keyframes[0]
     // ensure first offset 

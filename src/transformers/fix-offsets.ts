@@ -1,3 +1,4 @@
+import { Keyframe } from '../types'
 import { _, tail, head } from '../utils'
 
 const fixOffset0 = (keyframes: Keyframe[]) => {

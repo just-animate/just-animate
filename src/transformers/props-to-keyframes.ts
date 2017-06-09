@@ -1,11 +1,12 @@
+import { AnimationTargetContext, CssKeyframeOptions, CssPropertyOptions } from '../types'
 import { _, isArray, isDefined, parseUnit, resolve, unsupported } from '../utils'
 import { keyframeOffsetComparer } from './keyframe-offset-comparer'
 import { transforms } from './resources'
 
-export const propsToKeyframes = (css: ja.CssPropertyOptions, keyframes: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext): void => {
+export const propsToKeyframes = (css: CssPropertyOptions, keyframes: CssKeyframeOptions[], ctx: AnimationTargetContext): void => {
     // create a map to capture each keyframe by offset
-    const keyframesByOffset: { [key: number]: ja.CssKeyframeOptions } = {}
-    const cssProps = css as ja.CssPropertyOptions
+    const keyframesByOffset: { [key: number]: CssKeyframeOptions } = {}
+    const cssProps = css as CssPropertyOptions
 
     // iterate over each property split it into keyframes            
     for (let prop in cssProps) {
@@ -51,7 +52,7 @@ export const propsToKeyframes = (css: ja.CssPropertyOptions, keyframes: ja.CssKe
 
     const offsets = Object
         .keys(keyframesByOffset)
-        .map((s: ja.CssKeyframeOptions) => Number(s))
+        .map((s: CssKeyframeOptions) => Number(s))
         .sort()
 
     // if prop not present calculate each transform property in list

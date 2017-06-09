@@ -1,4 +1,24 @@
-import { _, assign, convertToMs, unitResolver, resolve, isArray } from '../utils'
+import {
+  Animation,
+  AnimationPlaybackState,
+  AnimationTargetContext,
+  AnimationTimeContext,
+  AnimationTiming,
+  CssKeyframeOptions,
+  CssPropertyOptions,
+  Func,
+  Keyframe,
+  Resolvable
+} from '../types'
+ 
+import {
+    _,
+    assign,
+    isArray,
+    resolve,
+    convertToMs,
+    unitResolver
+} from '../utils'
 
 import {
     addTransition,
@@ -22,20 +42,20 @@ on individual animation and calls finish.  If an animation plays after its time,
 like it restarts and that causes jank */
 const animationPadding = (1.0 / 60) + 7
 
-const createAnimation = (ctx: ja.AnimationTargetContext, timings: ja.AnimationTiming) => {
+const createAnimation = (ctx: AnimationTargetContext, timings: AnimationTiming) => {
     // process css as either keyframes or calculate what those keyframes should be   
     const options = ctx.options!
     const target = ctx.target as HTMLElement
     const css = options.css
 
-    let sourceKeyframes: ja.CssKeyframeOptions[]
+    let sourceKeyframes: CssKeyframeOptions[]
     if (isArray(css)) {
         // if an array, no processing has to occur
-        sourceKeyframes = css as ja.CssKeyframeOptions[]
+        sourceKeyframes = css as CssKeyframeOptions[]
         expandOffsets(sourceKeyframes)
     } else {
         sourceKeyframes = []
-        propsToKeyframes(css as ja.CssPropertyOptions, sourceKeyframes, ctx)
+        propsToKeyframes(css as CssPropertyOptions, sourceKeyframes, ctx)
     }
 
     const targetKeyframes: Keyframe[] = []
@@ -65,7 +85,7 @@ const createAnimation = (ctx: ja.AnimationTargetContext, timings: ja.AnimationTi
         fixPartialKeyframes(targetKeyframes)
     }
 
-    const animator = target.animate(targetKeyframes, timings)
+    const animator = (target as any).animate(targetKeyframes, timings)
     animator.cancel()
     return animator
 }
@@ -74,14 +94,14 @@ const createAnimation = (ctx: ja.AnimationTargetContext, timings: ja.AnimationTi
 export class Animator {
     public endTimeMs: number
     public startTimeMs: number
-    private ctx: ja.AnimationTimeContext
+    private ctx: AnimationTimeContext
     private easingFn: (n: number) => number
-    private timing: ja.AnimationTiming
-    private onCancel?: (ctx: ja.AnimationTimeContext) => void
-    private onFinish?: (ctx: ja.AnimationTimeContext) => void
-    private onPause?: (ctx: ja.AnimationTimeContext) => void
-    private onPlay?: (ctx: ja.AnimationTimeContext) => void
-    private onUpdate?: (ctx: ja.AnimationTimeContext) => void
+    private timing: AnimationTiming
+    private onCancel?: (ctx: AnimationTimeContext) => void
+    private onFinish?: (ctx: AnimationTimeContext) => void
+    private onPause?: (ctx: AnimationTimeContext) => void
+    private onPlay?: (ctx: AnimationTimeContext) => void
+    private onUpdate?: (ctx: AnimationTimeContext) => void
     private _animator: Animation
 
     private get animator(): Animation {
@@ -98,7 +118,7 @@ export class Animator {
         const { animator } = this
         return !animator ? 'fatal' : animator.playState
     }
-    public set playState(value: ja.AnimationPlaybackState) {
+    public set playState(value: AnimationPlaybackState) {
         const { animator } = this
         const playState = !animator ? 'fatal' : animator.playState
         if (playState === value) {
@@ -120,7 +140,7 @@ export class Animator {
         const self = this
         const { delay, easing, endDelay, from, index, target, targets } = options
 
-        const ctx: ja.AnimationTimeContext = {
+        const ctx: AnimationTimeContext = {
             index: index,
             target: target,
             targets: targets
@@ -282,24 +302,24 @@ export class Animator {
 }
 
 export interface IAnimationOptions {
-    direction: ja.Resolvable<string>
-    delay: ja.Resolvable<number>
+    direction: Resolvable<string>
+    delay: Resolvable<number>
     easing: string
-    endDelay: ja.Resolvable<number>
-    fill: ja.Resolvable<string>
+    endDelay: Resolvable<number>
+    fill: Resolvable<string>
     from: number
-    iterationStart: ja.Resolvable<number>
-    iterations: ja.Resolvable<number>
-    easingFn: ja.Func<number>
+    iterationStart: Resolvable<number>
+    iterations: Resolvable<number>
+    easingFn: Func<number>
     index: number
     to: number
     target: any
     targets: any[]
 
-    onCancel: (ctx: ja.AnimationTimeContext) => void
-    onCreate: (ctx: ja.AnimationTimeContext) => void
-    onFinish: (ctx: ja.AnimationTimeContext) => void
-    onPause: (ctx: ja.AnimationTimeContext) => void
-    onPlay: (ctx: ja.AnimationTimeContext) => void
-    onUpdate: (ctx: ja.AnimationTimeContext) => void
+    onCancel: (ctx: AnimationTimeContext) => void
+    onCreate: (ctx: AnimationTimeContext) => void
+    onFinish: (ctx: AnimationTimeContext) => void
+    onPause: (ctx: AnimationTimeContext) => void
+    onPlay: (ctx: AnimationTimeContext) => void
+    onUpdate: (ctx: AnimationTimeContext) => void
 }

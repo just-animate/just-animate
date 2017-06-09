@@ -7,7 +7,7 @@
     "@types/chai": "^4.0.0",
     "@types/jsdom": "^11.0.0",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.28",
+    "@types/node": "^7.0.29",
     "chai": "^4.0.2",
     "concurrently": "^3.4.0",
     "del-cli": "^1.0.0",

@@ -1,3 +1,4 @@
+import { Keyframe } from '../types'
 import { head, isDefined, tail } from '../utils'
 
 /**

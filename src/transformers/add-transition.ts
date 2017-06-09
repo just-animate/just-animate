@@ -1,3 +1,4 @@
+import { Keyframe } from '../types'
 import { isDefined } from '../utils'
 import { transforms } from './resources'
 

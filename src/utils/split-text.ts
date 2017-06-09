@@ -1,22 +1,15 @@
+import { AnimationTarget, SplitTextResult } from '../types'
 import { getTargets, toArray } from '.'
 
-const applySplitStyles = (element: HTMLElement) => {
-    element.style.display = 'inline-block'
-    element.style.position = 'relative'
-    element.style.textAlign = 'start'
-}
+const applySplitStyles = (element: HTMLElement) =>
+    element.setAttribute('style', 'display:inline-block;position:relative:textAlign:start')    
 
 /**
  * Detects words and characters from a target or a list of targets.
  * Note: if multiple targets are detected, they will return as a single
  * list of characters and numbers
- * 
- * @param {ja.AnimationDomTarget} target
- * @returns {ja.SplitTextResult}
- * 
- * @memberOf JustAnimate
  */
-export const splitText = (target: ja.AnimationTarget): ja.SplitTextResult => {
+export const splitText = (target: AnimationTarget): SplitTextResult => {
 
     // output parameters
     const characters: HTMLElement[] = []

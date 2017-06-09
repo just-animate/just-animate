@@ -1,4 +1,5 @@
-import { cssFunction } from '../utils/strings';
+import { AnimationTargetContext, CssKeyframeOptions, Keyframe } from '../types'
+import { cssFunction } from '../utils/strings'
 import { css } from 'just-curves'
 import { _, isDefined, resolve, toCamelCase } from '../utils'
 import { propertyAliases, transforms } from './resources'
@@ -51,7 +52,7 @@ const normalizeProperties = (keyframe: Keyframe): void => {
 /**
  * This calls all keyframe properties that are functions and sets their values
  */
-export const resolvePropertiesInKeyframes = (source: ja.CssKeyframeOptions[], target: ja.CssKeyframeOptions[], ctx: ja.AnimationTargetContext) => {
+export const resolvePropertiesInKeyframes = (source: CssKeyframeOptions[], target: CssKeyframeOptions[], ctx: AnimationTargetContext) => {
     for (let i = 0, ilen = source.length; i < ilen; i++) {
         const sourceKeyframe = source[i]
         let targetKeyframe: Keyframe = {}

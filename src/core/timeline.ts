@@ -1,4 +1,5 @@
 import { css, cssFunction } from 'just-curves'
+import { AnimationDirection, AnimationOptions, AnimationPlaybackState, AnimationTimeContext } from '../types'
 
 import {
     _,
@@ -29,30 +30,30 @@ const PLAY = 'play'
 const RUNNING = 'running'
 const UPDATE = 'update'
 
-export class Timeline implements ja.ITimeline {
+export class Timeline {
     public duration = 0
     public currentTime: number = _
     public playbackRate = 1
-    public playState: ja.AnimationPlaybackState = IDLE
+    public playState: AnimationPlaybackState = IDLE
     private _animations: Animator[] = []    
-    private _ctx: ja.AnimationTimeContext
+    private _ctx: AnimationTimeContext
     private _currentIteration: number = _
-    private _direction: ja.AnimationDirection = NORMAL    
-    private _listeners: { [key: string]: { (ctx: ja.AnimationTimeContext): void }[] }    
+    private _direction: AnimationDirection = NORMAL    
+    private _listeners: { [key: string]: { (ctx: AnimationTimeContext): void }[] }    
     private _totalIterations: number = _
 
     constructor() {
         const self = this
-        const ctx = {} as ja.AnimationTimeContext
+        const ctx = {} as AnimationTimeContext
         self._ctx = ctx
         self._listeners = {}
     }
-    public append(options: ja.AnimationOptions) {
+    public append(options: AnimationOptions) {
         const self = this
         self.at(self.duration, options)
         return self
     }
-    public at(position: string | number, opts: ja.AnimationOptions) {
+    public at(position: string | number, opts: AnimationOptions) {
         const self = this
         const { _animations } = self
         const startTime = convertToMs(parseUnit(position || 0))
@@ -125,7 +126,7 @@ export class Timeline implements ja.ITimeline {
         self.trigger(FINISH, self._ctx)
         return self
     }
-    public on(eventName: string, listener: (ctx: ja.AnimationTimeContext) => void) {
+    public on(eventName: string, listener: (ctx: AnimationTimeContext) => void) {
         const self = this
         const { _listeners } = self
 
@@ -136,7 +137,7 @@ export class Timeline implements ja.ITimeline {
 
         return self
     }
-    public off(eventName: string, listener: (ctx: ja.AnimationTimeContext) => void) {
+    public off(eventName: string, listener: (ctx: AnimationTimeContext) => void) {
         const self = this
         const listeners = self._listeners[eventName]
         if (listeners) {
@@ -174,7 +175,7 @@ export class Timeline implements ja.ITimeline {
         self.playbackRate = (self.playbackRate || 0) * -1
         return self
     }
-    private trigger = (eventName: string, resolvable: ja.AnimationTimeContext | { (): ja.AnimationTimeContext; }) => {
+    private trigger = (eventName: string, resolvable: AnimationTimeContext | { (): AnimationTimeContext; }) => {
         const self = this
         const listeners = self._listeners[eventName as string]
         if (listeners) {
