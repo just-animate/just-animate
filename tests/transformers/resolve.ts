@@ -89,4 +89,15 @@ describe('resolve', () => {
     }
     assert.equal(resolve('-=1px', context as any) as string, '-3px')
   })
+  
+  it('resolves nested functions holding a += notation string', () => {
+    const target = {}
+    const context = {
+      index: 2,
+      target: target,
+      targets: [undefined, undefined, target]
+    }
+    const insanity = () => () => () => '+=100em'
+    assert.equal(resolve(insanity, context as any) as string, '300em')
+  })
 })
