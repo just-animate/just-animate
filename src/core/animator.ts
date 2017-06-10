@@ -1,11 +1,11 @@
-import { _, FATAL, FINISHED, IDLE, PAUSED, RUNNING } from '../utils/resources'
-import { assign, isArray, resolve, convertToMs, unitResolver } from '../utils'
+import { _, FATAL, FINISHED, IDLE, PAUSED, RUNNING } from '../utils'
+import { assign, isArray, convertToMs } from '../utils'
 import {
     Animation, AnimationPlaybackState, AnimationTargetContext, AnimationTimeContext, AnimationTiming, CssKeyframeOptions,
     CssPropertyOptions, Func, Keyframe, Resolvable
 } from '../types'
 import {
-    addTransition, fixOffsets, expandOffsets, fixPartialKeyframes, keyframeOffsetComparer, propsToKeyframes,
+    addTransition, fixOffsets, expandOffsets, fixPartialKeyframes, keyframeOffsetComparer, propsToKeyframes, resolve,
     resolvePropertiesInKeyframes, spaceKeyframes
 } from '../transformers'
 
@@ -131,8 +131,8 @@ export class Animator {
         const direction = resolve(options.direction, ctx) || _
         const duration = +options.to - +options.from
         const fill = resolve(options.fill, ctx) || 'none'
-        const delayMs = convertToMs(unitResolver(resolve(delay, ctx) || 0)(index))
-        const endDelayMs = convertToMs(unitResolver(resolve(endDelay, ctx) || 0)(index))
+        const delayMs = convertToMs(resolve(delay, ctx) || 0)
+        const endDelayMs = convertToMs(resolve(endDelay, ctx) || 0)
         const totalTime = delayMs + ((iterations || 1) * duration) + endDelayMs
 
         // setup instance variables

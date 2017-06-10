@@ -1,5 +1,5 @@
 import { css, cssFunction } from 'just-curves'
-import { assign, convertToMs,  getTargets, inRange, isFunction, maxBy, parseUnit, toCamelCase } from '../utils'
+import { assign, convertToMs, getTargets, isDefined, inRange, isFunction, maxBy, toCamelCase } from '../utils'
 import { _, ALTERNATE, CANCEL, FATAL, FINISH, FINISHED, IDLE, ITERATION, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING, UPDATE } from '../utils/resources'
 import { AnimationDirection, AnimationOptions, AnimationPlaybackState, AnimationTimeContext } from '../types'
 import { Animator, timeloop } from '.'
@@ -9,11 +9,11 @@ export class Timeline {
     public currentTime: number = _
     public playbackRate = 1
     public playState: AnimationPlaybackState = IDLE
-    private _animations: Animator[] = []    
+    private _animations: Animator[] = []
     private _ctx: AnimationTimeContext
     private _currentIteration: number = _
-    private _direction: AnimationDirection = NORMAL    
-    private _listeners: { [key: string]: { (ctx: AnimationTimeContext): void }[] }    
+    private _direction: AnimationDirection = NORMAL
+    private _listeners: { [key: string]: { (ctx: AnimationTimeContext): void }[] }
     private _totalIterations: number = _
 
     constructor() {
@@ -24,82 +24,46 @@ export class Timeline {
     }
     public append(options: AnimationOptions) {
         const self = this
-        self.at(self.duration, options)
+        self.from(self.duration, options)
         return self
     }
-    public at(position: string | number, opts: AnimationOptions) {
-        const self = this
-        const { _animations } = self
-        const startTime = convertToMs(parseUnit(position || 0))
 
-        const { delay, direction, endDelay, fill, iterationStart, iterations } = opts
-
-        // set from and to relative to existing duration    
-        const from = convertToMs(parseUnit(opts.from || 0)) + startTime
-        const to = convertToMs(parseUnit(opts.to || 0)) + startTime
-
-        // set easing to linear by default     
-        const easingFn = cssFunction(opts.easing || css.ease)
-        const easing = css[toCamelCase(opts.easing)] || opts.easing || css.ease
-
-        const targets = getTargets(opts.targets!)
-        for (let index = 0, ilen = targets.length; index < ilen; index++) {
-            const target = targets[index]
-
-            const animator = new Animator({
-                to,
-                from,
-                delay,
-                direction,
-                easing,
-                easingFn,
-                endDelay,
-                fill,
-                iterationStart,
-                iterations,
-                target,
-                targets,
-                index,
-                onCreate: opts.onCreate,
-                onCancel: opts.onCancel,
-                onFinish: opts.onFinish,
-                onPause: opts.onPause,
-                onPlay: opts.onPlay,
-                onUpdate: opts.onUpdate
-            })
-
-            _animations.push(animator)
-        }
-
-        // recalculate the max duration of the timeline
-        self.duration = maxBy(self._animations, e => e.endTimeMs)
-
-        return self
-    }
     public cancel() {
         const self = this
-        timeloop.off(self.tick)
+        timeloop.off(self._tick)
         self.currentTime = 0
         self._currentIteration = _
         self.playState = IDLE
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].cancel()
         }
-        self.trigger(CANCEL, self._ctx)
+        self._trigger(CANCEL, self._ctx)
         return self
     }
     public finish() {
         const self = this
-        timeloop.off(self.tick)
+        timeloop.off(self._tick)
         self.currentTime = _
         self._currentIteration = _
         self.playState = FINISHED
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].finish()
         }
-        self.trigger(FINISH, self._ctx)
+        self._trigger(FINISH, self._ctx)
         return self
     }
+
+    public from(fromTime: string | number, opts: AnimationOptions) {
+        const self = this
+        const startTime = convertToMs(fromTime)
+        const endTime = isDefined(opts.to)
+            ? convertToMs(opts.to)
+            : startTime + convertToMs(isDefined(opts.duration)
+                ? opts.duration
+                : self.duration)
+        return self._insert(startTime, endTime, opts)
+    }
+
     public on(eventName: string, listener: (ctx: AnimationTimeContext) => void) {
         const self = this
         const { _listeners } = self
@@ -124,12 +88,12 @@ export class Timeline {
     }
     public pause() {
         const self = this
-        timeloop.off(self.tick)
+        timeloop.off(self._tick)
         self.playState = PAUSED
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].pause()
         }
-        self.trigger(PAUSE, self._ctx)
+        self._trigger(PAUSE, self._ctx)
         return self
     }
     public play(iterations = 1) {
@@ -139,8 +103,8 @@ export class Timeline {
 
         if (!(self.playState === RUNNING || self.playState === PENDING)) {
             self.playState = PENDING
-            timeloop.on(self.tick)
-            self.trigger(PLAY, self._ctx)
+            timeloop.on(self._tick)
+            self._trigger(PLAY, self._ctx)
         }
         return self
     }
@@ -149,7 +113,60 @@ export class Timeline {
         self.playbackRate = (self.playbackRate || 0) * -1
         return self
     }
-    private trigger = (eventName: string, resolvable: AnimationTimeContext | { (): AnimationTimeContext; }) => {
+
+    public to(toTime: string | number, opts: AnimationOptions) {
+        const self = this
+        const endTime = convertToMs(toTime)
+        const fromTime = isDefined(opts.from)
+            ? convertToMs(opts.from)
+            : endTime - convertToMs(isDefined(opts.duration)
+                ? opts.duration : 0)
+        return self._insert(fromTime, endTime, opts)
+    }
+
+    private _insert(from: number, to: number, opts: AnimationOptions) {
+        const self = this
+        const { _animations } = self
+
+        const { delay, direction, endDelay, fill, iterationStart, iterations } = opts
+        // set easing to linear by default     
+        const easingFn = cssFunction(opts.easing || css.ease)
+        const easing = css[toCamelCase(opts.easing)] || opts.easing || css.ease
+
+        const targets = getTargets(opts.targets!)
+        for (let index = 0, ilen = targets.length; index < ilen; index++) {
+            _animations.push(
+                new Animator({
+                    to,
+                    from,
+                    delay,
+                    direction,
+                    easing,
+                    easingFn,
+                    endDelay,
+                    fill,
+                    iterationStart,
+                    iterations,
+                    target: targets[index],
+                    targets,
+                    index,
+                    onCreate: opts.onCreate,
+                    onCancel: opts.onCancel,
+                    onFinish: opts.onFinish,
+                    onPause: opts.onPause,
+                    onPlay: opts.onPlay,
+                    onUpdate: opts.onUpdate
+                })
+            )
+        }
+
+        // recalculate the max duration of the timeline
+        self.duration = maxBy(self._animations, e => e.endTimeMs)
+
+        return self
+    }
+
+    private _trigger = (eventName: string, resolvable: AnimationTimeContext | { (): AnimationTimeContext; }) => {
         const self = this
         const listeners = self._listeners[eventName as string]
         if (listeners) {
@@ -163,7 +180,7 @@ export class Timeline {
         }
         return self
     }
-    private tick = (delta: number) => {
+    private _tick = (delta: number) => {
         const self = this
         const playState = self.playState
         const context = self._ctx
@@ -235,13 +252,13 @@ export class Timeline {
                 targets: _
             })
 
-            self.trigger(ITERATION, context)
+            self._trigger(ITERATION, context)
         }
 
         self._currentIteration = currentIteration
         self.currentTime = currentTime
 
-        self.trigger(UPDATE, context)
+        self._trigger(UPDATE, context)
 
         if (totalIterations === currentIteration) {
             self.finish()

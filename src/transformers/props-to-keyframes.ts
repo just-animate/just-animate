@@ -1,7 +1,8 @@
 import { AnimationTargetContext, CssKeyframeOptions, CssPropertyOptions } from '../types'
-import { _, isArray, isDefined, parseUnit, resolve, unsupported } from '../utils'
+import { _, isArray, isDefined, parseUnit, unsupported } from '../utils'
 import { keyframeOffsetComparer } from './keyframe-offset-comparer'
 import { transforms } from './resources'
+import { resolve } from '.'
 
 export const propsToKeyframes = (css: CssPropertyOptions, keyframes: CssKeyframeOptions[], ctx: AnimationTargetContext): void => {
     // create a map to capture each keyframe by offset

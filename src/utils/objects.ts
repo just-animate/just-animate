@@ -1,5 +1,4 @@
-import { AnimationTargetContext, Resolver } from '../types'
-import { isArray, isFunction, isObject, getTypeString } from './type'
+import { isArray, isObject, getTypeString } from './type'
 import { _ } from '.'
 
 /**
@@ -45,11 +44,4 @@ export const deepCopyObject = <T1 extends {}, T2 extends {}>(origin: T1, dest?: 
         deepCopyProperty(prop, origin, dest)
     }
     return dest
-}
-
-/**
- *  Resolves the property/value of an animation
- */
-export const resolve = <T1>(value: T1 | Resolver<T1>, ctx: AnimationTargetContext): T1 => {
-    return isFunction(value) ? (value as Resolver<T1>)(ctx) : value as T1
 }

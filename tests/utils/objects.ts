@@ -1,32 +1,9 @@
 import * as chai from 'chai'
 const { assert, expect } = chai
 
-import { resolve, deepCopyObject } from '../../src/utils'
+import { deepCopyObject } from '../../src/utils'
 
 describe('objects', () => {
-
-  describe('resolve', () => {
-    it('returns the same value when a non-function', () => {
-      const initial = 5
-      const result = resolve(initial, {})
-
-      expect(result).to.equal(initial)
-    })
-
-    it('returns the result of a function otherwise', () => {
-      const target = {}
-      const context = {
-        index: 2,
-        target: target,
-        targets: [undefined, undefined, target]
-      }
-      const initial = function(ctx: any): number { return ctx.index * 100 }
-      const result = resolve(initial, context as any)
-
-      expect(result).to.equal(200)
-    })
-  })
-
   describe('deepCopyObject', () => {
     it('combines combines {x:1} and {y:2} into {x:1,y;2}', () => {
       const first = { x: 1 }

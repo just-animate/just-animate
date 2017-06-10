@@ -1,7 +1,7 @@
 import * as chai from 'chai'
-const { assert, expect } = chai
+const { assert } = chai
 
-import { unitResolver, parseUnit } from '../../src/utils'
+import { parseUnit } from '../../src/utils'
 
 describe('parseUnit', () => {
     describe('parseUnit()', () => {
@@ -219,43 +219,6 @@ describe('parseUnit', () => {
             const result = parseUnit('-100%')
             assert.equal(-100, result.value)
             assert.equal('%', result.unit)
-        })
-    })
-
-    describe('createUnitResolver()', () => {
-        it('returns 1s when passed 1s', () => {
-            const resolver = unitResolver('1s')
-            expect({ unit: 's', value: 1 }).to.deep.equal(resolver(0))
-            expect({ unit: 's', value: 1 }).to.deep.equal(resolver(1))
-            expect({ unit: 's', value: 1 }).to.deep.equal(resolver(2))
-        })
-
-        it('returns x += 1.1 when passed += 1.1', () => {
-            const resolver = unitResolver('+=1.1')
-            assert.approximately((resolver(0) as any).value as number, 1.1, 0.0001)
-            assert.approximately((resolver(1) as any).value as number, 2.2, 0.0001)
-            assert.approximately((resolver(2) as any).value as number, 3.3, 0.0001)
-        })
-
-        it('returns x -= 1.1 when passed -= 1.1', () => {
-            const resolver = unitResolver('-=1.1')
-            assert.approximately((resolver(0) as any).value as number, -1.1, 0.0001)
-            assert.approximately((resolver(1) as any).value as number, -2.2, 0.0001)
-            assert.approximately((resolver(2) as any).value as number, -3.3, 0.0001)
-        })
-
-        it('returns x += 1 when passed +=1s', () => {
-            const resolver = unitResolver('+=1s')
-            expect({ unit: 's', value: 1 }).to.deep.equal(resolver(0))
-            expect({ unit: 's', value: 2 }).to.deep.equal(resolver(1))
-            expect({ unit: 's', value: 3 }).to.deep.equal(resolver(2))
-        })
-
-        it('returns x -= 1s when passed -=1s', () => {
-            const resolver = unitResolver('-=1s')
-            expect({ unit: 's', value: -1 }).to.deep.equal(resolver(0))
-            expect({ unit: 's', value: -2 }).to.deep.equal(resolver(1))
-            expect({ unit: 's', value: -3 }).to.deep.equal(resolver(2))
         })
     })
 })

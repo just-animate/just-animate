@@ -100,6 +100,7 @@ export type AnimationOptions = {
   css?: CssPropertyOptions | CssKeyframeOptions[];
   delay?: Resolvable<number>;
   direction?: Resolvable<string>;
+  duration?: string | number;
   easing?: string;
   endDelay?: Resolvable<number>;
   fill?: Resolvable<FillMode>;
@@ -108,7 +109,7 @@ export type AnimationOptions = {
   iterationStart?: Resolvable<number>;
   mixins?: string | string[];
   targets?: AnimationTarget;
-  to: number | string;
+  to?: number | string;
 
   onCancel?: AnimationEventListener;
   onCreate?: AnimationEventListener;

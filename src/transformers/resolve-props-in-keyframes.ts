@@ -1,8 +1,9 @@
+import { css } from 'just-curves'
 import { AnimationTargetContext, CssKeyframeOptions, Keyframe } from '../types'
 import { cssFunction } from '../utils/strings'
-import { css } from 'just-curves'
-import { _, isDefined, resolve, toCamelCase } from '../utils'
+import { _, isDefined, toCamelCase } from '../utils'
 import { propertyAliases, transforms } from './resources'
+import { resolve } from '.'
 
 const transformPropertyComparer = (a: string[], b: string[]) =>
     transforms.indexOf(a[0]) - transforms.indexOf(b[0])
