@@ -15,11 +15,9 @@ on individual animation and calls finish.  If an animation plays after its time,
 like it restarts and that causes jank */
 const animationPadding = (1.0 / 60) + 7
 
-const createAnimation = (ctx: AnimationTargetContext, timings: AnimationTiming) => {
+const createAnimation = (css: CssKeyframeOptions[] | CssPropertyOptions, ctx: AnimationTargetContext, timings: AnimationTiming, isTransition: boolean) => {
     // process css as either keyframes or calculate what those keyframes should be   
-    const options = ctx.options!
     const target = ctx.target as HTMLElement
-    const css = options.css
 
     let sourceKeyframes: CssKeyframeOptions[]
     if (isArray(css)) {
@@ -35,10 +33,9 @@ const createAnimation = (ctx: AnimationTargetContext, timings: AnimationTiming) 
 
     resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx)
 
-    if (options.$transition === true) {
+    if (isTransition) {
         // add computed properties to match "to" properties
         addTransition(targetKeyframes, target)
-        delete options.$transition
     }
 
     if (targetKeyframes.length > 1) {
@@ -67,6 +64,8 @@ const createAnimation = (ctx: AnimationTargetContext, timings: AnimationTiming) 
 export class Animator {
     public endTimeMs: number
     public startTimeMs: number
+    private $transition: boolean
+    private css:  CssKeyframeOptions[] | CssPropertyOptions
     private ctx: AnimationTimeContext
     private easingFn: (n: number) => number
     private timing: AnimationTiming
@@ -82,8 +81,8 @@ export class Animator {
         if (self._animator) {
             return self._animator
         }
-        const { ctx, timing } = self
-        self._animator = createAnimation(ctx, timing)
+        const { $transition, css, ctx, timing } = self
+        self._animator = createAnimation(css, ctx, timing, $transition)
         return self._animator
     }
 
@@ -113,12 +112,12 @@ export class Animator {
 
     constructor(options: IAnimationOptions) {
         const self = this
-        const { delay, easing, endDelay, from, index, target, targets } = options
+        const { $transition, css, delay, easing, endDelay, from, index, target, targets } = options
 
         const ctx: AnimationTimeContext = {
-            index: index,
-            target: target,
-            targets: targets
+            index,
+            target,
+            targets
         }
 
         // fire create function if provided (allows for modifying the target prior to animating)
@@ -143,11 +142,9 @@ export class Animator {
         self.onUpdate = options.onUpdate
         self.endTimeMs = from + totalTime
         self.startTimeMs = from
-
-        // add resolver context
+        self.css = css
         self.ctx = ctx
-
-        // add easing fn
+        self.$transition = !!$transition
         self.easingFn = options.easingFn
 
         // setup WAAPI timing object
@@ -273,6 +270,8 @@ export class Animator {
 }
 
 export interface IAnimationOptions {
+    $transition: boolean
+    css: CssKeyframeOptions[] | CssPropertyOptions
     direction: Resolvable<string>
     delay: Resolvable<number>
     easing: string

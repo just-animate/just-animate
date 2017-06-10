@@ -1,4 +1,4 @@
-import { css, cssFunction } from 'just-curves'
+import { css as cssDef, cssFunction } from 'just-curves'
 import { assign, convertToMs, getTargets, isDefined, inRange, isFunction, maxBy, toCamelCase } from '../utils'
 import { _, ALTERNATE, CANCEL, FATAL, FINISH, FINISHED, IDLE, ITERATION, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING, UPDATE } from '../utils/resources'
 import { AnimationDirection, AnimationOptions, AnimationPlaybackState, AnimationTimeContext } from '../types'
@@ -128,15 +128,17 @@ export class Timeline {
         const self = this
         const { _animations } = self
 
-        const { delay, direction, endDelay, fill, iterationStart, iterations } = opts
+        const { $transition, css, delay, direction, endDelay, fill, iterationStart, iterations } = opts
         // set easing to linear by default     
-        const easingFn = cssFunction(opts.easing || css.ease)
-        const easing = css[toCamelCase(opts.easing)] || opts.easing || css.ease
+        const easingFn = cssFunction(opts.easing || cssDef.ease)
+        const easing = css[toCamelCase(opts.easing)] || opts.easing || cssDef.ease
 
         const targets = getTargets(opts.targets!)
         for (let index = 0, ilen = targets.length; index < ilen; index++) {
             _animations.push(
                 new Animator({
+                    $transition,
+                    css,
                     to,
                     from,
                     delay,
@@ -212,7 +214,7 @@ export class Timeline {
         let endTime = isReversed ? 0 : duration
 
         if (self.playState === PENDING) {
-            const currentTime2 = self.currentTime
+            const currentTime2 = self.currentTime || 0
             const currentIteration = self._currentIteration
             self.currentTime = currentTime2 === endTime ? startTime : currentTime2
             self._currentIteration = currentIteration === totalIterations ? 0 : currentIteration

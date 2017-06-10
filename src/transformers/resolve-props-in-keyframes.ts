@@ -33,6 +33,9 @@ const normalizeProperties = (keyframe: Keyframe): void => {
         if (transformIndex !== -1) {
             // handle transforms
             cssTransforms.push([propAlias, value])
+            
+            // explicitly remove shorthand property
+            delete keyframe[prop]
         } else if (propAlias === 'easing') {
             // handle easings, switch out for css function if available, default to ease
             keyframe.easing = css[toCamelCase(value as string)] || value || css.linear
