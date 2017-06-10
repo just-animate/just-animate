@@ -1,7 +1,5 @@
 import { isDefined, isNumber } from './type'
-import { measureExpression, unitExpression } from './resources'
-import { random } from './random'
-import { _ } from '.'
+import { _, measureExpression, unitExpression } from './resources'
 
 export const stepNone = '='
 export const stepForward = '+='
@@ -12,39 +10,22 @@ export const stepBackward = '-='
  * at a given index.  for instance +=200 should be 200 at 0, 400 at 1, and 600 at 2
  */
 export const unitResolver = (val: string | number): UnitResolver => {
-    if (!isDefined(val)) {
-        return () => ({ unit: _, value: 0 })
-    }
-    if (isNumber(val)) {
-        return () => ({ unit: _, value: val as number })
-    }
+    if (isDefined(val) && !isNumber(val)) {
+        const match = unitExpression.exec(val as string) as RegExpExecArray
+        if (match) {
+            const stepTypeString = match[1]
+            const startString = match[2]
+            const unitTypeString = match[3]
 
-    const match = unitExpression.exec(val as string) as RegExpExecArray
-    const stepTypeString = match[1]
-    const startString = match[2]
-    const toOperator = match[3]
-    const endValueString = match[4]
-    const unitTypeString = match[5]
-
-    const startCo = startString ? parseFloat(startString) : 0
-    const endCo = endValueString ? parseFloat(endValueString) : 0
-    const sign = stepTypeString === stepBackward ? -1 : 1
-    const isIndexed = !!stepTypeString
-    const isRange = toOperator === 'to'
-
-    const resolver = (index?: number) => {
-        const index2 = isIndexed && isDefined(index) ? (index || 0) + 1 : 1
-        const value = isRange
-            ? random(startCo * (index2) * sign, (endCo - startCo) * index2 * sign) as number
-            : startCo * index2 * sign
-
-        return {
-            unit: unitTypeString || _,
-            value: value
+            const startCo = startString ? parseFloat(startString) : 0
+            const sign = stepTypeString === stepBackward ? -1 : 1
+            return (index?: number) => ({
+                unit: unitTypeString || _,
+                value: startCo * (stepTypeString && isDefined(index) ? (index || 0) + 1 : 1) * sign
+            })
         }
     }
-
-    return resolver
+    return () => val
 }
 
 /**
@@ -74,8 +55,11 @@ export const parseUnit = (val: string | number, output?: Unit): Unit => {
 /**
  * returns the unit as a number (resolves seconds to milliseconds)
  */
-export const convertToMs = (unit: Unit): number => {
-    return (unit.value || 0) * (unit.unit === 's' ? 1000 : 1)
+export const convertToMs = (unit: Unit | string | number) => {
+    if (unit && (unit as Unit).value) {
+        return ((unit as Unit).value || 0) * ((unit as Unit).unit === 's' ? 1000 : 1)
+    }
+    return unit as number
 }
 
 export type Unit = {
@@ -83,6 +67,4 @@ export type Unit = {
     unit?: string;
 }
 
-export type UnitResolver = {
-    (index: number): Unit;
-}
+export type UnitResolver = (index: number) => Unit | string | number

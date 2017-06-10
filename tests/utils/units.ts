@@ -232,16 +232,16 @@ describe('parseUnit', () => {
 
         it('returns x += 1.1 when passed += 1.1', () => {
             const resolver = unitResolver('+=1.1')
-            assert.approximately(resolver(0).value as number, 1.1, 0.0001)
-            assert.approximately(resolver(1).value as number, 2.2, 0.0001)
-            assert.approximately(resolver(2).value as number, 3.3, 0.0001)
+            assert.approximately((resolver(0) as any).value as number, 1.1, 0.0001)
+            assert.approximately((resolver(1) as any).value as number, 2.2, 0.0001)
+            assert.approximately((resolver(2) as any).value as number, 3.3, 0.0001)
         })
 
         it('returns x -= 1.1 when passed -= 1.1', () => {
             const resolver = unitResolver('-=1.1')
-            assert.approximately(resolver(0).value as number, -1.1, 0.0001)
-            assert.approximately(resolver(1).value as number, -2.2, 0.0001)
-            assert.approximately(resolver(2).value as number, -3.3, 0.0001)
+            assert.approximately((resolver(0) as any).value as number, -1.1, 0.0001)
+            assert.approximately((resolver(1) as any).value as number, -2.2, 0.0001)
+            assert.approximately((resolver(2) as any).value as number, -3.3, 0.0001)
         })
 
         it('returns x += 1 when passed +=1s', () => {
@@ -257,24 +257,5 @@ describe('parseUnit', () => {
             expect({ unit: 's', value: -2 }).to.deep.equal(resolver(1))
             expect({ unit: 's', value: -3 }).to.deep.equal(resolver(2))
         })
-
-        it('returns 100 when passed 0to1', () => {
-            const resolver = unitResolver('0 to 1')
-            const random1 = resolver(0).value as number
-            assert.isAbove(random1, -.000001)
-            assert.isBelow(random1, 1)
-        })
-
-        it('returns 100 to 200 when passed 100to200', () => {
-            const resolver = unitResolver('+= 100 to 200')
-            const random1 = resolver(0).value as number
-            assert.isAbove(random1, 99)
-            assert.isBelow(random1, 200)
-
-            const random2 = resolver(1).value as number
-            assert.isAbove(random2, 199)
-            assert.isBelow(random2, 300)
-        })
-
     })
 })

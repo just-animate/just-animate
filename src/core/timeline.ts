@@ -1,34 +1,8 @@
 import { css, cssFunction } from 'just-curves'
+import { assign, convertToMs,  getTargets, inRange, isFunction, maxBy, parseUnit, toCamelCase } from '../utils'
+import { _, ALTERNATE, CANCEL, FATAL, FINISH, FINISHED, IDLE, ITERATION, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING, UPDATE } from '../utils/resources'
 import { AnimationDirection, AnimationOptions, AnimationPlaybackState, AnimationTimeContext } from '../types'
-
-import {
-    _,
-    assign,
-    convertToMs,
-    getTargets,
-    inRange,
-    isFunction,
-    maxBy,
-    parseUnit,
-    toCamelCase
-} from '../utils'
-
 import { Animator, timeloop } from '.'
-
-const ALTERNATE = 'alternate'
-const CANCEL = 'cancel'
-const FATAL = 'fatal'
-const FINISH = 'finish'
-const FINISHED = 'finished'
-const IDLE = 'idle'
-const ITERATION = 'iteration'
-const NORMAL = 'normal'
-const PAUSE = 'pause'
-const PAUSED = 'paused'
-const PENDING = 'pending'
-const PLAY = 'play'
-const RUNNING = 'running'
-const UPDATE = 'update'
 
 export class Timeline {
     public duration = 0

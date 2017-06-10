@@ -1,42 +1,15 @@
+import { _, FATAL, FINISHED, IDLE, PAUSED, RUNNING } from '../utils/resources'
+import { assign, isArray, resolve, convertToMs, unitResolver } from '../utils'
 import {
-  Animation,
-  AnimationPlaybackState,
-  AnimationTargetContext,
-  AnimationTimeContext,
-  AnimationTiming,
-  CssKeyframeOptions,
-  CssPropertyOptions,
-  Func,
-  Keyframe,
-  Resolvable
+    Animation, AnimationPlaybackState, AnimationTargetContext, AnimationTimeContext, AnimationTiming, CssKeyframeOptions,
+    CssPropertyOptions, Func, Keyframe, Resolvable
 } from '../types'
- 
 import {
-    _,
-    assign,
-    isArray,
-    resolve,
-    convertToMs,
-    unitResolver
-} from '../utils'
-
-import {
-    addTransition,
-    fixOffsets,
-    expandOffsets,
-    fixPartialKeyframes,
-    keyframeOffsetComparer,
-    propsToKeyframes,
-    resolvePropertiesInKeyframes,
-    spaceKeyframes
+    addTransition, fixOffsets, expandOffsets, fixPartialKeyframes, keyframeOffsetComparer, propsToKeyframes,
+    resolvePropertiesInKeyframes, spaceKeyframes
 } from '../transformers'
 
-const FINISHED = 'finished'
-const IDLE = 'idle'
-const PAUSED = 'paused'
-const RUNNING = 'running'
-
-// fixme: see if this can be removed somehow
+// fixme: see if this can be removed
 /* this controls the amount of time left before the timeline gives up 
 on individual animation and calls finish.  If an animation plays after its time, it looks
 like it restarts and that causes jank */
@@ -120,18 +93,20 @@ export class Animator {
     }
     public set playState(value: AnimationPlaybackState) {
         const { animator } = this
-        const playState = !animator ? 'fatal' : animator.playState
+        const playState = !animator ? FATAL : animator.playState
         if (playState === value) {
-            /* do nothing */
-        } else if (playState === 'fatal') {
+            // do nothing if the play state has not changed
+            return
+        }
+        if (playState === FATAL) {
             animator.cancel()
-        } else if (value === 'finished') {
+        } else if (value === FINISHED) {
             animator.finish()
-        } else if (value === 'idle') {
+        } else if (value === IDLE) {
             animator.cancel()
-        } else if (value === 'paused') {
+        } else if (value === PAUSED) {
             animator.pause()
-        } else if (value === 'running') {
+        } else if (value === RUNNING) {
             animator.play()
         }
     }
@@ -156,12 +131,8 @@ export class Animator {
         const direction = resolve(options.direction, ctx) || _
         const duration = +options.to - +options.from
         const fill = resolve(options.fill, ctx) || 'none'
-
-        const delayUnit = unitResolver(resolve(delay, ctx) || 0)(index)
-        const endDelayUnit = unitResolver(resolve(endDelay, ctx) || 0)(index)
-
-        const delayMs = convertToMs(delayUnit)
-        const endDelayMs = convertToMs(endDelayUnit)
+        const delayMs = convertToMs(unitResolver(resolve(delay, ctx) || 0)(index))
+        const endDelayMs = convertToMs(unitResolver(resolve(endDelay, ctx) || 0)(index))
         const totalTime = delayMs + ((iterations || 1) * duration) + endDelayMs
 
         // setup instance variables
@@ -175,7 +146,7 @@ export class Animator {
 
         // add resolver context
         self.ctx = ctx
-        
+
         // add easing fn
         self.easingFn = options.easingFn
 
@@ -291,7 +262,7 @@ export class Animator {
             assign(ctx, {
                 computedOffset: self.easingFn(timeOffset),
                 currentTime: relativeCurrentTime,
-                delta, 
+                delta,
                 offset: timeOffset,
                 playbackRate
             })
