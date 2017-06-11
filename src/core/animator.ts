@@ -64,7 +64,6 @@ const createAnimation = (css: CssKeyframeOptions[] | CssPropertyOptions, ctx: An
 export class Animator {
     public endTimeMs: number
     public startTimeMs: number
-    private $transition: boolean
     private css:  CssKeyframeOptions[] | CssPropertyOptions
     private ctx: AnimationTimeContext
     private easingFn: (n: number) => number
@@ -75,20 +74,21 @@ export class Animator {
     private onPlay?: (ctx: AnimationTimeContext) => void
     private onUpdate?: (ctx: AnimationTimeContext) => void
     private _animator: Animation
+    private transition: boolean    
 
     private get animator(): Animation {
         const self = this
         if (self._animator) {
             return self._animator
         }
-        const { $transition, css, ctx, timing } = self
-        self._animator = createAnimation(css, ctx, timing, $transition)
+        const { transition, css, ctx, timing } = self
+        self._animator = createAnimation(css, ctx, timing, transition)
         return self._animator
     }
 
     public get playState() {
         const { animator } = this
-        return !animator ? 'fatal' : animator.playState
+        return !animator ? FATAL : animator.playState
     }
     public set playState(value: AnimationPlaybackState) {
         const { animator } = this
@@ -112,7 +112,7 @@ export class Animator {
 
     constructor(options: IAnimationOptions) {
         const self = this
-        const { $transition, css, delay, easing, endDelay, from, index, target, targets } = options
+        const { transition, css, delay, easing, endDelay, from, index, stagger, target, targets } = options
 
         const ctx: AnimationTimeContext = {
             index,
@@ -130,6 +130,7 @@ export class Animator {
         const direction = resolve(options.direction, ctx) || _
         const duration = +options.to - +options.from
         const fill = resolve(options.fill, ctx) || 'none'
+        const staggerMs = convertToMs(resolve(stagger, ctx, true) || 0)
         const delayMs = convertToMs(resolve(delay, ctx) || 0)
         const endDelayMs = convertToMs(resolve(endDelay, ctx) || 0)
         const totalTime = delayMs + ((iterations || 1) * duration) + endDelayMs
@@ -140,11 +141,11 @@ export class Animator {
         self.onPause = options.onPause
         self.onPlay = options.onPlay
         self.onUpdate = options.onUpdate
-        self.endTimeMs = from + totalTime
-        self.startTimeMs = from
+        self.endTimeMs = staggerMs + from + totalTime
+        self.startTimeMs = staggerMs + from
         self.css = css
         self.ctx = ctx
-        self.$transition = !!$transition
+        self.transition = !!transition
         self.easingFn = options.easingFn
 
         // setup WAAPI timing object
@@ -182,13 +183,13 @@ export class Animator {
             animator.playbackRate = value
         }
     }
-
+    
     public cancel() {
         const self = this
         self.playState = IDLE
         if (self.onCancel) {
             self.onCancel(self.ctx)
-        }
+        }  
     }
 
     public finish() {
@@ -197,7 +198,7 @@ export class Animator {
         self.playState = FINISHED
         if (self.onFinish) {
             self.onFinish(ctx)
-        }
+        }  
     }
 
     public pause() {
@@ -230,7 +231,7 @@ export class Animator {
         }
 
         self.playbackRate(playbackRate)
-
+        
         const shouldTriggerPlay = !!self.onPlay && playedThisFrame
         const shouldTriggerUpdate = !!self.onUpdate
 
@@ -270,7 +271,7 @@ export class Animator {
 }
 
 export interface IAnimationOptions {
-    $transition: boolean
+    transition: boolean
     css: CssKeyframeOptions[] | CssPropertyOptions
     direction: Resolvable<string>
     delay: Resolvable<number>
@@ -285,6 +286,8 @@ export interface IAnimationOptions {
     to: number
     target: any
     targets: any[]
+    
+    stagger: Resolvable<string | number>
 
     onCancel: (ctx: AnimationTimeContext) => void
     onCreate: (ctx: AnimationTimeContext) => void

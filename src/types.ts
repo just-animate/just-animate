@@ -71,18 +71,6 @@ export type AnimationTimeContext = {
 
 export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'update' | 'iteration'
 
-export type AnimationMixin = {
-  name: string;
-  css?: CssPropertyOptions | CssKeyframeOptions[];
-  delay?: Resolvable<number>;
-  direction?: Resolvable<string>;
-  easing?: string;
-  endDelay?: Resolvable<number>;
-  fill?: Resolvable<FillMode>;
-  iterations?: Resolvable<number>;
-  iterationStart?: Resolvable<number>;
-  to: number | string;
-}
 export type AnimationEvent = {
   cancel?: AnimationEventListener;
   finish?: AnimationEventListener;
@@ -96,7 +84,6 @@ export type AnimationEventListener = {
   (ctx: AnimationTimeContext): void;
 }
 export type AnimationOptions = {
-  $transition?: boolean;
   css?: CssPropertyOptions | CssKeyframeOptions[];
   delay?: Resolvable<number>;
   direction?: Resolvable<string>;
@@ -108,7 +95,9 @@ export type AnimationOptions = {
   iterations?: Resolvable<number>;
   iterationStart?: Resolvable<number>;
   mixins?: string | string[];
+  stagger?: Resolvable<string | number>;
   targets?: AnimationTarget;
+  transition?: boolean;  
   to?: number | string;
 
   onCancel?: AnimationEventListener;
@@ -393,12 +382,7 @@ export type AnimationTargetContext = {
   index?: number;
   targets?: AnimationTarget[]
 }
-export type Mapper<T1, T2> = {
-  (mapable: T1): T2;
-}
-export type Func<T1> = {
-  (mapable: T1): T1;
-}
-export type Resolver<T> = {
-  (ctx: AnimationTargetContext): T;
-}
+
+export type Mapper<T1, T2> = (mapable: T1) => T2
+export type Func<T1> = (mapable: T1) => T1
+export type Resolver<T> = (ctx: AnimationTargetContext) => T

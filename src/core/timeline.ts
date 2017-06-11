@@ -1,7 +1,12 @@
 import { css as cssDef, cssFunction } from 'just-curves'
-import { assign, convertToMs, getTargets, isDefined, inRange, isFunction, maxBy, toCamelCase } from '../utils'
+import { assign, convertToMs, getTargets, inRange, isDefined, isFunction, maxBy, missing, toCamelCase } from '../utils'
 import { _, ALTERNATE, CANCEL, FATAL, FINISH, FINISHED, IDLE, ITERATION, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING, UPDATE } from '../utils/resources'
-import { AnimationDirection, AnimationOptions, AnimationPlaybackState, AnimationTimeContext } from '../types'
+import {
+    AnimationDirection,
+    AnimationOptions,
+    AnimationPlaybackState,
+    AnimationTimeContext
+} from '../types'
 import { Animator, timeloop } from '.'
 
 export class Timeline {
@@ -56,11 +61,18 @@ export class Timeline {
     public from(fromTime: string | number, opts: AnimationOptions) {
         const self = this
         const startTime = convertToMs(fromTime)
-        const endTime = isDefined(opts.to)
-            ? convertToMs(opts.to)
-            : startTime + convertToMs(isDefined(opts.duration)
-                ? opts.duration
-                : self.duration)
+
+        let endTime: number
+        if (isDefined(opts.to)) {
+            endTime = convertToMs(opts.to)
+        } else if (isDefined(opts.duration)) {
+            endTime = startTime + convertToMs(opts.duration)
+        } else if (!self.duration) {
+            throw missing('duration/to')
+        } else {
+            endTime = self.duration
+        }
+
         return self._insert(startTime, endTime, opts)
     }
 
@@ -117,10 +129,16 @@ export class Timeline {
     public to(toTime: string | number, opts: AnimationOptions) {
         const self = this
         const endTime = convertToMs(toTime)
-        const fromTime = isDefined(opts.from)
-            ? convertToMs(opts.from)
-            : endTime - convertToMs(isDefined(opts.duration)
-                ? opts.duration : 0)
+
+        let fromTime: number
+        if (isDefined(opts.from)) {
+            fromTime = convertToMs(fromTime)
+        } else if (isDefined(opts.duration)) {
+            fromTime = Math.max(convertToMs(opts.duration), 0)
+        } else {
+            fromTime = self.duration
+        }
+
         return self._insert(fromTime, endTime, opts)
     }
 
@@ -128,16 +146,16 @@ export class Timeline {
         const self = this
         const { _animations } = self
 
-        const { $transition, css, delay, direction, endDelay, fill, iterationStart, iterations } = opts
+        const { transition, css, delay, direction, endDelay, fill, iterationStart, stagger, iterations } = opts
         // set easing to linear by default     
         const easingFn = cssFunction(opts.easing || cssDef.ease)
         const easing = css[toCamelCase(opts.easing)] || opts.easing || cssDef.ease
-
+        
         const targets = getTargets(opts.targets!)
         for (let index = 0, ilen = targets.length; index < ilen; index++) {
             _animations.push(
                 new Animator({
-                    $transition,
+                    transition,
                     css,
                     to,
                     from,
@@ -149,6 +167,7 @@ export class Timeline {
                     fill,
                     iterationStart,
                     iterations,
+                    stagger,
                     target: targets[index],
                     targets,
                     index,

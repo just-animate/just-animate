@@ -1,2 +1,2 @@
-export const invalidArg = (name: string) => new Error(`Bad: ${name}`)
+export const missing = (msg: string) => new Error(`Missing: ${msg}`)
 export const unsupported = (msg: string) => new Error(`Unsupported: ${msg}`)
