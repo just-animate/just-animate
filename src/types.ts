@@ -69,7 +69,7 @@ export type AnimationTimeContext = {
   iterations?: number;
 }
 
-export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'update' | 'iteration'
+export type AnimationEventType = 'cancel' | 'pause' | 'play' | 'finish' | 'iteration'
 
 export type AnimationEvent = {
   cancel?: AnimationEventListener;
@@ -102,7 +102,6 @@ export type AnimationOptions = {
 
   onCancel?: AnimationEventListener;
   onCreate?: AnimationEventListener;
-  onUpdate?: AnimationEventListener;
   onPause?: AnimationEventListener;
   onPlay?: AnimationEventListener;
   onFinish?: AnimationEventListener;

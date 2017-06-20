@@ -53,7 +53,7 @@ export const propsToKeyframes = (css: CssPropertyOptions, keyframes: CssKeyframe
 
     const offsets = Object
         .keys(keyframesByOffset)
-        .map((s: CssKeyframeOptions) => +s)
+        .map(s => +s)
         .sort()
 
     // if prop not present calculate each transform property in list

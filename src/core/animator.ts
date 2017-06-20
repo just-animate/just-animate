@@ -72,7 +72,6 @@ export class Animator {
     private onFinish?: (ctx: AnimationTimeContext) => void
     private onPause?: (ctx: AnimationTimeContext) => void
     private onPlay?: (ctx: AnimationTimeContext) => void
-    private onUpdate?: (ctx: AnimationTimeContext) => void
     private _animator: Animation
     private transition: boolean    
 
@@ -140,7 +139,6 @@ export class Animator {
         self.onFinish = options.onFinish
         self.onPause = options.onPause
         self.onPlay = options.onPlay
-        self.onUpdate = options.onUpdate
         self.endTimeMs = staggerMs + from + totalTime
         self.startTimeMs = staggerMs + from
         self.css = css
@@ -216,7 +214,7 @@ export class Animator {
         animator.play()
     }
 
-    public tick(currentTime: number, playbackRate: number, delta: number, isLastFrame: boolean) {
+    public tick(playbackRate: number, isLastFrame: boolean) {
         const self = this
         const { ctx } = self
         if (isLastFrame) {
@@ -233,9 +231,8 @@ export class Animator {
         self.playbackRate(playbackRate)
         
         const shouldTriggerPlay = !!self.onPlay && playedThisFrame
-        const shouldTriggerUpdate = !!self.onUpdate
 
-        if (shouldTriggerPlay || shouldTriggerUpdate) {
+        if (shouldTriggerPlay) {
             assign(ctx, {
                 computedOffset: _,
                 currentTime: _,
@@ -249,23 +246,6 @@ export class Animator {
 
         if (shouldTriggerPlay && self.onPlay) {
             self.onPlay(ctx)
-        }
-
-        if (shouldTriggerUpdate) {
-            const relativeDuration = self.endTimeMs - self.startTimeMs
-            const relativeCurrentTime = currentTime - self.startTimeMs
-            const timeOffset = relativeCurrentTime / relativeDuration
-
-            // set context object values for this update cycle 
-            assign(ctx, {
-                computedOffset: self.easingFn(timeOffset),
-                currentTime: relativeCurrentTime,
-                delta,
-                offset: timeOffset,
-                playbackRate
-            })
-
-            self.onUpdate(ctx)
         }
     }
 }
@@ -294,5 +274,4 @@ export interface IAnimationOptions {
     onFinish: (ctx: AnimationTimeContext) => void
     onPause: (ctx: AnimationTimeContext) => void
     onPlay: (ctx: AnimationTimeContext) => void
-    onUpdate: (ctx: AnimationTimeContext) => void
 }

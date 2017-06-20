@@ -51,7 +51,7 @@ describe('propsToKeyframes', () => {
     it('should change rotate: [0, 90deg, -360deg] to appropriate keyframes', () => {
         const css = {
             rotate: [0, '90deg', '-360deg']
-        }
+        } as any
         const sourceKeyframes: any = []
         const options = {}
         const target = document.createElement('div')

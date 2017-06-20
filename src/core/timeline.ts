@@ -175,8 +175,7 @@ export class Timeline {
                     onCancel: opts.onCancel,
                     onFinish: opts.onFinish,
                     onPause: opts.onPause,
-                    onPlay: opts.onPlay,
-                    onUpdate: opts.onUpdate
+                    onPlay: opts.onPlay
                 })
             )
         }
@@ -299,7 +298,7 @@ export class Timeline {
                 continue
             }
 
-            animator.tick(currentTime, playbackRate, delta, isLastFrame)
+            animator.tick(playbackRate, isLastFrame)
         }
     }
 }
