@@ -100,11 +100,11 @@ export type AnimationOptions = {
   transition?: boolean;  
   to?: number | string;
 
-  onCancel?: AnimationEventListener;
+  onCancel?: () => void;
   onCreate?: AnimationEventListener;
-  onPause?: AnimationEventListener;
-  onPlay?: AnimationEventListener;
-  onFinish?: AnimationEventListener;
+  onPause?: () => void;
+  onPlay?: () => void;
+  onFinish?: () => void;
 }
 export type CssPropertyOptions = {
   backdropFilter?: Resolvable<string | (string)[]>;

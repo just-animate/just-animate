@@ -269,9 +269,9 @@ export interface IAnimationOptions {
     
     stagger: Resolvable<string | number>
 
-    onCancel: (ctx: AnimationTimeContext) => void
-    onCreate: (ctx: AnimationTimeContext) => void
-    onFinish: (ctx: AnimationTimeContext) => void
-    onPause: (ctx: AnimationTimeContext) => void
-    onPlay: (ctx: AnimationTimeContext) => void
+    onCancel(): void
+    onCreate(ctx: AnimationTimeContext): void
+    onFinish(): void
+    onPause(): void
+    onPlay(): void
 }
