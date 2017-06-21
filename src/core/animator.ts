@@ -69,6 +69,7 @@ export class Animator {
     private onPause?: () => void
     private onPlay?: () => void
     private _animator: Animation
+    private _playbackRate: number
     private transition: boolean
 
     private get animator(): Animation {
@@ -111,6 +112,7 @@ export class Animator {
         self.onFinish = options.onFinish
         self.onPause = options.onPause
         self.onPlay = options.onPlay
+        self._playbackRate = 1
         self.endTimeMs = staggerMs + from + totalTime
         self.startTimeMs = staggerMs + from
         self.css = css
@@ -132,19 +134,6 @@ export class Animator {
         }
     }
 
-    public isActive(currentTime: number, playbackRate: number) {
-        const self = this
-        let { endTimeMs, startTimeMs } = self
-        const isForward = playbackRate >= 0
-
-        if (isForward) {
-            const paddedForwardTime = currentTime + framePadding
-            return startTimeMs <= paddedForwardTime && paddedForwardTime < endTimeMs
-        }
-
-        const paddedBackwardTime = currentTime - framePadding
-        return startTimeMs < paddedBackwardTime && paddedBackwardTime <= endTimeMs
-    }
 
     public seek(currentTime: number) {
         // convert to time relative to the animation's duration
@@ -156,8 +145,40 @@ export class Animator {
             animator.currentTime = relativeTime
         }
     }
+    
+    public tick(currentTime: number, isLastFrame: boolean) {
+        const self = this
+        let { endTimeMs, startTimeMs } = self
+        const isForward = this._playbackRate >= 0
+
+        let isActive: boolean;        
+        if (isForward) {
+            const paddedForwardTime = currentTime + framePadding
+            isActive = startTimeMs <= paddedForwardTime && paddedForwardTime < endTimeMs
+        } else {
+            const paddedBackwardTime = currentTime - framePadding
+            isActive = startTimeMs < paddedBackwardTime && paddedBackwardTime <= endTimeMs 
+        }
+
+        if (!isActive) {
+            return
+        }
+        
+        if (self.animator.playState !== RUNNING || isLastFrame) {
+            if (isLastFrame) {
+                self.restart()
+            }
+            
+            self.animator.play()
+            if (self.onPlay) {
+                self.onPlay()
+            }
+        }
+    }
     public playbackRate(value: number) {
-        const { animator } = this
+        const self = this
+        const { animator } = self
+        self._playbackRate = value
         if (animator.playbackRate !== value) {
             animator.playbackRate = value
         }
@@ -191,25 +212,6 @@ export class Animator {
         const { animator } = this
         animator.cancel()
         animator.play()
-    }
-
-    public tick(playbackRate: number, isLastFrame: boolean) {
-        const self = this
-
-        if (isLastFrame) {
-            self.restart()
-        }
-
-        if (self.animator.playState !== RUNNING || isLastFrame) {
-            self.playbackRate(playbackRate)
-            self.animator.play()
-            
-            if (self.onPlay) {
-                self.onPlay()
-            }
-        }
-
-        self.playbackRate(playbackRate)
     }
 }
 

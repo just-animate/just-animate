@@ -9,18 +9,48 @@ import {
 import { Animator, timeloop } from '.'
 
 export class Timeline {
-    public duration = 0
-    public currentTime: number = _
-    public playbackRate = 1
-    public playState: AnimationPlaybackState = IDLE
-    private _animations: Animator[] = []
-    private _currentIteration: number = _
-    private _direction: AnimationDirection = NORMAL
+    public duration: number
+    public playState: AnimationPlaybackState
+    private _animations: Animator[]  
+    private _currentIteration: number    
+    private _currentTime: number
+    private _direction: AnimationDirection
     private _listeners: { [key: string]: { (): void }[] }
-    private _totalIterations: number = _
+    private _playbackRate: number    
+    private _totalIterations: number
 
+    public get currentTime() {
+        return this._currentTime
+    }
+    public set currentTime(currentTime: number) {
+        const self = this
+        self._currentTime = currentTime
+        for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
+            self._animations[i].seek(currentTime)
+        }
+    }
+    
+    public get playbackRate() {
+        return this._playbackRate
+    }
+    public set playbackRate(playbackRate: number) {
+        const self = this
+        self._playbackRate = playbackRate
+        for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
+            self._animations[i].playbackRate(playbackRate)
+        }
+    }
+    
     constructor() {
         const self = this
+        self.duration = 0
+        self._currentTime = _
+        self._playbackRate = 1
+        self.playState = IDLE
+        self._animations = []
+        self._currentIteration = _
+        self._direction = NORMAL
+        self._totalIterations = _
         self._listeners = {}
     }
     public append(options: AnimationOptions) {
@@ -32,7 +62,7 @@ export class Timeline {
     public cancel() {
         const self = this
         timeloop.off(self._tick)
-        self.currentTime = 0
+        self._currentTime = 0
         self._currentIteration = _
         self.playState = IDLE
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
@@ -44,7 +74,7 @@ export class Timeline {
     public finish() {
         const self = this
         timeloop.off(self._tick)
-        self.currentTime = _
+        self._currentTime = _
         self._currentIteration = _
         self.playState = FINISHED
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
@@ -120,14 +150,6 @@ export class Timeline {
         const self = this
         self.playbackRate = (self.playbackRate || 0) * -1
         return self
-    }
-    
-    public seek(currentTime: number) {
-        const self = this
-        self.currentTime = currentTime
-        for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
-            self._animations[i].seek(currentTime)
-        }
     }
 
     public to(toTime: string | number, opts: AnimationOptions) {
@@ -230,21 +252,21 @@ export class Timeline {
         const duration = self.duration
         const totalIterations = self._totalIterations
 
-        let playbackRate = self.playbackRate
+        let playbackRate = self._playbackRate
         let isReversed = playbackRate < 0
         let startTime = isReversed ? duration : 0
         let endTime = isReversed ? 0 : duration
 
         if (self.playState === PENDING) {
-            const currentTime2 = self.currentTime || 0
+            const currentTime2 = self._currentTime || 0
             const currentIteration = self._currentIteration
-            self.currentTime = currentTime2 === endTime ? startTime : currentTime2
+            self._currentTime = currentTime2 === endTime ? startTime : currentTime2
             self._currentIteration = currentIteration === totalIterations ? 0 : currentIteration
             self.playState = RUNNING
         }
 
         // calculate currentTime from delta
-        let currentTime = self.currentTime + delta * playbackRate
+        let currentTime = self._currentTime + delta * playbackRate
         let currentIteration = self._currentIteration || 0
 
         let isLastFrame = false
@@ -252,9 +274,8 @@ export class Timeline {
         if (!inRange(currentTime, startTime, endTime)) {
             isLastFrame = true
             if (self._direction === ALTERNATE) {
-                playbackRate = (self.playbackRate || 0) * -1
-                self.playbackRate = playbackRate
-
+                self.reverse()
+                playbackRate = self.playbackRate
                 isReversed = playbackRate < 0
                 startTime = isReversed ? duration : 0
                 endTime = isReversed ? 0 : duration
@@ -265,7 +286,7 @@ export class Timeline {
         }
 
         self._currentIteration = currentIteration
-        self.currentTime = currentTime
+        self._currentTime = currentTime
 
         if (totalIterations === currentIteration) {
             self.finish()
@@ -274,10 +295,7 @@ export class Timeline {
 
         // start animations if should be active and currently aren't   
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
-            const animator = self._animations[i]
-            if (animator.isActive(currentTime, playbackRate)) {
-                animator.tick(playbackRate, isLastFrame)
-            }
+            self._animations[i].tick(currentTime, isLastFrame)
         }
     }
 }
