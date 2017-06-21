@@ -1,6 +1,6 @@
 import { css as cssDef, cssFunction } from 'just-curves'
 import { assign, convertToMs, getTargets, inRange, isDefined, isFunction, maxBy, missing, toCamelCase } from '../utils'
-import { _, ALTERNATE, CANCEL, FATAL, FINISH, FINISHED, IDLE, ITERATION, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING, UPDATE } from '../utils/resources'
+import { _, ALTERNATE, CANCEL, FATAL, FINISH, FINISHED, IDLE, ITERATION, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
 import {
     AnimationDirection,
     AnimationOptions,
@@ -277,8 +277,6 @@ export class Timeline {
 
         self._currentIteration = currentIteration
         self.currentTime = currentTime
-
-        self._trigger(UPDATE, context)
 
         if (totalIterations === currentIteration) {
             self.finish()

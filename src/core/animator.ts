@@ -1,5 +1,5 @@
 import { _, FATAL, FINISHED, IDLE, PAUSED, RUNNING } from '../utils'
-import { assign, isArray, convertToMs } from '../utils'
+import { isArray, convertToMs } from '../utils'
 import {
     Animation, AnimationPlaybackState, AnimationTargetContext, AnimationTimeContext, AnimationTiming, CssKeyframeOptions,
     CssPropertyOptions, Func, Keyframe, Resolvable
@@ -9,11 +9,7 @@ import {
     resolvePropertiesInKeyframes, spaceKeyframes
 } from '../transformers'
 
-// fixme: see if this can be removed
-/* this controls the amount of time left before the timeline gives up 
-on individual animation and calls finish.  If an animation plays after its time, it looks
-like it restarts and that causes jank */
-const animationPadding = (1.0 / 60) + 7
+const framePadding = 17
 
 const createAnimation = (css: CssKeyframeOptions[] | CssPropertyOptions, ctx: AnimationTargetContext, timings: AnimationTiming, isTransition: boolean) => {
     // process css as either keyframes or calculate what those keyframes should be   
@@ -68,10 +64,10 @@ export class Animator {
     private ctx: AnimationTimeContext
     private easingFn: (n: number) => number
     private timing: AnimationTiming
-    private onCancel?: (ctx: AnimationTimeContext) => void
-    private onFinish?: (ctx: AnimationTimeContext) => void
-    private onPause?: (ctx: AnimationTimeContext) => void
-    private onPlay?: (ctx: AnimationTimeContext) => void
+    private onCancel?: () => void
+    private onFinish?: () => void
+    private onPause?: () => void
+    private onPlay?: () => void
     private _animator: Animation
     private transition: boolean    
 
@@ -162,11 +158,16 @@ export class Animator {
 
     public isActive(currentTime: number, playbackRate: number) {
         const self = this
+        let { endTimeMs, startTimeMs } = self   
         const isForward = playbackRate >= 0
-        const startTimeMs = isForward ? self.startTimeMs : self.startTimeMs + animationPadding
-        const endTimeMs = isForward ? self.endTimeMs : self.endTimeMs - animationPadding
+        
+        if (isForward) {
+            const paddedForwardTime = currentTime + framePadding
+            return startTimeMs <= paddedForwardTime && paddedForwardTime < endTimeMs
+        }
 
-        return startTimeMs <= currentTime && currentTime <= endTimeMs
+        const paddedBackwardTime = currentTime - framePadding      
+        return startTimeMs < paddedBackwardTime && paddedBackwardTime <= endTimeMs
     }
 
     public seek(value: number) {
@@ -186,25 +187,23 @@ export class Animator {
         const self = this
         self.playState = IDLE
         if (self.onCancel) {
-            self.onCancel(self.ctx)
+            self.onCancel()
         }  
     }
 
     public finish() {
         const self = this
-        const { ctx } = self
         self.playState = FINISHED
         if (self.onFinish) {
-            self.onFinish(ctx)
+            self.onFinish()
         }  
     }
 
     public pause() {
         const self = this
-        const { ctx } = self
         self.playState = PAUSED
         if (self.onPause) {
-            self.onPause(ctx)
+            self.onPause()
         }
     }
 
@@ -216,7 +215,7 @@ export class Animator {
 
     public tick(playbackRate: number, isLastFrame: boolean) {
         const self = this
-        const { ctx } = self
+        
         if (isLastFrame) {
             self.restart()
         }
@@ -230,22 +229,8 @@ export class Animator {
 
         self.playbackRate(playbackRate)
         
-        const shouldTriggerPlay = !!self.onPlay && playedThisFrame
-
-        if (shouldTriggerPlay) {
-            assign(ctx, {
-                computedOffset: _,
-                currentTime: _,
-                delta: _,
-                duration: _,
-                iterations: _,
-                offset: _,
-                playbackRate: _
-            })
-        }
-
-        if (shouldTriggerPlay && self.onPlay) {
-            self.onPlay(ctx)
+        if (!!self.onPlay && playedThisFrame) {
+            self.onPlay()
         }
     }
 }
