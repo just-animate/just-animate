@@ -16,10 +16,10 @@ const normalizeProperties = (keyframe: Keyframe): void => {
 
     for (let prop in keyframe) {
         const value = keyframe[prop]
-        
+
         // nullify properties so shorthand and handled properties don't end up in the result        
         keyframe[prop] = _
-        
+
         if (!isDefined(value)) {
             continue
         }
@@ -33,7 +33,7 @@ const normalizeProperties = (keyframe: Keyframe): void => {
         if (transformIndex !== -1) {
             // handle transforms
             cssTransforms.push([propAlias, value])
-            
+
             // explicitly remove shorthand property
             delete keyframe[prop]
         } else if (propAlias === 'easing') {

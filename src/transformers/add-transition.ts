@@ -9,7 +9,7 @@ export const addTransition = (keyframes: Keyframe[], target: HTMLElement): void 
 
     // create the first frame
     const firstFrame: Keyframe = { offset: 0 }
-    
+
     const props: string[] = []
     for (let i = 0, ilen = keyframes.length; i < ilen; i++) {
         const item = keyframes[i]
@@ -24,6 +24,6 @@ export const addTransition = (keyframes: Keyframe[], target: HTMLElement): void 
             }
         }
     }
-    
+
     keyframes.splice(0, 0, firstFrame)
 }

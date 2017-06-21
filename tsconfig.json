@@ -13,7 +13,7 @@
         "noImplicitAny": true,
         "noUnusedParameters": true,
         "noImplicitThis": true,
-        "noImplicitReturns": true,
+        "noImplicitReturns": false,
         "noImplicitUseStrict": true,
         "noEmit": true,
         "noUnusedLocals": true,        

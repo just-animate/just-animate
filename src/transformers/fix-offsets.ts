@@ -12,7 +12,7 @@ const fixOffset0 = (keyframes: Keyframe[]) => {
         first = {}
         keyframes.splice(0, 0, first)
     }
-    
+
     // set the first frame to offset 0
     if (first.offset !== 0) {
         first.offset = 0

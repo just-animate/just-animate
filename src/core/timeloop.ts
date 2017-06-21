@@ -10,7 +10,7 @@ let lastTime: number = _
 
 type TimeLoopCallback = (delta: number, elapsed: number) => any
 
-const updateOffs = (): void => { 
+const updateOffs = (): void => {
     for (let i = 0, ilen = offs.length; i < ilen; i++) {
         const indexOfSub = active.indexOf(offs[i])
         if (indexOfSub !== -1) {

@@ -60,7 +60,7 @@ const createAnimation = (css: CssKeyframeOptions[] | CssPropertyOptions, ctx: An
 export class Animator {
     public endTimeMs: number
     public startTimeMs: number
-    private css:  CssKeyframeOptions[] | CssPropertyOptions
+    private css: CssKeyframeOptions[] | CssPropertyOptions
     private ctx: AnimationTimeContext
     private easingFn: (n: number) => number
     private timing: AnimationTiming
@@ -69,7 +69,7 @@ export class Animator {
     private onPause?: () => void
     private onPlay?: () => void
     private _animator: Animation
-    private transition: boolean    
+    private transition: boolean
 
     private get animator(): Animation {
         const self = this
@@ -158,15 +158,15 @@ export class Animator {
 
     public isActive(currentTime: number, playbackRate: number) {
         const self = this
-        let { endTimeMs, startTimeMs } = self   
+        let { endTimeMs, startTimeMs } = self
         const isForward = playbackRate >= 0
-        
+
         if (isForward) {
             const paddedForwardTime = currentTime + framePadding
             return startTimeMs <= paddedForwardTime && paddedForwardTime < endTimeMs
         }
 
-        const paddedBackwardTime = currentTime - framePadding      
+        const paddedBackwardTime = currentTime - framePadding
         return startTimeMs < paddedBackwardTime && paddedBackwardTime <= endTimeMs
     }
 
@@ -182,13 +182,13 @@ export class Animator {
             animator.playbackRate = value
         }
     }
-    
+
     public cancel() {
         const self = this
         self.playState = IDLE
         if (self.onCancel) {
             self.onCancel()
-        }  
+        }
     }
 
     public finish() {
@@ -196,7 +196,7 @@ export class Animator {
         self.playState = FINISHED
         if (self.onFinish) {
             self.onFinish()
-        }  
+        }
     }
 
     public pause() {
@@ -215,7 +215,7 @@ export class Animator {
 
     public tick(playbackRate: number, isLastFrame: boolean) {
         const self = this
-        
+
         if (isLastFrame) {
             self.restart()
         }
@@ -228,7 +228,7 @@ export class Animator {
         }
 
         self.playbackRate(playbackRate)
-        
+
         if (!!self.onPlay && playedThisFrame) {
             self.onPlay()
         }
@@ -251,7 +251,7 @@ export interface IAnimationOptions {
     to: number
     target: any
     targets: any[]
-    
+
     stagger: Resolvable<string | number>
 
     onCancel(): void

@@ -150,7 +150,7 @@ export class Timeline {
         // set easing to linear by default     
         const easingFn = cssFunction(opts.easing || cssDef.ease)
         const easing = css[toCamelCase(opts.easing)] || opts.easing || cssDef.ease
-        
+
         const targets = getTargets(opts.targets!)
         for (let index = 0, ilen = targets.length; index < ilen; index++) {
             _animations.push(
