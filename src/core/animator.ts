@@ -1,7 +1,7 @@
-import { _, FATAL, FINISHED, IDLE, PAUSED, RUNNING } from '../utils'
+import { _, RUNNING } from '../utils'
 import { isArray, convertToMs } from '../utils'
 import {
-    Animation, AnimationPlaybackState, AnimationTargetContext, AnimationTimeContext, AnimationTiming, CssKeyframeOptions,
+    Animation, AnimationTargetContext, AnimationTimeContext, AnimationTiming, CssKeyframeOptions,
     CssPropertyOptions, Func, Keyframe, Resolvable
 } from '../types'
 import {
@@ -81,30 +81,6 @@ export class Animator {
         return self._animator
     }
 
-    public get playState() {
-        const { animator } = this
-        return !animator ? FATAL : animator.playState
-    }
-    public set playState(value: AnimationPlaybackState) {
-        const { animator } = this
-        const playState = !animator ? FATAL : animator.playState
-        if (playState === value) {
-            // do nothing if the play state has not changed
-            return
-        }
-        if (playState === FATAL) {
-            animator.cancel()
-        } else if (value === FINISHED) {
-            animator.finish()
-        } else if (value === IDLE) {
-            animator.cancel()
-        } else if (value === PAUSED) {
-            animator.pause()
-        } else if (value === RUNNING) {
-            animator.play()
-        }
-    }
-
     constructor(options: IAnimationOptions) {
         const self = this
         const { transition, css, delay, easing, endDelay, from, index, stagger, target, targets } = options
@@ -170,10 +146,14 @@ export class Animator {
         return startTimeMs < paddedBackwardTime && paddedBackwardTime <= endTimeMs
     }
 
-    public seek(value: number) {
-        const { animator } = this
-        if (animator.currentTime !== value) {
-            animator.currentTime = value
+    public seek(currentTime: number) {
+        // convert to time relative to the animation's duration
+        const { animator, startTimeMs, endTimeMs } = this
+        const relativeTime = Math.min(Math.max(currentTime - startTimeMs, 0), endTimeMs - startTimeMs)
+        
+        // set if different than the last known value
+        if (animator.currentTime !== relativeTime) {
+            animator.currentTime = relativeTime
         }
     }
     public playbackRate(value: number) {
@@ -185,7 +165,7 @@ export class Animator {
 
     public cancel() {
         const self = this
-        self.playState = IDLE
+        self.animator.cancel()
         if (self.onCancel) {
             self.onCancel()
         }
@@ -193,7 +173,7 @@ export class Animator {
 
     public finish() {
         const self = this
-        self.playState = FINISHED
+        self.animator.finish()
         if (self.onFinish) {
             self.onFinish()
         }
@@ -201,7 +181,7 @@ export class Animator {
 
     public pause() {
         const self = this
-        self.playState = PAUSED
+        self.animator.pause()
         if (self.onPause) {
             self.onPause()
         }
@@ -220,18 +200,16 @@ export class Animator {
             self.restart()
         }
 
-        let playedThisFrame = false
-        if (self.playState !== RUNNING || isLastFrame) {
+        if (self.animator.playState !== RUNNING || isLastFrame) {
             self.playbackRate(playbackRate)
-            self.playState = RUNNING
-            playedThisFrame = true
+            self.animator.play()
+            
+            if (self.onPlay) {
+                self.onPlay()
+            }
         }
 
         self.playbackRate(playbackRate)
-
-        if (!!self.onPlay && playedThisFrame) {
-            self.onPlay()
-        }
     }
 }
 

@@ -1,11 +1,10 @@
 import { css as cssDef, cssFunction } from 'just-curves'
-import { assign, convertToMs, getTargets, inRange, isDefined, isFunction, maxBy, missing, toCamelCase } from '../utils'
-import { _, ALTERNATE, CANCEL, FATAL, FINISH, FINISHED, IDLE, ITERATION, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
+import { convertToMs, getTargets, inRange, isDefined, maxBy, missing, toCamelCase } from '../utils'
+import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
 import {
     AnimationDirection,
     AnimationOptions,
-    AnimationPlaybackState,
-    AnimationTimeContext
+    AnimationPlaybackState
 } from '../types'
 import { Animator, timeloop } from '.'
 
@@ -15,16 +14,13 @@ export class Timeline {
     public playbackRate = 1
     public playState: AnimationPlaybackState = IDLE
     private _animations: Animator[] = []
-    private _ctx: AnimationTimeContext
     private _currentIteration: number = _
     private _direction: AnimationDirection = NORMAL
-    private _listeners: { [key: string]: { (ctx: AnimationTimeContext): void }[] }
+    private _listeners: { [key: string]: { (): void }[] }
     private _totalIterations: number = _
 
     constructor() {
         const self = this
-        const ctx = {} as AnimationTimeContext
-        self._ctx = ctx
         self._listeners = {}
     }
     public append(options: AnimationOptions) {
@@ -42,7 +38,7 @@ export class Timeline {
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].cancel()
         }
-        self._trigger(CANCEL, self._ctx)
+        self._trigger(CANCEL)
         return self
     }
     public finish() {
@@ -54,7 +50,7 @@ export class Timeline {
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].finish()
         }
-        self._trigger(FINISH, self._ctx)
+        self._trigger(FINISH)
         return self
     }
 
@@ -76,7 +72,7 @@ export class Timeline {
         return self._insert(startTime, endTime, opts)
     }
 
-    public on(eventName: string, listener: (ctx: AnimationTimeContext) => void) {
+    public on(eventName: string, listener: () => void) {
         const self = this
         const { _listeners } = self
 
@@ -87,7 +83,7 @@ export class Timeline {
 
         return self
     }
-    public off(eventName: string, listener: (ctx: AnimationTimeContext) => void) {
+    public off(eventName: string, listener: () => void) {
         const self = this
         const listeners = self._listeners[eventName]
         if (listeners) {
@@ -105,7 +101,7 @@ export class Timeline {
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].pause()
         }
-        self._trigger(PAUSE, self._ctx)
+        self._trigger(PAUSE)
         return self
     }
     public play(iterations = 1) {
@@ -116,7 +112,7 @@ export class Timeline {
         if (!(self.playState === RUNNING || self.playState === PENDING)) {
             self.playState = PENDING
             timeloop.on(self._tick)
-            self._trigger(PLAY, self._ctx)
+            self._trigger(PLAY)
         }
         return self
     }
@@ -124,6 +120,14 @@ export class Timeline {
         const self = this
         self.playbackRate = (self.playbackRate || 0) * -1
         return self
+    }
+    
+    public seek(currentTime: number) {
+        const self = this
+        self.currentTime = currentTime
+        for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
+            self._animations[i].seek(currentTime)
+        }
     }
 
     public to(toTime: string | number, opts: AnimationOptions) {
@@ -180,22 +184,23 @@ export class Timeline {
             )
         }
 
-        // recalculate the max duration of the timeline
-        self.duration = maxBy(self._animations, e => e.endTimeMs)
+        self._calcDuration()
 
         return self
     }
+    
+    private _calcDuration() {
+        const self = this
+        // recalculate the max duration of the timeline
+        self.duration = maxBy(self._animations, e => e.endTimeMs)
+    }
 
-    private _trigger = (eventName: string, resolvable: AnimationTimeContext | { (): AnimationTimeContext; }) => {
+    private _trigger = (eventName: string) => {
         const self = this
         const listeners = self._listeners[eventName as string]
         if (listeners) {
-            const ctx = isFunction(resolvable)
-                ? (resolvable as Function)()
-                : resolvable
-
             for (const listener of listeners) {
-                listener(ctx)
+                listener()
             }
         }
         return self
@@ -203,7 +208,6 @@ export class Timeline {
     private _tick = (delta: number) => {
         const self = this
         const playState = self.playState
-        const context = self._ctx
 
         // canceled
         if (playState === IDLE) {
@@ -258,21 +262,6 @@ export class Timeline {
 
             currentIteration++
             currentTime = startTime
-
-            assign(context, {
-                computedOffset: _,
-                currentTime,
-                delta,
-                duration: endTime - startTime,
-                index: _,
-                iterations: currentIteration,
-                offset: _,
-                playbackRate,
-                target: _,
-                targets: _
-            })
-
-            self._trigger(ITERATION, context)
         }
 
         self._currentIteration = currentIteration
@@ -286,17 +275,9 @@ export class Timeline {
         // start animations if should be active and currently aren't   
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             const animator = self._animations[i]
-            if (!animator.isActive(currentTime, playbackRate)) {
-                continue
+            if (animator.isActive(currentTime, playbackRate)) {
+                animator.tick(playbackRate, isLastFrame)
             }
-            if (animator.playState === FATAL) {
-                // skip to end if there was a fatal error in one of the animators               
-                i = ilen
-                self.cancel()
-                continue
-            }
-
-            animator.tick(playbackRate, isLastFrame)
         }
     }
 }
