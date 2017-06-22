@@ -195,6 +195,7 @@ export class Animator {
     public finish() {
         const self = this
         self.animator.finish()
+        self.animator.pause()
         if (self.onFinish) {
             self.onFinish()
         }
