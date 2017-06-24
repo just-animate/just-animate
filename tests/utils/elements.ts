@@ -1,11 +1,11 @@
-import { jsdom } from '../dom'
+// import { jsdom } from '../dom'
 import * as chai from 'chai'
 const { assert } = chai 
 
 import { getTargets, splitText } from '../../src/utils'
 
 describe('elements', () => {
-    jsdom()
+    // jsdom()
     
     describe('getTargets()', () => {
 

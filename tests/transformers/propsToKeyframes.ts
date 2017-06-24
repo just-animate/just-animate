@@ -1,11 +1,11 @@
-import { jsdom } from '../dom'
+// import { jsdom } from '../dom'
 import * as chai from 'chai'
 const { expect } = chai 
 
 import { propsToKeyframes } from '../../src/transformers'
 
 describe('propsToKeyframes', () => {
-    jsdom()
+    // jsdom()
 
     it('should change opacity: [1,0,1,0] to appropriate keyframes', () => {
         const css = {

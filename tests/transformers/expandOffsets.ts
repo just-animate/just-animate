@@ -1,11 +1,11 @@
-import { jsdom } from '../dom'
+// import { jsdom } from '../dom'
 import * as chai from 'chai'
 const { expect } = chai
 
 import { expandOffsets } from '../../src/transformers'
 
 describe('expandOffsets', () => {
-    jsdom()
+    // jsdom()
 
     it('should copy offset: [0, 1] to { offset: 0 }, { offset: 1}', () => {
         const keyframes = [

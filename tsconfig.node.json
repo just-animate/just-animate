@@ -2,7 +2,8 @@
     "compilerOptions": {
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
-        "declaration": false,
+        "declaration": true,
+        "declarationDir": "types",
         "forceConsistentCasingInFileNames": true,
         "inlineSourceMap": false,
         "newLine": "LF",
