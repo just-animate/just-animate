@@ -94,20 +94,17 @@ module.exports = function (config) {
             ]
         }
     }
+    configuration.browsers.push(
+        'Chrome',
+        'Firefox'
+    )
 
-    // if (process.env.TRAVIS) {
-    //     configuration.singleRun = true
-    //     configuration.browsers.push(
-    //         'Chrome_travis_ci',
-    //         'Firefox'
-    //     )
-    // } else {
-        configuration.singleRun = false
-        configuration.browsers.push(
-            'Chrome',
-            'Firefox'
-        )
-    // }
+    if (process.env.TRAVIS) {
+        configuration.singleRun = true
+        
+    } else {
+        configuration.singleRun = false 
+    }
 
     config.set(configuration)
 }
