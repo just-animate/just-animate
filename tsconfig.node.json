@@ -28,8 +28,7 @@
         "lib",
         "lib.es2015",
         "tests",
-        "node_modules", 
-        "src/just-animate-umd.ts",
-        "src/just-animate-vue.ts"
+        "node_modules",
+        "types"
     ]
 }
