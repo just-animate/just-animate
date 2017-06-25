@@ -3,7 +3,7 @@ node_js:
 - '6'
 addons:
   firefox: latest
-  chrome: stable
+  chromium-browser: stable
 
 before_install:
   - export CHROME_BIN=chromium-browser
