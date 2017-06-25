@@ -95,19 +95,19 @@ module.exports = function (config) {
         }
     }
 
-    if (process.env.TRAVIS) {
-        configuration.singleRun = true
-        configuration.browsers.push(
-            'Chrome_travis_ci',
-            'Firefox'
-        )
-    } else {
+    // if (process.env.TRAVIS) {
+    //     configuration.singleRun = true
+    //     configuration.browsers.push(
+    //         'Chrome_travis_ci',
+    //         'Firefox'
+    //     )
+    // } else {
         configuration.singleRun = false
         configuration.browsers.push(
             'Chrome',
             'Firefox'
         )
-    }
+    // }
 
     config.set(configuration)
 }
