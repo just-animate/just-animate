@@ -23,7 +23,7 @@ export const resolve = <T1>(input: T1 | Resolver<T1>, ctx: AnimationTargetContex
         }
     }
     if (isNumber(output) && isStep) {
-        return (output as number) * ctx.index
+        return (output as number) * (ctx.index + 1)
     }
     return output
 }

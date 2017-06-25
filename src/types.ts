@@ -99,7 +99,7 @@ export type AnimationEventListener = {
 }
 export type AnimationOptions = {
   css?: CssPropertyOptions | CssKeyframeOptions[]
-  delay?: Resolvable<number>
+  delay?: Resolvable<number | string>
   direction?: Resolvable<string>
   duration?: string | number
   easing?: string

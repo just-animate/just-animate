@@ -2,7 +2,7 @@ import { _, RUNNING } from '../utils'
 import { isArray, convertToMs } from '../utils'
 import {
     Animation, AnimationTargetContext, AnimationTimeContext, AnimationTiming, CssKeyframeOptions,
-    CssPropertyOptions, Func, Keyframe, Resolvable
+    CssPropertyOptions, Keyframe, Resolvable
 } from '../types'
 import {
     addTransition, fixOffsets, expandOffsets, fixPartialKeyframes, keyframeOffsetComparer, propsToKeyframes, resolve,
@@ -62,7 +62,7 @@ export class Animator {
     public startTimeMs: number
     private css: CssKeyframeOptions[] | CssPropertyOptions
     private ctx: AnimationTimeContext
-    private easingFn: (n: number) => number
+    // private easingFn: (n: number) => number
     private timing: AnimationTiming
     private onCancel?: () => void
     private onFinish?: () => void
@@ -118,7 +118,7 @@ export class Animator {
         self.css = css
         self.ctx = ctx
         self.transition = !!transition
-        self.easingFn = options.easingFn
+        // self.easingFn = options.easingFn
 
         // setup WAAPI timing object
         self.timing = {
@@ -133,7 +133,6 @@ export class Animator {
             totalTime
         }
     }
-
 
     public seek(currentTime: number) {
         // convert to time relative to the animation's duration
@@ -220,14 +219,14 @@ export interface IAnimationOptions {
     transition: boolean
     css: CssKeyframeOptions[] | CssPropertyOptions
     direction: Resolvable<string>
-    delay: Resolvable<number>
+    delay: Resolvable<number | string>
     easing: string
     endDelay: Resolvable<number>
     fill: Resolvable<string>
     from: number
     iterationStart: Resolvable<number>
     iterations: Resolvable<number>
-    easingFn: Func<number>
+    // easingFn: Func<number>
     index: number
     to: number
     target: any

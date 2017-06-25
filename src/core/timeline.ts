@@ -1,4 +1,3 @@
-import { css as cssDef, cssFunction } from 'just-curves'
 import { convertToMs, getTargets, inRange, isDefined, maxBy, missing, toCamelCase } from '../utils'
 import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
 import {
@@ -174,8 +173,8 @@ export class Timeline {
 
         const { transition, css, delay, direction, endDelay, fill, iterationStart, stagger, iterations } = opts
         // set easing to linear by default     
-        const easingFn = cssFunction(opts.easing || cssDef.ease)
-        const easing = css[toCamelCase(opts.easing)] || opts.easing || cssDef.ease
+        // const easingFn = cssFunction(opts.easing || 'linear')
+        const easing = css[toCamelCase(opts.easing)] || opts.easing || 'linear'
 
         const targets = getTargets(opts.targets!)
         for (let index = 0, ilen = targets.length; index < ilen; index++) {
@@ -188,7 +187,7 @@ export class Timeline {
                     delay,
                     direction,
                     easing,
-                    easingFn,
+                    // easingFn,
                     endDelay,
                     fill,
                     iterationStart,
