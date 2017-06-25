@@ -3,7 +3,6 @@ node_js:
 - '6'
 addons:
   firefox: latest
-  chrome: stable
 
 before_install:
   - export DISPLAY=:99.0
