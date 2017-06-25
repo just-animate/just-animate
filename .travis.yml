@@ -1,6 +1,9 @@
 language: node_js
 node_js:
 - '6'
+addons:
+  firefox: latest
+  chrome: stable
 
 before_install:
   - export CHROME_BIN=chromium-browser
