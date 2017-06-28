@@ -1,4 +1,3 @@
-import { Mapper } from '../types'
 import { isArray } from './type'
 import { _ } from '.'
 
@@ -43,6 +42,19 @@ export const tail = <T>(indexed: IList<T>, predicate?: { (t: T): boolean; }): T 
         }
     }
     return _
+}
+
+/**
+ * Returns the index of the first matching item or -1
+ */
+export const indexOf = <T>(items: T[], predicate: { (t: T): boolean }) => {
+    for (let i = 0, ilen = items.length; i < ilen; i++) {
+        const item = items[i]
+        if (predicate(item)) {
+            return i
+        }
+    }
+    return -1
 }
 
 /**
