@@ -1,4 +1,4 @@
-import { convertToMs, getTargets, inRange, isDefined, maxBy, missing, toCamelCase } from '../utils'
+import { convertToMs, getTargets, inRange, isDefined, missing, toCamelCase } from '../utils'
 import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
 import {
     AnimationDirection,
@@ -157,7 +157,7 @@ export class Timeline {
 
         let fromTime: number
         if (isDefined(opts.from)) {
-            fromTime = convertToMs(fromTime)
+            fromTime = convertToMs(opts.from)
         } else if (isDefined(opts.duration)) {
             fromTime = Math.max(convertToMs(opts.duration), 0)
         } else {
@@ -212,8 +212,17 @@ export class Timeline {
     
     private _calcDuration() {
         const self = this
+        const { _animations } = self
+        
         // recalculate the max duration of the timeline
-        self.duration = maxBy(self._animations, e => e.endTimeMs)
+        let duration = 0
+        for (let i = _animations.length - 1; i > -1; i--) {
+            const { endTimeMs } = _animations[i]
+            if (duration < endTimeMs) {
+                duration = endTimeMs
+            }
+        }
+        self.duration = duration
     }
 
     private _trigger = (eventName: string) => {
