@@ -57,6 +57,13 @@ export const indexOf = <T>(items: T[], predicate: { (t: T): boolean }) => {
     return -1
 }
 
+export function sortBy<T>(fieldName: keyof T) {
+    return (a: T, b: T) => {
+        const a1 = a[fieldName], b1 = b[fieldName]
+        return a1 < b1 ? -1 : a1 > b1 ? 1 : 0
+    }
+}
+
 /**
  * Converts list to an Array.
  * Useful for converting NodeList and arguments to []
