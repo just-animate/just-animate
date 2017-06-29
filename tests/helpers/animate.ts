@@ -61,7 +61,6 @@ describe('sequence', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      fill: 'both',
       css: [
         { opacity: 0 },
         { opacity: 1, offset: .4 },
@@ -100,7 +99,6 @@ describe('sequence', () => {
       targets: targets,
       duration: 1000,
       stagger: 100,
-      fill: 'both',
       css: [
         { opacity: 0 },
         { opacity: 1 }
@@ -131,7 +129,6 @@ describe('sequence', () => {
       targets: targets,
       duration: 1000,
       delay: '+=100ms',
-      fill: 'both',
       css: [
         { opacity: 0 },
         { opacity: 1 }

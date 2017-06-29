@@ -1,12 +1,12 @@
-import { AnimationTargetContext, Resolver } from '../types'
-import { isFunction, unitExpression, isNumber, isDefined } from '../utils'
+import { AnimationTarget, KeyframeValueResolver, KeyframeFunction } from '../types';
+import { isDefined, isFunction, isNumber, unitExpression } from '../utils';
 
 /**
  *  Resolves the property/value of an animation
  */
-export const resolve = <T1>(input: T1 | Resolver<T1>, ctx: AnimationTargetContext, isStep = false): any => {
+export const resolve = <T1>(input: KeyframeValueResolver, target: AnimationTarget, index?: number, isStep = false): any => {
     let output = isFunction(input)
-        ? resolve((input as Resolver<T1>)(ctx), ctx)
+        ? resolve((input as KeyframeFunction)(target, index), target, index)
         : input as T1 | number | string
 
     if (isDefined(output) && !isNumber(output)) {
@@ -17,13 +17,13 @@ export const resolve = <T1>(input: T1 | Resolver<T1>, ctx: AnimationTargetContex
             const unitTypeString = match[3]
             const num = startString ? parseFloat(startString) : 0
             const sign = stepTypeString === '-=' ? -1 : 1
-            const step = isStep || stepTypeString && isDefined(ctx.index) ? (ctx.index || 0) + 1 : 1
+            const step = isStep || stepTypeString && isDefined(index) ? (index || 0) + 1 : 1
             const val = sign * num * step
             return unitTypeString ? val + unitTypeString : val
         }
     }
     if (isNumber(output) && isStep) {
-        return (output as number) * (ctx.index + 1)
+        return (output as number) * (index + 1)
     }
     return output
 }

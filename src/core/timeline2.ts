@@ -1,14 +1,15 @@
-import { Keyframe } from '../types';
+import { isFunction } from 'util';
+
+import { AnimationTarget, Keyframe, KeyframeOptions, KeyframeValueResolver } from '../types';
 import { convertToMs, head, indexOf, isArray, isDefined, sortBy } from '../utils';
 import { inferOffsets } from '../transformers/infer-offsets';
 
-const propKeyframeSort = sortBy<PropertyKeyframe<any>>('time')
+const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
-export type AnimationTarget = {};
-
-export interface PropertyKeyframe<T> {
+export interface PropertyKeyframe {
     time: number
-    value: T | { (target: any, index: number, targets: any[]): T }
+    index: number
+    value: KeyframeValueResolver | KeyframeValueResolver[]
 }
 
 export interface Target {
@@ -16,12 +17,12 @@ export interface Target {
     from: number
     to: number
     duration: number
-    props: { [key: string]: PropertyKeyframe<any>[] }
+    props: { [key: string]: PropertyKeyframe[] }
 }
 
 export interface BaseAnimationOptions {
-    target: AnimationTarget[]
-    css: Keyframe[]
+    targets: AnimationTarget[]
+    css: KeyframeOptions[]
 }
 
 export interface ToAnimationOptions extends BaseAnimationOptions {
@@ -40,7 +41,7 @@ export interface AnimationOptions extends BaseAnimationOptions {
 
 interface EffectOptions {
     target: AnimationTarget
-    css: Keyframe[]
+    keyframes: Keyframe[]
     duration: number
     to: number
     from: number
@@ -86,8 +87,9 @@ export class Timeline2 {
         }
 
         // add all targets as property keyframes
-        for (let i = 0, ilen = options2.target.length; i < ilen; i++) {
-            self.addTarget(options2.target[i], options2)
+        const { targets } = options2
+        for (let i = 0, ilen = targets.length; i < ilen; i++) {
+            self.addTarget(targets[i], i, options2)
         }
 
         // sort property keyframes
@@ -113,7 +115,7 @@ export class Timeline2 {
         return self.fromTo(fromTime, endTime, opts)
     }
 
-    public toAnimations(): EffectOptions[] {
+    public getOptions(): EffectOptions[] {
         const self = this
         const { targets } = self
         const result: EffectOptions[] = []
@@ -125,10 +127,21 @@ export class Timeline2 {
             for (const name in props) {
                 const propKeyframes = props[name]
                 const css = propKeyframes.map(p => {
-                    return {
-                        offset: (p.time - from) / (duration || 1),
-                        [name]: p.value
-                    }
+                    const offset = (p.time - from) / (duration || 1)
+                    let value: string | number
+                    if (isFunction(p.value)) {
+                        value = (p.value as Function)(target.target, p.index) 
+                    } else if (!isArray(p.value)) {
+                        value = p.value as string | number
+                    } else {
+                        const values = (p.value as KeyframeValueResolver[]).map(a => 
+                            isFunction(a) ? (a as Function)(target.target, p.index) : a as string | number)
+
+                        // todo: hand off to middleware instead
+                        // this is also where transforms need to be merged
+                        value = values[values.length - 1]
+                    } 
+                    return { offset, [name]: value }
                 });
 
                 result.push({
@@ -136,7 +149,7 @@ export class Timeline2 {
                     from: target.from,
                     to: target.to,
                     duration: target.duration,
-                    css: css
+                    keyframes: css
                 })
             }
         }
@@ -186,26 +199,26 @@ export class Timeline2 {
         self.duration = timelineTo
     }
 
-    private addTarget(t: AnimationTarget, options: AnimationOptions) {
+    private addTarget(target: AnimationTarget, index: number, options: AnimationOptions) {
         const self = this
-        let target = head(self.targets, t2 => t2.target === t)
-        if (!target) {
-            target = {
+        let targetConfig = head(self.targets, t2 => t2.target === target)
+        if (!targetConfig) {
+            targetConfig = {
                 from: options.from,
                 to: options.to,
                 duration: options.to - options.from,
-                target: t,
+                target,
                 props: {}
             }
-            self.targets.push(target)
+            self.targets.push(targetConfig)
         }
 
         if (isArray(options.css)) {
-            self.addKeyframes(target, options)
+            self.addKeyframes(targetConfig, index, options)
         }
     }
 
-    private addKeyframes(target: Target, options: AnimationOptions) {
+    private addKeyframes(target: Target, index: number, options: AnimationOptions) {
         const self = this
         const { from, to } = options
         options.css.forEach(keyframe => {
@@ -213,12 +226,13 @@ export class Timeline2 {
             self.addKeyframe(
                 target,
                 time,
+                index,
                 keyframe
             )
         })
     }
 
-    private addKeyframe(target: Target, time: number, keyframe: Keyframe) {
+    private addKeyframe(target: Target, time: number, index: number, keyframe: KeyframeOptions) {
         for (const name in keyframe) {
             if (name === 'offset') {
                 continue
@@ -232,17 +246,26 @@ export class Timeline2 {
 
             let props = target.props[name]
             if (!props) {
-                props = [] as PropertyKeyframe<any>[]
+                props = [] as PropertyKeyframe[]
                 target.props[name] = props
             }
 
-            let indexOfTime = indexOf(props, p => p.time === time)
+            const indexOfTime = indexOf(props, p => p.time === time)
             if (indexOfTime === -1) {
-                props.push({ time, value })
-            } else {
-                const prop = props[indexOfTime]
-                prop.value = value
+                props.push({ time, index, value })
+                continue
             }
+
+            const prop = props[indexOfTime]
+            if (!isDefined(prop.value)) {
+                prop.value = value 
+                continue
+            }
+            if (isArray(prop.value)) {
+                (prop.value as any[]).push(value)
+                continue
+            }
+            prop.value = [ value as any ]
         }
     }
 }

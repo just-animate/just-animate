@@ -1,10 +1,10 @@
-import { AnimationTargetContext, CssKeyframeOptions, CssPropertyOptions } from '../types'
+import { AnimationTarget, CssKeyframeOptions, CssPropertyOptions, KeyframeValueResolver } from '../types'
 import { _, isArray, isDefined, parseUnit, unsupported } from '../utils'
 import { keyframeOffsetComparer } from './keyframe-offset-comparer'
 import { transforms } from './resources'
 import { resolve } from '.'
 
-export const propsToKeyframes = (css: CssPropertyOptions, keyframes: CssKeyframeOptions[], ctx: AnimationTargetContext): void => {
+export const propsToKeyframes = (css: CssPropertyOptions, keyframes: CssKeyframeOptions[], target: AnimationTarget, index: number): void => {
     // create a map to capture each keyframe by offset
     const keyframesByOffset: { [key: number]: CssKeyframeOptions } = {}
     const cssProps = css as CssPropertyOptions
@@ -16,7 +16,7 @@ export const propsToKeyframes = (css: CssPropertyOptions, keyframes: CssKeyframe
         }
 
         // resolve value (changes function into discrete value or array)                    
-        const val = resolve(cssProps[prop], ctx)
+        const val = resolve(cssProps[prop] as KeyframeValueResolver, target, index)
 
         if (isArray(val)) {
             // if the value is an array, split up the offset automatically
@@ -72,7 +72,7 @@ export const propsToKeyframes = (css: CssPropertyOptions, keyframes: CssKeyframe
             const endKeyframe = keyframesByOffset[endOffset]
 
             // parse out unit values of next keyframe       
-            const envValueUnit = parseUnit(endKeyframe[transform])
+            const envValueUnit = parseUnit(endKeyframe[transform] as string)
             const endValue = envValueUnit.value
             const endUnitType = envValueUnit.unit
 
@@ -87,7 +87,7 @@ export const propsToKeyframes = (css: CssPropertyOptions, keyframes: CssKeyframe
                 const keyframe1 = keyframesByOffset[offset1]
                 if (isDefined(keyframe1[transform])) {
 
-                    const startValueUnit = parseUnit(keyframe1[transform])
+                    const startValueUnit = parseUnit(keyframe1[transform] as string)
                     startValue = startValueUnit.value
                     startUnit = startValueUnit.unit
                     startIndex = j

@@ -12,16 +12,9 @@ describe('propsToKeyframes', () => {
             opacity: [1, 0, 1, 0]
         }
         const sourceKeyframes: any = []
-        const options = {}
         const target = document.createElement('div')
-        const ctx = {
-            index: 0,
-            options: options,
-            target: target,
-            targets: [target]
-        } as any
 
-        propsToKeyframes(css, sourceKeyframes, ctx)
+        propsToKeyframes(css, sourceKeyframes, target, 0)
 
         expect(sourceKeyframes[0]).to.deep.equal({ offset: 0, opacity: 1 })
         expect(sourceKeyframes[1]).to.deep.equal({ offset: 1 / 3, opacity: 0 })
@@ -35,14 +28,8 @@ describe('propsToKeyframes', () => {
         }
         const sourceKeyframes: any = []
         const target = document.createElement('div')
-        const ctx = {
-            index: 0,
-            options: {},
-            target: target,
-            targets: [target]
-        } as any
-
-        propsToKeyframes(css, sourceKeyframes, ctx)
+        
+        propsToKeyframes(css, sourceKeyframes, target, 0)
 
         expect(sourceKeyframes[0]).to.deep.equal({ offset: 0, opacity: 1 })
         expect(sourceKeyframes[1]).to.deep.equal({ offset: 1, opacity: 0 })
@@ -53,16 +40,9 @@ describe('propsToKeyframes', () => {
             rotate: [0, '90deg', '-360deg']
         } as any
         const sourceKeyframes: any = []
-        const options = {}
         const target = document.createElement('div')
-        const ctx = {
-            index: 0,
-            options: options,
-            target: target,
-            targets: [target]
-        } as any
 
-        propsToKeyframes(css, sourceKeyframes, ctx)
+        propsToKeyframes(css, sourceKeyframes, target, 0)
 
         expect(sourceKeyframes[0]).to.deep.equal({ offset: 0, rotate: 0 })
         expect(sourceKeyframes[1]).to.deep.equal({ offset: 1 / 2, rotate: '90deg' })

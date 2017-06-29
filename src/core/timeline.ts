@@ -171,7 +171,7 @@ export class Timeline {
         const self = this
         const { _animations } = self
 
-        const { transition, css, delay, direction, endDelay, fill, iterationStart, stagger, iterations } = opts
+        const { transition, css, delay, endDelay, stagger } = opts
         // set easing to linear by default     
         // const easingFn = cssFunction(opts.easing || 'linear')
         const easing = css[toCamelCase(opts.easing)] || opts.easing || 'linear'
@@ -184,23 +184,12 @@ export class Timeline {
                     css,
                     to,
                     from,
-                    delay,
-                    direction,
+                    delay, 
                     easing,
-                    // easingFn,
                     endDelay,
-                    fill,
-                    iterationStart,
-                    iterations,
                     stagger,
                     target: targets[index],
-                    targets,
-                    index,
-                    onCreate: opts.onCreate,
-                    onCancel: opts.onCancel,
-                    onFinish: opts.onFinish,
-                    onPause: opts.onPause,
-                    onPlay: opts.onPlay
+                    index
                 })
             )
         }

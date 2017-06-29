@@ -2,10 +2,10 @@ import { Keyframe } from '../types'
 import { isDefined } from '../utils'
 import { transforms } from './resources'
 
-export const addTransition = (keyframes: Keyframe[], target: HTMLElement): void => {
+export const addTransition = (keyframes: Keyframe[], target: {}): void => {
     // copy properties from the dom to the animation
     // todo: check how to do this in IE8, or not?
-    const style = window.getComputedStyle(target)
+    const style = window.getComputedStyle(target as HTMLElement)
 
     // create the first frame
     const firstFrame: Keyframe = { offset: 0 }

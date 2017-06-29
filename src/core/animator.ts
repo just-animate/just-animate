@@ -1,33 +1,27 @@
-import { _, RUNNING } from '../utils'
-import { isArray, convertToMs } from '../utils'
+import { RUNNING, isArray, convertToMs } from '../utils'
+import { Animation, AnimationTarget, AnimationTiming, CssKeyframeOptions, 
+    CssPropertyOptions, Keyframe, KeyframeValue, KeyframeValueResolver } from '../types'
 import {
-    Animation, AnimationTargetContext, AnimationTimeContext, AnimationTiming, CssKeyframeOptions,
-    CssPropertyOptions, Keyframe, Resolvable
-} from '../types'
-import {
-    addTransition, fixOffsets, expandOffsets, fixPartialKeyframes, keyframeOffsetComparer, propsToKeyframes, resolve,
+    addTransition, fixOffsets, fixPartialKeyframes, keyframeOffsetComparer, propsToKeyframes, resolve,
     resolvePropertiesInKeyframes, spaceKeyframes
 } from '../transformers'
 
 const framePadding = 17
 
-const createAnimation = (css: CssKeyframeOptions[] | CssPropertyOptions, ctx: AnimationTargetContext, timings: AnimationTiming, isTransition: boolean) => {
+const createAnimation = (css: CssKeyframeOptions[] | CssPropertyOptions, target: AnimationTarget, index: number, timings: AnimationTiming, isTransition: boolean) => {
     // process css as either keyframes or calculate what those keyframes should be   
-    const target = ctx.target as HTMLElement
-
     let sourceKeyframes: CssKeyframeOptions[]
     if (isArray(css)) {
         // if an array, no processing has to occur
         sourceKeyframes = css as CssKeyframeOptions[]
-        expandOffsets(sourceKeyframes)
     } else {
         sourceKeyframes = []
-        propsToKeyframes(css as CssPropertyOptions, sourceKeyframes, ctx)
+        propsToKeyframes(css as CssPropertyOptions, sourceKeyframes, target, index)
     }
 
     const targetKeyframes: Keyframe[] = []
 
-    resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, ctx)
+    resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, target, index)
 
     if (isTransition) {
         // add computed properties to match "to" properties
@@ -61,13 +55,9 @@ export class Animator {
     public endTimeMs: number
     public startTimeMs: number
     private css: CssKeyframeOptions[] | CssPropertyOptions
-    private ctx: AnimationTimeContext
-    // private easingFn: (n: number) => number
+    private index: number
+    private target: AnimationTarget 
     private timing: AnimationTiming
-    private onCancel?: () => void
-    private onFinish?: () => void
-    private onPause?: () => void
-    private onPlay?: () => void
     private _animator: Animation
     private _playbackRate: number
     private transition: boolean
@@ -77,59 +67,38 @@ export class Animator {
         if (self._animator) {
             return self._animator
         }
-        const { transition, css, ctx, timing } = self
-        self._animator = createAnimation(css, ctx, timing, transition)
+        const { transition, css, timing, index, target } = self
+        self._animator = createAnimation(css, target, index, timing, transition)
         return self._animator
     }
 
     constructor(options: IAnimationOptions) {
         const self = this
-        const { transition, css, delay, easing, endDelay, from, index, stagger, target, targets } = options
+        const { transition, css, delay, index, easing, endDelay, stagger, target } = options
+        const from = options.from as number
 
-        const ctx: AnimationTimeContext = {
-            index,
-            target,
-            targets
-        }
-
-        // fire create function if provided (allows for modifying the target prior to animating)
-        if (options.onCreate) {
-            options.onCreate!(ctx)
-        }
-
-        const iterations = resolve(options.iterations, ctx) || 1
-        const iterationStart = resolve(options.iterationStart, ctx) || 0
-        const direction = resolve(options.direction, ctx) || _
         const duration = +options.to - +options.from
-        const fill = resolve(options.fill, ctx) || 'none'
-        const staggerMs = convertToMs(resolve(stagger, ctx, true) || 0)
-        const delayMs = convertToMs(resolve(delay, ctx) || 0)
-        const endDelayMs = convertToMs(resolve(endDelay, ctx) || 0)
-        const totalTime = delayMs + ((iterations || 1) * duration) + endDelayMs
+        const staggerMs = convertToMs(resolve(stagger, target, index, true) || 0) as number
+        const delayMs = convertToMs(resolve(delay, target, index) || 0) as number
+        const endDelayMs = convertToMs(resolve(endDelay, target, index) || 0) as number
+        const totalTime = delayMs + duration + endDelayMs
 
         // setup instance variables
-        self.onCancel = options.onCancel
-        self.onFinish = options.onFinish
-        self.onPause = options.onPause
-        self.onPlay = options.onPlay
         self._playbackRate = 1
         self.endTimeMs = staggerMs + from + totalTime
         self.startTimeMs = staggerMs + from
         self.css = css
-        self.ctx = ctx
-        self.transition = !!transition
-        // self.easingFn = options.easingFn
+        self.target = target
+        self.index = index
+        self.transition = !!transition 
 
         // setup WAAPI timing object
         self.timing = {
             delay: delayMs,
             endDelay: endDelayMs,
-            direction,
+            fill: 'both',
             duration,
             easing,
-            fill,
-            iterations,
-            iterationStart,
             totalTime
         }
     }
@@ -169,9 +138,6 @@ export class Animator {
             }
             
             self.animator.play()
-            if (self.onPlay) {
-                self.onPlay()
-            }
         }
     }
     public playbackRate(value: number) {
@@ -186,26 +152,17 @@ export class Animator {
     public cancel() {
         const self = this
         self.animator.cancel()
-        if (self.onCancel) {
-            self.onCancel()
-        }
     }
 
     public finish() {
         const self = this
         self.animator.finish()
         self.animator.pause()
-        if (self.onFinish) {
-            self.onFinish()
-        }
     }
 
     public pause() {
         const self = this
         self.animator.pause()
-        if (self.onPause) {
-            self.onPause()
-        }
     }
 
     public restart() {
@@ -218,25 +175,12 @@ export class Animator {
 export interface IAnimationOptions {
     transition: boolean
     css: CssKeyframeOptions[] | CssPropertyOptions
-    direction: Resolvable<string>
-    delay: Resolvable<number | string>
+    delay: KeyframeValueResolver
     easing: string
-    endDelay: Resolvable<number>
-    fill: Resolvable<string>
-    from: number
-    iterationStart: Resolvable<number>
-    iterations: Resolvable<number>
-    // easingFn: Func<number>
+    endDelay: KeyframeValueResolver
+    from: KeyframeValue
     index: number
-    to: number
+    to: KeyframeValue
     target: any
-    targets: any[]
-
-    stagger: Resolvable<string | number>
-
-    onCancel(): void
-    onCreate(ctx: AnimationTimeContext): void
-    onFinish(): void
-    onPause(): void
-    onPlay(): void
+    stagger: KeyframeValueResolver
 }

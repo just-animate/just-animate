@@ -1,9 +1,9 @@
 
-import { Keyframe } from '../types';
+import { KeyframeOptions } from '../types';
 import { head, tail } from '../utils/lists';
 import { isDefined } from '../utils/type';
 
-export function inferOffsets(keyframes: Keyframe[]) {
+export function inferOffsets(keyframes: KeyframeOptions[]) {
     if (!keyframes.length) {
         return;
     }
@@ -33,13 +33,13 @@ export function inferOffsets(keyframes: Keyframe[]) {
         // search for the next offset with a value        
         for (let j = i + 1; j < ilen; j++) {
             // pass if offset is not set
-            if (typeof keyframes[j].offset !== 'number') {
+            const endTime = keyframes[j].offset
+            if (!isDefined(endTime)) {
                 continue
             }
 
             // calculate timing/position info
             const startTime = keyframes[i - 1].offset
-            const endTime = keyframes[j].offset
             const timeDelta = endTime - startTime
             const deltaLength = j - i + 1
 

@@ -16,7 +16,9 @@ export const isString = (a: any) => typeof a === 'string'
 /**
  * Tests if object is an array
  */
-export const isArray = (a: any) => isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length)
+export function isArray(a: any) {
+    return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length)
+}
 
 /**
  * Returns true if the target appears to be an element.  This helper is looking for a value tagName
