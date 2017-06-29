@@ -7,7 +7,7 @@ import { isArray, isElement, isFunction, isObject, isString } from './type'
  * @param {ElementSource} source from which to locate elements
  * @returns {Element[]} array of elements found
  */
-export const getTargets = (target: AnimationTarget): (HTMLElement | {})[] => {
+export function getTargets (target: AnimationTarget): (HTMLElement | {})[] {
     if (isString(target)) {
         // if query selector, search for elements 
         return toArray(document.querySelectorAll(target as string))

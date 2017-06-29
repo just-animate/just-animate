@@ -1,7 +1,7 @@
 import { isFunction } from 'util';
 
 import { AnimationTarget, Keyframe, KeyframeOptions, KeyframeValueResolver } from '../types';
-import { convertToMs, head, indexOf, isArray, isDefined, sortBy } from '../utils';
+import { convertToMs, head, indexOf, isArray, isDefined, sortBy, getTargets } from '../utils';
 import { inferOffsets } from '../transformers/infer-offsets';
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
@@ -21,7 +21,7 @@ export interface Target {
 }
 
 export interface BaseAnimationOptions {
-    targets: AnimationTarget[]
+    targets: AnimationTarget | AnimationTarget[]
     css: KeyframeOptions[]
 }
 
@@ -29,8 +29,10 @@ export interface ToAnimationOptions extends BaseAnimationOptions {
     duration?: number | string
 }
 
-export interface FromAnimationOptions extends BaseAnimationOptions {
-    duration: number | string
+export interface AddAnimationOptions extends BaseAnimationOptions {
+    from?: number
+    to?: number
+    duration?: number
 }
 
 export interface AnimationOptions extends BaseAnimationOptions {
@@ -51,26 +53,39 @@ export class Timeline2 {
     targets: Target[] = []
     duration = 0
 
-    public append(options: AnimationOptions) {
+    public add(opts: AddAnimationOptions) {
         const self = this
-        self.from(self.duration, options)
-        return self
-    }
+        const hasTo = isDefined(opts.to)
+        const hasFrom = isDefined(opts.from)
+        const hasDuration = isDefined(opts.duration)
 
-    public from(fromTime: string | number, opts: FromAnimationOptions) {
-        const self = this
-        const startTime = convertToMs(fromTime)
-
-        let endTime: number
-        if (isDefined(opts.duration)) {
-            endTime = startTime + convertToMs(opts.duration)
-        } else if (!self.duration) {
-            throw new Error('duration/to')
+        // pretty exaustive rules for importing times
+        let from: number, to: number;  
+        if (hasFrom && hasTo) {
+            from = convertToMs(opts.from)
+            to = convertToMs(opts.to)
+        } else if (hasFrom && hasDuration) {
+            from = convertToMs(opts.from)
+            to = from + convertToMs(opts.duration)
+        } else if (hasTo && hasDuration) {
+            to = convertToMs(opts.to)
+            from = to - convertToMs(opts.duration)            
+        } else if (hasTo && !hasDuration) {
+            from = self.duration
+            to = from + convertToMs(opts.to)
+        } else if (hasDuration) {
+            from = self.duration
+            to = from + convertToMs(opts.duration)
         } else {
-            endTime = self.duration
+            throw new Error('Please provide to/from/duration')
         }
 
-        return self.fromTo(startTime, endTime, opts)
+        // ensure from/to is not negative
+        from = Math.max(from, 0)
+        to = Math.max(to, 0)
+        
+        self.fromTo(from, to, opts)
+        return self
     }
 
     public fromTo(from: number | string, to: number | string, options: BaseAnimationOptions) {
@@ -87,7 +102,7 @@ export class Timeline2 {
         }
 
         // add all targets as property keyframes
-        const { targets } = options2
+        const targets = getTargets(options.targets)
         for (let i = 0, ilen = targets.length; i < ilen; i++) {
             self.addTarget(targets[i], i, options2)
         }

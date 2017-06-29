@@ -48,7 +48,7 @@ export type AnimationPlaybackState =
   | 'paused'
   | 'finished'
 export type AnimationDomTarget = Node | NodeList | string
-export type AnimationTarget = {}
+export type AnimationTarget = string | {}
 export type AnimationDirection = 'normal' | 'alternate'
 export type Angle = string | number
 export type Color = string

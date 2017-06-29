@@ -32,6 +32,34 @@ describe('elements', () => {
         assert.deepEqual<{}>(actual, expected)
     })
 
+    it('decomposes and then re-composes a single set of keyframes', () => {
+        /* Test code */
+        const target = {}
+
+        const timeline = animate()
+            .add({
+                duration: 1000,
+                targets: [target],
+                css: [
+                    { opacity: 0 },
+                    { opacity: 1 }
+                ]
+            })
+
+        const actual = timeline.getOptions()
+        const expected = [{
+            target: {},
+            from: 0,
+            to: 1000,
+            duration: 1000,
+            keyframes: [
+                { offset: 0, opacity: 0 },
+                { offset: 1, opacity: 1 }
+            ]
+        }]
+        assert.deepEqual<{}>(actual, expected)
+    })
+
     it('decomposes and then re-composes a single set of keyframes for multiple targets', () => {
         /* Test code */
         const target1 = { id: 'element1' }
@@ -204,9 +232,8 @@ describe('elements', () => {
                     { opacity: 1, x: 100 }
                 ]
             })
-            .from(600, {
+            .fromTo(600, 1000, {
                 targets: [target],
-                duration: 400,
                 css: [
                     { opacity: 1, x: 100 },
                     { opacity: 0, x: 0 }
@@ -242,6 +269,77 @@ describe('elements', () => {
             ]
         }];
 
+        assert.deepEqual<{}>(actual, expected)
+    })
+
+    it('resolves single target', () => {
+        /* Test code */
+        const target1 = { }
+        const timeline = animate()
+            .to(1000, {
+                targets: target1,
+                css: [
+                    { opacity: 0 }, 
+                    { opacity: 1 }
+                ]
+            })
+
+        const actual = timeline.getOptions()[0]
+        const expected = {
+            target: target1,
+            from: 0,
+            to: 1000,
+            duration: 1000,
+            keyframes: [
+                { offset: 0, opacity: 0 },
+                { offset: 1, opacity: 1 }
+            ]
+        }
+        assert.deepEqual<{}>(actual, expected)
+    })
+
+    it('resolves a CSS selector', () => {
+        /* Test code */
+        const el1 = document.createElement('div')
+        el1.classList.add('single-target-element')
+        document.body.appendChild(el1)
+
+        const el2 = document.createElement('div')
+        el2.classList.add('single-target-element')
+        document.body.appendChild(el2)
+
+        const timeline = animate()
+            .to(1000, {
+                targets: '.single-target-element',
+                css: [
+                    { opacity: 0 }, 
+                    { opacity: 1 }
+                ]
+            })
+
+        const actual = timeline.getOptions()
+        const expected = [{
+            target: el1,
+            from: 0,
+            to: 1000,
+            duration: 1000,
+            keyframes: [
+                { offset: 0, opacity: 0 },
+                { offset: 1, opacity: 1 }
+            ]
+        }, {
+            target: el2,
+            from: 0,
+            to: 1000,
+            duration: 1000,
+            keyframes: [
+                { offset: 0, opacity: 0 },
+                { offset: 1, opacity: 1 }
+            ]
+        }]
+
+        document.body.removeChild(el1)
+        document.body.removeChild(el2)
         assert.deepEqual<{}>(actual, expected)
     })
 })
