@@ -1,105 +1,46 @@
-import { RUNNING, isArray, convertToMs } from '../utils'
-import { Animation, AnimationTarget, AnimationTiming, CssKeyframeOptions, 
-    CssPropertyOptions, Keyframe, KeyframeValue, KeyframeValueResolver } from '../types'
-import {
-    addTransition, fixOffsets, fixPartialKeyframes, keyframeOffsetComparer, propsToKeyframes, resolve,
-    resolvePropertiesInKeyframes, spaceKeyframes
-} from '../transformers'
+import * as types from '../types';
+import { RUNNING } from '../utils';
 
 const framePadding = 17
-
-const createAnimation = (css: CssKeyframeOptions[] | CssPropertyOptions, target: AnimationTarget, index: number, timings: AnimationTiming, isTransition: boolean) => {
-    // process css as either keyframes or calculate what those keyframes should be   
-    let sourceKeyframes: CssKeyframeOptions[]
-    if (isArray(css)) {
-        // if an array, no processing has to occur
-        sourceKeyframes = css as CssKeyframeOptions[]
-    } else {
-        sourceKeyframes = []
-        propsToKeyframes(css as CssPropertyOptions, sourceKeyframes, target, index)
-    }
-
-    const targetKeyframes: Keyframe[] = []
-
-    resolvePropertiesInKeyframes(sourceKeyframes, targetKeyframes, target, index)
-
-    if (isTransition) {
-        // add computed properties to match "to" properties
-        addTransition(targetKeyframes, target)
-    }
-
-    if (targetKeyframes.length > 1) {
-        // don't attempt to fill animation if less than 2 keyframes
-        spaceKeyframes(targetKeyframes)
-    }
-    if (targetKeyframes.length) {
-        // fix first and last offsets
-        fixOffsets(targetKeyframes)
-    }
-
-    // sort by offset (should have all offsets assigned)
-    targetKeyframes.sort(keyframeOffsetComparer)
-
-    if (targetKeyframes.length > 0) {
-        // don't attempt to fill animation if less than 1 keyframes
-        fixPartialKeyframes(targetKeyframes)
-    }
-
-    const animator = (target as any).animate(targetKeyframes, timings)
-    animator.cancel()
-    return animator
-}
 
 /** Implements the IAnimationController interface for the Web Animation API */
 export class Animator {
     public endTimeMs: number
     public startTimeMs: number
-    private css: CssKeyframeOptions[] | CssPropertyOptions
-    private index: number
-    private target: AnimationTarget 
-    private timing: AnimationTiming
-    private _animator: Animation
+    private keyframes: types.Keyframe[]
+    private target: types.AnimationTarget 
+    private timing: types.AnimationTiming
+    private _animator: types.Animation
     private _playbackRate: number
-    private transition: boolean
 
-    private get animator(): Animation {
+    private get animator(): types.Animation {
         const self = this
         if (self._animator) {
             return self._animator
         }
-        const { transition, css, timing, index, target } = self
-        self._animator = createAnimation(css, target, index, timing, transition)
+        const { target } = self
+        const animator = (target as any).animate(self.keyframes, self.timing)
+        animator.cancel() 
+        self._animator = animator
         return self._animator
     }
 
-    constructor(options: IAnimationOptions) {
+    constructor(options: types.EffectOptions) {
         const self = this
-        const { transition, css, delay, index, easing, endDelay, stagger, target } = options
-        const from = options.from as number
-
-        const duration = +options.to - +options.from
-        const staggerMs = convertToMs(resolve(stagger, target, index, true) || 0) as number
-        const delayMs = convertToMs(resolve(delay, target, index) || 0) as number
-        const endDelayMs = convertToMs(resolve(endDelay, target, index) || 0) as number
-        const totalTime = delayMs + duration + endDelayMs
+        const { keyframes, target, duration } = options
 
         // setup instance variables
         self._playbackRate = 1
-        self.endTimeMs = staggerMs + from + totalTime
-        self.startTimeMs = staggerMs + from
-        self.css = css
+
+        self.keyframes = keyframes
         self.target = target
-        self.index = index
-        self.transition = !!transition 
 
         // setup WAAPI timing object
         self.timing = {
-            delay: delayMs,
-            endDelay: endDelayMs,
+            delay: 0,
+            endDelay: 0,
             fill: 'both',
-            duration,
-            easing,
-            totalTime
+            duration
         }
     }
 
@@ -170,17 +111,4 @@ export class Animator {
         animator.cancel()
         animator.play()
     }
-}
-
-export interface IAnimationOptions {
-    transition: boolean
-    css: CssKeyframeOptions[] | CssPropertyOptions
-    delay: KeyframeValueResolver
-    easing: string
-    endDelay: KeyframeValueResolver
-    from: KeyframeValue
-    index: number
-    to: KeyframeValue
-    target: any
-    stagger: KeyframeValueResolver
 }

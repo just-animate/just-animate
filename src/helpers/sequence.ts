@@ -1,10 +1,10 @@
-import { AnimationOptions } from '../types'
+import { AddAnimationOptions } from '../types'
 import { Timeline } from '../core'
 
-export const sequence = (seqOptions: AnimationOptions[]) => {
+export const sequence = (seqOptions: AddAnimationOptions[]) => {
     const timeline = new Timeline()
     for (let i = 0, ilen = seqOptions.length; i < ilen; i++) {
-        timeline.append(seqOptions[i])
+        timeline.add(seqOptions[i])
     }
     return timeline
 }

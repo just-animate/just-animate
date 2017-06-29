@@ -1,22 +1,25 @@
-import { convertToMs, getTargets, inRange, isDefined, missing, toCamelCase } from '../utils'
+import * as types from '../types'
+
+import { convertToMs, getTargets, inRange, isDefined, isArray, isFunction, indexOf, sortBy, head } from '../utils'
 import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
-import {
-    AnimationDirection,
-    AnimationOptions,
-    AnimationPlaybackState
-} from '../types'
 import { Animator, timeloop } from '.'
+import { inferOffsets } from '../transformers/infer-offsets';
+
+const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
 
 export class Timeline {
     public duration: number
-    public playState: AnimationPlaybackState
+
+    public playState: types.AnimationPlaybackState
+    private targets: types.TargetConfiguration[] 
     private _animations: Animator[]  
     private _currentIteration: number    
     private _currentTime: number
-    private _direction: AnimationDirection
+    private _direction: types.AnimationDirection
     private _listeners: { [key: string]: { (): void }[] }
-    private _playbackRate: number    
+    private _playbackRate: number
     private _totalIterations: number
+    private _isReady: boolean
 
     public get currentTime() {
         return this._currentTime
@@ -47,15 +50,97 @@ export class Timeline {
         self._playbackRate = 1
         self.playState = IDLE
         self._animations = []
+        self.targets = []
+        self._isReady = false
         self._currentIteration = _
         self._direction = NORMAL
         self._totalIterations = _
         self._listeners = {}
     }
-    public append(options: AnimationOptions) {
+
+    public add(opts: types.AddAnimationOptions) {
         const self = this
-        self.from(self.duration, options)
+        const hasTo = isDefined(opts.to)
+        const hasFrom = isDefined(opts.from)
+        const hasDuration = isDefined(opts.duration)
+
+        // pretty exaustive rules for importing times
+        let from: number, to: number;  
+        if (hasFrom && hasTo) {
+            from = convertToMs(opts.from)
+            to = convertToMs(opts.to)
+        } else if (hasFrom && hasDuration) {
+            from = convertToMs(opts.from)
+            to = from + convertToMs(opts.duration)
+        } else if (hasTo && hasDuration) {
+            to = convertToMs(opts.to)
+            from = to - convertToMs(opts.duration)            
+        } else if (hasTo && !hasDuration) {
+            from = self.duration
+            to = from + convertToMs(opts.to)
+        } else if (hasDuration) {
+            from = self.duration
+            to = from + convertToMs(opts.duration)
+        } else {
+            throw new Error('Please provide to/from/duration')
+        }
+
+        // ensure from/to is not negative
+        from = Math.max(from, 0)
+        to = Math.max(to, 0)
+        
+        self.fromTo(from, to, opts)
         return self
+    }
+
+    public fromTo(from: number | string, to: number | string, options: types.BaseAnimationOptions) {
+        const self = this
+        // ensure to/from are in milliseconds (as numbers)
+        const options2 = options as types.AnimationOptions
+        options2.from = convertToMs(from)
+        options2.to = convertToMs(to)
+        options2.duration = options2.to - options2.from
+
+        // fill in missing offsets
+        if (isArray(options2.css)) {
+            inferOffsets(options2.css) 
+        }
+
+        // todo: incorporate WAAPI delay/endDelay
+        // const staggerMs = convertToMs(resolve(stagger, target, index, true) || 0) as number
+        // const delayMs = convertToMs(resolve(delay, target, index) || 0) as number
+        // const endDelayMs = convertToMs(resolve(endDelay, target, index) || 0) as number
+        // const totalTime = delayMs + duration + endDelayMs
+        // self.endTimeMs = staggerMs + from + totalTime
+        // self.startTimeMs = staggerMs + from
+
+        // add all targets as property keyframes
+        const targets = getTargets(options.targets)
+        for (let i = 0, ilen = targets.length; i < ilen; i++) {
+            self._addTarget(targets[i], i, options2)
+        }
+
+        // sort property keyframes
+        self._sortPropKeyframes()
+
+        // recalculate property keyframe times and total duration
+        self._calcTimes()
+
+        return self
+    }
+
+    public to(toTime: string | number, opts: types.ToAnimationOptions) {
+        const self = this
+        const endTime = convertToMs(toTime)
+
+        let fromTime: number
+        if (isDefined(opts.duration)) {
+            fromTime = Math.max(convertToMs(opts.duration), 0)
+        } else {
+            fromTime = self.duration
+        }
+
+        return self.fromTo(fromTime, endTime, opts)
     }
 
     public cancel() {
@@ -68,37 +153,22 @@ export class Timeline {
             self._animations[i].cancel()
         }
         self._trigger(CANCEL)
+        self._teardown()
         return self
     }
+
     public finish() {
         const self = this
         timeloop.off(self._tick)
+        self._setup()
         self._currentTime = _
         self._currentIteration = _
         self.playState = FINISHED
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].finish()
         }
-        self._trigger(FINISH)
+        self._trigger(FINISH) 
         return self
-    }
-
-    public from(fromTime: string | number, opts: AnimationOptions) {
-        const self = this
-        const startTime = convertToMs(fromTime)
-
-        let endTime: number
-        if (isDefined(opts.to)) {
-            endTime = convertToMs(opts.to)
-        } else if (isDefined(opts.duration)) {
-            endTime = startTime + convertToMs(opts.duration)
-        } else if (!self.duration) {
-            throw missing('duration/to')
-        } else {
-            endTime = self.duration
-        }
-
-        return self._insert(startTime, endTime, opts)
     }
 
     public on(eventName: string, listener: () => void) {
@@ -123,9 +193,11 @@ export class Timeline {
         }
         return self
     }
+
     public pause() {
         const self = this
         timeloop.off(self._tick)
+        self._setup()
         self.playState = PAUSED
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].pause()
@@ -133,9 +205,10 @@ export class Timeline {
         self._trigger(PAUSE)
         return self
     }
+
     public play(iterations = 1) {
         const self = this
-
+        self._setup()
         self._totalIterations = iterations
 
         if (!(self.playState === RUNNING || self.playState === PENDING)) {
@@ -145,73 +218,177 @@ export class Timeline {
         }
         return self
     }
+
     public reverse() {
         const self = this
         self.playbackRate = (self.playbackRate || 0) * -1
         return self
     }
 
-    public to(toTime: string | number, opts: AnimationOptions) {
+    public _getOptions(): types.EffectOptions[] {
         const self = this
-        const endTime = convertToMs(toTime)
+        const { targets } = self
+        const result: types.EffectOptions[] = []
 
-        let fromTime: number
-        if (isDefined(opts.from)) {
-            fromTime = convertToMs(opts.from)
-        } else if (isDefined(opts.duration)) {
-            fromTime = Math.max(convertToMs(opts.duration), 0)
-        } else {
-            fromTime = self.duration
-        }
+        for (let i = 0, ilen = targets.length; i < ilen; i++) {
+            const target = targets[i]
+            const { from, duration, props } = target
 
-        return self._insert(fromTime, endTime, opts)
-    }
+            for (const name in props) {
+                const propKeyframes = props[name]
+                const css = propKeyframes.map(p => {
+                    const offset = (p.time - from) / (duration || 1)
+                    let value: string | number
+                    if (isFunction(p.value)) {
+                        value = (p.value as Function)(target.target, p.index) 
+                    } else if (!isArray(p.value)) {
+                        value = p.value as string | number
+                    } else {
+                        const values = (p.value as types.KeyframeValueResolver[]).map(a => 
+                            isFunction(a) ? (a as Function)(target.target, p.index) : a as string | number)
 
-    private _insert(from: number, to: number, opts: AnimationOptions) {
-        const self = this
-        const { _animations } = self
+                        // todo: hand off to middleware instead
+                        // this is also where transforms need to be merged
+                        value = values[values.length - 1]
+                    } 
+                    return { offset, [name]: value }
+                });
 
-        const { transition, css, delay, endDelay, stagger } = opts
-        // set easing to linear by default     
-        // const easingFn = cssFunction(opts.easing || 'linear')
-        const easing = css[toCamelCase(opts.easing)] || opts.easing || 'linear'
-
-        const targets = getTargets(opts.targets!)
-        for (let index = 0, ilen = targets.length; index < ilen; index++) {
-            _animations.push(
-                new Animator({
-                    transition,
-                    css,
-                    to,
-                    from,
-                    delay, 
-                    easing,
-                    endDelay,
-                    stagger,
-                    target: targets[index],
-                    index
+                result.push({
+                    target: target.target,
+                    from: target.from,
+                    to: target.to,
+                    duration: target.duration,
+                    keyframes: css
                 })
-            )
-        }
-
-        self._calcDuration()
-
-        return self
-    }
-    
-    private _calcDuration() {
-        const self = this
-        const { _animations } = self
-        
-        // recalculate the max duration of the timeline
-        let duration = 0
-        for (let i = _animations.length - 1; i > -1; i--) {
-            const { endTimeMs } = _animations[i]
-            if (duration < endTimeMs) {
-                duration = endTimeMs
             }
         }
-        self.duration = duration
+
+        return result
+    } 
+
+    private _addTarget(target: types.AnimationTarget, index: number, options: types.AnimationOptions) {
+        const self = this
+        let targetConfig = head(self.targets, t2 => t2.target === target)
+        if (!targetConfig) {
+            targetConfig = {
+                from: options.from,
+                to: options.to,
+                duration: options.to - options.from,
+                target,
+                props: {}
+            }
+            self.targets.push(targetConfig)
+        }
+
+        if (isArray(options.css)) {
+            self._addKeyframes(targetConfig, index, options)
+        }
+    }
+
+    private _addKeyframes(target: types.TargetConfiguration, index: number, options: types.AnimationOptions) {
+        const self = this
+        const { from, to } = options
+        options.css.forEach(keyframe => {
+            const time = Math.floor(((to - from) * keyframe.offset) + from)
+            self._addKeyframe(
+                target,
+                time,
+                index,
+                keyframe
+            )
+        })
+    }
+
+    private _addKeyframe(target: types.TargetConfiguration, time: number, index: number, keyframe: types.KeyframeOptions) {
+        for (const name in keyframe) {
+            if (name === 'offset') {
+                continue
+            }
+
+            const value = keyframe[name]
+            // tslint:disable-next-line:no-null-keyword
+            if (value === null || value === undefined) {
+                continue
+            }
+
+            let props = target.props[name]
+            if (!props) {
+                props = [] as types.PropertyKeyframe[]
+                target.props[name] = props
+            }
+
+            const indexOfTime = indexOf(props, p => p.time === time)
+            if (indexOfTime === -1) {
+                props.push({ time, index, value })
+                continue
+            }
+
+            const prop = props[indexOfTime]
+            if (!isDefined(prop.value)) {
+                prop.value = value 
+                continue
+            }
+            if (isArray(prop.value)) {
+                (prop.value as any[]).push(value)
+                continue
+            }
+            prop.value = [ value as any ]
+        }
+    }
+    
+    private _calcTimes() {
+        const self = this
+        let timelineTo = 0
+
+        for (let i = 0, ilen = self.targets.length; i < ilen; i++) {
+            const target = self.targets[i]
+            let targetFrom = undefined
+            let targetTo = undefined
+
+            for (const name in target.props) {
+                const props = target.props[name]
+                for (let j = 0, jlen = props.length; j < jlen; j++) {
+                    const prop = props[j]
+                    if (prop.time < targetFrom || targetFrom === undefined) {
+                        targetFrom = prop.time
+                    }
+                    if (prop.time > targetTo || targetTo === undefined) {
+                        targetTo = prop.time
+                        if (prop.time > timelineTo) {
+                            timelineTo = prop.time
+                        }
+                    }
+                }
+            }
+            target.to = targetTo
+            target.from = targetFrom
+            target.duration = targetTo - targetFrom
+        }
+        self.duration = timelineTo
+    }
+
+    private _setup(): void {
+        const self = this
+        self._animations = self._getOptions().map(a => new Animator(a)) 
+        self._isReady = true
+    }
+
+    private _sortPropKeyframes() {
+        const self = this
+        const { targets } = self
+        for (let i = 0, ilen = targets.length; i < ilen; i++) {
+            const target = targets[i]
+            for (const name in target.props) {
+                target.props[name].sort(propKeyframeSort)
+            }
+        }
+    }
+
+    private _teardown(): void {
+        const self = this        
+        self._animations = []
+        self._isReady = false
     }
 
     private _trigger = (eventName: string) => {
@@ -224,6 +401,7 @@ export class Timeline {
         }
         return self
     }
+    
     private _tick = (delta: number) => {
         const self = this
         const playState = self.playState
@@ -294,5 +472,5 @@ export class Timeline {
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i].tick(currentTime, isLastFrame)
         }
-    }
+    } 
 }

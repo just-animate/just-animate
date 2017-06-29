@@ -8,14 +8,14 @@ describe('timeline.from()', () => {
     document.body.appendChild(target)
 
     const timeline = animate()
-    timeline.from(0, {
-      targets: target,
-      duration: 1000,
-      css: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
-    })
+      .add({
+        targets: target,
+        duration: 1000,
+        css: [
+          { opacity: 0 },
+          { opacity: 1 }
+        ]
+      })
 
     assert.equal(timeline.duration, 1000)
     
@@ -34,15 +34,16 @@ describe('timeline.from()', () => {
     document.body.appendChild(target)
 
     const timeline = animate()
-    timeline.from(500, {
-      targets: target,
-      duration: 1000,
-      css: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
-    })
-    
+      .add({
+        targets: target,
+        from: 500,
+        duration: 1000,
+        css: [
+          { opacity: 0 },
+          { opacity: 1 }
+        ]
+      })
+      
     assert.equal(timeline.duration, 1500)
 
     timeline.currentTime = 0
