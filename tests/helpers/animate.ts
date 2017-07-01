@@ -179,8 +179,7 @@ describe('sequence', () => {
       const expected = [{
         target: {},
         from: 0,
-        to: 1000,
-        duration: 1000,
+        to: 1000, 
         keyframes: [
           { offset: 0, opacity: 0 },
           { offset: 1, opacity: 1 }
@@ -206,15 +205,14 @@ describe('sequence', () => {
 
       const actual = timeline._getOptions()
       const expected = [{
-        target: {},
+        target,
         from: 0,
         to: 1000,
-        duration: 1000,
         keyframes: [
           { offset: 0, opacity: 0 },
           { offset: 1, opacity: 1 }
         ]
-      }]
+      }] 
       assert.deepEqual<{}>(actual, expected)
     })
 
@@ -243,8 +241,7 @@ describe('sequence', () => {
       const expected = [{
         target: target1,
         from: 0,
-        to: 1000,
-        duration: 1000,
+        to: 1000, 
         keyframes: [
           { offset: 0, opacity: 0 },
           { offset: 1, opacity: 1 }
@@ -253,8 +250,7 @@ describe('sequence', () => {
       {
         target: target2,
         from: 1000,
-        to: 2000,
-        duration: 1000,
+        to: 2000, 
         keyframes: [
           { offset: 0, x: 0 },
           { offset: 1, x: 200 }
@@ -286,8 +282,7 @@ describe('sequence', () => {
       const expected = [{
         target: { opacity: .1 },
         from: 0,
-        to: 1000,
-        duration: 1000,
+        to: 1000, 
         keyframes: [
           { offset: 0, opacity: .1 },
           { offset: 1, opacity: 1 }
@@ -296,7 +291,6 @@ describe('sequence', () => {
         target: { opacity: .2 },
         from: 0,
         to: 1000,
-        duration: 1000,
         keyframes: [
           { offset: 0, opacity: .2 },
           { offset: 1, opacity: 1 }
@@ -329,7 +323,6 @@ describe('sequence', () => {
         target: {},
         from: 0,
         to: 1000,
-        duration: 1000,
         keyframes: [
           { offset: 0, opacity: .1 },
           { offset: 1, opacity: 1 }
@@ -338,7 +331,6 @@ describe('sequence', () => {
         target: {},
         from: 0,
         to: 1000,
-        duration: 1000,
         keyframes: [
           { offset: 0, opacity: .2 },
           { offset: 1, opacity: 1 }
@@ -366,7 +358,6 @@ describe('sequence', () => {
         target: {},
         from: 0,
         to: 1000,
-        duration: 1000,
         keyframes: [
           { offset: 0, opacity: 1 },
           { offset: 1, opacity: 1 }
@@ -403,7 +394,6 @@ describe('sequence', () => {
         target: {},
         from: 200,
         to: 1000,
-        duration: 800,
         keyframes: [
           { offset: 0, opacity: 0 },
           { offset: 0.15, opacity: 0.5 },
@@ -415,7 +405,6 @@ describe('sequence', () => {
         target: {},
         from: 200,
         to: 1000,
-        duration: 800,
         keyframes: [
           { offset: 0, x: 0 },
           { offset: 0.075, x: 40 },
@@ -447,7 +436,6 @@ describe('sequence', () => {
         target: target1,
         from: 0,
         to: 1000,
-        duration: 1000,
         keyframes: [
           { offset: 0, opacity: 0 },
           { offset: 1, opacity: 1 }
@@ -479,8 +467,7 @@ describe('sequence', () => {
       const expected = [{
         target: el1,
         from: 0,
-        to: 1000,
-        duration: 1000,
+        to: 1000, 
         keyframes: [
           { offset: 0, opacity: 0 },
           { offset: 1, opacity: 1 }
@@ -488,8 +475,7 @@ describe('sequence', () => {
       }, {
         target: el2,
         from: 0,
-        to: 1000,
-        duration: 1000,
+        to: 1000, 
         keyframes: [
           { offset: 0, opacity: 0 },
           { offset: 1, opacity: 1 }

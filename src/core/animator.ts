@@ -1,114 +1,61 @@
 import * as types from '../types';
-import { RUNNING } from '../utils';
+import { RUNNING, CANCEL, PAUSE, FINISH, SEEK, TICK, inRange } from '../utils';
 
 const framePadding = 17
 
-/** Implements the IAnimationController interface for the Web Animation API */
-export class Animator {
-    public endTimeMs: number
-    public startTimeMs: number
-    private keyframes: types.Keyframe[]
-    private target: types.AnimationTarget 
-    private timing: types.AnimationTiming
-    private _animator: types.Animation
-    private _playbackRate: number
+export interface IAnimationController {
+    (type: string, time: number, playbackRate: number): void
+}
 
-    private get animator(): types.Animation {
-        const self = this
-        if (self._animator) {
-            return self._animator
+export function createWebAnimation({ keyframes, from, to, target }: types.EffectOptions): IAnimationController {
+    // intialize animator
+    let animator: any
+    return (type: string, time: number, playbackRate: number) => {
+        if (!animator) {
+            // initialize animator if not initialized
+            animator = (target as any).animate(keyframes, {
+                duration: to - from,
+                fill: 'both'
+            })
+            animator.cancel()
         }
-        const { target } = self
-        const animator = (target as any).animate(self.keyframes, self.timing)
-        animator.cancel() 
-        self._animator = animator
-        return self._animator
-    }
-
-    constructor(options: types.EffectOptions) {
-        const self = this
-        const { keyframes, target, duration, to, from } = options
-
-        // setup instance variables
-        self._playbackRate = 1
-
-        self.keyframes = keyframes
-        self.target = target
-        self.startTimeMs = from
-        self.endTimeMs = to
-
-        // setup WAAPI timing object
-        self.timing = {
-            fill: 'both',
-            duration
-        }
-    }
-
-    public seek(currentTime: number) {
-        // convert to time relative to the animation's duration
-        const { animator, startTimeMs, endTimeMs } = this
-        const relativeTime = Math.min(Math.max(currentTime - startTimeMs, 0), endTimeMs - startTimeMs)
+         
+        if (animator.playbackRate !== playbackRate) {
+            // set playbackRate direction/speed            
+            animator.playbackRate = playbackRate            
+        } 
         
-        // set if different than the last known value
-        if (animator.currentTime !== relativeTime) {
-            animator.currentTime = relativeTime
+        if (type === CANCEL) {
+            // cancel and return    
+            animator.cancel()    
+            return
         }
-    }
-    
-    public tick(currentTime: number, isLastFrame: boolean) {
-        const self = this
-        let { endTimeMs, startTimeMs } = self
-        const isForward = this._playbackRate >= 0
-
-        let isActive: boolean;        
-        if (isForward) {
-            const paddedForwardTime = currentTime + framePadding
-            isActive = startTimeMs <= paddedForwardTime && paddedForwardTime < endTimeMs
-        } else {
-            const paddedBackwardTime = currentTime - framePadding
-            isActive = startTimeMs < paddedBackwardTime && paddedBackwardTime <= endTimeMs 
+        if (type === FINISH) {
+             // finish animation and pause it so it won't attempt to play when seeking    
+            animator.finish()
+            animator.pause()
+            return
         }
 
-        if (!isActive) {
+        if (type === PAUSE) {
+            // pause the animation and continue processing    
+            animator.pause()
+        } 
+         
+        if (type === SEEK && animator.currentTime !== (time - from)) {
+            // sync if necessary          
+            animator.currentTime = time - from
+        } 
+        
+        const sign = (playbackRate || 0) < 0 ? -1 : 1
+        if (inRange(time + (framePadding * sign), 0, to - from)) {
+            // don't do anything if not in range
             return
         }
         
-        if (self.animator.playState !== RUNNING || isLastFrame) {
-            if (isLastFrame) {
-                self.restart()
-            }
-            
-            self.animator.play()
+        if (type === TICK && animator.playState !== RUNNING) {
+            // start if ticking and animator is not running
+            animator.play()
         }
-    }
-    public playbackRate(value: number) {
-        const self = this
-        const { animator } = self
-        self._playbackRate = value
-        if (animator.playbackRate !== value) {
-            animator.playbackRate = value
-        }
-    }
-
-    public cancel() {
-        const self = this
-        self.animator.cancel()
-    }
-
-    public finish() {
-        const self = this
-        self.animator.finish()
-        self.animator.pause()
-    }
-
-    public pause() {
-        const self = this
-        self.animator.pause()
-    }
-
-    public restart() {
-        const { animator } = this
-        animator.cancel()
-        animator.play()
     }
 }

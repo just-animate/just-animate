@@ -160,7 +160,6 @@ export interface AnimationOptions extends BaseAnimationOptions {
 export interface EffectOptions {
   target: AnimationTarget
   keyframes: Keyframe[]
-  duration: number
   to: number
   from: number
 }

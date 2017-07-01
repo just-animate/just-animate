@@ -1,22 +1,22 @@
 import * as types from '../types'
 import { resolve } from '../transformers/'
-import { convertToMs, getTargets, inRange, isDefined, isArray, isFunction, indexOf, sortBy, head } from '../utils'
+import { convertToMs, getTargets, inRange, isDefined, isArray, isFunction, indexOf, sortBy, head, SEEK, TICK } from '../utils'
 import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
-import { Animator, timeloop } from '.'
+import { createWebAnimation, timeloop, IAnimationController } from '.'
 import { inferOffsets } from '../transformers/infer-offsets';
 
 const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
 
 export class Timeline {
     public duration: number
+    public playbackRate: number    
     public playState: types.AnimationPlaybackState
     private targets: types.TargetConfiguration[] 
-    private _animations: Animator[]  
+    private _animations: IAnimationController[]  
     private _currentIteration: number    
     private _currentTime: number
     private _direction: types.AnimationDirection
     private _listeners: { [key: string]: { (): void }[] }
-    private _playbackRate: number
     private _totalIterations: number
     private _isReady: boolean
 
@@ -27,18 +27,7 @@ export class Timeline {
         const self = this
         self._currentTime = currentTime
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
-            self._animations[i].seek(currentTime)
-        }
-    }
-    
-    public get playbackRate() {
-        return this._playbackRate
-    }
-    public set playbackRate(playbackRate: number) {
-        const self = this
-        self._playbackRate = playbackRate
-        for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
-            self._animations[i].playbackRate(playbackRate)
+            self._animations[i](SEEK, currentTime, self.playbackRate)
         }
     }
     
@@ -46,7 +35,7 @@ export class Timeline {
         const self = this
         self.duration = 0
         self._currentTime = _
-        self._playbackRate = 1
+        self.playbackRate = 1
         self.playState = IDLE
         self._animations = []
         self.targets = []
@@ -143,7 +132,7 @@ export class Timeline {
         self._currentIteration = _
         self.playState = IDLE
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
-            self._animations[i].cancel()
+            self._animations[i](CANCEL, 0, self.playbackRate)
         }
         self._trigger(CANCEL)
         self._teardown()
@@ -158,7 +147,7 @@ export class Timeline {
         self._currentIteration = _
         self.playState = FINISHED
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
-            self._animations[i].finish()
+            self._animations[i](FINISH, _, self.playbackRate)
         }
         self._trigger(FINISH) 
         return self
@@ -189,11 +178,12 @@ export class Timeline {
 
     public pause() {
         const self = this
+        const { currentTime, playbackRate } = self
         timeloop.off(self._tick)
         self._setup()
         self.playState = PAUSED
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
-            self._animations[i].pause()
+            self._animations[i](PAUSE, currentTime, playbackRate)
         }
         self._trigger(PAUSE)
         return self
@@ -251,7 +241,6 @@ export class Timeline {
                     target: target.target,
                     from: target.from,
                     to: target.to,
-                    duration: target.duration,
                     keyframes: css
                 })
             }
@@ -371,7 +360,7 @@ export class Timeline {
 
     private _setup(): void {
         const self = this
-        self._animations = self._getOptions().map(a => new Animator(a)) 
+        self._animations = self._getOptions().map(createWebAnimation) 
         self._isReady = true
     }
 
@@ -428,7 +417,7 @@ export class Timeline {
         const duration = self.duration
         const totalIterations = self._totalIterations
 
-        let playbackRate = self._playbackRate
+        let playbackRate = self.playbackRate
         let isReversed = playbackRate < 0
         let startTime = isReversed ? duration : 0
         let endTime = isReversed ? 0 : duration
@@ -471,7 +460,7 @@ export class Timeline {
 
         // start animations if should be active and currently aren't   
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
-            self._animations[i].tick(currentTime, isLastFrame)
+            self._animations[i](TICK, currentTime, playbackRate)
         }
     } 
 }

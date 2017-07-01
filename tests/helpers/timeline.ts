@@ -2,7 +2,7 @@ import { animate } from '../../src/helpers'
 import * as chai from 'chai'
 const { assert } = chai
 
-describe('timeline.from()', () => {
+describe('timeline.add()', () => {
   it('adds no offset at 0', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
