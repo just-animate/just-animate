@@ -28,7 +28,7 @@ export interface Animation {
 }
 
 export interface KeyframeOptions {
-  offset?: number 
+  offset?: number
   [val: string]: string | number | { (target?: AnimationTarget, index?: number, targets?: AnimationTarget[]): string | number }
 }
 
@@ -106,7 +106,7 @@ export type CssPropertyOptions = {
 
 export type CssKeyframeOptions = {
   offset?: number
-  easing?: string 
+  easing?: string
   [name: string]: KeyframeValueResolver
 }
 
@@ -119,48 +119,48 @@ export type Mapper<T1, T2> = (mapable: T1) => T2
 export type Func<T1> = (mapable: T1) => T1
 
 export interface PropertyKeyframe {
-    time: number
-    index: number
-    value: KeyframeValueResolver | KeyframeValueResolver[]
+  time: number
+  index: number
+  value: KeyframeValueResolver | KeyframeValueResolver[]
 }
 
 export interface TargetConfiguration {
-    target: AnimationTarget
-    from: number
-    to: number
-    duration: number
-    props: { [key: string]: PropertyKeyframe[] }
+  target: AnimationTarget
+  from: number 
+  to: number
+  duration: number
+  props: { [key: string]: PropertyKeyframe[] }
 }
 
 export interface BaseAnimationOptions {
-    targets: AnimationTarget | AnimationTarget[]
-    css: KeyframeOptions[]
-    stagger?: number | string
-    delay?: number | string
-    endDelay?: number | string
+  targets: AnimationTarget | AnimationTarget[]
+  css: KeyframeOptions[]
+  stagger?: number | string
+  delay?: number | string
+  endDelay?: number | string
 }
 
 export interface ToAnimationOptions extends BaseAnimationOptions {
-    duration?: number | string
-    from?: number | string
+  duration?: number | string
+  from?: number | string
 }
 
 export interface AddAnimationOptions extends BaseAnimationOptions {
-    from?: number
-    to?: number
-    duration?: number
+  from?: number
+  to?: number
+  duration?: number
 }
 
 export interface AnimationOptions extends BaseAnimationOptions {
-    from: number
-    to: number
-    duration: number
+  from: number
+  to: number
+  duration: number
 }
 
 export interface EffectOptions {
-    target: AnimationTarget
-    keyframes: Keyframe[]
-    duration: number
-    to: number
-    from: number
+  target: AnimationTarget
+  keyframes: Keyframe[]
+  duration: number
+  to: number
+  from: number
 }

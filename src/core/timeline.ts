@@ -1,5 +1,5 @@
 import * as types from '../types'
-
+import { resolve } from '../transformers/'
 import { convertToMs, getTargets, inRange, isDefined, isArray, isFunction, indexOf, sortBy, head } from '../utils'
 import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
 import { Animator, timeloop } from '.'
@@ -9,7 +9,6 @@ const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
 
 export class Timeline {
     public duration: number
-
     public playState: types.AnimationPlaybackState
     private targets: types.TargetConfiguration[] 
     private _animations: Animator[]  
@@ -105,14 +104,6 @@ export class Timeline {
         if (isArray(options2.css)) {
             inferOffsets(options2.css) 
         }
-
-        // todo: incorporate WAAPI delay/endDelay
-        // const staggerMs = convertToMs(resolve(stagger, target, index, true) || 0) as number
-        // const delayMs = convertToMs(resolve(delay, target, index) || 0) as number
-        // const endDelayMs = convertToMs(resolve(endDelay, target, index) || 0) as number
-        // const totalTime = delayMs + duration + endDelayMs
-        // self.endTimeMs = staggerMs + from + totalTime
-        // self.startTimeMs = staggerMs + from
 
         // add all targets as property keyframes
         const targets = getTargets(options.targets)
@@ -287,8 +278,19 @@ export class Timeline {
     }
 
     private _addKeyframes(target: types.TargetConfiguration, index: number, options: types.AnimationOptions) {
-        const self = this
-        const { from, to } = options
+        const self = this 
+        const staggerMs = convertToMs(resolve(options.stagger, target, index, true) || 0) as number
+        const delayMs = convertToMs(resolve(options.delay, target, index) || 0) as number
+        const endDelayMs = convertToMs(resolve(options.endDelay, target, index) || 0) as number
+        
+        // todo: incorporate WAAPI delay/endDelay
+        const activeFrom = staggerMs + options.from
+        const activeTo = staggerMs + options.to
+        const duration = activeTo - activeFrom
+        const totalTime = delayMs + duration + endDelayMs
+        const from = staggerMs + activeFrom        
+        const to = staggerMs + activeFrom + totalTime
+        
         options.css.forEach(keyframe => {
             const time = Math.floor(((to - from) * keyframe.offset) + from)
             self._addKeyframe(

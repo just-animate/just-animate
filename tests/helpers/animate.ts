@@ -15,6 +15,8 @@ describe('sequence', () => {
         { opacity: 1 }
       ]
     })
+    
+    timeline.pause()
 
     timeline.currentTime = 0
     assert.equal(+getComputedStyle(target).opacity, 0)
@@ -32,6 +34,8 @@ describe('sequence', () => {
         { opacity: 1 }
       ]
     })
+    
+    timeline.pause()
 
     timeline.currentTime = 500
     assert.equal(+getComputedStyle(target).opacity, .5)
@@ -49,6 +53,8 @@ describe('sequence', () => {
         { opacity: 1 }
       ]
     })
+    
+    timeline.pause()
 
     timeline.currentTime = 1000
     assert.equal(+getComputedStyle(target).opacity, 1)
@@ -67,6 +73,8 @@ describe('sequence', () => {
         { opacity: 0 }
       ]
     })
+    
+    timeline.pause()
 
     timeline.currentTime = 0
     assert.approximately(+getComputedStyle(target).opacity, 0, .0001)
@@ -106,6 +114,8 @@ describe('sequence', () => {
         { opacity: 1 }
       ]
     })
+    
+    timeline.pause()
 
     assert.equal(timeline.duration, 1400)
 
@@ -140,6 +150,8 @@ describe('sequence', () => {
         { opacity: 1 }
       ]
     })
+    
+    timeline.pause()
 
     assert.equal(timeline.duration, 1400)
 
@@ -162,7 +174,7 @@ describe('sequence', () => {
             { opacity: 0 },
             { opacity: 1 }
           ]
-        })
+        }) 
 
       const actual = timeline._getOptions()
       const expected = [{

@@ -27,13 +27,15 @@ export class Animator {
 
     constructor(options: types.EffectOptions) {
         const self = this
-        const { keyframes, target, duration } = options
+        const { keyframes, target, duration, to, from } = options
 
         // setup instance variables
         self._playbackRate = 1
 
         self.keyframes = keyframes
         self.target = target
+        self.startTimeMs = to
+        self.endTimeMs = from
 
         // setup WAAPI timing object
         self.timing = {

@@ -16,7 +16,9 @@ describe('timeline.from()', () => {
           { opacity: 1 }
         ]
       })
-
+    
+    timeline.pause()
+    
     assert.equal(timeline.duration, 1000)
     
     timeline.currentTime = 0
@@ -43,6 +45,8 @@ describe('timeline.from()', () => {
           { opacity: 1 }
         ]
       })
+    
+    timeline.pause()
       
     assert.equal(timeline.duration, 1500)
 
@@ -73,6 +77,8 @@ describe('timeline.to()', () => {
         { opacity: 1 }
       ]
     })
+    
+    timeline.pause()
 
     assert.equal(timeline.duration, 1000)
     
@@ -99,6 +105,8 @@ describe('timeline.to()', () => {
         { opacity: 1 }
       ]
     })
+    
+    timeline.pause()
 
     assert.equal(timeline.duration, 1500)
     
