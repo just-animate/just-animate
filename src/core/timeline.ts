@@ -122,16 +122,18 @@ export class Timeline {
 
     public to(toTime: string | number, opts: types.ToAnimationOptions) {
         const self = this
-        const endTime = convertToMs(toTime)
+        const to = convertToMs(toTime)
 
         let fromTime: number
-        if (isDefined(opts.duration)) {
-            fromTime = Math.max(convertToMs(opts.duration), 0)
+        if (isDefined(opts.from)) {
+            fromTime = convertToMs(opts.from)
+        } else if (isDefined(opts.duration)) {
+            fromTime = to - convertToMs(opts.duration)
         } else {
             fromTime = self.duration
         }
 
-        return self.fromTo(fromTime, endTime, opts)
+        return self.fromTo(Math.max(fromTime, 0), to, opts)
     }
 
     public cancel() {
@@ -284,15 +286,12 @@ export class Timeline {
         const endDelayMs = convertToMs(resolve(options.endDelay, target, index) || 0) as number
         
         // todo: incorporate WAAPI delay/endDelay
-        const activeFrom = staggerMs + options.from
-        const activeTo = staggerMs + options.to
-        const duration = activeTo - activeFrom
-        const totalTime = delayMs + duration + endDelayMs
-        const from = staggerMs + activeFrom        
-        const to = staggerMs + activeFrom + totalTime
+        const from = staggerMs + delayMs + options.from
+        const to = staggerMs + delayMs + options.to + endDelayMs;
+        const duration = to - from
         
         options.css.forEach(keyframe => {
-            const time = Math.floor(((to - from) * keyframe.offset) + from)
+            const time = Math.floor((duration * keyframe.offset) + from)
             self._addKeyframe(
                 target,
                 time,

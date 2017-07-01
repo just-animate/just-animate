@@ -34,13 +34,11 @@ export class Animator {
 
         self.keyframes = keyframes
         self.target = target
-        self.startTimeMs = to
-        self.endTimeMs = from
+        self.startTimeMs = from
+        self.endTimeMs = to
 
         // setup WAAPI timing object
         self.timing = {
-            delay: 0,
-            endDelay: 0,
             fill: 'both',
             duration
         }

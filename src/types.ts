@@ -146,9 +146,9 @@ export interface ToAnimationOptions extends BaseAnimationOptions {
 }
 
 export interface AddAnimationOptions extends BaseAnimationOptions {
-  from?: number
-  to?: number
-  duration?: number
+  from?: number | string
+  to?: number | string
+  duration?: number | string
 }
 
 export interface AnimationOptions extends BaseAnimationOptions {

@@ -36,7 +36,6 @@ describe('sequence', () => {
     })
     
     timeline.pause()
-
     timeline.currentTime = 500
     assert.equal(+getComputedStyle(target).opacity, .5)
   });

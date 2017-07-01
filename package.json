@@ -10,7 +10,7 @@
     "@types/node": "^7.0.29",
     "chai": "^4.0.2",
     "concurrently": "^3.4.0",
-    "del-cli": "^1.0.0",
+    "del-cli": "^1.1.0",
     "jsdom": "^11.0.0",
     "karma": "^1.7.0",
     "karma-chai": "^0.1.0",
