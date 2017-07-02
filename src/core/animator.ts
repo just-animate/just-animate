@@ -1,5 +1,5 @@
 import * as types from '../types';
-import { RUNNING, CANCEL, PAUSE, FINISH, SEEK, TICK, inRange } from '../utils';
+import { RUNNING, CANCEL, PAUSE, FINISH, SEEK, TICK, inRange, clamp } from '../utils';
 
 const framePadding = 17
 
@@ -19,43 +19,45 @@ export function createWebAnimation({ keyframes, from, to, target }: types.Effect
             })
             animator.cancel()
         }
-         
+
         if (animator.playbackRate !== playbackRate) {
             // set playbackRate direction/speed            
-            animator.playbackRate = playbackRate            
-        } 
-        
+            animator.playbackRate = playbackRate
+        }
+
         if (type === CANCEL) {
-            // cancel and return    
-            animator.cancel()    
+            animator.cancel()
             return
         }
         if (type === FINISH) {
-             // finish animation and pause it so it won't attempt to play when seeking    
+            // without pause() WAAPI appears to play the animation again on seek
             animator.finish()
             animator.pause()
             return
         }
 
         if (type === PAUSE) {
-            // pause the animation and continue processing    
             animator.pause()
-        } 
-         
-        if (type === SEEK && animator.currentTime !== (time - from)) {
-            // sync if necessary          
-            animator.currentTime = time - from
-        } 
-        
-        const sign = (playbackRate || 0) < 0 ? -1 : 1
-        if (inRange(time + (framePadding * sign), 0, to - from)) {
-            // don't do anything if not in range
-            return
         }
-        
+
+        const duration = to - from
+        const currentTime = time - from
+        if (type === SEEK && animator.currentTime !== currentTime) {
+            // sync if necessary          
+            animator.currentTime = clamp(currentTime, 0, duration)
+        }
+
         if (type === TICK && animator.playState !== RUNNING) {
-            // start if ticking and animator is not running
-            animator.play()
+            const sign = (playbackRate || 0) < 0 ? -1 : 1
+            const isActive = inRange(currentTime + (framePadding * sign), 0, to - from)
+
+            if (isActive) {
+                // sync time
+                animator.currentTime = clamp(currentTime, 0, duration)
+
+                // start if ticking and animator is not running
+                animator.play()
+            }
         }
     }
 }
