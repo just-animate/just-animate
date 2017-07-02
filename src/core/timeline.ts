@@ -4,6 +4,7 @@ import { convertToMs, getTargets, inRange, isDefined, isArray, isFunction, index
 import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
 import { createWebAnimation, timeloop, IAnimationController } from '.'
 import { inferOffsets } from '../transformers/infer-offsets';
+import { propsToKeyframes } from '../transformers/props-to-keyframes'
 
 const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
 
@@ -83,16 +84,20 @@ export class Timeline {
 
     public fromTo(from: number | string, to: number | string, options: types.BaseAnimationOptions) {
         const self = this
+
+        if (isArray(options.css)) {
+            // fill in missing offsets            
+            inferOffsets(options.css as types.KeyframeOptions[]) 
+        } else {
+            // convert properties to offsets
+            options.css = propsToKeyframes(options.css as types.PropertyOptions)
+        }
+        
         // ensure to/from are in milliseconds (as numbers)
         const options2 = options as types.AnimationOptions
         options2.from = convertToMs(from)
         options2.to = convertToMs(to)
         options2.duration = options2.to - options2.from
-
-        // fill in missing offsets
-        if (isArray(options2.css)) {
-            inferOffsets(options2.css) 
-        }
 
         // add all targets as property keyframes
         const targets = getTargets(options.targets)
@@ -458,7 +463,7 @@ export class Timeline {
             return
         }
 
-        // start animations if should be active and currently aren't   
+        // call tick for all animations 
         for (let i = 0, ilen = self._animations.length; i < ilen; i++) {
             self._animations[i](TICK, currentTime, playbackRate)
         }

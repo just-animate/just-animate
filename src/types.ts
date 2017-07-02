@@ -1,35 +1,11 @@
-export interface AnimationEffectTiming {
-  direction?: string
-  delay?: number
-  duration?: number
-  easing?: string
-  endDelay?: number
-  fill?: string
-  iterationStart?: number
-  iterations?: number
-}
-
-export interface Animation {
-  id: string
-  startTime: number
-  currentTime: number
-  playState: 'idle' | 'pending' | 'running' | 'paused' | 'finished'
-  playbackRate: number
-  onfinish: Function
-  oncancel: Function
-
-  cancel(): void
-  finish(): void
-  play(): void
-  pause(): void
-  reverse(): void
-  addEventListener(eventName: string, listener: Function): void
-  removeEventListener(eventName: string, listener: Function): void
-}
 
 export interface KeyframeOptions {
   offset?: number
-  [val: string]: string | number | { (target?: AnimationTarget, index?: number, targets?: AnimationTarget[]): string | number }
+  [val: string]: KeyframeValueResolver
+}
+
+export interface PropertyOptions {
+  [name: string]: KeyframeValueResolver | KeyframeValueResolver[]
 }
 
 export interface Keyframe {
@@ -40,6 +16,7 @@ export interface Keyframe {
 }
 
 export type FillMode = 'none' | 'forwards' | 'backwards' | 'both' | 'auto'
+
 export type AnimationPlaybackState =
   | 'fatal'
   | 'idle'
@@ -58,15 +35,7 @@ export type KeyframeValue = string | number
 export type KeyframeFunction = (target?: any, index?: number) => KeyframeValueResolver
 export type KeyframeValueResolver = KeyframeValue | KeyframeFunction
 
-export type AnimationTiming = {
-  delay?: number
-  duration?: number
-  easing?: string
-  endDelay?: number
-  fill?: string
-}
-
-export type AnimationTimeContext = {
+export interface AnimationTimeContext {
   currentTime?: number
   delta?: number
   duration?: number
@@ -115,9 +84,6 @@ export type SplitTextResult = {
   characters: HTMLElement[]
 }
 
-export type Mapper<T1, T2> = (mapable: T1) => T2
-export type Func<T1> = (mapable: T1) => T1
-
 export interface PropertyKeyframe {
   time: number
   index: number
@@ -134,7 +100,7 @@ export interface TargetConfiguration {
 
 export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
-  css: KeyframeOptions[]
+  css: KeyframeOptions[] | PropertyOptions
   stagger?: number | string
   delay?: number | string
   endDelay?: number | string
@@ -155,6 +121,11 @@ export interface AnimationOptions extends BaseAnimationOptions {
   from: number
   to: number
   duration: number
+  targets: AnimationTarget[]
+  css: KeyframeOptions[]
+  stagger?: number
+  delay?: number
+  endDelay?: number
 }
 
 export interface EffectOptions {
