@@ -84,6 +84,13 @@ export type SplitTextResult = {
   characters: HTMLElement[]
 }
 
+export interface PropertyHandler {
+    isHandled(name: string, value?: string | number): boolean
+    toName(name: string): string
+    toValue(name: string, value: string | number): any
+    combine(values: string[]): string[]
+}
+
 export interface PropertyKeyframe {
   time: number
   index: number

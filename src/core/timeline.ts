@@ -1,6 +1,6 @@
 import * as types from '../types'
-import { createEffects, resolve } from '../transformers/'
-import { convertToMs, getTargets, inRange, isDefined, isArray, indexOf, sortBy, head, SEEK, UPDATE } from '../utils'
+import { toEffects, addKeyframes } from './keyframes'
+import { convertToMs, getTargets, inRange, isDefined, isArray, sortBy, head, SEEK, UPDATE } from '../utils'
 import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
 import { createWebAnimation, timeloop, IAnimationController } from '.'
 import { inferOffsets } from '../transformers/infer-offsets';
@@ -99,7 +99,21 @@ export class Timeline {
         // add all targets as property keyframes
         const targets = getTargets(options.targets)
         for (let i = 0, ilen = targets.length; i < ilen; i++) {
-            self._addTarget(targets[i], i, options2)
+            const target = targets[i]
+            
+            let targetConfig = head(self.targets, t2 => t2.target === target)
+            if (!targetConfig) {
+                targetConfig = {
+                    from: options2.from,
+                    to: options2.to,
+                    duration: options2.to - options2.from,
+                    target,
+                    props: {}
+                }
+                self.targets.push(targetConfig)
+            }
+
+            addKeyframes(targetConfig, i, options2)
         }
 
         // sort property keyframes
@@ -228,85 +242,7 @@ export class Timeline {
     }
 
     public getEffects() {
-        return createEffects(this.targets)
-    }
-
-    private _addTarget(target: types.AnimationTarget, index: number, options: types.AnimationOptions) {
-        const self = this
-        let targetConfig = head(self.targets, t2 => t2.target === target)
-        if (!targetConfig) {
-            targetConfig = {
-                from: options.from,
-                to: options.to,
-                duration: options.to - options.from,
-                target,
-                props: {}
-            }
-            self.targets.push(targetConfig)
-        }
-
-        if (isArray(options.css)) {
-            self._addKeyframes(targetConfig, index, options)
-        }
-    }
-
-    private _addKeyframes(target: types.TargetConfiguration, index: number, options: types.AnimationOptions) {
-        const self = this
-        const staggerMs = convertToMs(resolve(options.stagger, target, index, true) || 0) as number
-        const delayMs = convertToMs(resolve(options.delay, target, index) || 0) as number
-        const endDelayMs = convertToMs(resolve(options.endDelay, target, index) || 0) as number
-
-        // todo: incorporate WAAPI delay/endDelay
-        const from = staggerMs + delayMs + options.from
-        const to = staggerMs + delayMs + options.to + endDelayMs;
-        const duration = to - from
-
-        options.css.forEach(keyframe => {
-            const time = Math.floor((duration * keyframe.offset) + from)
-            self._addKeyframe(
-                target,
-                time,
-                index,
-                keyframe
-            )
-        })
-    }
-
-    private _addKeyframe(target: types.TargetConfiguration, time: number, index: number, keyframe: types.KeyframeOptions) {
-        for (const name in keyframe) {
-            if (name === 'offset') {
-                continue
-            }
-
-            const value = keyframe[name]
-            // tslint:disable-next-line:no-null-keyword
-            if (value === null || value === undefined) {
-                continue
-            }
-
-            let props = target.props[name]
-            if (!props) {
-                props = [] as types.PropertyKeyframe[]
-                target.props[name] = props
-            }
-
-            const indexOfTime = indexOf(props, p => p.time === time)
-            if (indexOfTime === -1) {
-                props.push({ time, index, value })
-                continue
-            }
-
-            const prop = props[indexOfTime]
-            if (!isDefined(prop.value)) {
-                prop.value = value
-                continue
-            }
-            if (isArray(prop.value)) {
-                (prop.value as any[]).push(value)
-                continue
-            }
-            prop.value = [value as any]
-        }
+        return toEffects(this.targets)
     }
 
     private _calcTimes() {
@@ -343,7 +279,7 @@ export class Timeline {
     private _setup(): void {
         const self = this
         if (!self._isReady) {
-            self._animators = createEffects(self.targets).map(createWebAnimation)
+            self._animators = toEffects(self.targets).map(createWebAnimation)
             self._isReady = true
         }
     }
