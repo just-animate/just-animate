@@ -18,14 +18,16 @@ module.exports = function (config) {
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['mocha', 'chai', "karma-typescript"],
-        modules: ['just-curves'],
+        modules: [
+            // 'just-curves'
+        ],
 
 
         // list of files / patterns to load in the browser
         files: [
             'tests/**/*.ts',
             'src/**/*.ts',
-            'node_modules/just-curves/**/*.ts'
+            // 'node_modules/just-curves/**/*.ts'
         ],
 
 

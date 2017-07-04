@@ -1,6 +1,6 @@
 // import { jsdom } from '../dom'
 import * as chai from 'chai'
-const { expect, assert } = chai 
+const { assert } = chai 
 
 import { propsToKeyframes } from '../../src/transformers'
 

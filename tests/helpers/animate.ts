@@ -252,9 +252,9 @@ describe('sequence', () => {
         from: 1000,
         to: 2000, 
         keyframes: [
-          { offset: 0, x: 0 },
-          { offset: 1, x: 200 }
-        ]
+            { offset: 0, transform: 'translateX(0px)' },
+            { offset: 1, transform: 'translateX(200px)' }
+          ]
       }]
 
       assert.deepEqual<{}>(actual, expected)
@@ -406,13 +406,13 @@ describe('sequence', () => {
         from: 200,
         to: 1000,
         keyframes: [
-          { offset: 0, x: 0 },
-          { offset: 0.075, x: 40 },
-          { offset: 0.15, x: 0 },
-          { offset: 0.3, x: 90 },
-          { offset: 0.375, x: 100 },
-          { offset: 0.5, x: 100 },
-          { offset: 1, x: 0 }
+          { offset: 0, transform: 'translateX(0px)' },
+          { offset: 0.075, transform: 'translateX(40px)' },
+          { offset: 0.15, transform: 'translateX(0px)' },
+          { offset: 0.3, transform: 'translateX(90px)' },
+          { offset: 0.375, transform: 'translateX(100px)' },
+          { offset: 0.5, transform: 'translateX(100px)' },
+          { offset: 1, transform: 'translateX(0px)' }
         ]
       }];
 
