@@ -85,10 +85,8 @@ export type SplitTextResult = {
 }
 
 export interface PropertyHandler {
-    isHandled(name: string, value?: string | number): boolean
-    toName(name: string): string
-    toValue(name: string, value: string | number): any
-    combine(values: string[]): string[]
+  convert?(prop: { name: string, value: string | number }): void
+  merge?(name: string, values: string[]): void
 }
 
 export interface PropertyKeyframe {
@@ -99,7 +97,7 @@ export interface PropertyKeyframe {
 
 export interface TargetConfiguration {
   target: AnimationTarget
-  from: number 
+  from: number
   to: number
   duration: number
   props: { [key: string]: PropertyKeyframe[] }
