@@ -1,4 +1,5 @@
 export * from './add-transition'
+export * from './create-effects'
 export * from './fix-offsets' 
 export * from './props-to-keyframes'
 export * from './resolve-props-in-keyframes'

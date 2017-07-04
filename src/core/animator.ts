@@ -1,25 +1,25 @@
 import * as types from '../types';
-import { RUNNING, CANCEL, PAUSE, FINISH, SEEK, TICK, inRange, clamp } from '../utils';
+import { RUNNING, CANCEL, PAUSE, FINISH, SEEK, UPDATE, inRange, clamp, _, lazy } from '../utils';
 
-const framePadding = 17
+const framePadding = 0
 
 export interface IAnimationController {
     (type: string, time: number, playbackRate: number): void
 }
 
 export function createWebAnimation({ keyframes, from, to, target }: types.EffectOptions): IAnimationController {
-    // intialize animator
-    let animator: any
-    return (type: string, time: number, playbackRate: number) => {
-        if (!animator) {
-            // initialize animator if not initialized
-            animator = (target as any).animate(keyframes, {
-                duration: to - from,
-                fill: 'both'
-            })
-            animator.cancel()
-        }
+    const getAnimator = lazy(() => {
+        const a = (target as any).animate(keyframes, {
+            duration: to - from,
+            fill: 'both'
+        })
+        a.pause()
+        return a
+    })
 
+    return (type: string, time: number, playbackRate: number) => {
+        const animator = getAnimator();
+            
         if (animator.playbackRate !== playbackRate) {
             // set playbackRate direction/speed            
             animator.playbackRate = playbackRate
@@ -40,16 +40,17 @@ export function createWebAnimation({ keyframes, from, to, target }: types.Effect
             animator.pause()
         }
 
+        const isForwards = (playbackRate || 0) >= 0
         const duration = to - from
-        const currentTime = time - from
-        if (type === SEEK && animator.currentTime !== currentTime) {
-            // sync if necessary          
+        const currentTime = (time !== _ ? time : isForwards ? 0 : duration) - from
+        if (type === PAUSE || type === SEEK) {
+            // sync if paused or seeking         
             animator.currentTime = clamp(currentTime, 0, duration)
         }
 
-        if (type === TICK && animator.playState !== RUNNING) {
-            const sign = (playbackRate || 0) < 0 ? -1 : 1
-            const isActive = inRange(currentTime + (framePadding * sign), 0, to - from)
+        if (type === UPDATE && animator.playState !== RUNNING) {
+            const sign = isForwards ? 1 : -1
+            const isActive = inRange(currentTime + (framePadding * sign), 0, duration)
 
             if (isActive) {
                 // sync time

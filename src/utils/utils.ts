@@ -15,3 +15,8 @@ export const raf = (ctx: any, fn: Function): any => {
         ? requestAnimationFrame(callback)
         : setTimeout(callback, 16)
 }
+
+export function lazy<T>(initializer: () => T) {
+    let value: T;
+    return () => value || (value = initializer())
+}

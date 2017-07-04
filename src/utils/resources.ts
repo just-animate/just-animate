@@ -18,4 +18,4 @@ export const ALTERNATE = 'alternate',
     PLAY = 'play',
     RUNNING = 'running',
     SEEK = 'seek',
-    TICK = 'tick'
+    UPDATE = 'update'

@@ -175,7 +175,7 @@ describe('sequence', () => {
           ]
         }) 
 
-      const actual = timeline._getOptions()
+      const actual = timeline.getEffects()
       const expected = [{
         target: {},
         from: 0,
@@ -203,7 +203,7 @@ describe('sequence', () => {
           ]
         })
 
-      const actual = timeline._getOptions()
+      const actual = timeline.getEffects()
       const expected = [{
         target,
         from: 0,
@@ -237,7 +237,7 @@ describe('sequence', () => {
           ]
         })
 
-      const actual = timeline._getOptions()
+      const actual = timeline.getEffects()
       const expected = [{
         target: target1,
         from: 0,
@@ -278,7 +278,7 @@ describe('sequence', () => {
           ]
         })
 
-      const actual = timeline._getOptions()
+      const actual = timeline.getEffects()
       const expected = [{
         target: { opacity: .1 },
         from: 0,
@@ -318,7 +318,7 @@ describe('sequence', () => {
           ]
         })
 
-      const actual = timeline._getOptions()
+      const actual = timeline.getEffects()
       const expected = [{
         target: {},
         from: 0,
@@ -353,7 +353,7 @@ describe('sequence', () => {
           ]
         })
 
-      const actual = timeline._getOptions()[0]
+      const actual = timeline.getEffects()[0]
       const expected = {
         target: {},
         from: 0,
@@ -389,7 +389,7 @@ describe('sequence', () => {
           ]
         })
 
-      const actual = timeline._getOptions()
+      const actual = timeline.getEffects()
       const expected = [{
         target: {},
         from: 200,
@@ -431,7 +431,7 @@ describe('sequence', () => {
           ]
         })
 
-      const actual = timeline._getOptions()[0]
+      const actual = timeline.getEffects()[0]
       const expected = {
         target: target1,
         from: 0,
@@ -463,7 +463,7 @@ describe('sequence', () => {
           ]
         })
 
-      const actual = timeline._getOptions()
+      const actual = timeline.getEffects()
       const expected = [{
         target: el1,
         from: 0,
