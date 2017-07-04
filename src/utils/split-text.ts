@@ -2,7 +2,7 @@ import { AnimationTarget, SplitTextResult } from '../types'
 import { getTargets, toArray } from '.'
 
 const applySplitStyles = (element: HTMLElement) =>
-    element.setAttribute('style', 'display:inline-block;position:relative:textAlign:start')
+    element.setAttribute('style', 'display:inline-block;position:relative;text-align:start')
 
 /**
  * Detects words and characters from a target or a list of targets.
