@@ -10,43 +10,33 @@ export interface PropertyOptions {
 
 export interface Keyframe {
   offset?: number
-  easing?: string
-  transform?: string
   [val: string]: string | number
 }
 
-export type FillMode = 'none' | 'forwards' | 'backwards' | 'both' | 'auto'
-
-export type AnimationPlaybackState =
-  | 'fatal'
-  | 'idle'
-  | 'pending'
-  | 'running'
-  | 'paused'
-  | 'finished'
+export const enum AnimationPlaybackState {
+  fatal = 0,
+  idle = 1,
+  pending = 2,
+  running = 3,
+  paused = 4,
+  finished = 5
+}
+  
 export type AnimationDomTarget = Node | NodeList | string
 export type AnimationTarget = string | {}
-export type AnimationDirection = 'normal' | 'alternate'
-export type Angle = string | number
-export type Color = string
-export type Distance = string | number
+
+export const enum AnimationDirection {
+  normal = 0,
+  alternate = 1
+}
 
 export type KeyframeValue = string | number
-export type KeyframeFunction = (target?: any, index?: number) => KeyframeValueResolver
-export type KeyframeValueResolver = KeyframeValue | KeyframeFunction
 
-export interface AnimationTimeContext {
-  currentTime?: number
-  delta?: number
-  duration?: number
-  offset?: number
-  computedOffset?: number
-  playbackRate?: number
-  target: any
-  targets: any[]
-  index: number
-  iterations?: number
+export interface KeyframeFunction {
+  (target?: any, index?: number): KeyframeValueResolver
 }
+
+export type KeyframeValueResolver = KeyframeValue | KeyframeFunction
 
 export type AnimationEventType =
   | 'cancel'
@@ -55,31 +45,7 @@ export type AnimationEventType =
   | 'finish'
   | 'iteration'
 
-export type AnimationEvent = {
-  cancel?: AnimationEventListener
-  finish?: AnimationEventListener
-  pause?: AnimationEventListener
-  play?: AnimationEventListener
-  update?: AnimationEventListener
-  iteration?: AnimationEventListener
-  [key: string]: AnimationEventListener
-}
-export type AnimationEventListener = {
-  (ctx: AnimationTimeContext): void
-}
-
-export type CssPropertyOptions = {
-  easing?: string
-  [name: string]: KeyframeValueResolver | KeyframeValueResolver[]
-}
-
-export type CssKeyframeOptions = {
-  offset?: number
-  easing?: string
-  [name: string]: KeyframeValueResolver
-}
-
-export type SplitTextResult = {
+export interface SplitTextResult {
   words: HTMLElement[]
   characters: HTMLElement[]
 }

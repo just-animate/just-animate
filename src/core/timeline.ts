@@ -1,23 +1,36 @@
-import * as types from '../types'
+import {
+    AddAnimationOptions,
+    AnimationDirection,
+    AnimationOptions,
+    AnimationPlaybackState,
+    BaseAnimationOptions,
+    EffectOptions,
+    KeyframeOptions,
+    PropertyKeyframe,
+    PropertyOptions,
+    TargetConfiguration,
+    ToAnimationOptions
+} from '../types'
+
 import { toEffects, addKeyframes } from './keyframes'
 import { convertToMs, getTargets, inRange, isDefined, isArray, sortBy, head, SEEK, UPDATE } from '../utils'
-import { _, ALTERNATE, CANCEL, FINISH, FINISHED, IDLE, NORMAL, PAUSE, PAUSED, PENDING, PLAY, RUNNING } from '../utils/resources'
+import { _, CANCEL, FINISH, PAUSE, PLAY } from '../utils/resources'
 import { createWebAnimation, timeloop, IAnimationController } from '.'
 import { inferOffsets } from '../transformers/infer-offsets';
 import { propsToKeyframes } from '../transformers/props-to-keyframes'
 
-const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
+const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
 export class Timeline {
     public duration: number
     public playbackRate: number
-    public playState: types.AnimationPlaybackState
+    public playState: AnimationPlaybackState
 
-    private targets: types.TargetConfiguration[]
+    private targets: TargetConfiguration[]
     private _animators: IAnimationController[]
     private _iteration: number
     private _time: number
-    private _dir: types.AnimationDirection
+    private _dir: AnimationDirection
     private _listeners: { [key: string]: { (time: number): void }[] }
     private _iterations: number
     private _isReady: boolean
@@ -34,17 +47,17 @@ export class Timeline {
         self.duration = 0
         self._time = _
         self.playbackRate = 1
-        self.playState = IDLE
+        self.playState = AnimationPlaybackState.idle
         self._animators = []
         self.targets = []
         self._isReady = false
         self._iteration = _
-        self._dir = NORMAL
+        self._dir = AnimationDirection.normal
         self._iterations = _
         self._listeners = {}
     }
 
-    public add(opts: types.AddAnimationOptions) {
+    public add(opts: AddAnimationOptions) {
         const self = this
         const hasTo = isDefined(opts.to)
         const hasFrom = isDefined(opts.from)
@@ -79,19 +92,19 @@ export class Timeline {
         return self
     }
 
-    public fromTo(from: number | string, to: number | string, options: types.BaseAnimationOptions) {
+    public fromTo(from: number | string, to: number | string, options: BaseAnimationOptions) {
         const self = this
 
         if (isArray(options.css)) {
             // fill in missing offsets            
-            inferOffsets(options.css as types.KeyframeOptions[])
+            inferOffsets(options.css as KeyframeOptions[])
         } else {
             // convert properties to offsets
-            options.css = propsToKeyframes(options.css as types.PropertyOptions)
+            options.css = propsToKeyframes(options.css as PropertyOptions)
         }
 
         // ensure to/from are in milliseconds (as numbers)
-        const options2 = options as types.AnimationOptions
+        const options2 = options as AnimationOptions
         options2.from = convertToMs(from)
         options2.to = convertToMs(to)
         options2.duration = options2.to - options2.from
@@ -125,7 +138,7 @@ export class Timeline {
         return self
     }
 
-    public to(toTime: string | number, opts: types.ToAnimationOptions) {
+    public to(toTime: string | number, opts: ToAnimationOptions) {
         const self = this
         const to = convertToMs(toTime)
 
@@ -146,7 +159,7 @@ export class Timeline {
         timeloop.off(self._tick)
         self._time = 0
         self._iteration = _
-        self.playState = IDLE
+        self.playState = AnimationPlaybackState.idle
         for (let i = 0, ilen = self._animators.length; i < ilen; i++) {
             self._animators[i](CANCEL, 0, self.playbackRate)
         }
@@ -162,7 +175,7 @@ export class Timeline {
         timeloop.off(self._tick)
         self._time = _
         self._iteration = _
-        self.playState = FINISHED
+        self.playState = AnimationPlaybackState.finished
         for (let i = 0, ilen = self._animators.length; i < ilen; i++) {
             self._animators[i](FINISH, _, self.playbackRate)
         }
@@ -198,7 +211,7 @@ export class Timeline {
         const { currentTime, playbackRate } = self
         timeloop.off(self._tick)
         self._setup()
-        self.playState = PAUSED
+        self.playState = AnimationPlaybackState.paused
         for (let i = 0, ilen = self._animators.length; i < ilen; i++) {
             self._animators[i](PAUSE, currentTime, playbackRate)
         }
@@ -206,14 +219,16 @@ export class Timeline {
         return self
     }
 
-    public play(iterations = 1, direction: types.AnimationDirection = NORMAL) {
+    public play(iterations = 1, direction = AnimationDirection.normal) {
         const self = this
         self._setup()
         self._iterations = iterations
         self._dir = direction
 
-        if (self.playState === PAUSED || self.playState !== RUNNING && self.playState !== PENDING) {
-            self.playState = PENDING
+        if (self.playState === AnimationPlaybackState.paused
+            || self.playState !== AnimationPlaybackState.running
+            && self.playState !== AnimationPlaybackState.pending) {
+            self.playState = AnimationPlaybackState.pending
         }
 
         timeloop.on(self._tick)
@@ -225,7 +240,7 @@ export class Timeline {
         const self = this
         self.playbackRate = (self.playbackRate || 0) * -1
         
-        if (self.playState === RUNNING) {
+        if (self.playState === AnimationPlaybackState.running) {
             // if currently running, pause the animation and replay from that position
             self.pause().play()
         }
@@ -241,7 +256,7 @@ export class Timeline {
         }
     }
 
-    public getEffects() {
+    public getEffects(): EffectOptions[] {
         return toEffects(this.targets)
     }
 
@@ -318,17 +333,17 @@ export class Timeline {
         const playState = self.playState
 
         // canceled
-        if (playState === IDLE) {
+        if (playState === AnimationPlaybackState.idle) {
             self.cancel()
             return
         }
         // finished
-        if (playState === FINISHED) {
+        if (playState === AnimationPlaybackState.finished) {
             self.finish()
             return
         }
         // paused
-        if (playState === PAUSED) {
+        if (playState === AnimationPlaybackState.paused) {
             self.pause()
             return
         }
@@ -343,7 +358,7 @@ export class Timeline {
         let time = self._time
         let iteration = self._iteration || 0
 
-        if (self.playState === PENDING) {
+        if (self.playState === AnimationPlaybackState.pending) {
             // reset position properties if necessary
             if (time === _ || (isReversed && time > duration) || (!isReversed && time < 0)) {
                 // if at finish, reset to start time              
@@ -353,7 +368,7 @@ export class Timeline {
                 // if at finish reset iterations to 0
                 iteration = 0
             }
-            self.playState = RUNNING
+            self.playState = AnimationPlaybackState.running
         }
         
         time += delta * playbackRate        
@@ -387,7 +402,7 @@ export class Timeline {
             return
         }
 
-        if (self._dir === ALTERNATE) {
+        if (self._dir === AnimationDirection.alternate) {
             // change direction
             self.playbackRate = (self.playbackRate || 0) * -1
         }

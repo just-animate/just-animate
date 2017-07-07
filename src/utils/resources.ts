@@ -18,4 +18,5 @@ export const ALTERNATE = 'alternate',
     PLAY = 'play',
     RUNNING = 'running',
     SEEK = 'seek',
+    TRANSFORM = 'transform',
     UPDATE = 'update'

@@ -8,7 +8,7 @@
         "inlineSourceMap": false,    
         "module": "commonjs",     
         "moduleResolution": "node", 
-        "newLine": "LF",         
+        "newLine": "lf",         
         "noFallthroughCasesInSwitch": true,             
         "noImplicitAny": true,
         "noUnusedParameters": true,
