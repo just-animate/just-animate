@@ -57,16 +57,19 @@ export interface PropertyHandler {
 
 export interface PropertyKeyframe {
   time: number
+  prop: string
   index: number
-  value: KeyframeValueResolver | KeyframeValueResolver[]
+  order: number;
+  value: KeyframeValueResolver[]
 }
 
 export interface TargetConfiguration {
   target: AnimationTarget
+  propOrder: { [name: string]: number }
   from: number
   to: number
   duration: number
-  props: { [key: string]: PropertyKeyframe[] }
+  keyframes: PropertyKeyframe[]
 }
 
 export interface BaseAnimationOptions {

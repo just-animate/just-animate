@@ -1,5 +1,5 @@
 import * as types from '../types'
-import { isArray, isFunction, convertToMs, isDefined, indexOf } from '../utils';
+import { isFunction, convertToMs, isDefined, indexOf } from '../utils';
 import { resolve } from '../transformers';
 import { unitHandler, transformHandler } from '../handlers';
 
@@ -10,44 +10,50 @@ export function toEffects(targets: types.TargetConfiguration[]): types.EffectOpt
 
     for (let i = 0, ilen = targets.length; i < ilen; i++) {
         const target = targets[i]
-        const { from, duration, props } = target
+        const { from, to, duration, keyframes } = target
 
-        for (const name in props) {
-            const propKeyframes = props[name]
-            const css = propKeyframes.map(p => {
-                const offset = (p.time - from) / (duration || 1)
-                let value: string | number
-                if (isFunction(p.value)) {
-                    value = (p.value as Function)(target.target, p.index)
-                } else if (isArray(p.value)) {
-                    const values = (p.value as types.KeyframeValueResolver[]).map(a =>
-                        isFunction(a) ? (a as Function)(target.target, p.index) : a as string | number)
+        // construct property animation options        
+        const props = {} as { [name: string]: types.EffectOptions }
+        for (let j = 0, jlen = keyframes.length; j < jlen; j++) {
+            const p = keyframes[j]
+            const propName = p.prop
+            const offset = (p.time - from) / (duration || 1)
 
-                    // process handlers
-                    for (let q = 0, qlen = propertyHandlers.length; q < qlen; q++) {
-                        const handler = propertyHandlers[q]
-                        if (isFunction(handler.merge)) {
-                            handler.merge(name, values)
-                        }
-                    }
+            const values = (p.value as types.KeyframeValueResolver[]).map(a =>
+                isFunction(a) ? (a as Function)(target.target, p.index) : a as string | number)
 
-                    // take the last value in the array
-                    value = values[values.length - 1]
-                } else {
-                    value = p.value as string | number
+            // process handlers
+            for (let q = 0, qlen = propertyHandlers.length; q < qlen; q++) {
+                const handler = propertyHandlers[q]
+                if (isFunction(handler.merge)) {
+                    handler.merge(propName, values)
                 }
-                return { offset, [name]: value }
-            });
+            }
 
-            result.push({
-                target: target.target,
-                from: target.from,
-                to: target.to,
-                keyframes: css
+            // take the last value in the array
+            const value = values[values.length - 1]
+
+            // get or create property            
+            let prop = props[propName]
+            if (!prop) {
+                prop = {
+                    target: target.target,
+                    from,
+                    to,
+                    keyframes: []
+                }
+                props[propName] = prop
+            }
+            
+            prop.keyframes.push({
+                offset, [propName]: value
             })
         }
-    }
 
+        for (const propName in props) {
+            result.push(props[propName])
+        }
+    }  
     return result
 }
 
@@ -73,6 +79,7 @@ export function addKeyframes(target: types.TargetConfiguration, index: number, o
 }
 
 function addKeyframe(target: types.TargetConfiguration, time: number, index: number, keyframe: types.KeyframeOptions) {
+    const { keyframes } = target
     for (const propName in keyframe) {
         if (propName === 'offset') {
             continue
@@ -97,22 +104,18 @@ function addKeyframe(target: types.TargetConfiguration, time: number, index: num
         }
 
         const { name, value } = propValue
-        const props = target.props[name] || (target.props[name] = [])
-        const indexOfTime = indexOf(props, p => p.time === time)
-        if (indexOfTime === -1) {
-            props.push({ time, index, value })
+        const indexOfFrame = indexOf(keyframes, k => k.prop === name && k.time === time)
+        if (indexOfFrame !== -1) {
+            keyframes[indexOfFrame].value.push(value)
             continue
         }
-
-        const prop = props[indexOfTime]
-        if (!isDefined(prop.value)) {
-            prop.value = value
-            continue
-        }
-        if (isArray(prop.value)) {
-            (prop.value as any[]).push(value)
-            continue
-        }
-        prop.value = [prop.value as any, value]
+        
+        keyframes.push({
+            index,
+            prop: name,
+            time,
+            order: 0, // fixme
+            value: [value]
+        })
     }
 }

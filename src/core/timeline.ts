@@ -121,7 +121,8 @@ export class Timeline {
                     to: options2.to,
                     duration: options2.to - options2.from,
                     target,
-                    props: {}
+                    keyframes: [],
+                    propOrder: {}
                 }
                 self.targets.push(targetConfig)
             }
@@ -266,24 +267,24 @@ export class Timeline {
 
         for (let i = 0, ilen = self.targets.length; i < ilen; i++) {
             const target = self.targets[i]
+            const { keyframes } = target
+            
             let targetFrom = undefined
             let targetTo = undefined
-
-            for (const name in target.props) {
-                const props = target.props[name]
-                for (let j = 0, jlen = props.length; j < jlen; j++) {
-                    const prop = props[j]
-                    if (prop.time < targetFrom || targetFrom === undefined) {
-                        targetFrom = prop.time
-                    }
-                    if (prop.time > targetTo || targetTo === undefined) {
-                        targetTo = prop.time
-                        if (prop.time > timelineTo) {
-                            timelineTo = prop.time
-                        }
+                
+            for (let j = 0, jlen = keyframes.length; j < jlen; j++) {
+                const keyframe = keyframes[j]
+                if (keyframe.time < targetFrom || targetFrom === undefined) {
+                    targetFrom = keyframe.time
+                }
+                if (keyframe.time > targetTo || targetTo === undefined) {
+                    targetTo = keyframe.time
+                    if (keyframe.time > timelineTo) {
+                        timelineTo = keyframe.time
                     }
                 }
             }
+
             target.to = targetTo
             target.from = targetFrom
             target.duration = targetTo - targetFrom
@@ -303,10 +304,7 @@ export class Timeline {
         const self = this
         const { targets } = self
         for (let i = 0, ilen = targets.length; i < ilen; i++) {
-            const target = targets[i]
-            for (const name in target.props) {
-                target.props[name].sort(propKeyframeSort)
-            }
+            targets[i].keyframes.sort(propKeyframeSort)
         }
     }
 

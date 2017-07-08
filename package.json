@@ -50,7 +50,7 @@
     "build:es2015": "tsc -p tsconfig.es2015.json",
     "compress": "npm run compress:umd",
     "compress:umd": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/just-animate-core.min.js dist/just-animate-core.js",
-    "clean": "node_modules/.bin/del-cli -f dist lib lib.es2015",
+    "clean": "node_modules/.bin/del-cli -f dist lib lib.es2015 types",
     "format": "tsfmt -r src/**/*.ts",
     "preversion": "npm run rebuild",
     "postversion": "git push --follow-tags && npm publish",
