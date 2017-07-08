@@ -46,9 +46,15 @@ module.exports = function (config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress'],
+        reporters: ['progress', 'spec'],
 
-
+        specReporter: {
+            suppressFailed: false,      // do not print information about failed tests 
+            suppressPassed: false,      // do not print information about passed tests 
+            suppressSkipped: true,      // do not print information about skipped tests 
+            showSpecTiming: false,      // print the time elapsed for each spec 
+            failFast: true              // test would finish with error when a first fail occurs.  
+        },
         // web server port
         port: 9876,
 
