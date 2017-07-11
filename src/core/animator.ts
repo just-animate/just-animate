@@ -7,7 +7,7 @@ export interface IAnimationController {
     (type: string, time: number, playbackRate: number): void
 }
 
-export function createWebAnimation({ keyframes, from, to, target }: types.EffectOptions): IAnimationController {
+export function createWebAnimation({ keyframes, from, to, target }: types.Effect): IAnimationController {
     const getAnimator = lazy(() => {
         const a = (target as any).animate(keyframes, {
             duration: to - from,

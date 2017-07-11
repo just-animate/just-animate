@@ -1,5 +1,5 @@
 export * from './helpers'
-export { random, shuffle, splitText } from './utils'
+export { random, shuffle } from './utils'
 
 import * as types from './types'
 export { types }

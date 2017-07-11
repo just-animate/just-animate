@@ -72,7 +72,7 @@
     "no-unused-expression": true,
     "no-unused-variable": true,
     "no-use-before-declare": true,
-    "no-var-keyword": true,
+    "no-var-keyword": false,
     "no-var-requires": false,
     "object-literal-sort-keys": false,
     "one-line": [

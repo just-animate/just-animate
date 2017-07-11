@@ -8,6 +8,9 @@ export interface IList<T> {
     length: number
 }
 
+export const includes = <T>(items: T[], item: T) =>
+    items.indexOf(item) !== -1    
+
 /**
  * Returns the first object in the list or undefined
  */

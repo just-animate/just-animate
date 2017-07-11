@@ -13,23 +13,22 @@ export interface Keyframe {
   [val: string]: string | number
 }
 
-export const enum AnimationPlaybackState {
-  fatal = 0,
-  idle = 1,
-  pending = 2,
-  running = 3,
-  paused = 4,
-  finished = 5
+export const playbackState = {
+  fatal: 0,
+  idle: 1,
+  pending: 2,
+  running: 3,
+  paused: 4,
+  finished: 5
+}
+
+export const direction = {
+  normal: 0,
+  alternate: 1
 }
   
 export type AnimationDomTarget = Node | NodeList | string
 export type AnimationTarget = string | {}
-
-export const enum AnimationDirection {
-  normal = 0,
-  alternate = 1
-}
-
 export type KeyframeValue = string | number
 
 export interface KeyframeFunction {
@@ -50,9 +49,8 @@ export interface SplitTextResult {
   characters: HTMLElement[]
 }
 
-export interface PropertyHandler {
-  convert?(prop: { name: string, value: string | number }): void
-  merge?(name: string, values: string[]): void
+export interface PropertyHandler { 
+  (target: TargetConfiguration, effects: PropertyEffects): void
 }
 
 export interface PropertyKeyframe {
@@ -60,7 +58,15 @@ export interface PropertyKeyframe {
   prop: string
   index: number
   order: number;
-  value: KeyframeValueResolver[]
+  value: KeyframeValueResolver
+}
+
+export interface EffectOptions {
+    offset: number
+    value: string | number
+  }
+export interface PropertyEffects {
+  [name: string]: EffectOptions[]
 }
 
 export interface TargetConfiguration {
@@ -102,7 +108,7 @@ export interface AnimationOptions extends BaseAnimationOptions {
   endDelay?: number
 }
 
-export interface EffectOptions {
+export interface Effect {
   target: AnimationTarget
   keyframes: Keyframe[]
   to: number

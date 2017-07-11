@@ -17,8 +17,8 @@ describe('sequence', () => {
     })
     
     timeline.pause()
-
     timeline.currentTime = 0
+    
     assert.equal(+getComputedStyle(target).opacity, 0)
   });
 
@@ -196,7 +196,7 @@ describe('sequence', () => {
       const timeline = animate()
         .add({
           duration: 1000,
-          targets: [target],
+          targets: target,
           css: [
             { opacity: 0 },
             { opacity: 1 }
@@ -204,6 +204,7 @@ describe('sequence', () => {
         })
 
       const actual = timeline.getEffects()
+      
       const expected = [{
         target,
         from: 0,
@@ -238,6 +239,8 @@ describe('sequence', () => {
         })
 
       const actual = timeline.getEffects()
+      console.log(JSON.stringify(actual, undefined, 4))
+      
       const expected = [{
         target: target1,
         from: 0,

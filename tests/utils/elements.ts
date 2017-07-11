@@ -2,7 +2,8 @@
 import * as chai from 'chai'
 const { assert } = chai 
 
-import { getTargets, splitText } from '../../src/utils'
+import { getTargets } from '../../src/utils'
+import { splitText } from '../../src/core'
 
 describe('elements', () => {
     // jsdom()
@@ -116,7 +117,6 @@ describe('elements', () => {
             const element = document.createElement('h2')
             element.innerHTML = 's  \n\ts'
             const letters = splitText(element).characters
-            console.log(letters.length)
 
             assert(letters.length === 2, 'Wrong number of elements')
             assert(letters[0].textContent = 's')

@@ -9,12 +9,14 @@ import { Timeline } from '../core'
 export const animate = (options?: AddAnimationOptions | AddAnimationOptions[]) => {
     const timeline = new Timeline()
     if (options) {
-        listify(options).forEach(opt => {
+        var optionList = listify(options)
+        for (var i = 0, ilen = optionList.length; i < ilen; i++) {
+            var opt = optionList[i]
             if (!isDefined(opt.from)) {
                 opt.from = 0
             }
             timeline.add(opt) 
-        })
+        }
     }
     return timeline
 }

@@ -1,8 +1,11 @@
 import { AnimationTarget, SplitTextResult } from '../types'
-import { getTargets, toArray } from '.'
-
-const applySplitStyles = (element: HTMLElement) =>
-    element.setAttribute('style', 'display:inline-block;position:relative;text-align:start')
+import { getTargets, toArray } from '../utils'
+    
+function newElement() {
+    const el = document.createElement('div');
+    el.setAttribute('style', 'display:inline-block;position:relative;text-align:start');
+    return el;
+}
 
 /**
  * Detects words and characters from a target or a list of targets.
@@ -53,8 +56,7 @@ export const splitText = (target: AnimationTarget): SplitTextResult => {
         for (let j = 0, jlen = ws.length; j < jlen; j++) {
             const w = ws[j]
             // create new div for word/run"
-            const word = document.createElement('div')
-            applySplitStyles(word)
+            const word = newElement()
 
             // mark element as a word                    
             word.setAttribute('ja-word', w)
@@ -63,8 +65,7 @@ export const splitText = (target: AnimationTarget): SplitTextResult => {
 
             // if not the first word, add a space            
             if (j > 0) {
-                const space = document.createElement('div')
-                applySplitStyles(space)
+                const space = newElement() 
                 space.innerHTML = '&nbsp;'
                 space.setAttribute('ja-space', '')
                 element.appendChild(space)
@@ -76,8 +77,7 @@ export const splitText = (target: AnimationTarget): SplitTextResult => {
             for (let k = 0, klen = w.length; k < klen; k++) {
                 const c = w[k]
                 // create new div for character"
-                const char = document.createElement('div')
-                applySplitStyles(char)
+                const char = newElement()
                 char.textContent = c
 
                 // mark element as a character                    

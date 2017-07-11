@@ -1,4 +1,5 @@
 export * from './animator'
 export * from './keyframes'
+export * from './split-text'
 export * from './timeline'
 export * from './timeloop'
