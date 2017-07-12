@@ -1,5 +1,5 @@
 import * as types from '../types';
-import { RUNNING, CANCEL, PAUSE, FINISH, SEEK, UPDATE, inRange, clamp, _, lazy } from '../utils';
+import { RUNNING, CANCEL, PAUSE, FINISH, SEEK, UPDATE, inRange, minMax, _, lazy } from '../utils';
 
 const framePadding = 0
 
@@ -45,7 +45,7 @@ export function createWebAnimation({ keyframes, from, to, target }: types.Effect
         const currentTime = (time !== _ ? time : isForwards ? 0 : duration) - from
         if (type === PAUSE || type === SEEK) {
             // sync if paused or seeking         
-            animator.currentTime = clamp(currentTime, 0, duration)
+            animator.currentTime = minMax(currentTime, 0, duration)
         }
 
         if (type === UPDATE && animator.playState !== RUNNING) {
@@ -54,7 +54,7 @@ export function createWebAnimation({ keyframes, from, to, target }: types.Effect
 
             if (isActive) {
                 // sync time
-                animator.currentTime = clamp(currentTime, 0, duration)
+                animator.currentTime = minMax(currentTime, 0, duration)
 
                 // start if ticking and animator is not running
                 animator.play()
