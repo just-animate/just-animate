@@ -1,7 +1,7 @@
 import * as types from '../types'
 
-import { toEffects, addKeyframes } from './effects'
 import {
+  _, 
   convertToMs,
   getTargets,
   inRange,
@@ -9,13 +9,17 @@ import {
   isArrayLike,
   sortBy,
   head,
+  CANCEL,
+  FINISH,
+  PAUSE,
+  PLAY,
   SEEK,
   UPDATE
 } from '../utils'
-import { _, CANCEL, FINISH, PAUSE, PLAY } from '../utils/resources'
+
 import { timeloop, getPlugins } from '.'
-import { inferOffsets } from '../transformers/infer-offsets'
-import { propsToKeyframes } from '../transformers/props-to-keyframes'
+import { toEffects, addKeyframes } from './effects'
+import { inferOffsets, propsToKeyframes } from '../transformers'
 
 const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
 
