@@ -10,9 +10,9 @@ addPlugin(waapiPlugin)
  * Returns a new timeline of animation(s) using the options provided
  * @param options Animtion options or an array of options
  */
-export const animate = (
+export function animate(
   options?: types.AddAnimationOptions | types.AddAnimationOptions[]
-) => {
+) {
   const timeline = new Timeline()
   if (options) {
     var optionList = listify(options)
@@ -31,7 +31,7 @@ export const animate = (
  * Returns a new sequence of animations in a timeline
  * @param seqOptions an array of animations options
  */
-export const sequence = (seqOptions: types.AddAnimationOptions[]) => {
+export function sequence(seqOptions: types.AddAnimationOptions[]) {
   const timeline = new Timeline()
   for (let i = 0, ilen = seqOptions.length; i < ilen; i++) {
     timeline.add(seqOptions[i])

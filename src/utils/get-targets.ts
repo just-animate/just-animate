@@ -1,5 +1,5 @@
 import { AnimationTarget } from '../types'
-import { toArray } from './lists'
+import { toArray, pushAll } from './lists'
 import { isArrayLike, isDOM, isFunction, isObject, isString } from './type'
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources
@@ -27,7 +27,7 @@ export function getTargets(target: AnimationTarget): (HTMLElement | {})[] {
     const elements: HTMLElement[] = []
     for (let i = 0, ilen = (target as any[]).length; i < ilen; i++) {
       // recursively call this function in case of nested elements
-      elements.push.apply(elements, getTargets(target[i]))
+      pushAll(elements, getTargets(target[i]))
     }
     return elements
   }

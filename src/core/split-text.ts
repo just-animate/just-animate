@@ -1,12 +1,13 @@
 import { AnimationTarget, SplitTextResult } from '../types'
-import { getTargets, toArray } from '../utils'
+import { getTargets, pushAll, $, appendChild, attr } from '../utils'
 
-function newElement() {
+function newElement(name: string, value: string, innerHTML?: string) {
   const el = document.createElement('div')
-  el.setAttribute(
-    'style',
-    'display:inline-block;position:relative;text-align:start'
-  )
+  attr(el, 'style', 'display:inline-block;position:relative;text-align:start')
+  attr(el, name, value)
+  if (innerHTML) {
+    el.innerHTML = innerHTML
+  }
   return el
 }
 
@@ -15,7 +16,7 @@ function newElement() {
  * Note: if multiple targets are detected, they will return as a single
  * list of characters and numbers
  */
-export const splitText = (target: AnimationTarget): SplitTextResult => {
+export function splitText(target: AnimationTarget): SplitTextResult {
   // output parameters
   const characters: HTMLElement[] = []
   const words: HTMLElement[] = []
@@ -24,19 +25,19 @@ export const splitText = (target: AnimationTarget): SplitTextResult => {
   const elements = getTargets(target) as HTMLElement[]
 
   // get paragraphs, words, and characters for each element
-  for (let i = 0, ilen = elements.length; i < ilen; i++) {
-    const element = elements[i]
+  for (var i = 0, ilen = elements.length; i < ilen; i++) {
+    var element = elements[i]
 
     // if we have already split this element, check if it was already split
-    if (element.getAttribute('ja-split-text')) {
-      const ws = toArray(element.querySelectorAll('[ja-word]'))
-      const cs = toArray(element.querySelectorAll('[ja-character]'))
+    if (element.getAttribute('jast')) {
+      const ws = $(element, '[jaw]')
+      const cs = $(element, '[jac]')
 
       // if split already return query result
       if (ws.length || cs.length) {
         // apply found split elements
-        words.push.apply(words, ws)
-        characters.push.apply(characters, cs)
+        pushAll(words, ws)
+        pushAll(characters, cs)
         continue
       }
       // otherwise split it!
@@ -49,51 +50,33 @@ export const splitText = (target: AnimationTarget): SplitTextResult => {
     element.innerHTML = ''
 
     // mark element as already being split
-    element.setAttribute('ja-split', '')
+    attr(element, 'jas', '')
 
     // split on spaces
     const ws = contents.split(/[\s]+/gi)
 
     // handle each word
-    for (let j = 0, jlen = ws.length; j < jlen; j++) {
-      const w = ws[j]
+    for (var j = 0, jlen = ws.length; j < jlen; j++) {
+      var w = ws[j]
       // create new div for word/run"
-      const word = newElement()
+      var word = appendChild(element, newElement('jaw', w))
 
-      // mark element as a word
-      word.setAttribute('ja-word', w)
       // add to the result
       words.push(word)
 
       // if not the first word, add a space
       if (j > 0) {
-        const space = newElement()
-        space.innerHTML = '&nbsp;'
-        space.setAttribute('ja-space', '')
-        element.appendChild(space)
+        appendChild(element, newElement('jas', '', '&nbsp;'))
       }
 
-      // add to the paragraph
-      element.appendChild(word)
-
-      for (let k = 0, klen = w.length; k < klen; k++) {
-        const c = w[k]
+      for (var k = 0, klen = w.length; k < klen; k++) {
+        var c = w[k]
         // create new div for character"
-        const char = newElement()
-        char.textContent = c
-
-        // mark element as a character
-        char.setAttribute('ja-character', c)
         // add to the result
-        characters.push(char)
-        // append to the word
-        word.appendChild(char)
+        characters.push(appendChild(word, newElement('jac', c, c)))
       }
     }
   }
 
-  return {
-    characters: characters,
-    words: words
-  }
+  return { characters, words }
 }

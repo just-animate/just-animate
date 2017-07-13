@@ -1,3 +1,5 @@
+import { flr, rdm } from './math'
+
 /**
  * Returns one of the supplied values at random
  * 
@@ -7,19 +9,19 @@
  * 
  * @memberOf JustAnimate
  */
-export const shuffle = <T>(choices: T[]): T => {
-  return choices[Math.floor(Math.random() * choices.length)]
+export function shuffle<T>(choices: T[]): T {
+  return choices[flr(rdm() * choices.length)]
 }
 
-export const random = (
+export function random(
   first: number,
   last: number,
   unit?: string,
   wholeNumbersOnly?: boolean
-): number | string => {
-  let val = first + Math.random() * (last - first)
+) {
+  let val = first + rdm() * (last - first)
   if (wholeNumbersOnly === true) {
-    val = Math.floor(val)
+    val = flr(val)
   }
   return !unit ? val : val + unit
 }

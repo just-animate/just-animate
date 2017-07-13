@@ -1,11 +1,27 @@
-export const isDefined = (a: any) => !!a || a === 0 || a === false
-export const getTypeString = (val: any) => Object.prototype.toString.call(val)
-export const isFunction = (a: any) => typeof a === 'function'
-export const isNumber = (a: any) => typeof a === 'number'
-export const isObject = (a: any) => typeof a === 'object' && !!a
-export const isString = (a: any) => typeof a === 'string'
+export function isDefined(a: any) {
+  return !!a || a === 0 || a === false
+}
+export function getTypeString(val: any) {
+  return Object.prototype.toString.call(val)
+}
+export function isFunction(a: any) {
+  return typeof a === 'function'
+}
+export function isNumber(a: any) {
+  return typeof a === 'number'
+}
+export function isObject(a: any) {
+  return typeof a === 'object' && !!a
+}
+export function isString(a: any) {
+  return typeof a === 'string'
+}
 export function isArrayLike(a: any) {
   return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length)
 }
-export const isSVG = (target: SVGElement | any) => target instanceof SVGAElement
-export const isDOM = (target: Node | any) => target.nodeType || isSVG(target)
+export function isSVG(target: SVGElement | any) {
+  return target instanceof SVGAElement
+}
+export function isDOM(target: Node | any) {
+  return target.nodeType || isSVG(target)
+}

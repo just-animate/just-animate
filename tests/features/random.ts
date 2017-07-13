@@ -13,7 +13,7 @@ describe('random', () => {
 
         it('returns the number as a unit', () => {
             const result = random(1, 2, 'px', true)
-            assert.isTrue(result === '1px')
+            assert.equal(result, '1px')
         })
     })
 })

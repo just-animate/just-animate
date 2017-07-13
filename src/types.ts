@@ -12,20 +12,6 @@ export interface Keyframe {
   [val: string]: string | number
 }
 
-export const playbackState = {
-  fatal: 0,
-  idle: 1,
-  pending: 2,
-  running: 3,
-  paused: 4,
-  finished: 5
-}
-
-export const direction = {
-  normal: 0,
-  alternate: 1
-}
-
 export type AnimationDomTarget = Node | NodeList | string
 export type AnimationTarget = string | {}
 export type KeyframeValue = string | number
@@ -35,13 +21,6 @@ export interface KeyframeFunction {
 }
 
 export type KeyframeValueResolver = KeyframeValue | KeyframeFunction
-
-export type AnimationEventType =
-  | 'cancel'
-  | 'pause'
-  | 'play'
-  | 'finish'
-  | 'iteration'
 
 export interface SplitTextResult {
   words: HTMLElement[]

@@ -1,5 +1,5 @@
 import * as types from '../types'
-import { isFunction, convertToMs, isDefined, indexOf } from '../utils'
+import { isFunction, convertToMs, isDefined, indexOf, flr } from '../utils'
 import { resolve } from '../transformers'
 import { getPlugins } from './plugins'
 
@@ -83,7 +83,7 @@ export function addKeyframes(
 
   for (var i = 0, ilen = css.length; i < ilen; i++) {
     var keyframe = css[i]
-    var time = Math.floor(duration * keyframe.offset + from)
+    var time = flr(duration * keyframe.offset + from)
     addKeyframe(target, time, index, keyframe)
   }
 }

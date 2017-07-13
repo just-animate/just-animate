@@ -1,4 +1,4 @@
-export * from './errors'
+export * from './elements'
 export * from './get-targets'
 export * from './lists'
 export * from './math'

@@ -4,11 +4,7 @@ import { _ } from '.'
 /**
  * Copies a single property from origin to destination
  */
-export const deepCopyProperty = (
-  prop: string | number,
-  origin: {},
-  dest: {}
-): void => {
+export function deepCopyProperty(prop: string | number, origin: {}, dest: {}) {
   const originProp = origin[prop]
   let destProp = dest[prop]
 
@@ -31,24 +27,13 @@ export const deepCopyProperty = (
   }
 }
 
-export const assign = <T1 extends {}, T2 extends {}>(
-  target: T1,
-  source: T2
-): T1 & T2 => {
-  const result = target as T1 & T2
-  for (let prop in source) {
-    result[prop] = source[prop]
-  }
-  return result
-}
-
 /**
  * performs a deep copy of properties from origin to destination
  */
-export const deepCopyObject = <T1 extends {}, T2 extends {}>(
+export function deepCopyObject<T1 extends {}, T2 extends {}>(
   origin: T1,
   dest?: T2
-): any => {
+): any {
   dest = dest || ({} as T2)
   for (let prop in origin) {
     deepCopyProperty(prop, origin, dest)

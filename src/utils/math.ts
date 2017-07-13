@@ -1,6 +1,14 @@
 import { _ } from './resources'
 
-export const inRange = (val: number, min: number, max: number) =>
-  val !== _ && min <= val && val <= max
-export const minMax = (val: number, min: number, max: number) =>
-  val < min ? min : val > max ? max : val
+export const abs = Math.abs,
+  flr = Math.floor,
+  max = Math.max,
+  min = Math.min,
+  rdm = Math.random
+
+export function inRange(val: number, a: number, z: number) {
+  return val !== _ && a <= val && val <= z
+}
+export function minMax(val: number, a: number, z: number) {
+  return min(max(val, a), z)
+}

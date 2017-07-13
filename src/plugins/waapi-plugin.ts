@@ -14,7 +14,8 @@ import {
   FINISH,
   SEEK,
   TRANSFORM,
-  UPDATE
+  UPDATE,
+  abs
 } from '../utils'
 
 const TOLERANCE = 0.0001
@@ -54,7 +55,7 @@ function fixUnits(effects: types.PropertyEffects) {
     const keyframes = effects[propName]
     const value = keyframes[propName]
     if (includes(lengthProps, propName) && isNumber(value)) {
-      keyframes[propName] = value + 'px'
+      keyframes[propName] = value + PX
     }
   }
 }
@@ -81,7 +82,7 @@ function handleTransforms(effects: types.PropertyEffects) {
       // use an episilon so same frames aren't missed due to floating point issues
       var index = indexOf(
         transformEffects,
-        t => Math.abs(t.offset - k.offset) < TOLERANCE
+        t => abs(t.offset - k.offset) < TOLERANCE
       )
 
       // create or find an existing effect at the offset

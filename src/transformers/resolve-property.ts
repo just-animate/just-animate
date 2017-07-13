@@ -8,12 +8,12 @@ import { isDefined, isFunction, isNumber, unitExpression } from '../utils'
 /**
  *  Resolves the property/value of an animation
  */
-export const resolve = <T1>(
+export function resolve<T1>(
   input: KeyframeValueResolver,
   target: AnimationTarget,
   index?: number,
   isStep = false
-): any => {
+): any {
   let output = isFunction(input)
     ? resolve((input as KeyframeFunction)(target, index), target, index)
     : input as T1 | number | string

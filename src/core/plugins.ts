@@ -1,5 +1,9 @@
 import * as types from '../types'
 
 const plugins: types.Plugin[] = []
-export const getPlugins = () => plugins
-export const addPlugin = (plugin: types.Plugin) => plugins.push(plugin)
+export function getPlugins() {
+  return plugins
+}
+export function addPlugin(plugin: types.Plugin) {
+  return plugins.push(plugin)
+}

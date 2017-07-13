@@ -5,11 +5,12 @@ export { now }
 /**
  * Wrapper for raf with fallback to setTimeout
  */
-export function raf(ctx: any, fn: Function): any {
-  const callback = () => fn(ctx)
-  return requestAnimationFrame
-    ? requestAnimationFrame(callback)
-    : setTimeout(callback, 16)
+export function raf(ctx: any, fn: Function): number {
+  return requestAnimationFrame(() => fn(ctx))
+}
+
+export function caf(handle: number) {
+  cancelAnimationFrame(handle)
 }
 
 export function lazy<T>(initializer: () => T) {
