@@ -1,22 +1,18 @@
+const now = performance && performance.now ? performance.now : Date.now
 
-/**
- * Wrapper for performance now() with a fallback to Date.now()
- */
-export const now = (): number => {
-    return performance && performance.now ? performance.now() : Date.now()
-}
+export { now }
 
 /**
  * Wrapper for raf with fallback to setTimeout
  */
-export const raf = (ctx: any, fn: Function): any => {
-    const callback = () => { fn(ctx) }
-    return requestAnimationFrame
-        ? requestAnimationFrame(callback)
-        : setTimeout(callback, 16)
+export function raf(ctx: any, fn: Function): any {
+  const callback = () => fn(ctx)
+  return requestAnimationFrame
+    ? requestAnimationFrame(callback)
+    : setTimeout(callback, 16)
 }
 
 export function lazy<T>(initializer: () => T) {
-    let value: T;
-    return () => value || (value = initializer())
+  let value: T
+  return () => value || (value = initializer())
 }

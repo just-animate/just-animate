@@ -1,4 +1,3 @@
-
 export interface KeyframeOptions {
   offset?: number
   [val: string]: KeyframeValueResolver
@@ -26,7 +25,7 @@ export const direction = {
   normal: 0,
   alternate: 1
 }
-  
+
 export type AnimationDomTarget = Node | NodeList | string
 export type AnimationTarget = string | {}
 export type KeyframeValue = string | number
@@ -49,22 +48,27 @@ export interface SplitTextResult {
   characters: HTMLElement[]
 }
 
-export interface PropertyHandler { 
-  (target: TargetConfiguration, effects: PropertyEffects): void
+export interface AnimationController {
+  (type: string, time: number, playbackRate: number): void
+}
+
+export interface Plugin {
+  transform(target: TargetConfiguration, effects: PropertyEffects): void
+  animate(options: Effect[], animations: AnimationController[]): void
 }
 
 export interface PropertyKeyframe {
   time: number
   prop: string
   index: number
-  order: number;
+  order: number
   value: KeyframeValueResolver
 }
 
 export interface EffectOptions {
-    offset: number
-    value: string | number
-  }
+  offset: number
+  value: string | number
+}
 export interface PropertyEffects {
   [name: string]: EffectOptions[]
 }

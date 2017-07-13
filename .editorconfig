@@ -2,7 +2,10 @@
 indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
+spaces_around_operators = true
 insert_final_newline = true
+quote_type = single
+indent_brace_style = K&R
 
 [*.md]
 trim_trailing_whitespace = true

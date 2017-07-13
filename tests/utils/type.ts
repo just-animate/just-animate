@@ -1,22 +1,22 @@
 import * as chai from 'chai'
 const { assert } = chai
 
-import { isArray, isDefined, isFunction, isNumber, isString } from '../../src/utils'
+import { isArrayLike, isDefined, isFunction, isNumber, isString } from '../../src/utils'
 
 describe('type', () => {
   describe('isArray()', () => {
     it('returns true when an array is passed', () => {
-      assert.equal(true, isArray([]))
+      assert.equal(true, isArrayLike([]))
     })
 
     it('returns true when an array-like object is passed', () => {
-      assert.equal(true, isArray({
+      assert.equal(true, isArrayLike({
         length: 0
       }))
     })
 
     it('returns false when a normal object is passed', () => {
-      assert.equal(false, isArray({}))
+      assert.equal(false, isArrayLike({}))
     })
   })
 
