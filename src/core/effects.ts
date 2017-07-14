@@ -1,21 +1,19 @@
 import * as types from '../types'
-import { isFunction, convertToMs, isDefined, indexOf, flr } from '../utils'
-import { resolve } from '../transformers'
+import { isFunction, convertToMs, isDefined, indexOf, flr, each } from '../utils'
+import { resolveProperty } from '../transformers'
 import { getPlugins } from './plugins'
 
 export function toEffects(
-  targets: types.TargetConfiguration[]
+  configs: types.TargetConfiguration[]
 ): types.Effect[] {
   const result: types.Effect[] = []
 
-  for (var i = 0, ilen = targets.length; i < ilen; i++) {
-    const targetConfig = targets[i]
+  each(configs, targetConfig => {
     const { from, to, duration, keyframes, target } = targetConfig
 
     // construct property animation options
     var effects: types.PropertyEffects = {}
-    for (var j = 0, jlen = keyframes.length; j < jlen; j++) {
-      const p = keyframes[j]
+    each(keyframes, p => {
       const propName = p.prop
       const offset = (p.time - from) / (duration || 1)
       const value = isFunction(p.value)
@@ -25,38 +23,33 @@ export function toEffects(
       // get or create property
       const effect = effects[propName] || (effects[propName] = [])
       effect.push({ offset, value })
-    }
+    })
 
     // process handlers
-    var plugins = getPlugins()
-    for (var q = 0, qlen = plugins.length; q < qlen; q++) {
-      var plugin = plugins[q]
+    each(getPlugins(), plugin => {
       if (plugin.transform) {
         plugin.transform(targetConfig, effects)
       }
-    }
+    })
 
     for (var propName in effects) {
       var effect = effects[propName]
-      if (!effect) {
-        continue
+      if (effect) {
+        // remap the keyframes field to remove multiple values
+        // add to list of Effects
+        result.push({
+          target,
+          from,
+          to,
+          keyframes: effect.map(({ offset, value }) => ({
+            offset,
+            [propName]: value
+          }))
+        })
       }
-
-      // remap the keyframes field to remove multiple values
-      var effect2 = {
-        target,
-        from,
-        to,
-        keyframes: effect.map(({ offset, value }) => ({
-          offset,
-          [propName]: value
-        }))
-      }
-
-      // add to list of Effects
-      result.push(effect2)
     }
-  }
+  })
+
   return result
 }
 
@@ -67,25 +60,23 @@ export function addKeyframes(
 ) {
   const { css } = options
   const staggerMs = convertToMs(
-    resolve(options.stagger, target, index, true) || 0
-  ) as number
+    resolveProperty(options.stagger, target, index, true) || 0
+  )
   const delayMs = convertToMs(
-    resolve(options.delay, target, index) || 0
-  ) as number
+    resolveProperty(options.delay, target, index) || 0
+  )
   const endDelayMs = convertToMs(
-    resolve(options.endDelay, target, index) || 0
-  ) as number
+    resolveProperty(options.endDelay, target, index) || 0
+  )
 
   // todo: incorporate WAAPI delay/endDelay
   const from = staggerMs + delayMs + options.from
   const to = staggerMs + delayMs + options.to + endDelayMs
   const duration = to - from
 
-  for (var i = 0, ilen = css.length; i < ilen; i++) {
-    var keyframe = css[i]
-    var time = flr(duration * keyframe.offset + from)
-    addKeyframe(target, time, index, keyframe)
-  }
+  each(css, keyframe => {
+    addKeyframe(target, flr(duration * keyframe.offset + from), index, keyframe)
+  })
 }
 
 function addKeyframe(

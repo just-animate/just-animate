@@ -24,7 +24,8 @@ import {
   PLAY,
   SEEK,
   UPDATE,
-  max
+  max,
+  each
 } from '../utils'
 
 import { loop, getPlugins } from '.'
@@ -36,16 +37,15 @@ const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
 export class Timeline {
   public duration: number
   public playbackRate: number
-  public playState: number
 
-  private targets: types.TargetConfiguration[]
-  private _animators: types.AnimationController[]
+  private _state: number
+  private _config: types.TargetConfiguration[]
+  private _effects: types.AnimationController[]
+  private _times: number
   private _iteration: number
   private _time: number
   private _dir: number
   private _listeners: { [key: string]: { (time: number): void }[] }
-  private _iterations: number
-  private _isReady: boolean
 
   public get currentTime() {
     return this._time
@@ -59,18 +59,17 @@ export class Timeline {
     self.duration = 0
     self._time = _
     self.playbackRate = 1
-    self.playState = S_IDLE
-    self._animators = []
-    self.targets = []
-    self._isReady = false
+    self._state = S_IDLE
+    self._effects = _
+    self._config = []
     self._iteration = _
     self._dir = D_NORMAL
-    self._iterations = _
+    self._times = _
     self._listeners = {}
   }
 
   public add(opts: types.AddAnimationOptions) {
-    const self = this
+    const { duration } = this
     const hasTo = isDefined(opts.to)
     const hasFrom = isDefined(opts.from)
     const hasDuration = isDefined(opts.duration)
@@ -87,10 +86,10 @@ export class Timeline {
       to = convertToMs(opts.to)
       from = to - convertToMs(opts.duration)
     } else if (hasTo && !hasDuration) {
-      from = self.duration
+      from = duration
       to = from + convertToMs(opts.to)
     } else if (hasDuration) {
-      from = self.duration
+      from = duration
       to = from + convertToMs(opts.duration)
     } else {
       throw new Error('Please provide to/from/duration')
@@ -100,8 +99,7 @@ export class Timeline {
     from = max(from, 0)
     to = max(to, 0)
 
-    self.fromTo(from, to, opts)
-    return self
+    return this.fromTo(from, to, opts)
   }
 
   public fromTo(
@@ -109,7 +107,7 @@ export class Timeline {
     to: number | string,
     options: types.BaseAnimationOptions
   ) {
-    const self = this
+    const config = this._config
 
     if (isArrayLike(options.css)) {
       // fill in missing offsets
@@ -127,9 +125,8 @@ export class Timeline {
 
     // add all targets as property keyframes
     const targets = getTargets(options.targets)
-    for (let i = 0, ilen = targets.length; i < ilen; i++) {
-      var target = targets[i]
-      var targetConfig = head(self.targets, t2 => t2.target === target)
+    each(targets, (target, i) => {
+      var targetConfig = head(config, t2 => t2.target === target)
 
       if (!targetConfig) {
         targetConfig = {
@@ -140,25 +137,22 @@ export class Timeline {
           keyframes: [],
           propOrder: {}
         }
-        self.targets.push(targetConfig)
+        config.push(targetConfig)
       }
 
       addKeyframes(targetConfig, i, options2)
-    }
+    })
 
     // sort property keyframes
-    for (let i = 0, ilen = self.targets.length; i < ilen; i++) {
-      self.targets[i].keyframes.sort(propKeyframeSort)
-    }
+    each(config, c => c.keyframes.sort(propKeyframeSort))
 
     // recalculate property keyframe times and total duration
-    self._calcTimes()
-
-    return self
+    this._calcTimes()
+    return this
   }
 
   public to(toTime: string | number, opts: types.ToAnimationOptions) {
-    const self = this
+    const { duration } = this
     const to = convertToMs(toTime)
 
     let fromTime: number
@@ -167,10 +161,10 @@ export class Timeline {
     } else if (isDefined(opts.duration)) {
       fromTime = to - convertToMs(opts.duration)
     } else {
-      fromTime = self.duration
+      fromTime = duration
     }
 
-    return self.fromTo(max(fromTime, 0), to, opts)
+    return this.fromTo(max(fromTime, 0), to, opts)
   }
 
   public cancel() {
@@ -178,12 +172,9 @@ export class Timeline {
     loop.off(self._tick)
     self._time = 0
     self._iteration = _
-    self.playState = S_IDLE
-    for (let i = 0, ilen = self._animators.length; i < ilen; i++) {
-      self._animators[i](CANCEL, 0, self.playbackRate)
-    }
-    self._animators = []
-    self._trigger(CANCEL)
+    self._state = S_IDLE
+    each(self._effects, c => c(CANCEL, 0, self.playbackRate))
+    each(self._listeners[CANCEL], c => c(0))
     self._teardown()
     return self
   }
@@ -194,11 +185,9 @@ export class Timeline {
     loop.off(self._tick)
     self._time = _
     self._iteration = _
-    self.playState = S_FINISHED
-    for (let i = 0, ilen = self._animators.length; i < ilen; i++) {
-      self._animators[i](FINISH, _, self.playbackRate)
-    }
-    self._trigger(FINISH)
+    self._state = S_FINISHED
+    each(self._effects, c => c(FINISH, _, self.playbackRate))
+    each(self._listeners[FINISH], c => c(_))
     return self
   }
 
@@ -227,32 +216,30 @@ export class Timeline {
 
   public pause() {
     const self = this
-    const { currentTime, playbackRate } = self
+    const { currentTime, playbackRate, _listeners, _time } = self
     loop.off(self._tick)
     self._setup()
-    self.playState = S_PAUSED
-    for (let i = 0, ilen = self._animators.length; i < ilen; i++) {
-      self._animators[i](PAUSE, currentTime, playbackRate)
-    }
-    self._trigger(PAUSE)
+    self._state = S_PAUSED
+    each(self._effects, e => e(PAUSE, currentTime, playbackRate))
+    each(_listeners[PAUSE], c => c(_time))
     return self
   }
 
   public play(iterations = 1, dir = D_NORMAL) {
     const self = this
     self._setup()
-    self._iterations = iterations
+    self._times = iterations
     self._dir = dir
 
     if (
-      self.playState === S_PAUSED ||
-      (self.playState !== S_RUNNING && self.playState !== S_PENDING)
+      self._state === S_PAUSED ||
+      (self._state !== S_RUNNING && self._state !== S_PENDING)
     ) {
-      self.playState = S_PENDING
+      self._state = S_PENDING
     }
 
     loop.on(self._tick)
-    self._trigger(PLAY)
+    each(self._listeners[PLAY], c => c(self._time))
     return self
   }
 
@@ -260,7 +247,7 @@ export class Timeline {
     const self = this
     self.playbackRate = (self.playbackRate || 0) * -1
 
-    if (self.playState === S_RUNNING) {
+    if (self._state === S_RUNNING) {
       // if currently running, pause the animation and replay from that position
       self.pause().play()
     }
@@ -271,28 +258,24 @@ export class Timeline {
     const self = this
     const timeMs = convertToMs(time)
     self._time = timeMs
-    for (let i = 0, ilen = self._animators.length; i < ilen; i++) {
-      self._animators[i](SEEK, timeMs, self.playbackRate)
-    }
+    each(self._effects, e => e(SEEK, timeMs, self.playbackRate))
   }
 
   public getEffects(): types.Effect[] {
-    return toEffects(this.targets)
+    return toEffects(this._config)
   }
 
   private _calcTimes() {
     const self = this
     let timelineTo = 0
 
-    for (let i = 0, ilen = self.targets.length; i < ilen; i++) {
-      const target = self.targets[i]
+    each(self._config, target => {
       const { keyframes } = target
 
-      var targetFrom = undefined
-      var targetTo = undefined
+      var targetFrom: number
+      var targetTo: number
 
-      for (let j = 0, jlen = keyframes.length; j < jlen; j++) {
-        const keyframe = keyframes[j]
+      each(keyframes, keyframe => {
         if (keyframe.time < targetFrom || targetFrom === undefined) {
           targetFrom = keyframe.time
         }
@@ -302,51 +285,35 @@ export class Timeline {
             timelineTo = keyframe.time
           }
         }
-      }
+      })
 
       target.to = targetTo
       target.from = targetFrom
       target.duration = targetTo - targetFrom
-    }
+    })
+
     self.duration = timelineTo
   }
 
   private _setup(): void {
     const self = this
-    if (!self._isReady) {
-      const effects = toEffects(self.targets)
+    if (!self._effects) {
+      const effects = toEffects(self._config)
       const plugins = getPlugins()
       const animations: types.AnimationController[] = []
-      for (var i = 0, ilen = plugins.length; i < ilen; i++) {
-        plugins[i].animate(effects, animations)
-      }
-
-      self._animators = animations
-      self._isReady = true
+      each(plugins, p => p.animate(effects, animations))
+      self._effects = animations
     }
   }
 
   private _teardown(): void {
     const self = this
-    self._animators = []
-    self._isReady = false
-  }
-
-  private _trigger = (eventName: string) => {
-    const self = this
-    const { _time } = self
-    const listeners = self._listeners[eventName as string]
-    if (listeners) {
-      for (const listener of listeners) {
-        listener(_time)
-      }
-    }
-    return self
+    self._effects = _
   }
 
   private _tick = (delta: number) => {
     const self = this
-    const playState = self.playState
+    const playState = self._state
 
     // canceled
     if (playState === S_IDLE) {
@@ -367,14 +334,14 @@ export class Timeline {
 
     // calculate running range
     const duration = self.duration
-    const iterations = self._iterations
+    const iterations = self._times
     const playbackRate = self.playbackRate
     const isReversed = playbackRate < 0
 
     let time = self._time
     let iteration = self._iteration || 0
 
-    if (self.playState === S_PENDING) {
+    if (self._state === S_PENDING) {
       // reset position properties if necessary
       if (
         time === _ ||
@@ -388,7 +355,7 @@ export class Timeline {
         // if at finish reset iterations to 0
         iteration = 0
       }
-      self.playState = S_RUNNING
+      self._state = S_RUNNING
     }
 
     time += delta * playbackRate
@@ -404,12 +371,8 @@ export class Timeline {
     // call update
     self._iteration = iteration
     self._time = time
-    self._trigger(UPDATE)
-
-    // call tick for all animations
-    for (let i = 0, ilen = self._animators.length; i < ilen; i++) {
-      self._animators[i](UPDATE, time, playbackRate)
-    }
+    each(self._listeners[UPDATE], c => c(time))
+    each(self._effects, c => c(UPDATE, time, playbackRate))
 
     if (!hasEnded) {
       // if not ended, return early

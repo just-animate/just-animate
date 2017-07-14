@@ -100,3 +100,31 @@ export function listify<T>(indexed: IList<T> | T): T[] {
 export function pushAll<T>(items: T[], newItems: T[]) {
   return push.apply(items, newItems)
 }
+
+export type AllAction<T1> = (input?: T1, index?: number) => undefined
+export type AllFunc<T1, T2> = (input?: T1, index?: number) => T2 | undefined
+
+/**
+ * A combination of map/filter/forEach that handles undefined lists
+ * @param items 
+ * @param action 
+ */
+export function each<T1>(items: IList<T1>, action: AllAction<T1>): undefined
+export function each<T1, T2>(items: IList<T1>, mapper: AllFunc<T1, T2>): T2[]
+export function each<T1, T2>(
+  items: T1[],
+  mapper: AllAction<T1> | AllFunc<T1, T2>
+): T2[] | undefined {
+  var len = items && items.length
+  var i = 0
+  var item: T2
+  var results: T2[]
+  while (i < len) {
+    item = mapper(items[i], i)
+    if (item) {
+      (results || (results = [])).push(item)
+    }
+    i++
+  }
+  return len ? results : (items as any) as T2[] | undefined
+}

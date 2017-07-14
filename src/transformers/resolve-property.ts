@@ -8,14 +8,14 @@ import { isDefined, isFunction, isNumber, unitExpression } from '../utils'
 /**
  *  Resolves the property/value of an animation
  */
-export function resolve<T1>(
+export function resolveProperty<T1>(
   input: KeyframeValueResolver,
   target: AnimationTarget,
   index?: number,
   isStep = false
 ): any {
   let output = isFunction(input)
-    ? resolve((input as KeyframeFunction)(target, index), target, index)
+    ? resolveProperty((input as KeyframeFunction)(target, index), target, index)
     : input as T1 | number | string
 
   if (isDefined(output) && !isNumber(output)) {

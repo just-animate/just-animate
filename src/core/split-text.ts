@@ -1,5 +1,5 @@
 import { AnimationTarget, SplitTextResult } from '../types'
-import { getTargets, pushAll, $, appendChild, attr } from '../utils'
+import { getTargets, pushAll, $, appendChild, attr, each } from '../utils'
 
 function newElement(name: string, value: string, innerHTML?: string) {
   const el = document.createElement('div')
@@ -25,9 +25,7 @@ export function splitText(target: AnimationTarget): SplitTextResult {
   const elements = getTargets(target) as HTMLElement[]
 
   // get paragraphs, words, and characters for each element
-  for (var i = 0, ilen = elements.length; i < ilen; i++) {
-    var element = elements[i]
-
+  each(elements, element => {
     // if we have already split this element, check if it was already split
     if (element.getAttribute('jast')) {
       const ws = $(element, '[jaw]')
@@ -38,7 +36,7 @@ export function splitText(target: AnimationTarget): SplitTextResult {
         // apply found split elements
         pushAll(words, ws)
         pushAll(characters, cs)
-        continue
+        return
       }
       // otherwise split it!
     }
@@ -56,8 +54,7 @@ export function splitText(target: AnimationTarget): SplitTextResult {
     const ws = contents.split(/[\s]+/gi)
 
     // handle each word
-    for (var j = 0, jlen = ws.length; j < jlen; j++) {
-      var w = ws[j]
+    each(ws, (w, j) => {
       // create new div for word/run"
       var word = appendChild(element, newElement('jaw', w))
 
@@ -69,14 +66,12 @@ export function splitText(target: AnimationTarget): SplitTextResult {
         appendChild(element, newElement('jas', '', '&nbsp;'))
       }
 
-      for (var k = 0, klen = w.length; k < klen; k++) {
-        var c = w[k]
-        // create new div for character"
-        // add to the result
-        characters.push(appendChild(word, newElement('jac', c, c)))
-      }
-    }
-  }
+      // create new div for character"
+      // add to the result
+      each(w, c => { characters.push(appendChild(word, newElement('jac', c, c))) })
+    })
+    
+  })
 
   return { characters, words }
 }

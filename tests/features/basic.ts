@@ -80,7 +80,6 @@ describe('basic', () => {
       })
 
     const actual = timeline.getEffects()
-    console.log(JSON.stringify(actual, undefined, 4))
 
     const expected = [{
       target: target1,
