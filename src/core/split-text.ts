@@ -1,7 +1,7 @@
 import { AnimationTarget, SplitTextResult } from '../types'
 import { attr, appendChild, $ } from '../utils/elements'
 import { getTargets } from '../utils/get-targets'
-import { fromAll, pushAll } from '../utils/lists'
+import { fromAll, pushAll, push } from '../utils/lists'
 
 function newElement(name: string, value: string, innerHTML?: string) {
   const el = document.createElement('div')
@@ -58,10 +58,8 @@ export function splitText(target: AnimationTarget): SplitTextResult {
     // handle each word
     fromAll(ws, (w, j) => {
       // create new div for word/run"
-      var word = appendChild(element, newElement('jaw', w))
-
       // add to the result
-      words.push(word)
+      var word = push(words, appendChild(element, newElement('jaw', w)))
 
       // if not the first word, add a space
       if (j > 0) {
@@ -70,9 +68,9 @@ export function splitText(target: AnimationTarget): SplitTextResult {
 
       // create new div for character"
       // add to the result
-      fromAll(w, c => {
-        characters.push(appendChild(word, newElement('jac', c, c)))
-      })
+      fromAll(w, c =>
+        push(characters, appendChild(word, newElement('jac', c, c)))
+      )
     })
   })
 

@@ -11,7 +11,7 @@ import {
 import { loopOn, loopOff, getPlugins } from '.'
 import { toEffects, addKeyframes } from './effects'
 import { inferOffsets, propsToKeyframes } from '../transformers'
-import { sortBy, fromAll, head } from '../utils/lists'
+import { sortBy, fromAll, head, push } from '../utils/lists'
 import { isDefined, isArrayLike } from '../utils/type'
 import { convertToMs } from '../utils/units'
 import { getTargets } from '../utils/get-targets'
@@ -42,6 +42,7 @@ import { max, inRange } from '../utils/math'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
+// tslint:disable-next-line:variable-name
 export class Timeline {
   public currentTime: number
   public duration: number
@@ -57,23 +58,23 @@ export class Timeline {
 
   constructor() {
     const self = this
+    // initialize default values
     self.duration = 0
-    self._time = _
     self.playbackRate = 1
-    self._state = S_IDLE
-    self._effects = _
-    self._config = []
-    self._iteration = _
     self._dir = D_NORMAL
-    self._times = _
+    self._state = S_IDLE
+    self._config = []
     self._listeners = {}
+
+    // bind tick to instance
+    self._tick = self._tick.bind(self)
 
     Object.defineProperty(self, 'currentTime', {
       get() {
-        return this._time
+        return self._time
       },
       set(time: number) {
-        this.seek(time)
+        self.seek(time)
       }
     })
   }
@@ -102,14 +103,10 @@ export class Timeline {
       from = duration
       to = from + convertToMs(opts.duration)
     } else {
-      throw new Error('Please provide to/from/duration')
+      throw new Error('No to/from/duration')
     }
 
-    // ensure from/to is not negative
-    from = max(from, 0)
-    to = max(to, 0)
-
-    return this.fromTo(from, to, opts)
+    return this.fromTo(max(from, 0), max(to, 0), opts)
   }
 
   public fromTo(
@@ -135,19 +132,16 @@ export class Timeline {
 
     // add all targets as property keyframes
     fromAll(getTargets(options.targets), (target, i) => {
-      var targetConfig = head(config, t2 => t2.target === target)
-
-      if (!targetConfig) {
-        targetConfig = {
+      var targetConfig =
+        head(config, t2 => t2.target === target) ||
+        push(config, {
           from: options2.from,
           to: options2.to,
           duration: options2.to - options2.from,
           target,
           keyframes: [],
           propOrder: {}
-        }
-        config.push(targetConfig)
-      }
+        })
 
       addKeyframes(targetConfig, i, options2)
     })
@@ -206,7 +200,7 @@ export class Timeline {
 
     const listeners = _listeners[eventName] || (_listeners[eventName] = [])
     if (listeners.indexOf(listener) === -1) {
-      listeners.push(listener)
+      push(listeners, listener)
     }
 
     return self
@@ -320,7 +314,7 @@ export class Timeline {
     self._effects = _
   }
 
-  private _tick = (delta: number) => {
+  private _tick(delta: number) {
     const self = this
     const playState = self._state
 

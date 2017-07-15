@@ -1,9 +1,10 @@
-import * as types from '../types'
+import { Plugin } from '../types'
+import { push } from '../utils/lists'
 
-const plugins: types.Plugin[] = []
+const plugins: Plugin[] = []
 export function getPlugins() {
   return plugins
 }
-export function addPlugin(plugin: types.Plugin) {
-  return plugins.push(plugin)
+export function addPlugin(plugin: Plugin) {
+  return push(plugins, plugin)
 }

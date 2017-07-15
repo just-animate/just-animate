@@ -1,8 +1,8 @@
 import * as types from '../types'
 import { resolveProperty } from '../transformers'
 import { getPlugins } from './plugins'
-import { fromAll, indexOf } from '../utils/lists'
-import { isFunction, isDefined } from '../utils/type'
+import { fromAll, indexOf, push } from '../utils/lists'
+import { isDefined } from '../utils/type'
 import { convertToMs } from '../utils/units'
 import { flr } from '../utils/math'
 
@@ -16,22 +16,24 @@ export function toEffects(
 
     // construct property animation options
     var effects: types.PropertyEffects = {}
-    fromAll(keyframes, p => {
-      const propName = p.prop
-      const offset = (p.time - from) / (duration || 1)
-      const value = isFunction(p.value)
-        ? (p.value as Function)(target, p.index)
-        : p.value as string | number
-
-      // get or create property
-      const effect = effects[propName] || (effects[propName] = [])
-      effect.push({ offset, value })
-    })
+    fromAll(keyframes, p =>
+      push(
+        // get or create property effect
+        effects[p.prop] || (effects[p.prop] = []),
+        {
+          // calculate offset based on duration and start time
+          offset: (p.time - from) / (duration || 1),
+          // get property value
+          value: resolveProperty(p.value, target, p.index)
+        }
+      )
+    )
 
     // process handlers
-    fromAll(getPlugins(), plugin => {
-      plugin.transform && plugin.transform(targetConfig, effects)
-    })
+    fromAll(
+      getPlugins(),
+      plugin => plugin.transform && plugin.transform(targetConfig, effects)
+    )
 
     for (var propName in effects) {
       var effect = effects[propName]

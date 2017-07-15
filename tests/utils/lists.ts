@@ -36,7 +36,7 @@ describe('toArray()', () => {
   })
 })
 
-describe('chain', () => {
+describe('list', () => {
   it('wraps an existing object in an array', () => {
     const input = { x: 2 }
     const result = list(input)

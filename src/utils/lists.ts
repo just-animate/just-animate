@@ -2,7 +2,8 @@ import { isArrayLike } from './type'
 import { _ } from './resources'
 
 const slice = Array.prototype.slice
-const push = Array.prototype.push
+const pushFn = Array.prototype.push
+const forEachFn = Array.prototype.forEach
 
 export interface IList<T> {
   [key: number]: T
@@ -74,7 +75,7 @@ export function sortBy<T>(fieldName: keyof T) {
 
 /**
  * Converts list to an Array.
- * Useful for converting NodeList and arguments to []
+ * Useful for converting NodeList and Arguments to []
  * 
  * @export
  * @template T
@@ -86,7 +87,7 @@ export function toArray<T>(indexed: IList<T>, index?: number): T[] {
 }
 
 /**
- * returns an array or an object wrapped in an array
+ * Returns an array if already an array or an object wrapped in an array
  * 
  * @export
  * @template T
@@ -97,12 +98,26 @@ export function list<T>(indexed: IList<T> | T): T[] {
   return isArrayLike(indexed) ? indexed as T[] : [indexed as T]
 }
 
-export function pushAll<T>(items: T[], newItems: T[]) {
-  push.apply(items, newItems)
+/**
+ * 
+ * @param indexed 
+ * @param item 
+ */
+export function push<T>(indexed: T[], item: T): T {
+  return pushFn.call(indexed, item), item
 }
 
 /**
- * A combination of map/filter/forEach that handles undefined lists
+ * Pushes multiple items into the array
+ * @param items 
+ * @param newItems 
+ */
+export function pushAll<T>(items: T[], newItems: T[]) {
+  pushFn.apply(items, newItems)
+}
+
+/**
+ * Alias for forEach
  * @param items 
  * @param action 
  */
@@ -110,9 +125,5 @@ export function fromAll<T1>(
   items: IList<T1>,
   mapper: (input?: T1, index?: number) => void
 ): void {
-  var i = -1,
-    len = items && items.length
-  while (++i < len) {
-    mapper(items[i], i)
-  }
+  items && forEachFn.call(items, mapper)
 }

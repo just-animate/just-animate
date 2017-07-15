@@ -1,14 +1,7 @@
 import * as types from '../types'
 import { isNumber, isDOM } from '../utils/type'
-import { fromAll, includes, indexOf } from '../utils/lists'
-import {
-  _,
-  CANCEL,
-  FINISH,
-  PAUSE,
-  SEEK,
-  UPDATE
-} from '../utils/resources'
+import { fromAll, includes, indexOf, push } from '../utils/lists'
+import { _, CANCEL, FINISH, PAUSE, SEEK, UPDATE } from '../utils/resources'
 import { abs, minMax, inRange } from '../utils/math'
 import { lazy } from '../utils/utils'
 
@@ -86,7 +79,7 @@ function handleTransforms(effects: types.PropertyEffects) {
             }
 
       if (index === -1) {
-        transformEffects.push(effect)
+        push(transformEffects, effect)
       }
 
       if (name === TRANSFORM) {
@@ -171,7 +164,7 @@ export const waapiPlugin: types.Plugin = {
   animate(effects, animations) {
     fromAll(
       effects,
-      effect => isDOM(effect.target) && animations.push(animateEffect(effect))
+      effect => isDOM(effect.target) && push(animations, animateEffect(effect))
     )
   },
   transform(_target, effects) {
