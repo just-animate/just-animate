@@ -1,21 +1,26 @@
 import * as types from '../types'
-import { isNumber, isDOM } from '../utils/type';
-import { includes, fromAll, indexOf } from '../utils/lists';
-import { TRANSFORM, CANCEL, PAUSE, FINISH, SEEK, UPDATE, _, RUNNING } from '../utils/resources';
-import { abs, minMax, inRange } from '../utils/math';
-import { lazy } from '../utils/utils';
+import { isNumber, isDOM } from '../utils/type'
+import { fromAll, includes, indexOf } from '../utils/lists'
+import {
+  _,
+  CANCEL,
+  FINISH,
+  PAUSE,
+  SEEK,
+  UPDATE
+} from '../utils/resources'
+import { abs, minMax, inRange } from '../utils/math'
+import { lazy } from '../utils/utils'
 
 const TOLERANCE = 0.0001
-const PADDING = 0
-const PERSPECTIVE = 'perspective'
-const ROTATE = 'rotate'
-const SCALE = 'scale'
 const TRANSLATE = 'translate'
 const PX = 'px'
 const DEG = 'deg'
 const X = 'X'
 const Y = 'Y'
 const Z = 'Z'
+const RUNNING = 'running'
+const TRANSFORM = 'transform'
 
 // animatable length properties
 const lengthProps = (`backgroundSize,border,borderBottom,borderBottomLeftRadius,borderBottomRightRadius,borderBottomWidth,borderLeft,borderLeftWidth,borderRadius,borderRight,borderRightWidth` +
@@ -23,11 +28,11 @@ const lengthProps = (`backgroundSize,border,borderBottom,borderBottomLeftRadius,
   `,height,left,letterSpacing,lineHeight,margin,marginBottom,marginLeft,marginRight,marginTop,maskSize,maxHeight,maxWidth,minHeight,minWidth,outline,outlineOffset,outlineWidth,padding,` +
   `paddingBottom,paddingLeft,paddingRight,paddingTop,perspective,right,shapeMargin,tabSize,top,width,wordSpacing`).split(
   ','
-  )
+)
 
-const transformAngles = [ROTATE + X, ROTATE + Y, ROTATE + Z, ROTATE]
-const transformScales = [SCALE + X, SCALE + Y, SCALE + Z, SCALE]
-const transformLengths = [PERSPECTIVE, 'x', 'y', 'z']
+const transformAngles = 'rotateX,rotateY,rotateZ,rotate'.split(',')
+const transformScales = 'scaleX,scaleY,scaleZ,scale'.split(',')
+const transformLengths = 'perspective,x,y,z'.split(',')
 const transforms = transformAngles.concat(transformScales, transformLengths)
 
 const aliases = {
@@ -76,9 +81,9 @@ function handleTransforms(effects: types.PropertyEffects) {
         index !== -1
           ? transformEffects[index]
           : {
-            offset: k.offset,
-            value: ''
-          }
+              offset: k.offset,
+              value: ''
+            }
 
       if (index === -1) {
         transformEffects.push(effect)
@@ -148,9 +153,11 @@ function animateEffect(effect: types.Effect): types.AnimationController {
       animator.currentTime = minMax(currentTime, 0, duration)
     }
 
-    if (type === UPDATE
-      && animator.playState !== RUNNING
-      && inRange(currentTime + PADDING * (isForwards ? 1 : -1), 0, duration)) {
+    if (
+      type === UPDATE &&
+      animator.playState !== RUNNING &&
+      inRange(currentTime * (isForwards ? 1 : -1), 0, duration)
+    ) {
       // sync time
       animator.currentTime = minMax(currentTime, 0, duration)
 
@@ -162,7 +169,10 @@ function animateEffect(effect: types.Effect): types.AnimationController {
 
 export const waapiPlugin: types.Plugin = {
   animate(effects, animations) {
-    fromAll(effects, effect => isDOM(effect.target) && animations.push(animateEffect(effect)))
+    fromAll(
+      effects,
+      effect => isDOM(effect.target) && animations.push(animateEffect(effect))
+    )
   },
   transform(_target, effects) {
     fixUnits(effects)

@@ -15,7 +15,5 @@ export const ALTERNATE = 'alternate',
   PAUSED = 'paused',
   PENDING = 'pending',
   PLAY = 'play',
-  RUNNING = 'running',
   SEEK = 'seek',
-  TRANSFORM = 'transform',
   UPDATE = 'update'

@@ -1,7 +1,7 @@
 import { addPlugin, Timeline } from './core'
-import { waapiPlugin } from './plugins/waapi-plugin'
+import { waapiPlugin } from './plugins/waapi'
 import * as types from './types'
-import { fromAll, list } from './utils/lists';
+import { fromAll, list } from './utils/lists'
 
 // configure plugins
 addPlugin(waapiPlugin)
@@ -14,7 +14,7 @@ export function animate(
   options?: types.AddAnimationOptions | types.AddAnimationOptions[]
 ) {
   const timeline = new Timeline()
-  if (options) { 
+  if (options) {
     fromAll(list(options), opt => {
       opt.from = opt.from || 0
       timeline.add(opt)

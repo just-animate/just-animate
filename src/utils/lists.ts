@@ -1,5 +1,5 @@
 import { isArrayLike } from './type'
-import { _ } from './resources';
+import { _ } from './resources'
 
 const slice = Array.prototype.slice
 const push = Array.prototype.push
@@ -106,7 +106,13 @@ export function pushAll<T>(items: T[], newItems: T[]) {
  * @param items 
  * @param action 
  */
-export function fromAll<T1>(items: IList<T1>, mapper: (input?: T1, index?: number) => void): void {
-  var i = -1, len = items && items.length
-  while (++i < len) { mapper(items[i], i) }
+export function fromAll<T1>(
+  items: IList<T1>,
+  mapper: (input?: T1, index?: number) => void
+): void {
+  var i = -1,
+    len = items && items.length
+  while (++i < len) {
+    mapper(items[i], i)
+  }
 }

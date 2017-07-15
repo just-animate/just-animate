@@ -1,4 +1,3 @@
-import * as types from '../types'
 import {
   D_ALTERNATIVE,
   D_NORMAL,
@@ -12,23 +11,44 @@ import {
 import { loopOn, loopOff, getPlugins } from '.'
 import { toEffects, addKeyframes } from './effects'
 import { inferOffsets, propsToKeyframes } from '../transformers'
-import { sortBy, fromAll, head } from '../utils/lists';
-import { isDefined, isArrayLike } from '../utils/type';
-import { convertToMs } from '../utils/units';
-import { getTargets } from '../utils/get-targets';
-import { max, inRange } from '../utils/math';
-import { CANCEL, FINISH, _, PAUSE, PLAY, SEEK, UPDATE } from '../utils/resources';
+import { sortBy, fromAll, head } from '../utils/lists'
+import { isDefined, isArrayLike } from '../utils/type'
+import { convertToMs } from '../utils/units'
+import { getTargets } from '../utils/get-targets'
+import {
+  _,
+  CANCEL,
+  FINISH,
+  PAUSE,
+  PLAY,
+  SEEK,
+  UPDATE
+} from '../utils/resources'
 
-const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
+import {
+  AddAnimationOptions,
+  AnimationController,
+  AnimationOptions,
+  BaseAnimationOptions,
+  Effect,
+  PropertyKeyframe,
+  KeyframeOptions,
+  PropertyOptions,
+  TargetConfiguration,
+  ToAnimationOptions
+} from '../types'
+
+import { max, inRange } from '../utils/math'
+
+const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
 export class Timeline {
   public currentTime: number
   public duration: number
   public playbackRate: number
-
   private _state: number
-  private _config: types.TargetConfiguration[]
-  private _effects: types.AnimationController[]
+  private _config: TargetConfiguration[]
+  private _effects: AnimationController[]
   private _times: number
   private _iteration: number
   private _time: number
@@ -47,7 +67,7 @@ export class Timeline {
     self._dir = D_NORMAL
     self._times = _
     self._listeners = {}
-    
+
     Object.defineProperty(self, 'currentTime', {
       get() {
         return this._time
@@ -58,7 +78,7 @@ export class Timeline {
     })
   }
 
-  public add(opts: types.AddAnimationOptions) {
+  public add(opts: AddAnimationOptions) {
     const { duration } = this
     const hasTo = isDefined(opts.to)
     const hasFrom = isDefined(opts.from)
@@ -95,25 +115,25 @@ export class Timeline {
   public fromTo(
     from: number | string,
     to: number | string,
-    options: types.BaseAnimationOptions
+    options: BaseAnimationOptions
   ) {
     const config = this._config
 
     if (isArrayLike(options.css)) {
       // fill in missing offsets
-      inferOffsets(options.css as types.KeyframeOptions[])
+      inferOffsets(options.css as KeyframeOptions[])
     } else {
       // convert properties to offsets
-      options.css = propsToKeyframes(options.css as types.PropertyOptions)
+      options.css = propsToKeyframes(options.css as PropertyOptions)
     }
 
     // ensure to/from are in milliseconds (as numbers)
-    const options2 = options as types.AnimationOptions
+    const options2 = options as AnimationOptions
     options2.from = convertToMs(from)
     options2.to = convertToMs(to)
     options2.duration = options2.to - options2.from
 
-    // add all targets as property keyframes 
+    // add all targets as property keyframes
     fromAll(getTargets(options.targets), (target, i) => {
       var targetConfig = head(config, t2 => t2.target === target)
 
@@ -140,7 +160,7 @@ export class Timeline {
     return this
   }
 
-  public to(toTime: string | number, opts: types.ToAnimationOptions) {
+  public to(toTime: string | number, opts: ToAnimationOptions) {
     const { duration } = this
     const to = convertToMs(toTime)
 
@@ -220,7 +240,10 @@ export class Timeline {
     self._times = iterations
     self._dir = dir
 
-    if (self._state === S_PAUSED || self._state !== S_RUNNING && self._state !== S_PENDING) {
+    if (
+      self._state === S_PAUSED ||
+      (self._state !== S_RUNNING && self._state !== S_PENDING)
+    ) {
       self._state = S_PENDING
     }
 
@@ -247,7 +270,7 @@ export class Timeline {
     fromAll(self._effects, e => e(SEEK, timeMs, self.playbackRate))
   }
 
-  public getEffects(): types.Effect[] {
+  public getEffects(): Effect[] {
     return toEffects(this._config)
   }
 
@@ -286,7 +309,7 @@ export class Timeline {
     if (!self._effects) {
       const effects = toEffects(self._config)
       const plugins = getPlugins()
-      const animations: types.AnimationController[] = []
+      const animations: AnimationController[] = []
       fromAll(plugins, p => p.animate(effects, animations))
       self._effects = animations
     }

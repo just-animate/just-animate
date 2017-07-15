@@ -17,10 +17,10 @@ export function random(
   first: number,
   last: number,
   unit?: string,
-  wholeNumbersOnly?: boolean
+  round?: boolean
 ) {
   let val = first + rdm() * (last - first)
-  if (wholeNumbersOnly === true) {
+  if (round === true) {
     val = flr(val)
   }
   return !unit ? val : val + unit

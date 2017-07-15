@@ -3,8 +3,8 @@ import {
   KeyframeValueResolver,
   KeyframeFunction
 } from '../types'
-import { isFunction, isNumber, isDefined } from '../utils/type';
-import { unitExpression } from '../utils/resources';
+import { isFunction, isNumber, isDefined } from '../utils/type'
+import { unitExpression } from '../utils/resources'
 
 /**
  *  Resolves the property/value of an animation
