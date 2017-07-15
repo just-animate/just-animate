@@ -1,7 +1,10 @@
 import * as types from '../types'
-import { isFunction, convertToMs, isDefined, indexOf, flr, fromAll } from '../utils'
 import { resolveProperty } from '../transformers'
 import { getPlugins } from './plugins'
+import { fromAll, indexOf } from '../utils/lists';
+import { isFunction, isDefined } from '../utils/type';
+import { convertToMs } from '../utils/units';
+import { flr } from '../utils/math';
 
 export function toEffects(
   configs: types.TargetConfiguration[]

@@ -3,7 +3,7 @@ import {
   PropertyOptions,
   KeyframeValueResolver
 } from '../types'
-import { isArrayLike } from '../utils'
+import { isArrayLike } from '../utils/type';
 
 export function propsToKeyframes(css: PropertyOptions): KeyframeOptions[] {
   // create a map to capture each keyframe by offset

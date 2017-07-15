@@ -1,7 +1,6 @@
 import * as chai from 'chai'
+import { parseUnit } from '../../src/utils/units';
 const { assert } = chai
-
-import { parseUnit } from '../../src/utils'
 
 describe('parseUnit', () => {
     describe('parseUnit()', () => {

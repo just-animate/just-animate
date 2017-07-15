@@ -9,28 +9,15 @@ import {
   S_RUNNING
 } from '../constants'
 
-import {
-  _,
-  convertToMs,
-  getTargets,
-  inRange,
-  isDefined,
-  isArrayLike,
-  sortBy,
-  head,
-  CANCEL,
-  FINISH,
-  PAUSE,
-  PLAY,
-  SEEK,
-  UPDATE,
-  max,
-  fromAll
-} from '../utils'
-
 import { loopOn, loopOff, getPlugins } from '.'
 import { toEffects, addKeyframes } from './effects'
 import { inferOffsets, propsToKeyframes } from '../transformers'
+import { sortBy, fromAll, head } from '../utils/lists';
+import { isDefined, isArrayLike } from '../utils/type';
+import { convertToMs } from '../utils/units';
+import { getTargets } from '../utils/get-targets';
+import { max, inRange } from '../utils/math';
+import { CANCEL, FINISH, _, PAUSE, PLAY, SEEK, UPDATE } from '../utils/resources';
 
 const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
 

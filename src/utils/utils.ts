@@ -1,6 +1,4 @@
-const now = performance && performance.now ? performance.now : Date.now
-
-export { now }
+export const now = (performance && performance.now) || Date.now
 
 /**
  * Wrapper for raf with fallback to setTimeout

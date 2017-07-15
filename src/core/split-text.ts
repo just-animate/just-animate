@@ -1,5 +1,7 @@
 import { AnimationTarget, SplitTextResult } from '../types'
-import { getTargets, pushAll, $, appendChild, attr, fromAll } from '../utils'
+import { attr, appendChild, $ } from '../utils/elements';
+import { getTargets } from '../utils/get-targets';
+import { fromAll, pushAll } from '../utils/lists';
 
 function newElement(name: string, value: string, innerHTML?: string) {
   const el = document.createElement('div')

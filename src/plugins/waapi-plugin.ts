@@ -1,23 +1,9 @@
 import * as types from '../types'
-import {
-  _,
-  isDOM,
-  isNumber,
-  includes,
-  indexOf,
-  inRange,
-  lazy,
-  minMax,
-  RUNNING,
-  CANCEL,
-  PAUSE,
-  FINISH,
-  SEEK,
-  TRANSFORM,
-  UPDATE,
-  abs,
-  fromAll
-} from '../utils'
+import { isNumber, isDOM } from '../utils/type';
+import { includes, fromAll, indexOf } from '../utils/lists';
+import { TRANSFORM, CANCEL, PAUSE, FINISH, SEEK, UPDATE, _, RUNNING } from '../utils/resources';
+import { abs, minMax, inRange } from '../utils/math';
+import { lazy } from '../utils/utils';
 
 const TOLERANCE = 0.0001
 const PADDING = 0
@@ -176,9 +162,7 @@ function animateEffect(effect: types.Effect): types.AnimationController {
 
 export const waapiPlugin: types.Plugin = {
   animate(effects, animations) {
-    fromAll(effects, effect => {
-      isDOM(effect.target) && animations.push(animateEffect(effect))
-    })
+    fromAll(effects, effect => isDOM(effect.target) && animations.push(animateEffect(effect)))
   },
   transform(_target, effects) {
     fixUnits(effects)

@@ -1,7 +1,6 @@
 import * as chai from 'chai'
+import { fromAll, head, tail, toArray, list } from '../../src/utils/lists';
 const { assert, expect } = chai
-
-import { head, tail, toArray, list, fromAll } from '../../src/utils'
 
 describe('fromAll()', () => {
   it('calls the function for each item', () => {

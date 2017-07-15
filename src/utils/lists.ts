@@ -1,5 +1,5 @@
 import { isArrayLike } from './type'
-import { _ } from '.'
+import { _ } from './resources';
 
 const slice = Array.prototype.slice
 const push = Array.prototype.push

@@ -1,7 +1,6 @@
 import * as chai from 'chai'
+import { deepCopyObject } from '../../src/utils/objects';
 const { assert, expect } = chai
-
-import { deepCopyObject } from '../../src/utils'
 
 describe('objects', () => {
   describe('deepCopyObject', () => {

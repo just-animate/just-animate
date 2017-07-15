@@ -1,7 +1,6 @@
 import * as chai from 'chai'
+import { isArrayLike, isDefined, isFunction, isNumber, isString } from '../../src/utils/type';
 const { assert } = chai
-
-import { isArrayLike, isDefined, isFunction, isNumber, isString } from '../../src/utils'
 
 describe('type', () => {
   describe('isArray()', () => {

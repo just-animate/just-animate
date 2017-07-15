@@ -1,8 +1,7 @@
 // import { jsdom } from '../dom'
 import * as chai from 'chai'
+import { getTargets } from '../../src/utils/get-targets';
 const { assert } = chai
-
-import { getTargets } from '../../src/utils'
 
 describe('getTargets()', () => {
 

@@ -1,7 +1,6 @@
 import * as chai from 'chai'
-const assert = chai.assert 
-
-import {random} from '../../src/utils'
+import { random } from '../../src/main';
+const assert = chai.assert
     
 describe('random', () => {
     describe('random()', () => { 

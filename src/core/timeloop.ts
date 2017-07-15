@@ -1,4 +1,5 @@
-import { _, raf, caf, now } from '../utils'
+import { caf, now, raf } from '../utils/utils';
+import { _ } from '../utils/resources';
 
 const active: TimeLoopCallback[] = []
 const elapses: number[] = []

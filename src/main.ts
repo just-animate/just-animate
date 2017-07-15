@@ -1,7 +1,7 @@
-import { fromAll, list } from './utils'
 import { addPlugin, Timeline } from './core'
 import { waapiPlugin } from './plugins/waapi-plugin'
 import * as types from './types'
+import { fromAll, list } from './utils/lists';
 
 // configure plugins
 addPlugin(waapiPlugin)
@@ -36,6 +36,6 @@ export function sequence(seqOptions: types.AddAnimationOptions[]) {
 }
 
 // export utils and types
-export { random, shuffle } from './utils'
+export { random, shuffle } from './utils/random'
 export { splitText } from './core'
 export { types }

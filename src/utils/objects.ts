@@ -1,5 +1,5 @@
 import { isArrayLike, isObject, getTypeString } from './type'
-import { _ } from '.'
+import { _ } from './resources';
 
 /**
  * Copies a single property from origin to destination
