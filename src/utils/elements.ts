@@ -1,6 +1,6 @@
 import { toArray } from './lists'
 
-export function $(element: HTMLElement, selector: string) {
+export function $(element: HTMLElement | HTMLDocument, selector: string) {
   return toArray(element.querySelectorAll(selector))
 }
 

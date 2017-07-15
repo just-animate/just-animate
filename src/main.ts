@@ -1,4 +1,4 @@
-import { listify, isDefined } from './utils'
+import { fromAll, list } from './utils'
 import { addPlugin, Timeline } from './core'
 import { waapiPlugin } from './plugins/waapi-plugin'
 import * as types from './types'
@@ -14,15 +14,11 @@ export function animate(
   options?: types.AddAnimationOptions | types.AddAnimationOptions[]
 ) {
   const timeline = new Timeline()
-  if (options) {
-    var optionList = listify(options)
-    for (var i = 0, ilen = optionList.length; i < ilen; i++) {
-      var opt = optionList[i]
-      if (!isDefined(opt.from)) {
-        opt.from = 0
-      }
+  if (options) { 
+    fromAll(list(options), opt => {
+      opt.from = opt.from || 0
       timeline.add(opt)
-    }
+    })
   }
   return timeline
 }
@@ -33,9 +29,9 @@ export function animate(
  */
 export function sequence(seqOptions: types.AddAnimationOptions[]) {
   const timeline = new Timeline()
-  for (let i = 0, ilen = seqOptions.length; i < ilen; i++) {
-    timeline.add(seqOptions[i])
-  }
+  fromAll(seqOptions, opt => {
+    timeline.add(opt)
+  })
   return timeline
 }
 

@@ -15,7 +15,8 @@ import {
   SEEK,
   TRANSFORM,
   UPDATE,
-  abs
+  abs,
+  fromAll
 } from '../utils'
 
 const TOLERANCE = 0.0001
@@ -36,7 +37,7 @@ const lengthProps = (`backgroundSize,border,borderBottom,borderBottomLeftRadius,
   `,height,left,letterSpacing,lineHeight,margin,marginBottom,marginLeft,marginRight,marginTop,maskSize,maxHeight,maxWidth,minHeight,minWidth,outline,outlineOffset,outlineWidth,padding,` +
   `paddingBottom,paddingLeft,paddingRight,paddingTop,perspective,right,shapeMargin,tabSize,top,width,wordSpacing`).split(
   ','
-)
+  )
 
 const transformAngles = [ROTATE + X, ROTATE + Y, ROTATE + Z, ROTATE]
 const transformScales = [SCALE + X, SCALE + Y, SCALE + Z, SCALE]
@@ -77,8 +78,7 @@ function handleTransforms(effects: types.PropertyEffects) {
     effects[name] = _
 
     // append default unit if property requires one
-    for (var i = 0, ilen = effectOptions.length; i < ilen; i++) {
-      var k = effectOptions[i]
+    fromAll(effectOptions, k => {
       // use an episilon so same frames aren't missed due to floating point issues
       var index = indexOf(
         transformEffects,
@@ -90,9 +90,9 @@ function handleTransforms(effects: types.PropertyEffects) {
         index !== -1
           ? transformEffects[index]
           : {
-              offset: k.offset,
-              value: ''
-            }
+            offset: k.offset,
+            value: ''
+          }
 
       if (index === -1) {
         transformEffects.push(effect)
@@ -111,7 +111,7 @@ function handleTransforms(effects: types.PropertyEffects) {
         }
         effect.value += `${aliases[name] || name}(${value})`
       }
-    }
+    })
   }
 
   if (transformEffects.length) {
@@ -162,34 +162,25 @@ function animateEffect(effect: types.Effect): types.AnimationController {
       animator.currentTime = minMax(currentTime, 0, duration)
     }
 
-    if (type === UPDATE && animator.playState !== RUNNING) {
-      const sign = isForwards ? 1 : -1
-      const isActive = inRange(currentTime + PADDING * sign, 0, duration)
+    if (type === UPDATE
+      && animator.playState !== RUNNING
+      && inRange(currentTime + PADDING * (isForwards ? 1 : -1), 0, duration)) {
+      // sync time
+      animator.currentTime = minMax(currentTime, 0, duration)
 
-      if (isActive) {
-        // sync time
-        animator.currentTime = minMax(currentTime, 0, duration)
-
-        // start if ticking and animator is not running
-        animator.play()
-      }
+      // start if ticking and animator is not running
+      animator.play()
     }
   }
 }
 
 export const waapiPlugin: types.Plugin = {
-  animate(effects: types.Effect[], animations: types.AnimationController[]) {
-    for (var i = 0, ilen = effects.length; i < ilen; i++) {
-      var effect = effects[i]
-      if (isDOM(effect.target)) {
-        animations.push(animateEffect(effect))
-      }
-    }
+  animate(effects, animations) {
+    fromAll(effects, effect => {
+      isDOM(effect.target) && animations.push(animateEffect(effect))
+    })
   },
-  transform(
-    _target: types.TargetConfiguration,
-    effects: types.PropertyEffects
-  ) {
+  transform(_target, effects) {
     fixUnits(effects)
     handleTransforms(effects)
   }

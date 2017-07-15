@@ -1,6 +1,7 @@
 import { AnimationTarget } from '../types'
-import { toArray, pushAll } from './lists'
+import { pushAll, fromAll } from './lists'
 import { isArrayLike, isDOM, isFunction, isObject, isString } from './type'
+import { $ } from './elements';
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources
  * 
@@ -10,30 +11,26 @@ import { isArrayLike, isDOM, isFunction, isObject, isString } from './type'
 export function getTargets(target: AnimationTarget): (HTMLElement | {})[] {
   if (isString(target)) {
     // if query selector, search for elements
-    return toArray(document.querySelectorAll(target as string))
+    return $(document, target as string)
   }
   if (isDOM(target)) {
     // if a single element, wrap in array
     return [target]
   }
   if (isFunction(target)) {
-    // if function, call it and call this function
-    const provider = target as { (): AnimationTarget }
-    const result = provider()
-    return getTargets(result)
+    // if function, call it and call this function 
+    return getTargets((target as { (): AnimationTarget })())
   }
   if (isArrayLike(target)) {
     // if array or jQuery object, flatten to an array
+    // recursively call this function in case of nested elements        
     const elements: HTMLElement[] = []
-    for (let i = 0, ilen = (target as any[]).length; i < ilen; i++) {
-      // recursively call this function in case of nested elements
-      pushAll(elements, getTargets(target[i]))
-    }
+    fromAll(target as any[], t => pushAll(elements, getTargets(t)))
     return elements
   }
   if (isObject(target)) {
     // if it is an actual object at this point, handle it
-    return [target] as {}[]
+    return [target]
   }
 
   // otherwise return empty

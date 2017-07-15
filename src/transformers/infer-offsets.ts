@@ -1,6 +1,5 @@
 import { KeyframeOptions } from '../types'
-import { head, tail } from '../utils/lists'
-import { isDefined } from '../utils/type'
+import { head, tail, isDefined } from '../utils'
 
 export function inferOffsets(keyframes: KeyframeOptions[]) {
   if (!keyframes.length) {

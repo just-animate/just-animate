@@ -6,7 +6,7 @@ const elapses: number[] = []
 let lastHandle: number = _
 let lastTime: number = _
 
-type TimeLoopCallback = (delta: number, elapsed: number) => any
+export type TimeLoopCallback = (delta: number, elapsed: number) => any
 
 function cancel() {
   caf(lastHandle)
@@ -42,27 +42,26 @@ function update() {
   }
 }
 
-export const loop = {
-  on(fn: TimeLoopCallback) {
-    const indexOfSub = active.indexOf(fn)
-    if (indexOfSub === -1) {
-      active.splice(indexOfSub, 1)
-      elapses.splice(indexOfSub, 1)
-    }
+export function loopOn(fn: TimeLoopCallback) {
+  const indexOfSub = active.indexOf(fn)
+  if (indexOfSub === -1) {
+    active.splice(indexOfSub, 1)
+    elapses.splice(indexOfSub, 1)
+  }
 
-    if (!lastHandle) {
-      lastHandle = raf(self, update)
-    }
-  },
-  off(fn: TimeLoopCallback) {
-    const indexOfSub = active.indexOf(fn)
-    if (indexOfSub !== -1) {
-      active.splice(indexOfSub, 1)
-      elapses.splice(indexOfSub, 1)
-    }
+  if (!lastHandle) {
+    lastHandle = raf(self, update)
+  }
+}
 
-    if (!active.length) {
-      cancel()
-    }
+export function loopOff(fn: TimeLoopCallback) {
+  const indexOfSub = active.indexOf(fn)
+  if (indexOfSub !== -1) {
+    active.splice(indexOfSub, 1)
+    elapses.splice(indexOfSub, 1)
+  }
+
+  if (!active.length) {
+    cancel()
   }
 }

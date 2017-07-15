@@ -1,5 +1,5 @@
 import * as types from '../types'
-import { isFunction, convertToMs, isDefined, indexOf, flr, each } from '../utils'
+import { isFunction, convertToMs, isDefined, indexOf, flr, fromAll } from '../utils'
 import { resolveProperty } from '../transformers'
 import { getPlugins } from './plugins'
 
@@ -8,12 +8,12 @@ export function toEffects(
 ): types.Effect[] {
   const result: types.Effect[] = []
 
-  each(configs, targetConfig => {
+  fromAll(configs, targetConfig => {
     const { from, to, duration, keyframes, target } = targetConfig
 
     // construct property animation options
     var effects: types.PropertyEffects = {}
-    each(keyframes, p => {
+    fromAll(keyframes, p => {
       const propName = p.prop
       const offset = (p.time - from) / (duration || 1)
       const value = isFunction(p.value)
@@ -26,10 +26,8 @@ export function toEffects(
     })
 
     // process handlers
-    each(getPlugins(), plugin => {
-      if (plugin.transform) {
-        plugin.transform(targetConfig, effects)
-      }
+    fromAll(getPlugins(), plugin => {
+      plugin.transform && plugin.transform(targetConfig, effects)
     })
 
     for (var propName in effects) {
@@ -74,7 +72,7 @@ export function addKeyframes(
   const to = staggerMs + delayMs + options.to + endDelayMs
   const duration = to - from
 
-  each(css, keyframe => {
+  fromAll(css, keyframe => {
     addKeyframe(target, flr(duration * keyframe.offset + from), index, keyframe)
   })
 }

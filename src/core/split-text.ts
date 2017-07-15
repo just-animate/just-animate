@@ -1,5 +1,5 @@
 import { AnimationTarget, SplitTextResult } from '../types'
-import { getTargets, pushAll, $, appendChild, attr, each } from '../utils'
+import { getTargets, pushAll, $, appendChild, attr, fromAll } from '../utils'
 
 function newElement(name: string, value: string, innerHTML?: string) {
   const el = document.createElement('div')
@@ -25,7 +25,7 @@ export function splitText(target: AnimationTarget): SplitTextResult {
   const elements = getTargets(target) as HTMLElement[]
 
   // get paragraphs, words, and characters for each element
-  each(elements, element => {
+  fromAll(elements, element => {
     // if we have already split this element, check if it was already split
     if (element.getAttribute('jast')) {
       const ws = $(element, '[jaw]')
@@ -54,7 +54,7 @@ export function splitText(target: AnimationTarget): SplitTextResult {
     const ws = contents.split(/[\s]+/gi)
 
     // handle each word
-    each(ws, (w, j) => {
+    fromAll(ws, (w, j) => {
       // create new div for word/run"
       var word = appendChild(element, newElement('jaw', w))
 
@@ -68,7 +68,7 @@ export function splitText(target: AnimationTarget): SplitTextResult {
 
       // create new div for character"
       // add to the result
-      each(w, c => { characters.push(appendChild(word, newElement('jac', c, c))) })
+      fromAll(w, c => { characters.push(appendChild(word, newElement('jac', c, c))) })
     })
     
   })

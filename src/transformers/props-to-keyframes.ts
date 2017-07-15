@@ -17,7 +17,7 @@ export function propsToKeyframes(css: PropertyOptions): KeyframeOptions[] {
 
     // resolve value (changes function into discrete value or array)
     const val = css[prop]
-
+ 
     if (isArrayLike(val)) {
       // if the value is an array, split up the offset automatically
       const valAsArray = val as KeyframeValueResolver[]

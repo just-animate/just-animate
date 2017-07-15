@@ -23,9 +23,9 @@ export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean }): T {
   if (predicate === _) {
     return indexed[0]
   }
-  for (const item of indexed as T[]) {
-    if (predicate(item)) {
-      return item
+  for (let i = 0, ilen = indexed.length; i < ilen; i++) {
+    if (predicate(indexed[i])) {
+      return indexed[i]
     }
   }
   return _
@@ -93,38 +93,20 @@ export function toArray<T>(indexed: IList<T>, index?: number): T[] {
  * @param {(IList<T> | T)} indexed
  * @returns {T[]}
  */
-export function listify<T>(indexed: IList<T> | T): T[] {
+export function list<T>(indexed: IList<T> | T): T[] {
   return isArrayLike(indexed) ? indexed as T[] : [indexed as T]
 }
 
 export function pushAll<T>(items: T[], newItems: T[]) {
-  return push.apply(items, newItems)
+  push.apply(items, newItems)
 }
-
-export type AllAction<T1> = (input?: T1, index?: number) => undefined
-export type AllFunc<T1, T2> = (input?: T1, index?: number) => T2 | undefined
 
 /**
  * A combination of map/filter/forEach that handles undefined lists
  * @param items 
  * @param action 
  */
-export function each<T1>(items: IList<T1>, action: AllAction<T1>): undefined
-export function each<T1, T2>(items: IList<T1>, mapper: AllFunc<T1, T2>): T2[]
-export function each<T1, T2>(
-  items: T1[],
-  mapper: AllAction<T1> | AllFunc<T1, T2>
-): T2[] | undefined {
-  var len = items && items.length
-  var i = 0
-  var item: T2
-  var results: T2[]
-  while (i < len) {
-    item = mapper(items[i], i)
-    if (item) {
-      (results || (results = [])).push(item)
-    }
-    i++
-  }
-  return len ? results : (items as any) as T2[] | undefined
+export function fromAll<T1>(items: IList<T1>, mapper: (input?: T1, index?: number) => void): void {
+  var i = -1, len = items && items.length
+  while (++i < len) { mapper(items[i], i) }
 }

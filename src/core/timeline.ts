@@ -25,16 +25,17 @@ import {
   SEEK,
   UPDATE,
   max,
-  each
+  fromAll
 } from '../utils'
 
-import { loop, getPlugins } from '.'
+import { loopOn, loopOff, getPlugins } from '.'
 import { toEffects, addKeyframes } from './effects'
 import { inferOffsets, propsToKeyframes } from '../transformers'
 
 const propKeyframeSort = sortBy<types.PropertyKeyframe>('time')
 
 export class Timeline {
+  public currentTime: number
   public duration: number
   public playbackRate: number
 
@@ -46,13 +47,6 @@ export class Timeline {
   private _time: number
   private _dir: number
   private _listeners: { [key: string]: { (time: number): void }[] }
-
-  public get currentTime() {
-    return this._time
-  }
-  public set currentTime(time: number) {
-    this.seek(time)
-  }
 
   constructor() {
     const self = this
@@ -66,6 +60,15 @@ export class Timeline {
     self._dir = D_NORMAL
     self._times = _
     self._listeners = {}
+    
+    Object.defineProperty(self, 'currentTime', {
+      get() {
+        return this._time
+      },
+      set(time: number) {
+        this.seek(time)
+      }
+    })
   }
 
   public add(opts: types.AddAnimationOptions) {
@@ -123,9 +126,8 @@ export class Timeline {
     options2.to = convertToMs(to)
     options2.duration = options2.to - options2.from
 
-    // add all targets as property keyframes
-    const targets = getTargets(options.targets)
-    each(targets, (target, i) => {
+    // add all targets as property keyframes 
+    fromAll(getTargets(options.targets), (target, i) => {
       var targetConfig = head(config, t2 => t2.target === target)
 
       if (!targetConfig) {
@@ -144,7 +146,7 @@ export class Timeline {
     })
 
     // sort property keyframes
-    each(config, c => c.keyframes.sort(propKeyframeSort))
+    fromAll(config, c => c.keyframes.sort(propKeyframeSort))
 
     // recalculate property keyframe times and total duration
     this._calcTimes()
@@ -169,12 +171,12 @@ export class Timeline {
 
   public cancel() {
     const self = this
-    loop.off(self._tick)
     self._time = 0
     self._iteration = _
     self._state = S_IDLE
-    each(self._effects, c => c(CANCEL, 0, self.playbackRate))
-    each(self._listeners[CANCEL], c => c(0))
+    loopOff(self._tick)
+    fromAll(self._effects, c => c(CANCEL, 0, self.playbackRate))
+    fromAll(self._listeners[CANCEL], c => c(0))
     self._teardown()
     return self
   }
@@ -182,12 +184,12 @@ export class Timeline {
   public finish() {
     const self = this
     self._setup()
-    loop.off(self._tick)
     self._time = _
     self._iteration = _
     self._state = S_FINISHED
-    each(self._effects, c => c(FINISH, _, self.playbackRate))
-    each(self._listeners[FINISH], c => c(_))
+    loopOff(self._tick)
+    fromAll(self._effects, c => c(FINISH, _, self.playbackRate))
+    fromAll(self._listeners[FINISH], c => c(_))
     return self
   }
 
@@ -217,11 +219,11 @@ export class Timeline {
   public pause() {
     const self = this
     const { currentTime, playbackRate, _listeners, _time } = self
-    loop.off(self._tick)
     self._setup()
     self._state = S_PAUSED
-    each(self._effects, e => e(PAUSE, currentTime, playbackRate))
-    each(_listeners[PAUSE], c => c(_time))
+    loopOff(self._tick)
+    fromAll(self._effects, e => e(PAUSE, currentTime, playbackRate))
+    fromAll(_listeners[PAUSE], c => c(_time))
     return self
   }
 
@@ -231,15 +233,12 @@ export class Timeline {
     self._times = iterations
     self._dir = dir
 
-    if (
-      self._state === S_PAUSED ||
-      (self._state !== S_RUNNING && self._state !== S_PENDING)
-    ) {
+    if (self._state === S_PAUSED || self._state !== S_RUNNING && self._state !== S_PENDING) {
       self._state = S_PENDING
     }
 
-    loop.on(self._tick)
-    each(self._listeners[PLAY], c => c(self._time))
+    loopOn(self._tick)
+    fromAll(self._listeners[PLAY], c => c(self._time))
     return self
   }
 
@@ -258,7 +257,7 @@ export class Timeline {
     const self = this
     const timeMs = convertToMs(time)
     self._time = timeMs
-    each(self._effects, e => e(SEEK, timeMs, self.playbackRate))
+    fromAll(self._effects, e => e(SEEK, timeMs, self.playbackRate))
   }
 
   public getEffects(): types.Effect[] {
@@ -269,13 +268,13 @@ export class Timeline {
     const self = this
     let timelineTo = 0
 
-    each(self._config, target => {
+    fromAll(self._config, target => {
       const { keyframes } = target
 
       var targetFrom: number
       var targetTo: number
 
-      each(keyframes, keyframe => {
+      fromAll(keyframes, keyframe => {
         if (keyframe.time < targetFrom || targetFrom === undefined) {
           targetFrom = keyframe.time
         }
@@ -301,7 +300,7 @@ export class Timeline {
       const effects = toEffects(self._config)
       const plugins = getPlugins()
       const animations: types.AnimationController[] = []
-      each(plugins, p => p.animate(effects, animations))
+      fromAll(plugins, p => p.animate(effects, animations))
       self._effects = animations
     }
   }
@@ -371,8 +370,8 @@ export class Timeline {
     // call update
     self._iteration = iteration
     self._time = time
-    each(self._listeners[UPDATE], c => c(time))
-    each(self._effects, c => c(UPDATE, time, playbackRate))
+    fromAll(self._listeners[UPDATE], c => c(time))
+    fromAll(self._effects, c => c(UPDATE, time, playbackRate))
 
     if (!hasEnded) {
       // if not ended, return early
