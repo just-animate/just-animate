@@ -29,7 +29,8 @@ export function resolveProperty<T1>(
       const unitTypeString = match[3]
       const num = startString ? parseFloat(startString) : 0
       const sign = stepTypeString === '-=' ? -1 : 1
-      const step = isStep || (stepTypeString && isDefined(index)) ? (index || 0) + 1 : 1
+      const step =
+        isStep || (stepTypeString && isDefined(index)) ? (index || 0) + 1 : 1
       const val = sign * num * step
       return unitTypeString ? val + unitTypeString : val
     }

@@ -1,9 +1,8 @@
-import { isArrayLike } from './type'
+import { isArrayLike, isDefined } from './type'
 import { _ } from './resources'
 
 const slice = Array.prototype.slice
 const pushFn = Array.prototype.push
-const forEachFn = Array.prototype.forEach
 
 export interface IList<T> {
   [key: number]: T
@@ -104,7 +103,20 @@ export function list<T>(indexed: IList<T> | T): T[] {
  * @param item 
  */
 export function push<T>(indexed: T[], item: T): T {
-  return pushFn.call(indexed, item), item
+  pushFn.call(indexed, item)
+  return item
+}
+
+export function pushDistinct<T extends string | number>(
+  indexed: T[],
+  item: T
+): T {
+  const index = indexed.indexOf(item)
+  if (index !== -1) {
+    return item
+  }
+  push(indexed, item)
+  return item
 }
 
 /**
@@ -113,17 +125,29 @@ export function push<T>(indexed: T[], item: T): T {
  * @param newItems 
  */
 export function pushAll<T>(items: T[], newItems: T[]) {
-  pushFn.apply(items, newItems)
+  for (let i = 0, ilen = newItems.length; i < ilen; i++) {
+    if (isDefined(newItems[i])) {
+      push(items, newItems[i])      
+    }
+  }
 }
 
+export type Action<T1> = (input?: T1, index?: number) => void
+export type ActionWithBreak<T1> = (input?: T1, index?: number) => void | false
+
 /**
- * Alias for forEach
+ * iterates over all items until [false] is returned or it runs out of items
  * @param items 
  * @param action 
  */
-export function fromAll<T1>(
-  items: IList<T1>,
-  mapper: (input?: T1, index?: number) => void
-): void {
-  items && forEachFn.call(items, mapper)
+export function forEach<T1>(items: IList<T1>, action: Action<T1>): void;
+export function forEach<T1>(items: IList<T1>, action: ActionWithBreak<T1>): void;
+export function forEach<T1>(items: IList<T1>, action: Action<T1> | ActionWithBreak<T1>): void {
+  if (items) {
+    for (let i = 0, ilen = items.length; i < ilen; i++) {
+      if (action(items[i], i) === false) {
+        break;
+      }
+    }
+  }
 }

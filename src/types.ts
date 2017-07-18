@@ -54,7 +54,7 @@ export interface PropertyEffects {
 
 export interface TargetConfiguration {
   target: AnimationTarget
-  propOrder: { [name: string]: number }
+  propNames: string[]
   from: number
   to: number
   duration: number

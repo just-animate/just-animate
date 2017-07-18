@@ -1,6 +1,6 @@
 import * as types from '../types'
 import { isNumber, isDOM } from '../utils/type'
-import { fromAll, includes, indexOf, push } from '../utils/lists'
+import { forEach, includes, push, pushDistinct, head } from '../utils/lists'
 import { _, CANCEL, FINISH, PAUSE, SEEK, UPDATE } from '../utils/resources'
 import { abs, minMax, inRange } from '../utils/math'
 import { lazy } from '../utils/utils'
@@ -21,7 +21,7 @@ const lengthProps = (`backgroundSize,border,borderBottom,borderBottomLeftRadius,
   `,height,left,letterSpacing,lineHeight,margin,marginBottom,marginLeft,marginRight,marginTop,maskSize,maxHeight,maxWidth,minHeight,minWidth,outline,outlineOffset,outlineWidth,padding,` +
   `paddingBottom,paddingLeft,paddingRight,paddingTop,perspective,right,shapeMargin,tabSize,top,width,wordSpacing`).split(
   ','
-)
+  )
 
 const transformAngles = 'rotateX,rotateY,rotateZ,rotate'.split(',')
 const transformScales = 'scaleX,scaleY,scaleZ,scale'.split(',')
@@ -37,11 +37,12 @@ const aliases = {
 function fixUnits(effects: types.PropertyEffects) {
   // suffix lengths
   for (const propName in effects) {
-    const keyframes = effects[propName]
-    const value = keyframes[propName]
-    if (includes(lengthProps, propName) && isNumber(value)) {
-      keyframes[propName] = value + PX
-    }
+    const prop = effects[propName]
+    forEach(prop, (value, i) => {
+      if (includes(lengthProps, propName) && isNumber(value.value)) {
+        prop[i].value += PX
+      }  
+    })
   }
 }
 
@@ -49,59 +50,75 @@ function handleTransforms(effects: types.PropertyEffects) {
   // handle transforms
   const transformEffects: {
     offset: number
-    value: string
+    values: { name: string, value: string | number }[]
   }[] = []
 
-  for (var name in effects) {
+  const transformNames: string[] = []
+  const offsets: number[] = []
+
+  for (const name in effects) {
     if (name !== TRANSFORM && !includes(transforms, name)) {
       continue
     }
+    // add transform name to the list
+    pushDistinct(transformNames, name)
 
     // pull transform prop and remove it from the effects
     const effectOptions = effects[name]
     effects[name] = _
 
     // append default unit if property requires one
-    fromAll(effectOptions, k => {
+    forEach(effectOptions, k => {
+      // add offset to list of offsets
+      pushDistinct(offsets, k.offset)
+
       // use an episilon so same frames aren't missed due to floating point issues
-      var index = indexOf(
-        transformEffects,
-        t => abs(t.offset - k.offset) < TOLERANCE
-      )
-
-      // create or find an existing effect at the offset
       const effect =
-        index !== -1
-          ? transformEffects[index]
-          : {
-              offset: k.offset,
-              value: ''
-            }
+        head(transformEffects, t => abs(t.offset - k.offset) < TOLERANCE) ||
+        push(transformEffects, {
+          offset: k.offset,
+          values: []
+        })
 
-      if (index === -1) {
-        push(transformEffects, effect)
-      }
-
-      if (name === TRANSFORM) {
-        // take transform at face value, override all other values
-        effect.value = k.value + ''
-      } else {
-        // convert each found values to transform functions and to list of effects
-        let value = k.value
-        if (includes(transformLengths, name) && isNumber(value)) {
-          value += PX
-        } else if (includes(transformAngles, name) && isNumber(value)) {
-          value += DEG
-        }
-        effect.value += `${aliases[name] || name}(${value})`
-      }
+      effect.values.push({
+        name,
+        value: k.value
+      })
     })
   }
 
-  if (transformEffects.length) {
-    // apply transform effects to keyframes
-    effects[TRANSFORM] = transformEffects
+  if (!transformEffects.length) {
+    return
   }
+
+  offsets.sort()
+
+  // apply transform effects to keyframes
+  effects[TRANSFORM] = transformEffects.map(t => {
+    let value = ''
+    forEach(t.values, k => {
+      const name = k.name
+      if (name === TRANSFORM) {
+        value = k.value + ''
+        // break early
+        return false
+      }
+      // convert each found values to transform functions and to list of effects
+      let propValue = k.value
+      if (includes(transformLengths, name) && isNumber(propValue)) {
+        propValue += PX
+      } else if (includes(transformAngles, name) && isNumber(propValue)) {
+        propValue += DEG
+      }
+      value += `${aliases[name] || name}(${propValue})`
+      return _
+    })
+
+    return {
+      offset: t.offset,
+      value
+    }
+  })
 }
 
 function animateEffect(effect: types.Effect): types.AnimationController {
@@ -162,13 +179,17 @@ function animateEffect(effect: types.Effect): types.AnimationController {
 
 export const waapiPlugin: types.Plugin = {
   animate(effects, animations) {
-    fromAll(
+    forEach(
       effects,
-      effect => isDOM(effect.target) && push(animations, animateEffect(effect))
+      effect => {
+        isDOM(effect.target) && push(animations, animateEffect(effect))
+      }
     )
   },
-  transform(_target, effects) {
-    fixUnits(effects)
-    handleTransforms(effects)
+  transform(target, effects) {
+    if (isDOM(target.target)) {
+      fixUnits(effects)
+      handleTransforms(effects)
+    }
   }
 }

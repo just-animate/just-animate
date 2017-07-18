@@ -1,7 +1,7 @@
 import { addPlugin, Timeline } from './core'
 import { waapiPlugin } from './plugins/waapi'
 import * as types from './types'
-import { fromAll, list } from './utils/lists'
+import { forEach, list } from './utils/lists'
 
 // configure plugins
 addPlugin(waapiPlugin)
@@ -15,7 +15,7 @@ export function animate(
 ) {
   const timeline = new Timeline()
   if (options) {
-    fromAll(list(options), opt => {
+    forEach(list(options), opt => {
       opt.from = opt.from || 0
       timeline.add(opt)
     })
@@ -23,13 +23,13 @@ export function animate(
   return timeline
 }
 
-/**
+/**s
  * Returns a new sequence of animations in a timeline
  * @param seqOptions an array of animations options
  */
 export function sequence(seqOptions: types.AddAnimationOptions[]) {
   const timeline = new Timeline()
-  fromAll(seqOptions, opt => {
+  forEach(seqOptions, opt => {
     timeline.add(opt)
   })
   return timeline

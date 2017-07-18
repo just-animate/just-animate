@@ -11,7 +11,7 @@ import {
 import { loopOn, loopOff, getPlugins } from '.'
 import { toEffects, addKeyframes } from './effects'
 import { inferOffsets, propsToKeyframes } from '../transformers'
-import { sortBy, fromAll, head, push } from '../utils/lists'
+import { sortBy, forEach, head, push } from '../utils/lists'
 import { isDefined, isArrayLike } from '../utils/type'
 import { convertToMs } from '../utils/units'
 import { getTargets } from '../utils/get-targets'
@@ -131,23 +131,24 @@ export class Timeline {
     options2.duration = options2.to - options2.from
 
     // add all targets as property keyframes
-    fromAll(getTargets(options.targets), (target, i) => {
-      var targetConfig =
+    forEach(getTargets(options.targets), (target, i) =>
+      addKeyframes(
         head(config, t2 => t2.target === target) ||
-        push(config, {
-          from: options2.from,
-          to: options2.to,
-          duration: options2.to - options2.from,
-          target,
-          keyframes: [],
-          propOrder: {}
-        })
-
-      addKeyframes(targetConfig, i, options2)
-    })
+          push(config, {
+            from: options2.from,
+            to: options2.to,
+            duration: options2.to - options2.from,
+            target,
+            keyframes: [],
+            propNames: []
+          }),
+        i,
+        options2
+      )
+    )
 
     // sort property keyframes
-    fromAll(config, c => c.keyframes.sort(propKeyframeSort))
+    forEach(config, c => c.keyframes.sort(propKeyframeSort))
 
     // recalculate property keyframe times and total duration
     this._calcTimes()
@@ -176,8 +177,8 @@ export class Timeline {
     self._iteration = _
     self._state = S_IDLE
     loopOff(self._tick)
-    fromAll(self._effects, c => c(CANCEL, 0, self.playbackRate))
-    fromAll(self._listeners[CANCEL], c => c(0))
+    forEach(self._effects, c => c(CANCEL, 0, self.playbackRate))
+    forEach(self._listeners[CANCEL], c => c(0))
     self._teardown()
     return self
   }
@@ -189,8 +190,8 @@ export class Timeline {
     self._iteration = _
     self._state = S_FINISHED
     loopOff(self._tick)
-    fromAll(self._effects, c => c(FINISH, _, self.playbackRate))
-    fromAll(self._listeners[FINISH], c => c(_))
+    forEach(self._effects, c => c(FINISH, _, self.playbackRate))
+    forEach(self._listeners[FINISH], c => c(_))
     return self
   }
 
@@ -223,8 +224,8 @@ export class Timeline {
     self._setup()
     self._state = S_PAUSED
     loopOff(self._tick)
-    fromAll(self._effects, e => e(PAUSE, currentTime, playbackRate))
-    fromAll(_listeners[PAUSE], c => c(_time))
+    forEach(self._effects, e => e(PAUSE, currentTime, playbackRate))
+    forEach(_listeners[PAUSE], c => c(_time))
     return self
   }
 
@@ -242,7 +243,7 @@ export class Timeline {
     }
 
     loopOn(self._tick)
-    fromAll(self._listeners[PLAY], c => c(self._time))
+    forEach(self._listeners[PLAY], c => c(self._time))
     return self
   }
 
@@ -261,7 +262,7 @@ export class Timeline {
     const self = this
     const timeMs = convertToMs(time)
     self._time = timeMs
-    fromAll(self._effects, e => e(SEEK, timeMs, self.playbackRate))
+    forEach(self._effects, e => e(SEEK, timeMs, self.playbackRate))
   }
 
   public getEffects(): Effect[] {
@@ -272,13 +273,13 @@ export class Timeline {
     const self = this
     let timelineTo = 0
 
-    fromAll(self._config, target => {
+    forEach(self._config, target => {
       const { keyframes } = target
 
       var targetFrom: number
       var targetTo: number
 
-      fromAll(keyframes, keyframe => {
+      forEach(keyframes, keyframe => {
         if (keyframe.time < targetFrom || targetFrom === undefined) {
           targetFrom = keyframe.time
         }
@@ -304,7 +305,7 @@ export class Timeline {
       const effects = toEffects(self._config)
       const plugins = getPlugins()
       const animations: AnimationController[] = []
-      fromAll(plugins, p => p.animate(effects, animations))
+      forEach(plugins, p => p.animate(effects, animations))
       self._effects = animations
     }
   }
@@ -374,8 +375,8 @@ export class Timeline {
     // call update
     self._iteration = iteration
     self._time = time
-    fromAll(self._listeners[UPDATE], c => c(time))
-    fromAll(self._effects, c => c(UPDATE, time, playbackRate))
+    forEach(self._listeners[UPDATE], c => c(time))
+    forEach(self._effects, c => c(UPDATE, time, playbackRate))
 
     if (!hasEnded) {
       // if not ended, return early

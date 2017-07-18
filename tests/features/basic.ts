@@ -74,8 +74,8 @@ describe('basic', () => {
       .to(2000, {
         targets: [target2],
         css: [
-          { x: 0 },
-          { x: 200 }
+          { number: 0 },
+          { number: 200 }
         ]
       })
 
@@ -95,8 +95,8 @@ describe('basic', () => {
       from: 1000,
       to: 2000,
       keyframes: [
-        { offset: 0, transform: 'translateX(0px)' },
-        { offset: 1, transform: 'translateX(200px)' }
+        { offset: 0, number: 0 },
+        { offset: 1, number: 200 }
       ]
     }]
 
@@ -217,24 +217,24 @@ describe('basic', () => {
       .fromTo(200, 500, {
         targets: [target],
         css: [
-          { opacity: 0, x: 0 },
-          { offset: .2, x: 40 },
-          { opacity: .5, x: 0 },
-          { offset: .8, x: 90 },
-          { opacity: 1, x: 100 }
+          { opacity: 0, left: 0 },
+          { offset: .2, left: 40 },
+          { opacity: .5, left: 0 },
+          { offset: .8, left: 90 },
+          { opacity: 1, left: 100 }
         ]
       })
       .fromTo(600, 1000, {
         targets: [target],
         css: [
-          { opacity: 1, x: 100 },
-          { opacity: 0, x: 0 }
+          { opacity: 1, left: 100 },
+          { opacity: 0, left: 0 }
         ]
       })
 
     const actual = timeline.getEffects()
     const expected = [{
-      target: {},
+      target: target,
       from: 200,
       to: 1000,
       keyframes: [
@@ -245,17 +245,17 @@ describe('basic', () => {
         { offset: 1, opacity: 0 }
       ]
     }, {
-      target: {},
+      target: target,
       from: 200,
       to: 1000,
       keyframes: [
-        { offset: 0, transform: 'translateX(0px)' },
-        { offset: 0.075, transform: 'translateX(40px)' },
-        { offset: 0.15, transform: 'translateX(0px)' },
-        { offset: 0.3, transform: 'translateX(90px)' },
-        { offset: 0.375, transform: 'translateX(100px)' },
-        { offset: 0.5, transform: 'translateX(100px)' },
-        { offset: 1, transform: 'translateX(0px)' }
+        { offset: 0, left: 0 },
+        { offset: 0.075, left: 40 },
+        { offset: 0.15, left: 0 },
+        { offset: 0.3, left: 90 },
+        { offset: 0.375, left: 100 },
+        { offset: 0.5, left: 100 },
+        { offset: 1, left: 0 }
       ]
     }];
 

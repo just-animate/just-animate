@@ -1,5 +1,5 @@
 import { AnimationTarget } from '../types'
-import { pushAll, fromAll } from './lists'
+import { pushAll, forEach } from './lists'
 import { isArrayLike, isDOM, isFunction, isObject, isString } from './type'
 import { $ } from './elements'
 /**
@@ -25,7 +25,7 @@ export function getTargets(target: AnimationTarget): (HTMLElement | {})[] {
     // if array or jQuery object, flatten to an array
     // recursively call this function in case of nested elements
     const elements: HTMLElement[] = []
-    fromAll(target as any[], t => pushAll(elements, getTargets(t)))
+    forEach(target as any[], t => pushAll(elements, getTargets(t)))
     return elements
   }
   if (isObject(target)) {

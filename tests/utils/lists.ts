@@ -1,12 +1,24 @@
 import * as chai from 'chai'
-import { fromAll, head, tail, toArray, list } from '../../src/utils/lists';
+import { forEach, head, tail, toArray, list } from '../../src/utils/lists';
 const { assert, expect } = chai
 
-describe('fromAll()', () => {
+describe('forEach()', () => {
   it('calls the function for each item', () => {
     const results: number[] = []
-    fromAll([1, 2, 3, 4], s => results.push(s))
+    forEach([1, 2, 3, 4], s => results.push(s))
     assert.deepEqual([1, 2, 3, 4], results)
+  })
+  
+  it('stops execution when false is returned', () => {
+    const results: number[] = []
+    forEach([1, 2, 3, 4], s => {
+      if (s === 3) {
+        return false
+      }
+      results.push(s)
+      return undefined
+    })
+    assert.deepEqual([1, 2], results)
   })
 })
 

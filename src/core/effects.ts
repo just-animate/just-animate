@@ -1,7 +1,7 @@
 import * as types from '../types'
 import { resolveProperty } from '../transformers'
 import { getPlugins } from './plugins'
-import { fromAll, indexOf, push } from '../utils/lists'
+import { forEach, indexOf, push } from '../utils/lists'
 import { isDefined } from '../utils/type'
 import { convertToMs } from '../utils/units'
 import { flr } from '../utils/math'
@@ -11,12 +11,12 @@ export function toEffects(
 ): types.Effect[] {
   const result: types.Effect[] = []
 
-  fromAll(configs, targetConfig => {
+  forEach(configs, targetConfig => {
     const { from, to, duration, keyframes, target } = targetConfig
 
     // construct property animation options
     var effects: types.PropertyEffects = {}
-    fromAll(keyframes, p =>
+    forEach(keyframes, p =>
       push(
         // get or create property effect
         effects[p.prop] || (effects[p.prop] = []),
@@ -30,7 +30,7 @@ export function toEffects(
     )
 
     // process handlers
-    fromAll(
+    forEach(
       getPlugins(),
       plugin => plugin.transform && plugin.transform(targetConfig, effects)
     )
@@ -77,7 +77,7 @@ export function addKeyframes(
   const to = staggerMs + delayMs + options.to + endDelayMs
   const duration = to - from
 
-  fromAll(css, keyframe => {
+  forEach(css, keyframe => {
     addKeyframe(target, flr(duration * keyframe.offset + from), index, keyframe)
   })
 }
@@ -89,6 +89,7 @@ function addKeyframe(
   keyframe: types.KeyframeOptions
 ) {
   var { keyframes } = target
+  var count = -1
   for (var name in keyframe) {
     if (name === 'offset') {
       continue
@@ -97,6 +98,11 @@ function addKeyframe(
     var value = keyframe[name] as string | number
     if (!isDefined(value)) {
       continue
+    }
+
+    var propIndex = target.propNames.indexOf(name)
+    if (propIndex === -1) {
+      target.propNames.push(name)
     }
 
     var indexOfFrame = indexOf(
@@ -112,7 +118,7 @@ function addKeyframe(
       index,
       prop: name,
       time,
-      order: 0, // fixme
+      order: ++count,
       value
     })
   }
