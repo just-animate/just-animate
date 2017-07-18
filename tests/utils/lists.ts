@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import { forEach, head, tail, toArray, list } from '../../src/utils/lists';
+import { forEach, head, tail, list } from '../../src/utils/lists';
 const { assert, expect } = chai
 
 describe('forEach()', () => {
@@ -39,12 +39,6 @@ describe('tail()', () => {
 
   it('should return the last item if array is not empty', () => {
     assert.equal('1', tail(['0', '1']))
-  })
-})
-
-describe('toArray()', () => {
-  it('returns an array from an array like structure', () => {
-    expect(toArray({ length: 0 })).to.deep.equal([])
   })
 })
 

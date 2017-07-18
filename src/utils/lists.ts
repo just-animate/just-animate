@@ -1,9 +1,6 @@
 import { isArrayLike, isDefined } from './type'
 import { _ } from './resources'
 
-const slice = Array.prototype.slice
-const pushFn = Array.prototype.push
-
 export interface IList<T> {
   [key: number]: T
   length: number
@@ -73,19 +70,6 @@ export function sortBy<T>(fieldName: keyof T) {
 }
 
 /**
- * Converts list to an Array.
- * Useful for converting NodeList and Arguments to []
- * 
- * @export
- * @template T
- * @param {T[]} list to convert
- * @returns {T[]} array clone of list
- */
-export function toArray<T>(indexed: IList<T>, index?: number): T[] {
-  return slice.call(indexed, index || 0)
-}
-
-/**
  * Returns an array if already an array or an object wrapped in an array
  * 
  * @export
@@ -103,7 +87,7 @@ export function list<T>(indexed: IList<T> | T): T[] {
  * @param item 
  */
 export function push<T>(indexed: T[], item: T): T {
-  pushFn.call(indexed, item)
+  Array.prototype.push.call(indexed, item)
   return item
 }
 

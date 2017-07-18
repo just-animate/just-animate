@@ -65,19 +65,19 @@ export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
   css: KeyframeOptions[] | PropertyOptions
   stagger?: number | string
-  delay?: number | string
-  endDelay?: number | string
+  delay?: number
+  endDelay?: number
 }
 
 export interface ToAnimationOptions extends BaseAnimationOptions {
-  duration?: number | string
-  from?: number | string
+  duration?: number
+  from?: number
 }
 
 export interface AddAnimationOptions extends BaseAnimationOptions {
-  from?: number | string
-  to?: number | string
-  duration?: number | string
+  from?: number
+  to?: number
+  duration?: number
 }
 
 export interface AnimationOptions extends BaseAnimationOptions {

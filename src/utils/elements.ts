@@ -1,7 +1,5 @@
-import { toArray } from './lists'
-
 export function $(element: HTMLElement | HTMLDocument, selector: string) {
-  return toArray(element.querySelectorAll(selector))
+  return Array.prototype.slice.call(element.querySelectorAll(selector))
 }
 
 export function attr(element: HTMLElement, name: string, value: string) {
@@ -9,6 +7,5 @@ export function attr(element: HTMLElement, name: string, value: string) {
 }
 
 export function appendChild(element: HTMLElement, child: HTMLElement) {
-  element.appendChild(child)
-  return child
+  return element.appendChild(child)
 }

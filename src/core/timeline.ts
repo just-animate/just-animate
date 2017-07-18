@@ -88,22 +88,22 @@ export class Timeline {
     // pretty exaustive rules for importing times
     let from: number, to: number
     if (hasFrom && hasTo) {
-      from = convertToMs(opts.from)
-      to = convertToMs(opts.to)
+      from = opts.from
+      to = opts.to
     } else if (hasFrom && hasDuration) {
-      from = convertToMs(opts.from)
-      to = from + convertToMs(opts.duration)
+      from = opts.from
+      to = from + opts.duration
     } else if (hasTo && hasDuration) {
-      to = convertToMs(opts.to)
-      from = to - convertToMs(opts.duration)
+      to = opts.to
+      from = to - opts.duration
     } else if (hasTo && !hasDuration) {
       from = duration
-      to = from + convertToMs(opts.to)
+      to = from + opts.to
     } else if (hasDuration) {
       from = duration
-      to = from + convertToMs(opts.duration)
+      to = from + opts.duration
     } else {
-      throw new Error('No to/from/duration')
+      throw new Error('Missing duration')
     }
 
     return this.fromTo(max(from, 0), max(to, 0), opts)

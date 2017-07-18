@@ -1,4 +1,3 @@
-// import { jsdom } from '../dom'
 import * as chai from 'chai'
 const { assert } = chai
 import { splitText } from '../../src/main'

@@ -1,9 +1,6 @@
 export function isDefined(a: any) {
   return !!a || a === 0 || a === false
 }
-export function getTypeString(val: any) {
-  return Object.prototype.toString.call(val)
-}
 export function isFunction(a: any) {
   return typeof a === 'function'
 }

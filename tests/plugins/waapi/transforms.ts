@@ -1,4 +1,4 @@
-import { animate } from '../../src/main'
+import { animate } from '../../../src/main'
 import * as chai from 'chai'
 const { assert } = chai
 
