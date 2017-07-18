@@ -1,8 +1,12 @@
 import { animate } from '../../../src/main'
 import * as chai from 'chai'
+import { waapiPlugin } from '../../../src/plugins/waapi';
+import { addPlugin } from '../../../src/core/plugins';
 const { assert } = chai
 
 describe('basic', () => {
+  addPlugin(waapiPlugin)
+  
   it('infers offsets and consolidates animations by property on the same target', () => {
     /* Test code */
     const target = document.createElement('div')

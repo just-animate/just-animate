@@ -1,10 +1,10 @@
 export interface KeyframeOptions {
   offset?: number
-  [val: string]: KeyframeValueResolver
+  [val: string]: KeyframeValueResolver<string | number>
 }
 
 export interface PropertyOptions {
-  [name: string]: KeyframeValueResolver | KeyframeValueResolver[]
+  [name: string]: KeyframeValueResolver<string | number> | KeyframeValueResolver<string | number>[]
 }
 
 export interface Keyframe {
@@ -12,15 +12,14 @@ export interface Keyframe {
   [val: string]: string | number
 }
 
-export type AnimationDomTarget = Node | NodeList | string
-export type AnimationTarget = string | {}
+export type AnimationTarget = any
 export type KeyframeValue = string | number
 
-export interface KeyframeFunction {
-  (target?: any, index?: number): KeyframeValueResolver
+export interface KeyframeFunction<T> {
+  (target?: any, index?: number): KeyframeValueResolver<T>
 }
 
-export type KeyframeValueResolver = KeyframeValue | KeyframeFunction
+export type KeyframeValueResolver<T> = T | KeyframeFunction<T>
 
 export interface SplitTextResult {
   words: HTMLElement[]
@@ -32,8 +31,9 @@ export interface AnimationController {
 }
 
 export interface Plugin {
+  animate(options: Effect[], animations: AnimationController[]): void  
+  resolve(selector: string): any[];
   transform(target: TargetConfiguration, effects: PropertyEffects): void
-  animate(options: Effect[], animations: AnimationController[]): void
 }
 
 export interface PropertyKeyframe {
@@ -41,7 +41,7 @@ export interface PropertyKeyframe {
   prop: string
   index: number
   order: number
-  value: KeyframeValueResolver
+  value: KeyframeValueResolver<string | number>
 }
 
 export interface EffectOptions {
@@ -65,9 +65,9 @@ export interface TargetConfiguration {
 export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
   css: KeyframeOptions[] | PropertyOptions
-  stagger?: number | string
-  delay?: number
-  endDelay?: number
+  stagger?: number
+  delay?: KeyframeValueResolver<number>
+  endDelay?: KeyframeValueResolver<number>
 }
 
 export interface ToAnimationOptions extends BaseAnimationOptions {
@@ -81,15 +81,15 @@ export interface AddAnimationOptions extends BaseAnimationOptions {
   duration?: number
 }
 
-export interface AnimationOptions extends BaseAnimationOptions {
+export interface AnimationOptions {
   from: number
   to: number
   duration: number
   targets: AnimationTarget[]
   css: KeyframeOptions[]
   stagger?: number
-  delay?: number
-  endDelay?: number
+  delay?: KeyframeValueResolver<number>
+  endDelay?: KeyframeValueResolver<number>
 }
 
 export interface Effect {

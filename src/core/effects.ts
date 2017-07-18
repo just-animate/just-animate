@@ -62,12 +62,8 @@ export function addKeyframes(
 ) {
   const { css } = options 
   const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0
-  const delayMs = options.delay || 0
-  // const endDelayMs = options.endDelay || 0 
-
-  // todo: incorporate WAAPI delay/endDelay
+  const delayMs = resolveProperty(options.delay, target, index) || 0
   const from = max(staggerMs + delayMs + options.from, 0)
-  // const to = max(staggerMs + delayMs + options.to + endDelayMs, 0)
   const duration = options.to - options.from
 
   forEach(css, keyframe => {

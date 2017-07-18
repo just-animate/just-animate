@@ -10,10 +10,9 @@ import {
 
 import { loopOn, loopOff, getPlugins } from '.'
 import { toEffects, addKeyframes } from './effects'
-import { inferOffsets, propsToKeyframes } from '../transformers'
+import { inferOffsets, propsToKeyframes, resolveProperty } from '../transformers'
 import { sortBy, forEach, head, push } from '../utils/lists'
 import { isDefined, isArrayLike } from '../utils/type'
-import { convertToMs } from '../utils/units'
 import { getTargets } from '../utils/get-targets'
 import {
   _,
@@ -42,7 +41,9 @@ import { max, inRange } from '../utils/math'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
-// tslint:disable-next-line:variable-name
+/**
+ * Animation timeline control.  Defines animation definition methods like .fromTo() and player controls like .play()
+ */
 export class Timeline {
   public currentTime: number
   public duration: number
@@ -54,7 +55,7 @@ export class Timeline {
   private _times: number
   private _iteration: number
   private _time: number
-  private _dir: number
+  private _dir: typeof D_NORMAL | typeof D_ALTERNATIVE
   private _listeners: { [key: string]: { (time: number): void }[] }
 
   constructor() {
@@ -81,6 +82,10 @@ export class Timeline {
     })
   }
 
+  /**
+   * Adds an animation at the end of the timeline, unless from/to are specified
+   * @param opts the animation definition
+   */
   public add(opts: AddAnimationOptions) {
     const { _nextTime } = this
     const hasTo = isDefined(opts.to)
@@ -108,12 +113,20 @@ export class Timeline {
       throw new Error('Missing duration')
     }
 
-    return this.fromTo(max(from, 0), max(to, 0), opts)
+    return this.fromTo(from, to, opts)
   }
 
+  /**
+   * Defines an animation that occurs starting at "from" and ending at "to".
+   *
+   * Note: The delay, endDelay, and stagger properties may shift the from/to times
+   * @param from the starting time in milliseconds
+   * @param to the ending time in milliseconds
+   * @param options the animation definition.
+   */
   public fromTo(
-    from: number | string,
-    to: number | string,
+    from: number,
+    to: number,
     options: BaseAnimationOptions
   ) {
     const config = this._config
@@ -128,27 +141,28 @@ export class Timeline {
 
     // ensure to/from are in milliseconds (as numbers)
     const options2 = options as AnimationOptions
-    options2.from = convertToMs(from)
-    options2.to = convertToMs(to)
+    options2.from = from
+    options2.to = to
     options2.duration = options2.to - options2.from
-
+    
     // add all targets as property keyframes
-    forEach(getTargets(options.targets), (target, i) =>
+    forEach(getTargets(options.targets, getPlugins()), (target, i) => {
+      const delay = resolveProperty(options2.delay, target, i) || 0
       addKeyframes(
         head(config, t2 => t2.target === target) ||
-          push(config, {
-            from: options2.from,
-            to: options2.to,
-            duration: options2.to - options2.from,
-            endDelay: (options2.endDelay || 0),
-            target,
-            keyframes: [],
-            propNames: []
-          }),
+        push(config, {
+          from: max(options2.from + delay, 0),
+          to: max(options2.to + delay, 0),
+          duration: options2.to - options2.from,
+          endDelay: resolveProperty(options2.endDelay, target, i) || 0,
+          target,
+          keyframes: [],
+          propNames: []
+        }),
         i,
         options2
       )
-    )
+    })
 
     // sort property keyframes
     forEach(config, c => c.keyframes.sort(propKeyframeSort))
@@ -158,22 +172,34 @@ export class Timeline {
     return this
   }
 
-  public to(toTime: string | number, opts: ToAnimationOptions) {
+  /**
+   * Defines an animation ending at the "to" parameter.
+   *
+   * The following rules are used to find the starting point:
+   * - If "from" is not provided, "duration" is used instead.
+   * - If neither "from" nor "duration" are specified, the duration of the animation is used as the starting point.
+   *
+   * @param to the end time in milliseconds
+   * @param opts the animation definition
+   */
+  public to(to: number, opts: ToAnimationOptions) {
     const { duration } = this
-    const to = convertToMs(toTime)
 
     let fromTime: number
     if (isDefined(opts.from)) {
-      fromTime = convertToMs(opts.from)
+      fromTime = opts.from
     } else if (isDefined(opts.duration)) {
-      fromTime = to - convertToMs(opts.duration)
+      fromTime = to - opts.duration
     } else {
       fromTime = duration
     }
 
-    return this.fromTo(max(fromTime, 0), to, opts)
+    return this.fromTo(fromTime, to, opts)
   }
 
+  /**
+   * Cancels an animation, removes all effects, and resets internal state
+   */
   public cancel() {
     const self = this
     self._time = 0
@@ -186,6 +212,12 @@ export class Timeline {
     return self
   }
 
+  /**
+   * Finishes an animation.  If the animation has never been active, this will
+   * activate effects
+   * - If playbackRate is 0 or more, the animation will seek to duration.
+   * - If playbackRate is less than 0, the animation will seek to 0
+   */
   public finish() {
     const self = this
     self._setup()
@@ -198,6 +230,11 @@ export class Timeline {
     return self
   }
 
+  /**
+   * Register for timeline events
+   * @param eventName timeline event name
+   * @param listener callback for when the event occurs
+   */
   public on(eventName: string, listener: () => void) {
     const self = this
     const { _listeners } = self
@@ -209,6 +246,12 @@ export class Timeline {
 
     return self
   }
+  
+  /**
+   * Unregister for timeline events
+   * @param eventName timeline event name
+   * @param listener callback to unregister
+   */
   public off(eventName: string, listener: () => void) {
     const self = this
     const listeners = self._listeners[eventName]
@@ -221,6 +264,10 @@ export class Timeline {
     return self
   }
 
+  /**
+   * Pauses execution of the animation. If the animation has never been active, this will
+   * activate effects
+   */
   public pause() {
     const self = this
     const { currentTime, playbackRate, _listeners, _time } = self
@@ -232,7 +279,12 @@ export class Timeline {
     return self
   }
 
-  public play(iterations = 1, dir = D_NORMAL) {
+/**
+ * Plays the animation until finished.  If the animation has never been active, this will activate the effects.
+ * @param iterations number of iterations to play the animation.  Use Infinity to loop forever
+ * @param dir the direction the animation should play.  "normal" (default) or "alternate" (yoyo)
+ */
+  public play(iterations = 1, dir: typeof D_NORMAL | typeof D_ALTERNATIVE = D_NORMAL) {
     const self = this
     self._setup()
     self._times = iterations
@@ -250,6 +302,9 @@ export class Timeline {
     return self
   }
 
+  /**
+   * Reverses the animation playbackRate.  If the animation is currently playing, it will reverse the animation
+   */
   public reverse() {
     const self = this
     self.playbackRate = (self.playbackRate || 0) * -1
@@ -261,13 +316,20 @@ export class Timeline {
     return self
   }
 
-  public seek(time: number | string) {
+  /**
+   * Seeks to a specific time.  If the animation is not active, this will activate effects.
+   * @param time the time in milliseconds to seek to.
+   */
+  public seek(time: number) {
     const self = this
-    const timeMs = convertToMs(time)
-    self._time = timeMs
-    forEach(self._effects, e => e(SEEK, timeMs, self.playbackRate))
+    self._setup()
+    self._time = time
+    forEach(self._effects, e => e(SEEK, time, self.playbackRate))
   }
 
+  /**
+   * Gets the pre-processed effects of the current configuration.  This is mostly used for testing purposes.
+   */
   public getEffects(): Effect[] {
     return toEffects(this._config)
   }

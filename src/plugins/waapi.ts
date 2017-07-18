@@ -4,6 +4,7 @@ import { forEach, includes, push, pushDistinct, head } from '../utils/lists'
 import { _, CANCEL, FINISH, PAUSE, SEEK, UPDATE } from '../utils/resources'
 import { abs, minMax, inRange } from '../utils/math'
 import { lazy } from '../utils/utils'
+import { $ } from '../utils/elements';
 
 const TOLERANCE = 0.0001
 const TRANSLATE = 'translate'
@@ -185,6 +186,9 @@ export const waapiPlugin: types.Plugin = {
         isDOM(effect.target) && push(animations, animateEffect(effect))
       }
     )
+  },
+  resolve(selector: string) {
+    return $(document, selector)
   },
   transform(target, effects) {
     if (isDOM(target.target)) {

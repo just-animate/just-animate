@@ -1,13 +1,14 @@
 // import { jsdom } from '../dom'
 import * as chai from 'chai'
-import { getTargets } from '../../src/utils/get-targets';
+import { getTargets } from '../../../src/utils/get-targets';
+import { waapiPlugin } from '../../../src/plugins/waapi'
 const { assert } = chai
 
 describe('getTargets()', () => {
 
     it('resolves element as element[]', () => {
         const element = document.createElement('div')
-        assert.equal(1, getTargets(element).length)
+        assert.equal(1, getTargets(element, [waapiPlugin]).length)
     })
 
     it('resolves elements by selector', () => {
@@ -21,7 +22,7 @@ describe('getTargets()', () => {
             parent.appendChild(child)
         }
 
-        assert.equal(20, getTargets('#elementBySelector .child').length)
+        assert.equal(20, getTargets('#elementBySelector .child', [waapiPlugin]).length)
         document.body.removeChild(parent)
     })
 
@@ -36,7 +37,7 @@ describe('getTargets()', () => {
             parent.appendChild(child)
         }
 
-        assert.equal(20, getTargets(document.querySelectorAll('#elementBySelector .child')).length)
+        assert.equal(20, getTargets(document.querySelectorAll('#elementBySelector .child'), [waapiPlugin]).length)
         document.body.removeChild(parent)
     })
 
@@ -44,7 +45,7 @@ describe('getTargets()', () => {
         const targets = () => {
             return document.createElement('i')
         }
-        assert.equal(1, getTargets(targets).length)
+        assert.equal(1, getTargets(targets, [waapiPlugin]).length)
     })
 
     it('flattens element list', () => {
@@ -60,7 +61,7 @@ describe('getTargets()', () => {
                 ]
             ]
         ]
-        assert.equal(6, getTargets(targets as any).length)
+        assert.equal(6, getTargets(targets, [waapiPlugin]).length)
     })
 
     it('handles general ridiculousness', () => {
@@ -84,6 +85,6 @@ describe('getTargets()', () => {
                 document.querySelectorAll('#byId3')
             ]
         }
-        assert.equal(4, getTargets(targets as any).length)
+        assert.equal(4, getTargets(targets, [waapiPlugin]).length)
     })
 })

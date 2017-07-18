@@ -21,7 +21,7 @@ export function propsToKeyframes(css: PropertyOptions): KeyframeOptions[] {
 
     if (isArrayLike(val)) {
       // if the value is an array, split up the offset automatically
-      const valAsArray = val as KeyframeValueResolver[]
+      const valAsArray = val as KeyframeValueResolver<string | number>[]
       for (let i = 0, ilen = valAsArray.length; i < ilen; i++) {
         push(keyframes, {
           offset: i === 0 ? 0 : i === ilen - 1 ? 1 : i / (ilen - 1.0),
@@ -29,7 +29,7 @@ export function propsToKeyframes(css: PropertyOptions): KeyframeOptions[] {
         })
       }
     } else {
-      push(keyframes, { offset: 1, [prop]: val as KeyframeValueResolver })
+      push(keyframes, { offset: 1, [prop]: val as KeyframeValueResolver<string | number> })
     }
   }
   return keyframes

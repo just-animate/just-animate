@@ -211,7 +211,6 @@ describe('sequencing', () => {
         ]
       }
     ]
-    console.log(JSON.stringify(actual, undefined, 4))
     assert.deepEqual<{}>(actual, expected)
   })
   
@@ -260,7 +259,6 @@ describe('sequencing', () => {
         ]
       }
     ]
-    console.log(JSON.stringify(actual, undefined, 4))
     assert.deepEqual<{}>(actual, expected)
   })
 })

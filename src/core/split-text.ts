@@ -24,7 +24,7 @@ export function splitText(target: AnimationTarget): SplitTextResult {
   const words: HTMLElement[] = []
 
   // acquiring targets ;)
-  const elements = getTargets(target) as HTMLElement[]
+  const elements = getTargets(target, []) as HTMLElement[]
 
   // get paragraphs, words, and characters for each element
   forEach(elements, element => {
