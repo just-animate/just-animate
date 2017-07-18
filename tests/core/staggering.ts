@@ -5,14 +5,8 @@ const { assert } = chai
 describe('staggering', () => {
   it('staggers targets', () => {
     const targets = [
-      document.createElement('div'),
-      document.createElement('div'),
-      document.createElement('div'),
-      document.createElement('div')
+      {}, {}, {}, {}
     ]
-    targets.forEach(element => {
-      document.body.appendChild(element)
-    });
 
     const timeline = animate({
       targets: targets,
@@ -23,51 +17,46 @@ describe('staggering', () => {
         { opacity: 1 }
       ]
     })
-    
-    timeline.pause()
 
-    assert.equal(timeline.duration, 1400)
+    const actual = timeline.getEffects()
 
-    timeline.currentTime = 400
-    assert.approximately(+getComputedStyle(targets[0]).opacity, .3, .0001)
-    assert.approximately(+getComputedStyle(targets[1]).opacity, .2, .0001)
-    assert.approximately(+getComputedStyle(targets[2]).opacity, .1, .0001)
-    assert.approximately(+getComputedStyle(targets[3]).opacity, 0, .0001)
-
-    targets.forEach(element => {
-      document.body.removeChild(element)
-    });
-  });
-
-  it('delay/staggers targets', () => {
-    const targets = [
-      document.createElement('div'),
-      document.createElement('div'),
-      document.createElement('div'),
-      document.createElement('div')
-    ]
-    targets.forEach(element => {
-      document.body.appendChild(element)
-    });
-
-    const timeline = animate({
-      targets: targets,
-      duration: 1000,
-      delay: '+=100ms',
-      css: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
-    })
-    
-    timeline.pause()
-
-    assert.equal(timeline.duration, 1400)
-
-    timeline.currentTime = 400
-    assert.approximately(+getComputedStyle(targets[0]).opacity, .3, .0001)
-    assert.approximately(+getComputedStyle(targets[1]).opacity, .2, .0001)
-    assert.approximately(+getComputedStyle(targets[2]).opacity, .1, .0001)
-    assert.approximately(+getComputedStyle(targets[3]).opacity, 0, .0001)
+    assert.deepEqual(actual, [
+      {
+        target: {},
+        from: 100,
+        to: 1100,
+        keyframes: [
+          { offset: 0, opacity: 0 },
+          { offset: 1, opacity: 1 }
+        ]
+      },
+      {
+        target: {},
+        from: 200,
+        to: 1200,
+        keyframes: [
+          { offset: 0, opacity: 0 },
+          { offset: 1, opacity: 1 }
+        ]
+      },
+      {
+        target: {},
+        from: 300,
+        to: 1300,
+        keyframes: [
+          { offset: 0, opacity: 0 },
+          { offset: 1, opacity: 1 }
+        ]
+      },
+      {
+        target: {},
+        from: 400,
+        to: 1400,
+        keyframes: [
+          { offset: 0, opacity: 0 },
+          { offset: 1, opacity: 1 }
+        ]
+      }
+    ])
   });
 });

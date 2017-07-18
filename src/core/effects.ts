@@ -3,8 +3,7 @@ import { resolveProperty } from '../transformers'
 import { getPlugins } from './plugins'
 import { forEach, indexOf, push } from '../utils/lists'
 import { isDefined } from '../utils/type'
-import { convertToMs } from '../utils/units'
-import { flr } from '../utils/math'
+import { flr, max } from '../utils/math'
 
 export function toEffects(
   configs: types.TargetConfiguration[]
@@ -61,21 +60,15 @@ export function addKeyframes(
   index: number,
   options: types.AnimationOptions
 ) {
-  const { css } = options
-  const staggerMs = convertToMs(
-    resolveProperty(options.stagger, target, index, true) || 0
-  )
-  const delayMs = convertToMs(
-    resolveProperty(options.delay, target, index) || 0
-  )
-  const endDelayMs = convertToMs(
-    resolveProperty(options.endDelay, target, index) || 0
-  )
+  const { css } = options 
+  const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0
+  const delayMs = options.delay || 0
+  // const endDelayMs = options.endDelay || 0 
 
   // todo: incorporate WAAPI delay/endDelay
-  const from = staggerMs + delayMs + options.from
-  const to = staggerMs + delayMs + options.to + endDelayMs
-  const duration = to - from
+  const from = max(staggerMs + delayMs + options.from, 0)
+  // const to = max(staggerMs + delayMs + options.to + endDelayMs, 0)
+  const duration = options.to - options.from
 
   forEach(css, keyframe => {
     addKeyframe(target, flr(duration * keyframe.offset + from), index, keyframe)

@@ -47,6 +47,7 @@ export class Timeline {
   public currentTime: number
   public duration: number
   public playbackRate: number
+  private _nextTime: number
   private _state: number
   private _config: TargetConfiguration[]
   private _effects: AnimationController[]
@@ -60,6 +61,7 @@ export class Timeline {
     const self = this
     // initialize default values
     self.duration = 0
+    self._nextTime = 0
     self.playbackRate = 1
     self._dir = D_NORMAL
     self._state = S_IDLE
@@ -80,7 +82,7 @@ export class Timeline {
   }
 
   public add(opts: AddAnimationOptions) {
-    const { duration } = this
+    const { _nextTime } = this
     const hasTo = isDefined(opts.to)
     const hasFrom = isDefined(opts.from)
     const hasDuration = isDefined(opts.duration)
@@ -97,10 +99,10 @@ export class Timeline {
       to = opts.to
       from = to - opts.duration
     } else if (hasTo && !hasDuration) {
-      from = duration
+      from = _nextTime
       to = from + opts.to
     } else if (hasDuration) {
-      from = duration
+      from = _nextTime
       to = from + opts.duration
     } else {
       throw new Error('Missing duration')
@@ -138,6 +140,7 @@ export class Timeline {
             from: options2.from,
             to: options2.to,
             duration: options2.to - options2.from,
+            endDelay: (options2.endDelay || 0),
             target,
             keyframes: [],
             propNames: []
@@ -272,6 +275,7 @@ export class Timeline {
   private _calcTimes() {
     const self = this
     let timelineTo = 0
+    let maxNextTime = 0
 
     forEach(self._config, target => {
       const { keyframes } = target
@@ -280,13 +284,14 @@ export class Timeline {
       var targetTo: number
 
       forEach(keyframes, keyframe => {
-        if (keyframe.time < targetFrom || targetFrom === undefined) {
-          targetFrom = keyframe.time
+        const time = keyframe.time
+        if (time < targetFrom || targetFrom === _) {
+          targetFrom = time
         }
-        if (keyframe.time > targetTo || targetTo === undefined) {
-          targetTo = keyframe.time
-          if (keyframe.time > timelineTo) {
-            timelineTo = keyframe.time
+        if (time > targetTo || targetTo === _) {
+          targetTo = time
+          if (time > timelineTo) {
+            timelineTo = time
           }
         }
       })
@@ -294,8 +299,11 @@ export class Timeline {
       target.to = targetTo
       target.from = targetFrom
       target.duration = targetTo - targetFrom
+      
+      maxNextTime = max(targetTo + target.endDelay, maxNextTime)
     })
 
+    self._nextTime = maxNextTime
     self.duration = timelineTo
   }
 

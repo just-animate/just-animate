@@ -195,7 +195,7 @@ describe('sequencing', () => {
       {
         target: { id: 'target1' },
         from: 0,
-        to: 1500,
+        to: 1000,
         keyframes: [
           { offset: 0, opacity: 1 },
           { offset: 1, opacity: 0 }
@@ -215,7 +215,7 @@ describe('sequencing', () => {
     assert.deepEqual<{}>(actual, expected)
   })
   
-  it('handles positive endDelays in sequencing', () => {
+  it('handles negative endDelays in sequencing', () => {
     /* Test code */
     const target1 = [{ id: 'target1' }]
     const target2 = { id: 'target2' }
@@ -244,7 +244,7 @@ describe('sequencing', () => {
       {
         target: { id: 'target1' },
         from: 0,
-        to: 500,
+        to: 1000,
         keyframes: [
           { offset: 0, opacity: 1 },
           { offset: 1, opacity: 0 }
@@ -260,6 +260,7 @@ describe('sequencing', () => {
         ]
       }
     ]
+    console.log(JSON.stringify(actual, undefined, 4))
     assert.deepEqual<{}>(actual, expected)
   })
 })

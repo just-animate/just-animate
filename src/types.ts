@@ -57,6 +57,7 @@ export interface TargetConfiguration {
   propNames: string[]
   from: number
   to: number
+  endDelay: number
   duration: number
   keyframes: PropertyKeyframe[]
 }
