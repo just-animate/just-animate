@@ -11,7 +11,7 @@ describe('transforms', () => {
       targets: target,
       duration: 1000,
       stagger: 80,
-      css: {
+      props: {
         y: [0, 200, 0],
         rotate: [0, 180, 360],
         transform: ['none', 'none', 'none']
@@ -36,7 +36,7 @@ describe('transforms', () => {
       targets: target,
       duration: 1000,
       stagger: 80,
-      css: {
+      props: {
         y: [0, 200, 0],
         rotate: [0, 180, 360]
       }

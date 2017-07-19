@@ -11,7 +11,7 @@ describe('timeline.add()', () => {
       .add({
         targets: target,
         duration: 1000,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
@@ -40,7 +40,7 @@ describe('timeline.add()', () => {
         targets: target,
         from: 500,
         duration: 1000,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]

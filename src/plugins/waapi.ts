@@ -4,7 +4,7 @@ import { forEach, includes, push, pushDistinct, head } from '../utils/lists'
 import { _, CANCEL, FINISH, PAUSE, SEEK, UPDATE } from '../utils/resources'
 import { abs, minMax, inRange } from '../utils/math'
 import { lazy } from '../utils/utils'
-import { $ } from '../utils/elements';
+import { $ } from '../utils/elements'
 
 const TOLERANCE = 0.0001
 const TRANSLATE = 'translate'
@@ -22,7 +22,7 @@ const lengthProps = (`backgroundSize,border,borderBottom,borderBottomLeftRadius,
   `,height,left,letterSpacing,lineHeight,margin,marginBottom,marginLeft,marginRight,marginTop,maskSize,maxHeight,maxWidth,minHeight,minWidth,outline,outlineOffset,outlineWidth,padding,` +
   `paddingBottom,paddingLeft,paddingRight,paddingTop,perspective,right,shapeMargin,tabSize,top,width,wordSpacing`).split(
   ','
-  )
+)
 
 const transformAngles = 'rotateX,rotateY,rotateZ,rotate'.split(',')
 const transformScales = 'scaleX,scaleY,scaleZ,scale'.split(',')
@@ -42,7 +42,7 @@ function fixUnits(effects: types.PropertyEffects) {
     forEach(prop, (value, i) => {
       if (includes(lengthProps, propName) && isNumber(value.value)) {
         prop[i].value += PX
-      }  
+      }
     })
   }
 }
@@ -51,7 +51,7 @@ function handleTransforms(effects: types.PropertyEffects) {
   // handle transforms
   const transformEffects: {
     offset: number
-    values: { name: string, value: string | number }[]
+    values: { name: string; value: string | number }[]
   }[] = []
 
   const transformNames: string[] = []
@@ -151,7 +151,7 @@ function animateEffect(effect: types.Effect): types.AnimationController {
       animator.pause()
       return
     }
-    
+
     if (type === PAUSE) {
       animator.pause()
     }
@@ -164,16 +164,11 @@ function animateEffect(effect: types.Effect): types.AnimationController {
       animator.currentTime = minMax(currentTime, 0, duration)
     }
 
-    if (
-      type === UPDATE &&
-      animator.playState !== RUNNING &&
-      inRange(currentTime, 0, duration)
-    ) {
-      
+    if (type === UPDATE && animator.playState !== RUNNING && inRange(currentTime, 0, duration)) {
       const localTime = minMax(currentTime, 0, duration)
       if (abs(animator.currentTime - localTime) > TOLERANCE) {
-        // sync time        
-        animator.currentTime = localTime;
+        // sync time
+        animator.currentTime = localTime
       }
 
       // start if ticking and animator is not running
@@ -184,12 +179,9 @@ function animateEffect(effect: types.Effect): types.AnimationController {
 
 export const waapiPlugin: types.Plugin = {
   animate(effects, animations) {
-    forEach(
-      effects,
-      effect => {
-        isDOM(effect.target) && push(animations, animateEffect(effect))
-      }
-    )
+    forEach(effects, effect => {
+      isDOM(effect.target) && push(animations, animateEffect(effect))
+    })
   },
   resolve(selector: string) {
     return $(document, selector)

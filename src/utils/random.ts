@@ -13,12 +13,7 @@ export function shuffle<T>(choices: T[]): T {
   return choices[flr(rdm() * choices.length)]
 }
 
-export function random(
-  first: number,
-  last: number,
-  unit?: string,
-  round?: boolean
-) {
+export function random(first: number, last: number, unit?: string, round?: boolean) {
   let val = first + rdm() * (last - first)
   if (round === true) {
     val = flr(val)

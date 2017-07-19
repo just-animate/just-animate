@@ -52,7 +52,7 @@
     "compress": "npm run compress:umd",
     "compress:umd": "uglifyjs --c --lift-vars --m --screw-ie8 --o dist/just-animate-core.min.js dist/just-animate-core.js",
     "clean": "node_modules/.bin/del-cli -f dist lib lib.es2015 types",
-    "format": "prettier --single-quote --no-semi --list-different --write \"src/**/*.ts\"",
+    "format": "prettier --print-width 120 --single-quote --no-semi --list-different --write \"src/**/*.ts\"",
     "preversion": "npm run rebuild",
     "postversion": "git push --follow-tags && npm publish",
     "rebuild": "npm run clean && npm run build && npm run compress",

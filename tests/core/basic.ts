@@ -9,7 +9,7 @@ describe('basic', () => {
     const timeline = animate()
       .to(1000, {
         targets: target1,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
@@ -36,7 +36,7 @@ describe('basic', () => {
       .add({
         duration: 1000,
         targets: target,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
@@ -64,14 +64,14 @@ describe('basic', () => {
     const timeline = animate()
       .to(1000, {
         targets: [target1],
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
       })
       .to(2000, {
         targets: [target2],
-        css: [
+        props: [
           { number: 0 },
           { number: 200 }
         ]
@@ -113,7 +113,7 @@ describe('basic', () => {
     const timeline = animate()
       .to(1000, {
         targets: [target1, target2],
-        css: [
+        props: [
           { opacity: opacityFromTarget },
           { opacity: 1 }
         ]
@@ -141,7 +141,6 @@ describe('basic', () => {
     assert.deepEqual<{}>(actual, expected)
   })
 
-
   it('functions on properties resolve index', () => {
     /* Test code */
     const target1 = {}
@@ -154,7 +153,7 @@ describe('basic', () => {
     const timeline = animate()
       .to(1000, {
         targets: [target1, target2],
-        css: [
+        props: [
           { opacity: opacityFromIndex },
           { opacity: 1 }
         ]
@@ -188,7 +187,7 @@ describe('basic', () => {
     const timeline = animate()
       .to(1000, {
         targets: [target1],
-        css: [
+        props: [
           { opacity: 0, offset: 0 },
           { opacity: 1, offset: 0 },
           { opacity: 1 }

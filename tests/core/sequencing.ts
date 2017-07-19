@@ -11,7 +11,7 @@ describe('sequencing', () => {
       {
         duration: 1000,
         targets: target1,
-        css: [
+        props: [
           { opacity: 1 },
           { opacity: 0 }
         ]
@@ -19,7 +19,7 @@ describe('sequencing', () => {
       {
         duration: 1000,
         targets: target2,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
@@ -59,7 +59,7 @@ describe('sequencing', () => {
         duration: 1000,
         stagger: 100,
         targets: target1,
-        css: [
+        props: [
           { opacity: 1 },
           { opacity: 0 }
         ]
@@ -67,7 +67,7 @@ describe('sequencing', () => {
       {
         duration: 1000,
         targets: target2,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
@@ -125,7 +125,7 @@ describe('sequencing', () => {
       {
         duration: 1000,
         targets: target1,
-        css: [
+        props: [
           { opacity: 1 },
           { opacity: 0 }
         ]
@@ -134,7 +134,7 @@ describe('sequencing', () => {
         duration: 1000,
         delay: -500,
         targets: target2,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
@@ -175,7 +175,7 @@ describe('sequencing', () => {
         duration: 1000,
         endDelay: 500,
         targets: target1,
-        css: [
+        props: [
           { opacity: 1 },
           { opacity: 0 }
         ]
@@ -183,7 +183,7 @@ describe('sequencing', () => {
       {
         duration: 1000,
         targets: target2,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
@@ -223,7 +223,7 @@ describe('sequencing', () => {
         duration: 1000,
         endDelay: -500,
         targets: target1,
-        css: [
+        props: [
           { opacity: 1 },
           { opacity: 0 }
         ]
@@ -231,7 +231,7 @@ describe('sequencing', () => {
       {
         duration: 1000,
         targets: target2,
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]

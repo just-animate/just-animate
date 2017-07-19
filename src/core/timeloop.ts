@@ -21,7 +21,7 @@ function update() {
   lastTime = lastTime || now()
   const thisTime = now()
   const delta = thisTime - lastTime
-  
+
   // if not is subscribed, kill the cycle
   if (!len) {
     // end recursion

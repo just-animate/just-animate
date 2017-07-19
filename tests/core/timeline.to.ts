@@ -10,7 +10,7 @@ describe('timeline.to()', () => {
     const timeline = animate()
     timeline.to(1000, {
       targets: target,
-      css: [
+      props: [
         { opacity: 0 },
         { opacity: 1 }
       ]
@@ -38,7 +38,7 @@ describe('timeline.to()', () => {
     timeline.to(1500, {
       from: 500,
       targets: target,
-      css: [
+      props: [
         { opacity: 0 },
         { opacity: 1 }
       ]

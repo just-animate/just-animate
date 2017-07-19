@@ -5,9 +5,7 @@ import { forEach, indexOf, push, list, head, tail } from '../utils/lists'
 import { isDefined, isArrayLike } from '../utils/type'
 import { flr, max } from '../utils/math'
 
-export function toEffects(
-  configs: types.TargetConfiguration[]
-): types.Effect[] {
+export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] {
   const result: types.Effect[] = []
 
   forEach(configs, targetConfig => {
@@ -29,10 +27,7 @@ export function toEffects(
     )
 
     // process handlers
-    forEach(
-      getPlugins(),
-      plugin => plugin.transform && plugin.transform(targetConfig, effects)
-    )
+    forEach(getPlugins(), plugin => plugin.transform && plugin.transform(targetConfig, effects))
 
     for (var propName in effects) {
       var effect = effects[propName]
@@ -60,7 +55,7 @@ export function addPropertyKeyframes(
   index: number,
   options: types.AnimationOptions
 ) {
-  const css = options.css
+  const css = options.props
   const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0
   const delayMs = resolveProperty(options.delay, target, index) || 0
   const from = max(staggerMs + delayMs + options.from, 0)
@@ -68,7 +63,7 @@ export function addPropertyKeyframes(
 
   if (isArrayLike(css)) {
     // fill in missing offsets
-    inferOffsets(options.css as types.KeyframeOptions[])
+    inferOffsets(options.props as types.KeyframeOptions[])
     addKeyframes(target, index, css as types.KeyframeOptions[], duration, from)
   } else {
     addProperties(target, index, css as types.PropertyOptions, duration, from)
@@ -78,11 +73,11 @@ export function addPropertyKeyframes(
 function addKeyframes(
   target: types.TargetConfiguration,
   index: number,
-  css: types.KeyframeOptions[],
+  props: types.KeyframeOptions[],
   duration: number,
   from: number
 ) {
-  forEach(css, keyframe => {
+  forEach(props, keyframe => {
     const time = flr(duration * keyframe.offset + from)
     const keyframes = target.keyframes
     let count = -1
@@ -104,10 +99,7 @@ function addKeyframes(
       }
 
       // find matching keyframe
-      var indexOfFrame = indexOf(
-        keyframes,
-        k => k.prop === name && k.time === time
-      )
+      var indexOfFrame = indexOf(keyframes, k => k.prop === name && k.time === time)
       if (indexOfFrame !== -1) {
         keyframes[indexOfFrame].value = value
         continue
@@ -127,19 +119,18 @@ function addKeyframes(
 function addProperties(
   target: types.TargetConfiguration,
   index: number,
-  css: types.PropertyOptions,
+  props: types.PropertyOptions,
   duration: number,
   from: number
 ): void {
-
   // iterate over each property split it into keyframes
-  for (let name in css) {
-    if (!css.hasOwnProperty(name)) {
+  for (let name in props) {
+    if (!props.hasOwnProperty(name)) {
       continue
     }
 
     // resolve value (changes function into discrete value or array)
-    const val = css[name]
+    const val = props[name]
     // skip undefined options
     if (!isDefined(val)) {
       continue
@@ -148,7 +139,7 @@ function addProperties(
     const keyframes = target.keyframes
     let count = -1
 
-    const valAsArray = list(val);
+    const valAsArray = list(val)
     for (let i = 0, ilen = valAsArray.length; i < ilen; i++) {
       const offset = i === 0 ? 0 : i === ilen - 1 ? 1 : i / (ilen - 1.0)
       const time = flr(duration * offset + from)
@@ -160,12 +151,9 @@ function addProperties(
       }
 
       // find matching keyframe
-      var indexOfFrame = indexOf(
-        keyframes,
-        k => k.prop === name && k.time === time
-      )
-      
-      const value = val[i]      
+      var indexOfFrame = indexOf(keyframes, k => k.prop === name && k.time === time)
+
+      const value = val[i]
       if (indexOfFrame !== -1) {
         keyframes[indexOfFrame].value = value
         continue
@@ -195,8 +183,7 @@ function inferOffsets(keyframes: types.KeyframeOptions[]) {
   }
 
   // search for offset 1 or assume it is the last one in the list
-  const last =
-    tail(keyframes, k => k.offset === 1) || keyframes[keyframes.length - 1]
+  const last = tail(keyframes, k => k.offset === 1) || keyframes[keyframes.length - 1]
   if (keyframes.length > 1 && !isDefined(last.offset)) {
     // if no offset is set on last keyframe, it is assumed to be 1
     last.offset = 1

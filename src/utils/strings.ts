@@ -7,7 +7,5 @@ function camelCaseReplacer(_: string, p1: string, p2: string) {
 }
 
 export function toCamelCase(value: string): string {
-  return isString(value)
-    ? (value as string).replace(camelCaseRegex, camelCaseReplacer)
-    : ''
+  return isString(value) ? (value as string).replace(camelCaseRegex, camelCaseReplacer) : ''
 }

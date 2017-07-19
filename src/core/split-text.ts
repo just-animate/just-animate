@@ -2,7 +2,7 @@ import { AnimationTarget, SplitTextResult } from '../types'
 import { attr, appendChild, $ } from '../utils/elements'
 import { getTargets } from '../utils/get-targets'
 import { forEach, pushAll, push } from '../utils/lists'
-import { getPlugins } from './plugins';
+import { getPlugins } from './plugins'
 
 function newElement(name: string, value: string, innerHTML?: string) {
   const el = document.createElement('div')
@@ -62,16 +62,14 @@ export function splitText(target: AnimationTarget): SplitTextResult {
       if (j > 0) {
         appendChild(element, newElement('jas', '', '&nbsp;'))
       }
-      
+
       // create new div for word/run"
       // add to the result
       var word = push(words, appendChild(element, newElement('jaw', w)))
 
       // create new div for character"
       // add to the result
-      forEach(w, c =>
-        push(characters, appendChild(word, newElement('jac', c, c)))
-      )
+      forEach(w, c => push(characters, appendChild(word, newElement('jac', c, c))))
     })
   })
 

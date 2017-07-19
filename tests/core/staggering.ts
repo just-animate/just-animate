@@ -12,7 +12,7 @@ describe('staggering', () => {
       targets: targets,
       duration: 1000,
       stagger: 100,
-      css: [
+      props: [
         { opacity: 0 },
         { opacity: 1 }
       ]

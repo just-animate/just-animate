@@ -31,8 +31,8 @@ export interface AnimationController {
 }
 
 export interface Plugin {
-  animate(options: Effect[], animations: AnimationController[]): void  
-  resolve(selector: string): any[];
+  animate(options: Effect[], animations: AnimationController[]): void
+  resolve(selector: string): any[]
   transform(target: TargetConfiguration, effects: PropertyEffects): void
 }
 
@@ -64,7 +64,7 @@ export interface TargetConfiguration {
 
 export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
-  css: KeyframeOptions[] | PropertyOptions
+  props: KeyframeOptions[] | PropertyOptions
   stagger?: number
   delay?: KeyframeValueResolver<number>
   endDelay?: KeyframeValueResolver<number>
@@ -86,7 +86,7 @@ export interface AnimationOptions {
   to: number
   duration: number
   targets: AnimationTarget[]
-  css: PropertyOptions | KeyframeOptions[]
+  props: PropertyOptions | KeyframeOptions[]
   stagger?: number
   delay?: KeyframeValueResolver<number>
   endDelay?: KeyframeValueResolver<number>

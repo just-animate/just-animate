@@ -91,10 +91,7 @@ export function push<T>(indexed: T[], item: T): T {
   return item
 }
 
-export function pushDistinct<T extends string | number>(
-  indexed: T[],
-  item: T
-): T {
+export function pushDistinct<T extends string | number>(indexed: T[], item: T): T {
   const index = indexed.indexOf(item)
   if (index !== -1) {
     return item
@@ -111,7 +108,7 @@ export function pushDistinct<T extends string | number>(
 export function pushAll<T>(items: T[], newItems: T[]) {
   for (let i = 0, ilen = newItems.length; i < ilen; i++) {
     if (isDefined(newItems[i])) {
-      push(items, newItems[i])      
+      push(items, newItems[i])
     }
   }
 }
@@ -124,13 +121,13 @@ export type ActionWithBreak<T1> = (input?: T1, index?: number) => void | false
  * @param items 
  * @param action 
  */
-export function forEach<T1>(items: IList<T1>, action: Action<T1>): void;
-export function forEach<T1>(items: IList<T1>, action: ActionWithBreak<T1>): void;
+export function forEach<T1>(items: IList<T1>, action: Action<T1>): void
+export function forEach<T1>(items: IList<T1>, action: ActionWithBreak<T1>): void
 export function forEach<T1>(items: IList<T1>, action: Action<T1> | ActionWithBreak<T1>): void {
   if (items) {
     for (let i = 0, ilen = items.length; i < ilen; i++) {
       if (action(items[i], i) === false) {
-        break;
+        break
       }
     }
   }

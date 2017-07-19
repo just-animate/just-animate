@@ -1,27 +1,11 @@
-import {
-  D_ALTERNATIVE,
-  D_NORMAL,
-  S_FINISHED,
-  S_IDLE,
-  S_PAUSED,
-  S_PENDING,
-  S_RUNNING
-} from '../constants'
+import { D_ALTERNATIVE, D_NORMAL, S_FINISHED, S_IDLE, S_PAUSED, S_PENDING, S_RUNNING } from '../constants'
 
 import { loopOn, loopOff, getPlugins, resolveProperty } from '.'
 import { toEffects, addPropertyKeyframes } from './effects'
 import { sortBy, forEach, head, push } from '../utils/lists'
 import { isDefined } from '../utils/type'
 import { getTargets } from '../utils/get-targets'
-import {
-  _,
-  CANCEL,
-  FINISH,
-  PAUSE,
-  PLAY,
-  SEEK,
-  UPDATE
-} from '../utils/resources'
+import { _, CANCEL, FINISH, PAUSE, PLAY, SEEK, UPDATE } from '../utils/resources'
 
 import {
   AddAnimationOptions,
@@ -121,23 +105,20 @@ export class Timeline {
    * @param to the ending time in milliseconds
    * @param options the animation definition.
    */
-  public fromTo(
-    from: number,
-    to: number,
-    options: BaseAnimationOptions
-  ) {
+  public fromTo(from: number, to: number, options: BaseAnimationOptions) {
     const config = this._config
-    
+
     // ensure to/from are in milliseconds (as numbers)
     const options2 = options as AnimationOptions
     options2.from = from
     options2.to = to
     options2.duration = options2.to - options2.from
-    
+
     // add all targets as property keyframes
     forEach(getTargets(options.targets, getPlugins()), (target, i) => {
       const delay = resolveProperty(options2.delay, target, i) || 0
-      const targetConfig = head(config, t2 => t2.target === target) ||
+      const targetConfig =
+        head(config, t2 => t2.target === target) ||
         push(config, {
           from: max(options2.from + delay, 0),
           to: max(options2.to + delay, 0),
@@ -146,8 +127,8 @@ export class Timeline {
           target,
           keyframes: [],
           propNames: []
-      })
-      
+        })
+
       addPropertyKeyframes(targetConfig, i, options2)
     })
 
@@ -192,7 +173,7 @@ export class Timeline {
     self._time = 0
     self._iteration = _
     self._state = S_IDLE
-    loopOff(self._tick)        
+    loopOff(self._tick)
     forEach(self._effects, c => c(CANCEL, 0, self.playbackRate))
     forEach(self._listeners[CANCEL], c => c(0))
     self._teardown()
@@ -211,7 +192,7 @@ export class Timeline {
     self._time = _
     self._iteration = _
     self._state = S_FINISHED
-    loopOff(self._tick)    
+    loopOff(self._tick)
     forEach(self._effects, c => c(FINISH, _, self.playbackRate))
     forEach(self._listeners[FINISH], c => c(_))
     return self
@@ -233,7 +214,7 @@ export class Timeline {
 
     return self
   }
-  
+
   /**
    * Unregister for timeline events
    * @param eventName timeline event name
@@ -260,31 +241,28 @@ export class Timeline {
     const { currentTime, playbackRate, _listeners, _time } = self
     self._setup()
     self._state = S_PAUSED
-    loopOff(self._tick)    
+    loopOff(self._tick)
     forEach(self._effects, e => e(PAUSE, currentTime, playbackRate))
     forEach(_listeners[PAUSE], c => c(_time))
     return self
   }
 
-/**
- * Plays the animation until finished.  If the animation has never been active, this will activate the effects.
- * @param iterations number of iterations to play the animation.  Use Infinity to loop forever
- * @param dir the direction the animation should play.  "normal" (default) or "alternate" (yoyo)
- */
+  /**
+   * Plays the animation until finished.  If the animation has never been active, this will activate the effects.
+   * @param iterations number of iterations to play the animation.  Use Infinity to loop forever
+   * @param dir the direction the animation should play.  "normal" (default) or "alternate" (yoyo)
+   */
   public play(iterations = 1, dir: typeof D_NORMAL | typeof D_ALTERNATIVE = D_NORMAL) {
     const self = this
     self._setup()
     self._times = iterations
     self._dir = dir
 
-    if (
-      self._state === S_PAUSED ||
-      (self._state !== S_RUNNING && self._state !== S_PENDING)
-    ) {
+    if (self._state === S_PAUSED || (self._state !== S_RUNNING && self._state !== S_PENDING)) {
       self._state = S_PENDING
     }
-    
-    loopOn(self._tick)    
+
+    loopOn(self._tick)
     forEach(self._listeners[PLAY], c => c(self._time))
     return self
   }
@@ -348,7 +326,7 @@ export class Timeline {
       target.to = targetTo
       target.from = targetFrom
       target.duration = targetTo - targetFrom
-      
+
       maxNextTime = max(targetTo + target.endDelay, maxNextTime)
     })
 
@@ -404,11 +382,7 @@ export class Timeline {
 
     if (self._state === S_PENDING) {
       // reset position properties if necessary
-      if (
-        time === _ ||
-        (isReversed && time > duration) ||
-        (!isReversed && time < 0)
-      ) {
+      if (time === _ || (isReversed && time > duration) || (!isReversed && time < 0)) {
         // if at finish, reset to start time
         time = isReversed ? duration : 0
       }

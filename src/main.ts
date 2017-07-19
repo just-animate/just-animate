@@ -10,9 +10,7 @@ addPlugin(waapiPlugin)
  * Returns a new timeline of animation(s) using the options provided
  * @param options Animtion options or an array of options
  */
-export function animate(
-  options?: types.AddAnimationOptions | types.AddAnimationOptions[]
-) {
+export function animate(options?: types.AddAnimationOptions | types.AddAnimationOptions[]) {
   const timeline = new Timeline()
   if (options) {
     forEach(list(options), opt => {

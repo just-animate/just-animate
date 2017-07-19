@@ -15,7 +15,7 @@ describe('basic', () => {
     const timeline = animate()
       .fromTo(200, 500, {
         targets: [target],
-        css: [
+        props: [
           { opacity: 0, left: 0 },
           { offset: .2, left: 40 },
           { opacity: .5, left: 0 },
@@ -25,7 +25,7 @@ describe('basic', () => {
       })
       .fromTo(600, 1000, {
         targets: [target],
-        css: [
+        props: [
           { opacity: 1, left: 100 },
           { opacity: 0, left: 0 }
         ]
@@ -76,7 +76,7 @@ describe('basic', () => {
     const timeline = animate()
       .to(1000, {
         targets: '.single-target-element',
-        css: [
+        props: [
           { opacity: 0 },
           { opacity: 1 }
         ]
@@ -113,7 +113,7 @@ describe('basic', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      css: [
+      props: [
         { opacity: 0 },
         { opacity: 1 }
       ]
@@ -132,7 +132,7 @@ describe('basic', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      css: [
+      props: [
         { opacity: 0 },
         { opacity: 1 }
       ]
@@ -150,7 +150,7 @@ describe('basic', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      css: [
+      props: [
         { opacity: 0 },
         { opacity: 1 }
       ]
@@ -169,7 +169,7 @@ describe('basic', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      css: [
+      props: [
         { opacity: 0 },
         { opacity: 1, offset: .4 },
         { opacity: 0 }
