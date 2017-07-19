@@ -1,8 +1,8 @@
 import * as types from '../types'
-import { resolveProperty } from '../transformers'
+import { resolveProperty } from '.'
 import { getPlugins } from './plugins'
-import { forEach, indexOf, push } from '../utils/lists'
-import { isDefined } from '../utils/type'
+import { forEach, indexOf, push, list, head, tail } from '../utils/lists'
+import { isDefined, isArrayLike } from '../utils/type'
 import { flr, max } from '../utils/math'
 
 export function toEffects(
@@ -55,60 +55,183 @@ export function toEffects(
   return result
 }
 
-export function addKeyframes(
+export function addPropertyKeyframes(
   target: types.TargetConfiguration,
   index: number,
   options: types.AnimationOptions
 ) {
-  const { css } = options 
+  const css = options.css
   const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0
   const delayMs = resolveProperty(options.delay, target, index) || 0
   const from = max(staggerMs + delayMs + options.from, 0)
   const duration = options.to - options.from
 
+  if (isArrayLike(css)) {
+    // fill in missing offsets
+    inferOffsets(options.css as types.KeyframeOptions[])
+    addKeyframes(target, index, css as types.KeyframeOptions[], duration, from)
+  } else {
+    addProperties(target, index, css as types.PropertyOptions, duration, from)
+  }
+}
+
+function addKeyframes(
+  target: types.TargetConfiguration,
+  index: number,
+  css: types.KeyframeOptions[],
+  duration: number,
+  from: number
+) {
   forEach(css, keyframe => {
-    addKeyframe(target, flr(duration * keyframe.offset + from), index, keyframe)
+    const time = flr(duration * keyframe.offset + from)
+    const keyframes = target.keyframes
+    let count = -1
+
+    for (var name in keyframe) {
+      if (name === 'offset') {
+        continue
+      }
+
+      var value = keyframe[name] as string | number
+      if (!isDefined(value)) {
+        continue
+      }
+
+      // add property name if not present
+      var propIndex = target.propNames.indexOf(name)
+      if (propIndex === -1) {
+        target.propNames.push(name)
+      }
+
+      // find matching keyframe
+      var indexOfFrame = indexOf(
+        keyframes,
+        k => k.prop === name && k.time === time
+      )
+      if (indexOfFrame !== -1) {
+        keyframes[indexOfFrame].value = value
+        continue
+      }
+
+      keyframes.push({
+        index,
+        prop: name,
+        time,
+        order: ++count,
+        value
+      })
+    }
   })
 }
 
-function addKeyframe(
+function addProperties(
   target: types.TargetConfiguration,
-  time: number,
   index: number,
-  keyframe: types.KeyframeOptions
-) {
-  var { keyframes } = target
-  var count = -1
-  for (var name in keyframe) {
-    if (name === 'offset') {
+  css: types.PropertyOptions,
+  duration: number,
+  from: number
+): void {
+
+  // iterate over each property split it into keyframes
+  for (let name in css) {
+    if (!css.hasOwnProperty(name)) {
       continue
     }
 
-    var value = keyframe[name] as string | number
-    if (!isDefined(value)) {
+    // resolve value (changes function into discrete value or array)
+    const val = css[name]
+    // skip undefined options
+    if (!isDefined(val)) {
       continue
     }
 
-    var propIndex = target.propNames.indexOf(name)
-    if (propIndex === -1) {
-      target.propNames.push(name)
-    }
+    const keyframes = target.keyframes
+    let count = -1
 
-    var indexOfFrame = indexOf(
-      keyframes,
-      k => k.prop === name && k.time === time
-    )
-    if (indexOfFrame !== -1) {
-      keyframes[indexOfFrame].value = value
+    const valAsArray = list(val);
+    for (let i = 0, ilen = valAsArray.length; i < ilen; i++) {
+      const offset = i === 0 ? 0 : i === ilen - 1 ? 1 : i / (ilen - 1.0)
+      const time = flr(duration * offset + from)
+
+      // add property name if not present
+      var propIndex = target.propNames.indexOf(name)
+      if (propIndex === -1) {
+        target.propNames.push(name)
+      }
+
+      // find matching keyframe
+      var indexOfFrame = indexOf(
+        keyframes,
+        k => k.prop === name && k.time === time
+      )
+      
+      const value = val[i]      
+      if (indexOfFrame !== -1) {
+        keyframes[indexOfFrame].value = value
+        continue
+      }
+
+      keyframes.push({
+        index,
+        prop: name,
+        time,
+        order: ++count,
+        value
+      })
+    }
+  }
+}
+
+function inferOffsets(keyframes: types.KeyframeOptions[]) {
+  if (!keyframes.length) {
+    return
+  }
+
+  // search for offset 0 or assume it is the first one in the list
+  const first = head(keyframes, k => k.offset === 0) || keyframes[0]
+  if (!isDefined(first.offset)) {
+    // if no offset is set on first keyframe, it is assumed to be 0
+    first.offset = 0
+  }
+
+  // search for offset 1 or assume it is the last one in the list
+  const last =
+    tail(keyframes, k => k.offset === 1) || keyframes[keyframes.length - 1]
+  if (keyframes.length > 1 && !isDefined(last.offset)) {
+    // if no offset is set on last keyframe, it is assumed to be 1
+    last.offset = 1
+  }
+
+  // fill in the rest of the offsets
+  for (let i = 1, ilen = keyframes.length; i < ilen; i++) {
+    const target = keyframes[i]
+    if (isDefined(target.offset)) {
+      // skip entries that have an offset
       continue
     }
 
-    keyframes.push({
-      index,
-      prop: name,
-      time,
-      order: ++count,
-      value
-    })
+    // search for the next offset with a value
+    for (let j = i + 1; j < ilen; j++) {
+      // pass if offset is not set
+      const endTime = keyframes[j].offset
+      if (!isDefined(endTime)) {
+        continue
+      }
+
+      // calculate timing/position info
+      const startTime = keyframes[i - 1].offset
+      const timeDelta = endTime - startTime
+      const deltaLength = j - i + 1
+
+      // set the values of all keyframes between i and j (exclusive)
+      for (let k = 1; k < deltaLength; k++) {
+        // set to percentage of change over time delta + starting time
+        keyframes[k - 1 + i].offset = k / j * timeDelta + startTime
+      }
+
+      // move i past this keyframe since all frames between should be processed
+      i = j
+      break
+    }
   }
 }

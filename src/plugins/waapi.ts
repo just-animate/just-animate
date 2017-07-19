@@ -151,7 +151,7 @@ function animateEffect(effect: types.Effect): types.AnimationController {
       animator.pause()
       return
     }
-
+    
     if (type === PAUSE) {
       animator.pause()
     }
@@ -169,14 +169,15 @@ function animateEffect(effect: types.Effect): types.AnimationController {
       animator.playState !== RUNNING &&
       inRange(currentTime, 0, duration)
     ) {
-      console.log(minMax(currentTime, 0, duration))
       
-      // sync time
-      animator.currentTime = minMax(currentTime, 0, duration)
+      const localTime = minMax(currentTime, 0, duration)
+      if (abs(animator.currentTime - localTime) > TOLERANCE) {
+        // sync time        
+        animator.currentTime = localTime;
+      }
 
       // start if ticking and animator is not running
       animator.play()
-      console.log('played')
     }
   }
 }

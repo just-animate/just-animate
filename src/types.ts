@@ -86,7 +86,7 @@ export interface AnimationOptions {
   to: number
   duration: number
   targets: AnimationTarget[]
-  css: KeyframeOptions[]
+  css: PropertyOptions | KeyframeOptions[]
   stagger?: number
   delay?: KeyframeValueResolver<number>
   endDelay?: KeyframeValueResolver<number>

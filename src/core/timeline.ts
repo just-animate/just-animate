@@ -8,11 +8,10 @@ import {
   S_RUNNING
 } from '../constants'
 
-import { loopOn, loopOff, getPlugins } from '.'
-import { toEffects, addKeyframes } from './effects'
-import { inferOffsets, propsToKeyframes, resolveProperty } from '../transformers'
+import { loopOn, loopOff, getPlugins, resolveProperty } from '.'
+import { toEffects, addPropertyKeyframes } from './effects'
 import { sortBy, forEach, head, push } from '../utils/lists'
-import { isDefined, isArrayLike } from '../utils/type'
+import { isDefined } from '../utils/type'
 import { getTargets } from '../utils/get-targets'
 import {
   _,
@@ -31,8 +30,6 @@ import {
   BaseAnimationOptions,
   Effect,
   PropertyKeyframe,
-  KeyframeOptions,
-  PropertyOptions,
   TargetConfiguration,
   ToAnimationOptions
 } from '../types'
@@ -136,14 +133,6 @@ export class Timeline {
     options2.from = from
     options2.to = to
     options2.duration = options2.to - options2.from
-
-    if (isArrayLike(options.css)) {
-      // fill in missing offsets
-      inferOffsets(options.css as KeyframeOptions[])
-    } else {
-      // convert properties to offsets
-      options.css = propsToKeyframes(options.css as PropertyOptions)
-    }
     
     // add all targets as property keyframes
     forEach(getTargets(options.targets, getPlugins()), (target, i) => {
@@ -159,7 +148,7 @@ export class Timeline {
           propNames: []
       })
       
-      addKeyframes(targetConfig, i, options2)
+      addPropertyKeyframes(targetConfig, i, options2)
     })
 
     // sort property keyframes
