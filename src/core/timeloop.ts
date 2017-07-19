@@ -12,6 +12,7 @@ export type TimeLoopCallback = (delta: number, elapsed: number) => any
 function cancel() {
   caf(lastHandle)
   lastHandle = _
+  lastTime = _
 }
 
 function update() {
@@ -20,7 +21,7 @@ function update() {
   lastTime = lastTime || now()
   const thisTime = now()
   const delta = thisTime - lastTime
-
+  
   // if not is subscribed, kill the cycle
   if (!len) {
     // end recursion
@@ -30,7 +31,7 @@ function update() {
 
   // ensure running and requestAnimationFrame is called
   lastTime = thisTime
-  lastHandle = raf(self, update)
+  lastHandle = raf(update)
 
   for (let i = 0; i < len; i++) {
     // update delta and save result
@@ -46,12 +47,12 @@ function update() {
 export function loopOn(fn: TimeLoopCallback) {
   const indexOfSub = active.indexOf(fn)
   if (indexOfSub === -1) {
-    active.splice(indexOfSub, 1)
-    elapses.splice(indexOfSub, 1)
+    active.push(fn)
+    elapses.push(0)
   }
 
   if (!lastHandle) {
-    lastHandle = raf(self, update)
+    lastHandle = raf(update)
   }
 }
 

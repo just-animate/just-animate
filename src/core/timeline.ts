@@ -130,6 +130,12 @@ export class Timeline {
     options: BaseAnimationOptions
   ) {
     const config = this._config
+    
+    // ensure to/from are in milliseconds (as numbers)
+    const options2 = options as AnimationOptions
+    options2.from = from
+    options2.to = to
+    options2.duration = options2.to - options2.from
 
     if (isArrayLike(options.css)) {
       // fill in missing offsets
@@ -138,18 +144,11 @@ export class Timeline {
       // convert properties to offsets
       options.css = propsToKeyframes(options.css as PropertyOptions)
     }
-
-    // ensure to/from are in milliseconds (as numbers)
-    const options2 = options as AnimationOptions
-    options2.from = from
-    options2.to = to
-    options2.duration = options2.to - options2.from
     
     // add all targets as property keyframes
     forEach(getTargets(options.targets, getPlugins()), (target, i) => {
       const delay = resolveProperty(options2.delay, target, i) || 0
-      addKeyframes(
-        head(config, t2 => t2.target === target) ||
+      const targetConfig = head(config, t2 => t2.target === target) ||
         push(config, {
           from: max(options2.from + delay, 0),
           to: max(options2.to + delay, 0),
@@ -158,10 +157,9 @@ export class Timeline {
           target,
           keyframes: [],
           propNames: []
-        }),
-        i,
-        options2
-      )
+      })
+      
+      addKeyframes(targetConfig, i, options2)
     })
 
     // sort property keyframes
@@ -205,7 +203,7 @@ export class Timeline {
     self._time = 0
     self._iteration = _
     self._state = S_IDLE
-    loopOff(self._tick)
+    loopOff(self._tick)        
     forEach(self._effects, c => c(CANCEL, 0, self.playbackRate))
     forEach(self._listeners[CANCEL], c => c(0))
     self._teardown()
@@ -224,7 +222,7 @@ export class Timeline {
     self._time = _
     self._iteration = _
     self._state = S_FINISHED
-    loopOff(self._tick)
+    loopOff(self._tick)    
     forEach(self._effects, c => c(FINISH, _, self.playbackRate))
     forEach(self._listeners[FINISH], c => c(_))
     return self
@@ -273,7 +271,7 @@ export class Timeline {
     const { currentTime, playbackRate, _listeners, _time } = self
     self._setup()
     self._state = S_PAUSED
-    loopOff(self._tick)
+    loopOff(self._tick)    
     forEach(self._effects, e => e(PAUSE, currentTime, playbackRate))
     forEach(_listeners[PAUSE], c => c(_time))
     return self
@@ -296,8 +294,8 @@ export class Timeline {
     ) {
       self._state = S_PENDING
     }
-
-    loopOn(self._tick)
+    
+    loopOn(self._tick)    
     forEach(self._listeners[PLAY], c => c(self._time))
     return self
   }
@@ -323,7 +321,7 @@ export class Timeline {
   public seek(time: number) {
     const self = this
     self._setup()
-    self._time = time
+    self._time = +time
     forEach(self._effects, e => e(SEEK, time, self.playbackRate))
   }
 

@@ -2,6 +2,7 @@ import { AnimationTarget, SplitTextResult } from '../types'
 import { attr, appendChild, $ } from '../utils/elements'
 import { getTargets } from '../utils/get-targets'
 import { forEach, pushAll, push } from '../utils/lists'
+import { getPlugins } from './plugins';
 
 function newElement(name: string, value: string, innerHTML?: string) {
   const el = document.createElement('div')
@@ -24,7 +25,7 @@ export function splitText(target: AnimationTarget): SplitTextResult {
   const words: HTMLElement[] = []
 
   // acquiring targets ;)
-  const elements = getTargets(target, []) as HTMLElement[]
+  const elements = getTargets(target, getPlugins()) as HTMLElement[]
 
   // get paragraphs, words, and characters for each element
   forEach(elements, element => {
@@ -57,14 +58,14 @@ export function splitText(target: AnimationTarget): SplitTextResult {
 
     // handle each word
     forEach(ws, (w, j) => {
-      // create new div for word/run"
-      // add to the result
-      var word = push(words, appendChild(element, newElement('jaw', w)))
-
       // if not the first word, add a space
       if (j > 0) {
         appendChild(element, newElement('jas', '', '&nbsp;'))
       }
+      
+      // create new div for word/run"
+      // add to the result
+      var word = push(words, appendChild(element, newElement('jaw', w)))
 
       // create new div for character"
       // add to the result

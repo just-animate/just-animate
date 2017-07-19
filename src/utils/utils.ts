@@ -1,10 +1,12 @@
-export const now = (performance && performance.now) || Date.now
+export function now() {
+  return (performance && performance.now()) || Date.now()
+}
 
 /**
  * Wrapper for raf with fallback to setTimeout
  */
-export function raf(ctx: any, fn: Function): number {
-  return requestAnimationFrame(() => fn(ctx))
+export function raf(fn: FrameRequestCallback): number {
+  return requestAnimationFrame(fn)
 }
 
 export function caf(handle: number) {

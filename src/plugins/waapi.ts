@@ -167,13 +167,16 @@ function animateEffect(effect: types.Effect): types.AnimationController {
     if (
       type === UPDATE &&
       animator.playState !== RUNNING &&
-      inRange(currentTime * (isForwards ? 1 : -1), 0, duration)
+      inRange(currentTime, 0, duration)
     ) {
+      console.log(minMax(currentTime, 0, duration))
+      
       // sync time
       animator.currentTime = minMax(currentTime, 0, duration)
 
       // start if ticking and animator is not running
       animator.play()
+      console.log('played')
     }
   }
 }

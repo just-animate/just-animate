@@ -29,7 +29,11 @@ export function propsToKeyframes(css: PropertyOptions): KeyframeOptions[] {
         })
       }
     } else {
-      push(keyframes, { offset: 1, [prop]: val as KeyframeValueResolver<string | number> })
+      // if only one value, set offset and 
+      const singleValue = val as KeyframeValueResolver<string | number>
+      keyframes.push(
+        { offset: 1, [prop]: singleValue }
+      )
     }
   }
   return keyframes
