@@ -16,16 +16,16 @@ describe('basic', () => {
       })
 
     const actual = timeline.getEffects()[0]
-    const expected = {
+    assert.deepEqual(actual, {
       target: target1,
       from: 0,
       to: 1000,
+      prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: 0 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: 0 },
+        { offset: 1, value: 1 }
       ]
-    }
-    assert.deepEqual<{}>(actual, expected)
+    })
   })
 
   it('decomposes and then re-composes a single set of keyframes', () => {
@@ -48,9 +48,10 @@ describe('basic', () => {
       target,
       from: 0,
       to: 1000,
+       prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: 0 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: 0 },
+        { offset: 1, value: 1 }
       ]
     }]
     assert.deepEqual<{}>(actual, expected)
@@ -83,18 +84,20 @@ describe('basic', () => {
       target: target1,
       from: 0,
       to: 1000,
+       prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: 0 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: 0 },
+        { offset: 1, value: 1 }
       ]
     },
     {
       target: target2,
       from: 1000,
       to: 2000,
+      prop: 'number',
       keyframes: [
-        { offset: 0, name: 'number', value: 0 },
-        { offset: 1, name: 'number', value: 200 }
+        { offset: 0, value: 0 },
+        { offset: 1, value: 200 }
       ]
     }]
 
@@ -124,17 +127,19 @@ describe('basic', () => {
       target: { opacity: .1 },
       from: 0,
       to: 1000,
+      prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: .1 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: .1 },
+        { offset: 1, value: 1 }
       ]
     }, {
       target: { opacity: .2 },
       from: 0,
       to: 1000,
+      prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: .2 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: .2 },
+        { offset: 1, value: 1 }
       ]
     }]
 
@@ -164,17 +169,19 @@ describe('basic', () => {
       target: {},
       from: 0,
       to: 1000,
+      prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: .1 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: .1 },
+        { offset: 1, value: 1 }
       ]
     }, {
       target: {},
       from: 0,
       to: 1000,
+       prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: .2 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: .2 },
+        { offset: 1, value: 1 }
       ]
     }]
 
@@ -199,9 +206,10 @@ describe('basic', () => {
       target: {},
       from: 0,
       to: 1000,
+       prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: 1 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: 1 },
+        { offset: 1, value: 1 }
       ]
     }
     assert.deepEqual<{}>(actual, expected)

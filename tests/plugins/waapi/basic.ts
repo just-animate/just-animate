@@ -37,25 +37,27 @@ describe('basic', () => {
       target: target,
       from: 200,
       to: 1000,
+      prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: 0 },
-        { offset: 0.15, name: 'opacity', value: 0.5 },
-        { offset: 0.375, name: 'opacity', value: 1 },
-        { offset: 0.5, name: 'opacity', value: 1 },
-        { offset: 1, name: 'opacity', value: 0 }
+        { offset: 0, value: 0 },
+        { offset: 0.15, value: 0.5 },
+        { offset: 0.375, value: 1 },
+        { offset: 0.5, value: 1 },
+        { offset: 1, value: 0 }
       ]
     }, {
       target: target,
       from: 200,
       to: 1000,
+      prop: 'left',
       keyframes: [
-        { offset: 0, name: 'left', value: '0px' },
-        { offset: 0.075, name: 'left', value: '40px' },
-        { offset: 0.15, name: 'left', value: '0px' },
-        { offset: 0.3, name: 'left', value: '90px' },
-        { offset: 0.375, name: 'left', value: '100px' },
-        { offset: 0.5, name: 'left', value: '100px' },
-        { offset: 1, name: 'left', value: '0px' }
+        { offset: 0, value: '0px' },
+        { offset: 0.075, value: '40px' },
+        { offset: 0.15, value: '0px' },
+        { offset: 0.3, value: '90px' },
+        { offset: 0.375, value: '100px' },
+        { offset: 0.5, value: '100px' },
+        { offset: 1, value: '0px' }
       ]
     }];
 
@@ -87,17 +89,19 @@ describe('basic', () => {
       target: el1,
       from: 0,
       to: 1000,
+      prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: 0 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: 0 },
+        { offset: 1, value: 1 }
       ]
     }, {
       target: el2,
       from: 0,
       to: 1000,
+      prop: 'opacity',
       keyframes: [
-        { offset: 0, name: 'opacity', value: 0 },
-        { offset: 1, name: 'opacity', value: 1 }
+        { offset: 0, value: 0 },
+        { offset: 1, value: 1 }
       ]
     }]
 

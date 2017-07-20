@@ -5,10 +5,10 @@ import { minMax, inRange, abs } from '../../utils/math';
 import { RUNNING, TOLERANCE } from './constants';
 
 export function animateEffect(effect: Effect): AnimationController {
-  const { keyframes, from, to, target } = effect
+  const { keyframes, prop, from, to, target } = effect
   const getAnimator = lazy(() => {
     const a = (target as any).animate(
-      keyframes.map(({offset, name, value}) => ({ offset, [name]: value })),
+      keyframes.map(({offset, value}) => ({ offset, [prop]: value })),
       {
         duration: to - from,
         fill: 'both'

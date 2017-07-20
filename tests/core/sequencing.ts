@@ -27,27 +27,28 @@ describe('sequencing', () => {
     ]);
 
     const actual = timeline.getEffects()
-    const expected = [
+    assert.deepEqual(actual, [
       {
         target: target1,
         from: 0,
         to: 1000,
+         prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 1 },
-          { offset: 1, name: 'opacity', value: 0 }
+          { offset: 0, value: 1 },
+          { offset: 1, value: 0 }
         ]
       },
       {
         target: target2,
         from: 1000,
         to: 2000,
+         prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       }
-    ]
-    assert.deepEqual<{}>(actual, expected)
+    ])
   })
 
   it('handles staggering in sequencing', () => {
@@ -80,36 +81,40 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 100,
         to: 1100,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 1 },
-          { offset: 1, name: 'opacity', value: 0 }
+          { offset: 0, value: 1 },
+          { offset: 1, value: 0 }
         ]
       },
       {
         target: { id: 'target2' },
         from: 200,
         to: 1200,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 1 },
-          { offset: 1, name: 'opacity', value: 0 }
+          { offset: 0, value: 1 },
+          { offset: 1, value: 0 }
         ]
       },
       {
         target: { id: 'target3' },
         from: 300,
         to: 1300,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 1 },
-          { offset: 1, name: 'opacity', value: 0 }
+          { offset: 0, value: 1 },
+          { offset: 1, value: 0 }
         ]
       },
       {
         target: { id: 'target4' },
         from: 1300,
         to: 2300,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       }
     ]
@@ -147,18 +152,20 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 1 },
-          { offset: 1, name: 'opacity', value: 0 }
+          { offset: 0, value: 1 },
+          { offset: 1, value: 0 }
         ]
       },
       {
         target: { id: 'target2' },
         from: 500,
         to: 1500,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       }
     ]
@@ -196,18 +203,20 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 1 },
-          { offset: 1, name: 'opacity', value: 0 }
+          { offset: 0, value: 1 },
+          { offset: 1, value: 0 }
         ]
       },
       {
         target: { id: 'target2' },
         from: 1500,
         to: 2500,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       }
     ]
@@ -244,18 +253,20 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 1 },
-          { offset: 1, name: 'opacity', value: 0 }
+          { offset: 0, value: 1 },
+          { offset: 1, value: 0 }
         ]
       },
       {
         target: { id: 'target2' },
         from: 500,
         to: 1500,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       }
     ]

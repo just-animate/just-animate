@@ -343,7 +343,11 @@ export class Timeline {
       
       forEach(effects, effect => {
         forEach(plugins, p => {
-          p.animate(effect, animations)
+          // return false to stop the loop, undefined to continue
+          if (p.animate(effect, animations)) {
+            return false
+          }
+          return _
         })
       })
       

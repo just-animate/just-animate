@@ -34,20 +34,17 @@ export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] 
       }
     })
 
-    for (var name in effects) {
-      var effect = effects[name]
+    for (var prop in effects) {
+      var effect = effects[prop]
       if (effect) {
         // remap the keyframes field to remove multiple values
         // add to list of Effects
         result.push({
           target,
+          prop,
           from,
           to,
-          keyframes: effect.map(({ offset, value }) => ({
-            offset,
-            name,
-            value
-          }))
+          keyframes: effect
         })
       }
     }

@@ -9,7 +9,6 @@ export interface PropertyOptions {
 
 export interface Keyframe {
   offset: number
-  name: string
   value: string | number
 }
 
@@ -32,7 +31,7 @@ export interface AnimationController {
 }
 
 export interface Plugin {
-  animate(effect: Effect, animations: AnimationController[]): void
+  animate(effect: Effect, animations: AnimationController[]): boolean
   resolve(selector: string): any[]
   transform(target: TargetConfiguration, effects: PropertyEffects): void
 }
@@ -95,6 +94,7 @@ export interface AnimationOptions {
 
 export interface Effect {
   target: AnimationTarget
+  prop: string;
   keyframes: Keyframe[]
   to: number
   from: number

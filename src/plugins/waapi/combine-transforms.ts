@@ -75,7 +75,6 @@ export function combineTransforms(effects: PropertyEffects) {
 
     return {
       offset: t.offset,
-      name: TRANSFORM,
       value
     }
   })

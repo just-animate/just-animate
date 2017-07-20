@@ -5,8 +5,8 @@ import { cssLengths, PX } from './constants';
 
 export function appendUnits(effects: PropertyEffects) {
   // suffix lengths
-  for (const propName in effects) {
-    const prop = effects[propName]
+  for (var propName in effects) {
+    var prop = effects[propName]
     forEach(prop, (value, i) => {
       if (includes(cssLengths, propName) && isNumber(value.value)) {
         prop[i].value += PX

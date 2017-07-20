@@ -25,36 +25,40 @@ describe('staggering', () => {
         target: {},
         from: 100,
         to: 1100,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       },
       {
         target: {},
         from: 200,
         to: 1200,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       },
       {
         target: {},
         from: 300,
         to: 1300,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       },
       {
         target: {},
         from: 400,
         to: 1400,
+        prop: 'opacity',
         keyframes: [
-          { offset: 0, name: 'opacity', value: 0 },
-          { offset: 1, name: 'opacity', value: 1 }
+          { offset: 0, value: 0 },
+          { offset: 1, value: 1 }
         ]
       }
     ])
