@@ -340,7 +340,13 @@ export class Timeline {
       const effects = toEffects(self._config)
       const plugins = getPlugins()
       const animations: AnimationController[] = []
-      forEach(plugins, p => p.animate(effects, animations))
+      
+      forEach(effects, effect => {
+        forEach(plugins, p => {
+          p.animate(effect, animations)
+        })
+      })
+      
       self._effects = animations
     }
   }

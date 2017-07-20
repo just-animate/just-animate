@@ -8,8 +8,9 @@ export interface PropertyOptions {
 }
 
 export interface Keyframe {
-  offset?: number
-  [val: string]: string | number
+  offset: number
+  name: string
+  value: string | number
 }
 
 export type AnimationTarget = any
@@ -31,7 +32,7 @@ export interface AnimationController {
 }
 
 export interface Plugin {
-  animate(options: Effect[], animations: AnimationController[]): void
+  animate(effect: Effect, animations: AnimationController[]): void
   resolve(selector: string): any[]
   transform(target: TargetConfiguration, effects: PropertyEffects): void
 }

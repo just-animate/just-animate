@@ -1,9 +1,9 @@
 import * as chai from 'chai'
 import { random } from '../../src/main';
 const assert = chai.assert
-    
+
 describe('random', () => {
-    describe('random()', () => { 
+    describe('random()', () => {
         it('returns a number between start and end', () => {
             const result = random(0, 100) as number
             assert.isBelow(result, 100)

@@ -7,6 +7,7 @@ import { flr, max } from '../utils/math'
 
 export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] {
   const result: types.Effect[] = []
+  const plugins = getPlugins()
 
   forEach(configs, targetConfig => {
     const { from, to, duration, keyframes, target } = targetConfig
@@ -27,10 +28,14 @@ export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] 
     )
 
     // process handlers
-    forEach(getPlugins(), plugin => plugin.transform && plugin.transform(targetConfig, effects))
+    forEach(plugins, plugin => {
+      if (plugin.transform) {
+        plugin.transform(targetConfig, effects)
+      }
+    })
 
-    for (var propName in effects) {
-      var effect = effects[propName]
+    for (var name in effects) {
+      var effect = effects[name]
       if (effect) {
         // remap the keyframes field to remove multiple values
         // add to list of Effects
@@ -40,7 +45,8 @@ export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] 
           to,
           keyframes: effect.map(({ offset, value }) => ({
             offset,
-            [propName]: value
+            name,
+            value
           }))
         })
       }
@@ -55,18 +61,18 @@ export function addPropertyKeyframes(
   index: number,
   options: types.AnimationOptions
 ) {
-  const css = options.props
+  const props = options.props
   const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0
   const delayMs = resolveProperty(options.delay, target, index) || 0
   const from = max(staggerMs + delayMs + options.from, 0)
   const duration = options.to - options.from
 
-  if (isArrayLike(css)) {
+  if (isArrayLike(props)) {
     // fill in missing offsets
     inferOffsets(options.props as types.KeyframeOptions[])
-    addKeyframes(target, index, css as types.KeyframeOptions[], duration, from)
+    addKeyframes(target, index, props as types.KeyframeOptions[], duration, from)
   } else {
-    addProperties(target, index, css as types.PropertyOptions, duration, from)
+    addProperties(target, index, props as types.PropertyOptions, duration, from)
   }
 }
 

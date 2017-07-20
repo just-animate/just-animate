@@ -33,8 +33,8 @@ describe('sequencing', () => {
         from: 0,
         to: 1000,
         keyframes: [
-          { offset: 0, opacity: 1 },
-          { offset: 1, opacity: 0 }
+          { offset: 0, name: 'opacity', value: 1 },
+          { offset: 1, name: 'opacity', value: 0 }
         ]
       },
       {
@@ -42,8 +42,8 @@ describe('sequencing', () => {
         from: 1000,
         to: 2000,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       }
     ]
@@ -81,8 +81,8 @@ describe('sequencing', () => {
         from: 100,
         to: 1100,
         keyframes: [
-          { offset: 0, opacity: 1 },
-          { offset: 1, opacity: 0 }
+          { offset: 0, name: 'opacity', value: 1 },
+          { offset: 1, name: 'opacity', value: 0 }
         ]
       },
       {
@@ -90,8 +90,8 @@ describe('sequencing', () => {
         from: 200,
         to: 1200,
         keyframes: [
-          { offset: 0, opacity: 1 },
-          { offset: 1, opacity: 0 }
+          { offset: 0, name: 'opacity', value: 1 },
+          { offset: 1, name: 'opacity', value: 0 }
         ]
       },
       {
@@ -99,8 +99,8 @@ describe('sequencing', () => {
         from: 300,
         to: 1300,
         keyframes: [
-          { offset: 0, opacity: 1 },
-          { offset: 1, opacity: 0 }
+          { offset: 0, name: 'opacity', value: 1 },
+          { offset: 1, name: 'opacity', value: 0 }
         ]
       },
       {
@@ -108,8 +108,8 @@ describe('sequencing', () => {
         from: 1300,
         to: 2300,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       }
     ]
@@ -148,8 +148,8 @@ describe('sequencing', () => {
         from: 0,
         to: 1000,
         keyframes: [
-          { offset: 0, opacity: 1 },
-          { offset: 1, opacity: 0 }
+          { offset: 0, name: 'opacity', value: 1 },
+          { offset: 1, name: 'opacity', value: 0 }
         ]
       },
       {
@@ -157,15 +157,15 @@ describe('sequencing', () => {
         from: 500,
         to: 1500,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       }
     ]
-    
+
     assert.deepEqual<{}>(actual, expected)
   })
-  
+
   it('handles positive endDelays in sequencing', () => {
     /* Test code */
     const target1 = [{ id: 'target1' }]
@@ -197,8 +197,8 @@ describe('sequencing', () => {
         from: 0,
         to: 1000,
         keyframes: [
-          { offset: 0, opacity: 1 },
-          { offset: 1, opacity: 0 }
+          { offset: 0, name: 'opacity', value: 1 },
+          { offset: 1, name: 'opacity', value: 0 }
         ]
       },
       {
@@ -206,14 +206,14 @@ describe('sequencing', () => {
         from: 1500,
         to: 2500,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       }
     ]
     assert.deepEqual<{}>(actual, expected)
   })
-  
+
   it('handles negative endDelays in sequencing', () => {
     /* Test code */
     const target1 = [{ id: 'target1' }]
@@ -245,8 +245,8 @@ describe('sequencing', () => {
         from: 0,
         to: 1000,
         keyframes: [
-          { offset: 0, opacity: 1 },
-          { offset: 1, opacity: 0 }
+          { offset: 0, name: 'opacity', value: 1 },
+          { offset: 1, name: 'opacity', value: 0 }
         ]
       },
       {
@@ -254,8 +254,8 @@ describe('sequencing', () => {
         from: 500,
         to: 1500,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       }
     ]

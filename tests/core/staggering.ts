@@ -26,8 +26,8 @@ describe('staggering', () => {
         from: 100,
         to: 1100,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       },
       {
@@ -35,8 +35,8 @@ describe('staggering', () => {
         from: 200,
         to: 1200,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       },
       {
@@ -44,8 +44,8 @@ describe('staggering', () => {
         from: 300,
         to: 1300,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       },
       {
@@ -53,8 +53,8 @@ describe('staggering', () => {
         from: 400,
         to: 1400,
         keyframes: [
-          { offset: 0, opacity: 0 },
-          { offset: 1, opacity: 1 }
+          { offset: 0, name: 'opacity', value: 0 },
+          { offset: 1, name: 'opacity', value: 1 }
         ]
       }
     ])

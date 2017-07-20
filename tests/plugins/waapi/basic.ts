@@ -6,7 +6,7 @@ const { assert } = chai
 
 describe('basic', () => {
   addPlugin(waapiPlugin)
-  
+
   it('infers offsets and consolidates animations by property on the same target', () => {
     /* Test code */
     const target = document.createElement('div')
@@ -32,35 +32,35 @@ describe('basic', () => {
       })
 
     const actual = timeline.getEffects()
-    
+
     const expected = [{
       target: target,
       from: 200,
       to: 1000,
       keyframes: [
-        { offset: 0, opacity: 0 },
-        { offset: 0.15, opacity: 0.5 },
-        { offset: 0.375, opacity: 1 },
-        { offset: 0.5, opacity: 1 },
-        { offset: 1, opacity: 0 }
+        { offset: 0, name: 'opacity', value: 0 },
+        { offset: 0.15, name: 'opacity', value: 0.5 },
+        { offset: 0.375, name: 'opacity', value: 1 },
+        { offset: 0.5, name: 'opacity', value: 1 },
+        { offset: 1, name: 'opacity', value: 0 }
       ]
     }, {
       target: target,
       from: 200,
       to: 1000,
       keyframes: [
-        { offset: 0, left: '0px' },
-        { offset: 0.075, left: '40px' },
-        { offset: 0.15, left: '0px' },
-        { offset: 0.3, left: '90px' },
-        { offset: 0.375, left: '100px' },
-        { offset: 0.5, left: '100px' },
-        { offset: 1, left: '0px' }
+        { offset: 0, name: 'left', value: '0px' },
+        { offset: 0.075, name: 'left', value: '40px' },
+        { offset: 0.15, name: 'left', value: '0px' },
+        { offset: 0.3, name: 'left', value: '90px' },
+        { offset: 0.375, name: 'left', value: '100px' },
+        { offset: 0.5, name: 'left', value: '100px' },
+        { offset: 1, name: 'left', value: '0px' }
       ]
     }];
 
     assert.deepEqual<{}>(actual, expected)
-    document.body.removeChild(target)    
+    document.body.removeChild(target)
   })
 
   it('resolves a CSS selector', () => {
@@ -88,16 +88,16 @@ describe('basic', () => {
       from: 0,
       to: 1000,
       keyframes: [
-        { offset: 0, opacity: 0 },
-        { offset: 1, opacity: 1 }
+        { offset: 0, name: 'opacity', value: 0 },
+        { offset: 1, name: 'opacity', value: 1 }
       ]
     }, {
       target: el2,
       from: 0,
       to: 1000,
       keyframes: [
-        { offset: 0, opacity: 0 },
-        { offset: 1, opacity: 1 }
+        { offset: 0, name: 'opacity', value: 0 },
+        { offset: 1, name: 'opacity', value: 1 }
       ]
     }]
 
@@ -105,7 +105,7 @@ describe('basic', () => {
     document.body.removeChild(el2)
     assert.deepEqual<{}>(actual, expected)
   })
-  
+
   it('handles seeking to 0%', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
