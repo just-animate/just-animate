@@ -21,7 +21,7 @@ export const waapiPlugin: Plugin = {
   transform(target, effects) {
     if (isDOM(target.target)) {
       appendUnits(effects)
-      combineTransforms(effects)
+      combineTransforms(target, effects)
     }
   }
 }

@@ -1,7 +1,7 @@
 import * as types from '../types'
 import { resolveProperty } from '.'
 import { getPlugins } from './plugins'
-import { forEach, indexOf, push, list, head, tail } from '../utils/lists'
+import { forEach, indexOf, list, head, tail } from '../utils/lists'
 import { isDefined, isArrayLike } from '../utils/type'
 import { flr, max } from '../utils/math'
 
@@ -14,18 +14,13 @@ export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] 
 
     // construct property animation options
     var effects: types.PropertyEffects = {}
-    forEach(keyframes, p =>
-      push(
-        // get or create property effect
-        effects[p.prop] || (effects[p.prop] = []),
-        {
-          // calculate offset based on duration and start time
-          offset: (p.time - from) / (duration || 1),
-          // get property value
-          value: resolveProperty(p.value, target, p.index)
-        }
-      )
-    )
+    forEach(keyframes, p => {
+      const effect = (effects[p.prop] || (effects[p.prop] = []))
+      const offset = (p.time - from) / (duration || 1)
+      const value = resolveProperty(p.value, target, p.index)
+      
+      effect[offset] = value
+    })
 
     // process handlers
     forEach(plugins, plugin => {
@@ -39,12 +34,20 @@ export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] 
       if (effect) {
         // remap the keyframes field to remove multiple values
         // add to list of Effects
+        const effectKeyframes = Object.keys(effect)
+          .map(e => +e)
+          .sort()
+          .map(e => ({
+            offset: e,
+            value: effect[e]
+          }))
+        
         result.push({
           target,
           prop,
           from,
           to,
-          keyframes: effect
+          keyframes: effectKeyframes
         })
       }
     }

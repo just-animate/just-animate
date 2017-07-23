@@ -43,13 +43,10 @@ export interface PropertyKeyframe {
   order: number
   value: KeyframeValueResolver<string | number>
 }
-
-export interface EffectOptions {
-  offset: number
-  value: string | number
-}
 export interface PropertyEffects {
-  [name: string]: EffectOptions[]
+  [name: string]: {
+    [offset: number]: string | number
+  }
 }
 
 export interface TargetConfiguration {

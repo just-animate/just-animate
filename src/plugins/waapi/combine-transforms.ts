@@ -1,81 +1,139 @@
-import { PropertyEffects } from '../../types';
-import { includes, pushDistinct, forEach, head, push } from '../../utils/lists';
+import { PropertyEffects, TargetConfiguration } from '../../types';
+import { includes, pushDistinct, forEach } from '../../utils/lists';
 import { _ } from '../../utils/resources';
-import { abs } from '../../utils/math';
-import { isNumber } from '../../utils/type';
-import { TRANSFORM, transforms, transformLengths, transformAngles, PX, DEG, aliases, TOLERANCE } from './constants';
+import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG } from './constants';
+import { isDefined } from '../../utils/type';
+import { parseUnit } from './parse-unit';
 
-export function combineTransforms(effects: PropertyEffects) {
-  // handle transforms
-  const transformEffects: {
-    offset: number
-    values: { name: string; value: string | number }[]
-  }[] = []
+export function combineTransforms(target: TargetConfiguration, effects: PropertyEffects) {
+  // get all unique properties
+  const transformNames = target.propNames.filter(t => includes(transforms, t))
 
-  const transformNames: string[] = []
+  // if transform is in the list, remove shorthand properties
+  if (transformNames.length > 1 && includes(transformNames, TRANSFORM)) {
+    throw new Error('mixing transform and shorthand properties is not allowed')
+  }
+
+  // get a list of offsets
   const offsets: number[] = []
-
-  for (const name in effects) {
-    if (name !== TRANSFORM && !includes(transforms, name)) {
-      continue
-    }
-    // add transform name to the list
-    pushDistinct(transformNames, name)
-
-    // pull transform prop and remove it from the effects
-    const effectOptions = effects[name]
-    effects[name] = _
-
-    // append default unit if property requires one
-    forEach(effectOptions, k => {
-      // add offset to list of offsets
-      pushDistinct(offsets, k.offset)
-
-      // use an episilon so same frames aren't missed due to floating point issues
-      const effect =
-        head(transformEffects, t => abs(t.offset - k.offset) < TOLERANCE) ||
-        push(transformEffects, {
-          offset: k.offset,
-          values: []
-        })
-
-      effect.values.push({
-        name,
-        value: k.value
+  forEach(transformNames, name => {
+    const effect = effects[name]
+    if (effect) {
+      forEach(Object.keys(effect), k => {
+        pushDistinct(offsets, +k)
       })
-    })
-  }
+    }
+  })
 
-  if (!transformEffects.length) {
-    return
-  }
-
+  // put offsets in numerical order
   offsets.sort()
 
-  // apply transform effects to keyframes
-  effects[TRANSFORM] = transformEffects.map(t => {
-    let value = ''
-    forEach(t.values, k => {
-      const name = k.name
-      if (name === TRANSFORM) {
-        value = k.value + ''
-        // break early
-        return false
+  // create effects for each transform function at each offset
+  // this should guarantee transforms are processed in the order that they are scene
+  // from the original properties or keyframes
+  const transformEffects = offsets.map(offset => {
+    // create effect
+    const values = {} as { [name: number]: string | number }
+    forEach(transformNames, name => {
+      if (effects[name] === _) {
+        debugger
       }
-      // convert each found values to transform functions and to list of effects
-      let propValue = k.value
-      if (includes(transformLengths, name) && isNumber(propValue)) {
-        propValue += PX
-      } else if (includes(transformAngles, name) && isNumber(propValue)) {
-        propValue += DEG
-      }
-      value += `${aliases[name] || name}(${propValue})`
-      return _
+      values[name] = effects[name][offset]
     })
 
     return {
-      offset: t.offset,
-      value
+      offset,
+      values
     }
   })
+
+  // fill in gaps in keyframes
+  const len = transformEffects.length
+  for (let i = len - 1; i > -1; --i) {
+    const effect = transformEffects[i]
+
+    // foreach keyframe if has transform property
+    for (const transform in effect.values) {
+      let value = effect.values[transform];
+
+      if (isDefined(value)) {
+        continue
+      }
+
+      // find first value in range
+      let startingPos: number = _
+      for (var j = i - 1; j > -1; j--) {
+        if (isDefined(transformEffects[j].values[transform])) {
+          startingPos = j
+          break;
+        }
+      }
+
+      // find next value in range
+      let endingPos: number = _
+      for (var k = i + 1; k < len; k++) {
+        if (isDefined(transformEffects[k].values[transform])) {
+          endingPos = k
+          break
+        }
+      } 
+      
+      // determine which values were found
+      const startingPosFound = startingPos !== _
+      const endingPosFound = endingPos !== _
+      if (startingPosFound && endingPosFound) {
+        // if both start and end are found, fill the value based on the relative offset
+        const startEffect = transformEffects[startingPos]
+        const endEffect = transformEffects[endingPos]  
+        const startVal = parseUnit(startEffect.values[transform]);
+        const endVal = parseUnit(endEffect.values[transform]);
+
+        for (let g = startingPos + 1; g < endingPos; g++) {
+          const currentOffset = offsets[g];
+
+          // calculate offset delta (how much animation progress to apply)
+          const offsetDelta = (currentOffset - startEffect.offset) / (endEffect.offset - startEffect.offset);
+          const currentValue = startVal.value + (endVal.value - startVal.value) * offsetDelta;
+
+          const currentValueWithUnit = currentValue + (endVal.unit || startVal.unit || '')
+          const currentKeyframe = transformEffects[g];
+          currentKeyframe.values[transform] = currentValueWithUnit;
+        }
+      } else {
+        // if either start or end was not found, fill from the last known position
+        const valuePos = endingPosFound ? endingPos : startingPos
+        const gStart = endingPosFound ? 0 : startingPos + 1
+        const gEnd = endingPosFound ? endingPos : len
+        for (let g = gStart; g < gEnd; g++) {
+          transformEffects[g].values[transform] = transformEffects[valuePos].values[transform]
+        }
+      }
+    }
+  }
+
+  if (transformEffects.length) {
+    // remove transform shorthands
+    forEach(transformNames, name => {
+      effects[name] = _
+    })
+    
+    const transformEffect = {}
+    forEach(transformEffects, effect => {
+      let val = '';
+      for (var prop in effect.values) {
+        if (prop === TRANSFORM) {
+          val = effect.values[prop] + '';
+          break;
+        }
+        const unit = parseUnit(effect.values[prop])
+        if (!unit.unit) {
+          unit.unit = includes(transformAngles, prop) ? DEG : PX
+        }
+ 
+        val += (val ? ' ' : '') + (aliases[prop] || prop) + '(' + effect.values[prop] + unit.unit + ')'
+      }
+      transformEffect[effect.offset] = val
+    })
+    effects[TRANSFORM] = transformEffect
+  }
 }
