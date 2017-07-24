@@ -29,7 +29,7 @@ export const transformLengths = [
   'y',
   'z'
 ]
-export const transforms = [TRANSFORM].concat(transformAngles, transformScales, transformLengths)
+export const transforms = transformAngles.concat(transformScales, transformLengths)
 
 export const aliases = {
   x: TRANSLATE + X,
@@ -153,4 +153,4 @@ export const cssOtherProps = [
   'zIndex'
 ]
 
-export const cssProps = transforms.concat(cssLengths, cssOtherProps)
+export const cssProps = [TRANSFORM].concat(transforms, cssLengths, cssOtherProps)

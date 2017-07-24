@@ -344,7 +344,8 @@ export class Timeline {
       forEach(effects, effect => {
         forEach(plugins, p => {
           // return false to stop the loop, undefined to continue
-          if (p.animate(effect, animations)) {
+          if (p.isHandled(effect.target, effect.prop)) {
+            p.animate(effect, animations)
             return false
           }
           return _

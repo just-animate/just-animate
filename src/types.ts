@@ -31,16 +31,18 @@ export interface AnimationController {
 }
 
 export interface Plugin {
-  animate(effect: Effect, animations: AnimationController[]): boolean
-  resolve(selector: string): any[]
-  transform(target: TargetConfiguration, effects: PropertyEffects): void
+  onWillAnimate?: { (target: TargetConfiguration, effects: PropertyEffects): void }
+
+  animate(effect: Effect, animations: AnimationController[]): void
+  isHandled(target: AnimationTarget, propName: string): boolean  
+  getValue(target: AnimationTarget, key: string): string | number
+  getTargets(selector: string): any[]
 }
 
 export interface PropertyKeyframe {
   time: number
   prop: string
   index: number
-  order: number
   value: KeyframeValueResolver<string | number>
 }
 export interface PropertyEffects {

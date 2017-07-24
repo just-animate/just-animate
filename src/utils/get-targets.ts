@@ -12,7 +12,7 @@ export function getTargets(target: AnimationTarget, plugins: Plugin[]): any[] {
     const targets: any[] = []
     // if query selector, search for elements
     forEach(plugins, plugin => {
-      pushAll(targets, plugin.resolve(target as string))
+      pushAll(targets, plugin.getTargets(target as string))
     })
     return targets
   }

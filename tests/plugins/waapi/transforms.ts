@@ -153,7 +153,7 @@ describe('transforms', () => {
       to: 1000,
       prop: 'transform',
       keyframes: [
-        { offset: 0, value: 'rotate(180deg) translateY(120px)' },
+        { offset: 0, value: 'rotate(180deg)' },
         { offset: .5, value: 'rotate(180deg) translateY(120px)' },
         { offset: 1, value: 'rotate(180deg) translateY(0px)' }
       ]

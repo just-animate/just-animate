@@ -7,8 +7,9 @@ import { RUNNING, TOLERANCE } from './constants';
 export function animateEffect(effect: Effect): AnimationController {
   const { keyframes, prop, from, to, target } = effect
   const getAnimator = lazy(() => {
+
     const a = (target as any).animate(
-      keyframes.map(({offset, value}) => ({ offset, [prop]: value })),
+      keyframes.map(({ offset, value }) => ({ offset, [prop]: value })),
       {
         duration: to - from,
         fill: 'both'

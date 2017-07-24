@@ -1,9 +1,10 @@
 import * as types from '../types'
 import { resolveProperty } from '.'
 import { getPlugins } from './plugins'
-import { forEach, indexOf, list, head, tail } from '../utils/lists'
+import { forEach, indexOf, list, head, tail, pushDistinct } from '../utils/lists'
 import { isDefined, isArrayLike } from '../utils/type'
 import { flr, max } from '../utils/math'
+import { _ } from '../utils/resources';
 
 export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] {
   const result: types.Effect[] = []
@@ -18,14 +19,14 @@ export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] 
       const effect = (effects[p.prop] || (effects[p.prop] = []))
       const offset = (p.time - from) / (duration || 1)
       const value = resolveProperty(p.value, target, p.index)
-      
+
       effect[offset] = value
     })
 
     // process handlers
     forEach(plugins, plugin => {
-      if (plugin.transform) {
-        plugin.transform(targetConfig, effects)
+      if (plugin.onWillAnimate) {
+        plugin.onWillAnimate(targetConfig, effects)
       }
     })
 
@@ -41,7 +42,28 @@ export function toEffects(configs: types.TargetConfiguration[]): types.Effect[] 
             offset: e,
             value: effect[e]
           }))
-        
+
+        const firstFrame = head(effectKeyframes, c => c.offset === 0)
+        if (firstFrame === _ || firstFrame.value === _) {
+          // add keyframe if offset 0 is missing
+          forEach(plugins, plugin => {
+            if (plugin.isHandled(target, prop)) {
+              const value = plugin.getValue(target, prop)
+              if (firstFrame === _) {
+                effectKeyframes.splice(0, 0, {
+                  offset: 0,
+                  value: value
+                })
+              } else {
+                firstFrame.value = value
+              }
+
+              return false
+            }
+            return _
+          })
+        }
+
         result.push({
           target,
           prop,
@@ -86,7 +108,6 @@ function addKeyframes(
   forEach(props, keyframe => {
     const time = flr(duration * keyframe.offset + from)
     const keyframes = target.keyframes
-    let count = -1
 
     for (var name in keyframe) {
       if (name === 'offset') {
@@ -98,16 +119,13 @@ function addKeyframes(
         continue
       }
 
-      // add property name if not present
-      var propIndex = target.propNames.indexOf(name)
-      if (propIndex === -1) {
-        target.propNames.push(name)
-      }
+      // add property name if not present 
+      pushDistinct(target.propNames, name)
 
       // find matching keyframe
-      var indexOfFrame = indexOf(keyframes, k => k.prop === name && k.time === time)
-      if (indexOfFrame !== -1) {
-        keyframes[indexOfFrame].value = value
+      var existingFrame = head(keyframes, k => k.prop === name && k.time === time)
+      if (existingFrame) {
+        existingFrame.value = value
         continue
       }
 
@@ -115,7 +133,6 @@ function addKeyframes(
         index,
         prop: name,
         time,
-        order: ++count,
         value
       })
     }
@@ -130,12 +147,11 @@ function addProperties(
   from: number
 ): void {
   // iterate over each property split it into keyframes
-  for (let name in props) {
+  for (const name in props) {
     if (!props.hasOwnProperty(name)) {
       continue
     }
 
-    // resolve value (changes function into discrete value or array)
     const val = props[name]
     // skip undefined options
     if (!isDefined(val)) {
@@ -143,23 +159,26 @@ function addProperties(
     }
 
     const keyframes = target.keyframes
-    let count = -1
-
     const valAsArray = list(val)
     for (let i = 0, ilen = valAsArray.length; i < ilen; i++) {
-      const offset = i === 0 ? 0 : i === ilen - 1 ? 1 : i / (ilen - 1.0)
+      let offset: number
+      if (i === ilen - 1) {
+        offset = 1
+      } else if (i === 0) {
+        offset = 0
+      } else {
+        offset = i / (ilen - 1.0)
+      }
+
       const time = flr(duration * offset + from)
 
       // add property name if not present
-      var propIndex = target.propNames.indexOf(name)
-      if (propIndex === -1) {
-        target.propNames.push(name)
-      }
+      pushDistinct(target.propNames, name)
 
       // find matching keyframe
       var indexOfFrame = indexOf(keyframes, k => k.prop === name && k.time === time)
 
-      const value = val[i]
+      const value = valAsArray[i]
       if (indexOfFrame !== -1) {
         keyframes[indexOfFrame].value = value
         continue
@@ -169,8 +188,28 @@ function addProperties(
         index,
         prop: name,
         time,
-        order: ++count,
         value
+      })
+    }
+
+    // insert start frame if not present
+    if (!head(keyframes, k => k.prop === name && k.time === from)) {
+      keyframes.push({
+        index,
+        prop: name,
+        time: from,
+        value: _
+      })
+    }
+
+    // insert start frame if not present
+    const to = from + duration
+    if (!tail(keyframes, k => k.prop === name && k.time === to)) {
+      keyframes.push({
+        index,
+        prop: name,
+        time: to,
+        value: _
       })
     }
   }

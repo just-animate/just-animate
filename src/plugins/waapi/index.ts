@@ -1,4 +1,4 @@
-import { Plugin } from '../../types'
+import { Plugin, AnimationTarget } from '../../types'
 import { isDOM } from '../../utils/type'
 import { push, includes } from '../../utils/lists'
 import { $ } from '../../utils/elements'
@@ -9,16 +9,18 @@ import { combineTransforms } from './combine-transforms'
 
 export const waapiPlugin: Plugin = {
   animate(effect, animations) {
-    if (isDOM(effect.target) && includes(cssProps, effect.prop)) {
-      push(animations, animateEffect(effect))
-      return true;
-    }
-    return false;
+    push(animations, animateEffect(effect))
   },
-  resolve(selector: string) {
+  isHandled(target: AnimationTarget, propName: string) {
+    return isDOM(target) && includes(cssProps, propName)
+  },
+  getValue(target: HTMLElement, key: string) {
+    return getComputedStyle(target)[key]
+  },
+  getTargets(selector: string) {
     return $(document, selector)
   },
-  transform(target, effects) {
+  onWillAnimate(target, effects) {
     if (isDOM(target.target)) {
       appendUnits(effects)
       combineTransforms(target, effects)

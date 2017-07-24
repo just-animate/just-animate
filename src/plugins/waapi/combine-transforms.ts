@@ -6,11 +6,15 @@ import { isDefined } from '../../utils/type';
 import { parseUnit } from './parse-unit';
 
 export function combineTransforms(target: TargetConfiguration, effects: PropertyEffects) {
-  // get all unique properties
+  // get all transform shorthands
   const transformNames = target.propNames.filter(t => includes(transforms, t))
+  
+  if (!transformNames.length) { 
+    return
+  }
 
-  // if transform is in the list, remove shorthand properties
-  if (transformNames.length > 1 && includes(transformNames, TRANSFORM)) {
+  if (includes(target.propNames, TRANSFORM)) {
+    // disallow mixing tranform with shorthand properties
     throw new Error('mixing transform and shorthand properties is not allowed')
   }
 
@@ -35,9 +39,6 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
     // create effect
     const values = {} as { [name: number]: string | number }
     forEach(transformNames, name => {
-      if (effects[name] === _) {
-        debugger
-      }
       values[name] = effects[name][offset]
     })
 
@@ -99,13 +100,10 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
           const currentKeyframe = transformEffects[g];
           currentKeyframe.values[transform] = currentValueWithUnit;
         }
-      } else {
+      } else if (startingPosFound) {
         // if either start or end was not found, fill from the last known position
-        const valuePos = endingPosFound ? endingPos : startingPos
-        const gStart = endingPosFound ? 0 : startingPos + 1
-        const gEnd = endingPosFound ? endingPos : len
-        for (let g = gStart; g < gEnd; g++) {
-          transformEffects[g].values[transform] = transformEffects[valuePos].values[transform]
+        for (let g = startingPos + 1; g < len; g++) {
+          transformEffects[g].values[transform] = transformEffects[startingPos].values[transform]
         }
       }
     }
@@ -119,18 +117,17 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
     
     const transformEffect = {}
     forEach(transformEffects, effect => {
-      let val = '';
+      let val = undefined;
       for (var prop in effect.values) {
-        if (prop === TRANSFORM) {
-          val = effect.values[prop] + '';
-          break;
-        }
         const unit = parseUnit(effect.values[prop])
+        if (unit.value === _) {
+          continue;
+        }
         if (!unit.unit) {
           unit.unit = includes(transformAngles, prop) ? DEG : PX
         }
  
-        val += (val ? ' ' : '') + (aliases[prop] || prop) + '(' + effect.values[prop] + unit.unit + ')'
+        val = (val ? (val + ' ') : '') + (aliases[prop] || prop) + '(' + effect.values[prop] + unit.unit + ')'
       }
       transformEffect[effect.offset] = val
     })
