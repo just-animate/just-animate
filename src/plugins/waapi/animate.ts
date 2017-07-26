@@ -1,64 +1,68 @@
 import { AnimationController, Effect } from '../../types';
 import { lazy } from '../../utils/utils';
-import { CANCEL, FINISH, PAUSE, SEEK, _, UPDATE } from '../../utils/resources';
-import { minMax, inRange, abs } from '../../utils/math';
-import { RUNNING, TOLERANCE } from './constants';
+import { flr } from '../../utils/math';
+import { RUNNING } from './constants';
 
-export function animateEffect(effect: Effect): AnimationController {
+// minimum amount of time left on an animation required to call .play()
+const frameSize = flr(1000 / 30);
+
+export function animate(effect: Effect): AnimationController {
   const { keyframes, prop, from, to, target } = effect
+  const duration = to - from
+  let playbackRate = 1
+  
   const getAnimator = lazy(() => {
-
     const a = (target as any).animate(
       keyframes.map(({ offset, value }) => ({ offset, [prop]: value })),
       {
-        duration: to - from,
+        duration,
         fill: 'both'
       }
     )
+    a.onfinish = () => {
+      // prevent restart of animation
+      a.pause()
+      a.currentTime = playbackRate < 0 ? 0 : duration
+    }
     a.pause()
     return a
   })
 
-  return (type: string, time: number, playbackRate: number) => {
-    const animator = getAnimator()
-
-    if (animator.playbackRate !== playbackRate) {
-      // set playbackRate direction/speed
-      animator.playbackRate = playbackRate
-    }
-
-    if (type === CANCEL) {
-      animator.cancel()
-      return
-    }
-    if (type === FINISH) {
-      // without pause() WAAPI appears to play the animation again on seek
-      animator.finish()
-      animator.pause()
-      return
-    }
-
-    if (type === PAUSE) {
-      animator.pause()
-    }
-
-    const isForwards = (playbackRate || 0) >= 0
-    const duration = to - from
-    const currentTime = (time !== _ ? time : isForwards ? 0 : duration) - from
-    if (type === PAUSE || type === SEEK) {
-      // sync if paused or seeking
-      animator.currentTime = minMax(currentTime, 0, duration)
-    }
-
-    if (type === UPDATE && animator.playState !== RUNNING && inRange(currentTime, 0, duration)) {
-      const localTime = minMax(currentTime, 0, duration)
-      if (abs(animator.currentTime - localTime) > TOLERANCE) {
-        // sync time
+  return {
+    cancel() {
+      getAnimator().cancel()
+    },
+    update(localTime: number, rate: number, isPlaying: boolean) {
+      const animator = getAnimator()
+      if (flr(animator.currentTime) !== localTime) {
+        // sync if paused or seeking
         animator.currentTime = localTime
       }
+      if (animator.playbackRate !== rate) {
+        // set playbackRate direction/speed
+        animator.playbackRate = rate
+      }
 
-      // start if ticking and animator is not running
-      animator.play()
+      const needsToPlay = isPlaying && animator.playState !== RUNNING
+      if (needsToPlay) {
+        if (rate < 0 && localTime < frameSize) {
+          // skip to the 0 if reversed and not enough time to animate
+          animator.currentTime = 0 
+        } else if (rate >= 0 && localTime > duration - frameSize) {
+          // skip to the end if forwards and not enough time to animate
+          animator.currentTime = duration  
+        } else { 
+          // start up animator
+          animator.play()  
+        }
+      }
+      
+      const needsToPause = !isPlaying && animator.playState === RUNNING
+      if (needsToPause) {
+        animator.pause()
+      }    
+      
+      playbackRate = rate      
     }
   }
 }

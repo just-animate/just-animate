@@ -27,13 +27,19 @@ export interface SplitTextResult {
 }
 
 export interface AnimationController {
-  (type: string, time: number, playbackRate: number): void
+  cancel(): void
+  update(localTime: number, playbackRate: number, isActive: boolean): void
+}
+
+export interface AnimationTimelineController extends AnimationController {
+  from: number
+  to: number
 }
 
 export interface Plugin {
   onWillAnimate?: { (target: TargetConfiguration, effects: PropertyEffects): void }
 
-  animate(effect: Effect, animations: AnimationController[]): void
+  animate(effect: Effect): AnimationController
   isHandled(target: AnimationTarget, propName: string): boolean  
   getValue(target: AnimationTarget, key: string): string | number
   getTargets(selector: string): any[]

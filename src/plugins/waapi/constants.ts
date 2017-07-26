@@ -1,4 +1,3 @@
-export const TOLERANCE = 0.0001
 export const RUNNING = 'running'
 
 export const PX = 'px'

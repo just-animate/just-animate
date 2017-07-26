@@ -5,20 +5,20 @@ import { toEffects, addPropertyKeyframes } from './effects'
 import { sortBy, forEach, head, push } from '../utils/lists'
 import { isDefined } from '../utils/type'
 import { getTargets } from '../utils/get-targets'
-import { _, CANCEL, FINISH, PAUSE, PLAY, SEEK, UPDATE } from '../utils/resources'
+import { _, CANCEL, FINISH, PAUSE, REVERSE, UPDATE, PLAY } from '../utils/resources'
 
 import {
   AddAnimationOptions,
-  AnimationController,
   AnimationOptions,
   BaseAnimationOptions,
   Effect,
   PropertyKeyframe,
   TargetConfiguration,
-  ToAnimationOptions
+  ToAnimationOptions,
+  AnimationTimelineController
 } from '../types'
 
-import { max, inRange } from '../utils/math'
+import { max, inRange, minMax, rnd, flr } from '../utils/math'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
@@ -32,10 +32,11 @@ export class Timeline {
   private _nextTime: number
   private _state: number
   private _config: TargetConfiguration[]
-  private _effects: AnimationController[]
+  private _effects: AnimationTimelineController[]
   private _times: number
   private _iteration: number
   private _time: number
+  private _rate: number
   private _dir: typeof D_NORMAL | typeof D_ALTERNATIVE
   private _listeners: { [key: string]: { (time: number): void }[] }
 
@@ -44,7 +45,8 @@ export class Timeline {
     // initialize default values
     self.duration = 0
     self._nextTime = 0
-    self.playbackRate = 1
+    self._rate = 1
+    self._time = 0
     self._dir = D_NORMAL
     self._state = S_IDLE
     self._config = []
@@ -53,12 +55,26 @@ export class Timeline {
     // bind tick to instance
     self._tick = self._tick.bind(self)
 
+    // define currentTime setter/getter
     Object.defineProperty(self, 'currentTime', {
       get() {
         return self._time
       },
       set(time: number) {
-        self.seek(time)
+        time = +time
+        self._time = isFinite(time) ? time : (self._rate < 0 ? self.duration : 0)
+        self._update(UPDATE)
+      }
+    })
+
+    // define playbackRate setter/getter    
+    Object.defineProperty(self, 'playbackRate', {
+      get() {
+        return self._rate
+      },
+      set(rate: number) {
+        self._rate = +rate || 1
+        self._update(REVERSE)
       }
     })
   }
@@ -169,15 +185,7 @@ export class Timeline {
    * Cancels an animation, removes all effects, and resets internal state
    */
   public cancel() {
-    const self = this
-    self._time = 0
-    self._iteration = _
-    self._state = S_IDLE
-    loopOff(self._tick)
-    forEach(self._effects, c => c(CANCEL, 0, self.playbackRate))
-    forEach(self._listeners[CANCEL], c => c(0))
-    self._teardown()
-    return self
+    return this._update(CANCEL)
   }
 
   /**
@@ -187,15 +195,7 @@ export class Timeline {
    * - If playbackRate is less than 0, the animation will seek to 0
    */
   public finish() {
-    const self = this
-    self._setup()
-    self._time = _
-    self._iteration = _
-    self._state = S_FINISHED
-    loopOff(self._tick)
-    forEach(self._effects, c => c(FINISH, _, self.playbackRate))
-    forEach(self._listeners[FINISH], c => c(_))
-    return self
+    return this._update(FINISH)
   }
 
   /**
@@ -237,14 +237,7 @@ export class Timeline {
    * activate effects
    */
   public pause() {
-    const self = this
-    const { currentTime, playbackRate, _listeners, _time } = self
-    self._setup()
-    self._state = S_PAUSED
-    loopOff(self._tick)
-    forEach(self._effects, e => e(PAUSE, currentTime, playbackRate))
-    forEach(_listeners[PAUSE], c => c(_time))
-    return self
+    return this._update(PAUSE)
   }
 
   /**
@@ -254,16 +247,10 @@ export class Timeline {
    */
   public play(iterations = 1, dir: typeof D_NORMAL | typeof D_ALTERNATIVE = D_NORMAL) {
     const self = this
-    self._setup()
     self._times = iterations
     self._dir = dir
-
-    if (self._state === S_PAUSED || (self._state !== S_RUNNING && self._state !== S_PENDING)) {
-      self._state = S_PENDING
-    }
-
-    loopOn(self._tick)
-    forEach(self._listeners[PLAY], c => c(self._time))
+    self._state = S_RUNNING
+    this._update(PLAY)
     return self
   }
 
@@ -273,11 +260,6 @@ export class Timeline {
   public reverse() {
     const self = this
     self.playbackRate = (self.playbackRate || 0) * -1
-
-    if (self._state === S_RUNNING) {
-      // if currently running, pause the animation and replay from that position
-      self.pause().play()
-    }
     return self
   }
 
@@ -286,10 +268,7 @@ export class Timeline {
    * @param time the time in milliseconds to seek to.
    */
   public seek(time: number) {
-    const self = this
-    self._setup()
-    self._time = +time
-    forEach(self._effects, e => e(SEEK, time, self.playbackRate))
+    this.currentTime = time
   }
 
   /**
@@ -297,6 +276,70 @@ export class Timeline {
    */
   public getEffects(): Effect[] {
     return toEffects(this._config)
+  }
+
+  private _update(type: string) {
+    const self = this
+
+    // update state and loop
+    if (type === CANCEL) {
+      self._state = S_IDLE
+    } else if (type === FINISH) {
+      self._state = S_FINISHED
+      self._time = self._rate < 0 ? 0 : self.duration;
+      self._iteration = _
+    } else if (type === PAUSE) {
+      self._state = S_PAUSED
+    } else if (type === PLAY) {
+      // set current time (this will automatically start playing when the _state is running)
+      const isForwards = self._rate >= 0
+      if (isForwards && self._time === self.duration) {
+        self._time = 0
+      } else if (!isForwards && self._time === 0) {
+        self._time = self.duration
+      }
+    }
+
+    // check current state
+    const isTimelineActive = self._state === S_RUNNING
+    const isTimelineInEffect = self._state !== S_IDLE
+    const time = self.currentTime
+
+    // setup effects if required
+    if (isTimelineInEffect && self._effects === _) {
+      self._setup()
+    }
+
+    // update effect clocks
+    if (isTimelineInEffect) {
+      // update effects
+      forEach(self._effects, effect => {
+        const { from, to } = effect
+        const isAnimationActive = isTimelineActive && inRange(flr(time), from, to)
+        const localTime = rnd(minMax(time - from, 0, to - from))
+        effect.update(localTime, self._rate, isAnimationActive)
+      })
+    }
+
+    // remove tick from loop if no timelines are active
+    if (!isTimelineActive) {
+      loopOff(self._tick)
+    }
+    if (type === PLAY) {
+      loopOn(self._tick)
+    }
+
+    // teardown/destroy
+    if (!isTimelineInEffect) {
+      forEach(self._effects, effect => effect.cancel())
+      self._time = 0
+      self._iteration = _
+      self._effects = _
+    }
+
+    // notify event listeners
+    forEach(self._listeners[type], c => c(time))
+    return self
   }
 
   private _calcTimes() {
@@ -333,32 +376,33 @@ export class Timeline {
     self._nextTime = maxNextTime
     self.duration = timelineTo
   }
-
   private _setup(): void {
     const self = this
     if (!self._effects) {
       const effects = toEffects(self._config)
       const plugins = getPlugins()
-      const animations: AnimationController[] = []
-      
+      const animations: AnimationTimelineController[] = []
+
       forEach(effects, effect => {
         forEach(plugins, p => {
           // return false to stop the loop, undefined to continue
           if (p.isHandled(effect.target, effect.prop)) {
-            p.animate(effect, animations)
+            const controller = p.animate(effect) as AnimationTimelineController
+            if (controller) {
+              controller.from = effect.from
+              controller.to = effect.to
+              push(animations, controller)
+            }
+
             return false
           }
           return _
         })
       })
-      
+
+      self._time = self._rate < 0 ? self.duration : 0
       self._effects = animations
     }
-  }
-
-  private _teardown(): void {
-    const self = this
-    self._effects = _
   }
 
   private _tick(delta: number) {
@@ -367,17 +411,17 @@ export class Timeline {
 
     // canceled
     if (playState === S_IDLE) {
-      self.cancel()
+      self._update(CANCEL)
       return
     }
     // finished
     if (playState === S_FINISHED) {
-      self.finish()
+      self._update(FINISH)
       return
     }
     // paused
     if (playState === S_PAUSED) {
-      self.pause()
+      self._update(PAUSE)
       return
     }
     // running/pending
@@ -385,10 +429,16 @@ export class Timeline {
     // calculate running range
     const duration = self.duration
     const iterations = self._times
-    const playbackRate = self.playbackRate
-    const isReversed = playbackRate < 0
+    const rate = self._rate
+    const isReversed = rate < 0
 
-    let time = self._time
+    // set time use existing
+    let time: number
+    if (self._time === _) {
+      time = rate < 0 ? duration : 0
+    } else {
+      time = self._time
+    }
     let iteration = self._iteration || 0
 
     if (self._state === S_PENDING) {
@@ -404,7 +454,7 @@ export class Timeline {
       self._state = S_RUNNING
     }
 
-    time += delta * playbackRate
+    time += delta * rate
 
     // check if timeline has finished
     let hasEnded = false
@@ -418,27 +468,26 @@ export class Timeline {
     self._iteration = iteration
     self._time = time
     forEach(self._listeners[UPDATE], c => c(time))
-    forEach(self._effects, c => c(UPDATE, time, playbackRate))
+    self._update(UPDATE)
 
     if (!hasEnded) {
       // if not ended, return early
       return
     }
 
+    if (self._dir === D_ALTERNATIVE) {
+      // change direction
+      self._rate = (self._rate || 0) * -1
+    }
+
     if (iterations === iteration) {
       // end the cycle
-      self.finish()
+      self._update(FINISH)
       return
     }
 
-    if (self._dir === D_ALTERNATIVE) {
-      // change direction
-      self.playbackRate = (self.playbackRate || 0) * -1
-    }
-
     // if not the last iteration, reset the clock and call tick again
-    time = self.playbackRate < 0 ? duration : 0
-    self._time = time
+    self._time = self._rate < 0 ? duration : 0
     self._tick(0)
   }
 }
