@@ -9,7 +9,7 @@ import { loopOn, loopOff } from './timeloop'
 import { toEffects, addPropertyKeyframes } from './effects'
 import { sortBy, forEach, head, push } from './lists'
 import { isDefined } from './inspect'
-import { getTargets } from './get-targets' 
+import { getTargets } from './get-targets'
 import { max, inRange, minMax, rnd, flr } from './math'
 
 import {
@@ -20,73 +20,28 @@ import {
   PropertyKeyframe,
   TargetConfiguration,
   ToAnimationOptions,
-  AnimationTimelineController
+  AnimationTimelineController,
+  ITimeline
 } from './types'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
-/**
- * Animation timeline control.  Defines animation definition methods like .fromTo() and player controls like .play()
- */
-export class Timeline {
-  public currentTime: number
-  public duration: number
-  public playbackRate: number
-  private _nextTime: number
-  private _state: number
-  private _config: TargetConfiguration[]
-  private _effects: AnimationTimelineController[]
-  private _times: number
-  private _iteration: number
-  private _time: number
-  private _rate: number
-  private _dir: typeof D_NORMAL | typeof D_ALTERNATIVE
-  private _listeners: { [key: string]: { (time: number): void }[] }
+const timelineProto: ITimeline = {
+  currentTime: _ as number,
+  duration: _ as number,
+  playbackRate: _ as number,
+  _nextTime: _ as number,
+  _state: _ as number,
+  _config: _ as TargetConfiguration[],
+  _effects: _ as AnimationTimelineController[],
+  _times: _ as number,
+  _iteration: _ as number,
+  _time: _ as number,
+  _rate: _ as number,
+  _dir: _ as typeof D_NORMAL | typeof D_ALTERNATIVE,
+  _listeners: _ as { [key: string]: { (time: number): void }[] },
 
-  constructor() {
-    const self = this
-    // initialize default values
-    self.duration = 0
-    self._nextTime = 0
-    self._rate = 1
-    self._time = 0
-    self._dir = D_NORMAL
-    self._state = S_IDLE
-    self._config = []
-    self._listeners = {}
-
-    // bind tick to instance
-    self._tick = self._tick.bind(self)
-
-    // define currentTime setter/getter
-    Object.defineProperty(self, 'currentTime', {
-      get() {
-        return self._time
-      },
-      set(time: number) {
-        time = +time
-        self._time = isFinite(time) ? time : (self._rate < 0 ? self.duration : 0)
-        self._update(UPDATE)
-      }
-    })
-
-    // define playbackRate setter/getter    
-    Object.defineProperty(self, 'playbackRate', {
-      get() {
-        return self._rate
-      },
-      set(rate: number) {
-        self._rate = +rate || 1
-        self._update(REVERSE)
-      }
-    })
-  }
-
-  /**
-   * Adds an animation at the end of the timeline, unless from/to are specified
-   * @param opts the animation definition
-   */
-  public add(opts: AddAnimationOptions) {
+  add(this: ITimeline, opts: AddAnimationOptions) {
     const { _nextTime } = this
     const hasTo = isDefined(opts.to)
     const hasFrom = isDefined(opts.from)
@@ -114,17 +69,8 @@ export class Timeline {
     }
 
     return this.fromTo(from, to, opts)
-  }
-
-  /**
-   * Defines an animation that occurs starting at "from" and ending at "to".
-   *
-   * Note: The delay, endDelay, and stagger properties may shift the from/to times
-   * @param from the starting time in milliseconds
-   * @param to the ending time in milliseconds
-   * @param options the animation definition.
-   */
-  public fromTo(from: number, to: number, options: BaseAnimationOptions) {
+  }, 
+  fromTo(this: ITimeline, from: number, to: number, options: BaseAnimationOptions) {
     const config = this._config
 
     // ensure to/from are in milliseconds (as numbers)
@@ -157,19 +103,8 @@ export class Timeline {
     // recalculate property keyframe times and total duration
     this._calcTimes()
     return this
-  }
-
-  /**
-   * Defines an animation ending at the "to" parameter.
-   *
-   * The following rules are used to find the starting point:
-   * - If "from" is not provided, "duration" is used instead.
-   * - If neither "from" nor "duration" are specified, the duration of the animation is used as the starting point.
-   *
-   * @param to the end time in milliseconds
-   * @param opts the animation definition
-   */
-  public to(to: number, opts: ToAnimationOptions) {
+  }, 
+  to(this: ITimeline, to: number, opts: ToAnimationOptions) {
     const { duration } = this
 
     let fromTime: number
@@ -182,31 +117,14 @@ export class Timeline {
     }
 
     return this.fromTo(fromTime, to, opts)
-  }
-
-  /**
-   * Cancels an animation, removes all effects, and resets internal state
-   */
-  public cancel() {
+  }, 
+  cancel(this: ITimeline) {
     return this._update(CANCEL)
-  }
-
-  /**
-   * Finishes an animation.  If the animation has never been active, this will
-   * activate effects
-   * - If playbackRate is 0 or more, the animation will seek to duration.
-   * - If playbackRate is less than 0, the animation will seek to 0
-   */
-  public finish() {
+  }, 
+  finish(this: ITimeline) {
     return this._update(FINISH)
-  }
-
-  /**
-   * Register for timeline events
-   * @param eventName timeline event name
-   * @param listener callback for when the event occurs
-   */
-  public on(eventName: string, listener: () => void) {
+  }, 
+  on(this: ITimeline, eventName: string, listener: () => void) {
     const self = this
     const { _listeners } = self
 
@@ -216,14 +134,8 @@ export class Timeline {
     }
 
     return self
-  }
-
-  /**
-   * Unregister for timeline events
-   * @param eventName timeline event name
-   * @param listener callback to unregister
-   */
-  public off(eventName: string, listener: () => void) {
+  }, 
+  off(this: ITimeline, eventName: string, listener: () => void) {
     const self = this
     const listeners = self._listeners[eventName]
     if (listeners) {
@@ -233,55 +145,32 @@ export class Timeline {
       }
     }
     return self
-  }
-
-  /**
-   * Pauses execution of the animation. If the animation has never been active, this will
-   * activate effects
-   */
-  public pause() {
+  }, 
+  pause(this: ITimeline) {
     return this._update(PAUSE)
-  }
-
-  /**
-   * Plays the animation until finished.  If the animation has never been active, this will activate the effects.
-   * @param iterations number of iterations to play the animation.  Use Infinity to loop forever
-   * @param dir the direction the animation should play.  "normal" (default) or "alternate" (yoyo)
-   */
-  public play(iterations = 1, dir: typeof D_NORMAL | typeof D_ALTERNATIVE = D_NORMAL) {
+  }, 
+  play(this: ITimeline, iterations = 1, dir: typeof D_NORMAL | typeof D_ALTERNATIVE = D_NORMAL) {
     const self = this
     self._times = iterations
     self._dir = dir
     self._state = S_RUNNING
     this._update(PLAY)
     return self
-  }
-
-  /**
-   * Reverses the animation playbackRate.  If the animation is currently playing, it will reverse the animation
-   */
-  public reverse() {
+  }, 
+  reverse(this: ITimeline) {
     const self = this
     self.playbackRate = (self.playbackRate || 0) * -1
     return self
-  }
-
-  /**
-   * Seeks to a specific time.  If the animation is not active, this will activate effects.
-   * @param time the time in milliseconds to seek to.
-   */
-  public seek(time: number) {
+  }, 
+  seek(this: ITimeline, time: number) {
     this.currentTime = time
-  }
-
-  /**
-   * Gets the pre-processed effects of the current configuration.  This is mostly used for testing purposes.
-   */
-  public getEffects(): Effect[] {
+    return this
+  },
+  getEffects(this: ITimeline): Effect[] {
     return toEffects(this._config)
-  }
+  },
 
-  private _update(type: string) {
+  _update(this: ITimeline, type: string) {
     const self = this
 
     // update state and loop
@@ -343,9 +232,8 @@ export class Timeline {
     // notify event listeners
     forEach(self._listeners[type], c => c(time))
     return self
-  }
-
-  private _calcTimes() {
+  },
+  _calcTimes(this: ITimeline) {
     const self = this
     let timelineTo = 0
     let maxNextTime = 0
@@ -378,8 +266,8 @@ export class Timeline {
 
     self._nextTime = maxNextTime
     self.duration = timelineTo
-  }
-  private _setup(): void {
+  },
+  _setup(this: ITimeline): void {
     const self = this
     if (!self._effects) {
       const effects = toEffects(self._config)
@@ -406,9 +294,8 @@ export class Timeline {
       self._time = self._rate < 0 ? self.duration : 0
       self._effects = animations
     }
-  }
-
-  private _tick(delta: number) {
+  },
+  _tick(this: ITimeline, delta: number) {
     const self = this
     const playState = self._state
 
@@ -493,4 +380,49 @@ export class Timeline {
     self._time = self._rate < 0 ? duration : 0
     self._tick(0)
   }
+};
+
+/**
+ * Animation timeline control.  Defines animation definition methods like .fromTo() and player controls like .play()
+ */
+
+export function timeline(): ITimeline {
+  const self: ITimeline = Object.create(timelineProto)
+  // initialize default values
+  self.duration = 0
+  self._nextTime = 0
+  self._rate = 1
+  self._time = 0
+  self._dir = D_NORMAL
+  self._state = S_IDLE
+  self._config = []
+  self._listeners = {}
+
+  // bind tick to instance
+  self._tick = self._tick.bind(self)
+
+  // define currentTime setter/getter
+  Object.defineProperty(self, 'currentTime', {
+    get() {
+      return self._time
+    },
+    set(time: number) {
+      time = +time
+      self._time = isFinite(time) ? time : (self._rate < 0 ? self.duration : 0)
+      self._update(UPDATE)
+    }
+  })
+
+  // define playbackRate setter/getter    
+  Object.defineProperty(self, 'playbackRate', {
+    get() {
+      return self._rate
+    },
+    set(rate: number) {
+      self._rate = +rate || 1
+      self._update(REVERSE)
+    }
+  })
+
+  return self
 }

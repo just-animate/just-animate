@@ -17,7 +17,7 @@ export function isArrayLike(a: any) {
   return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length)
 }
 export function isSVG(target: SVGElement | any) {
-  return target instanceof SVGAElement
+  return target instanceof SVGElement
 }
 export function isDOM(target: Node | any) {
   return target.nodeType || isSVG(target)

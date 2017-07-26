@@ -1,4 +1,4 @@
-import { animate } from '../../src/main'
+import { timeline } from '../../src/main'
 import * as chai from 'chai'
 const { assert } = chai
 
@@ -7,36 +7,36 @@ describe('timeline.to()', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate()
-    timeline.to(1000, {
-      targets: target,
-      props: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
-    })
-    
-    timeline.pause()
+    const t1 = timeline()
+      .to(1000, {
+        targets: target,
+        props: [
+          { opacity: 0 },
+          { opacity: 1 }
+        ]
+      })
 
-    assert.equal(timeline.duration, 1000)
+    t1.pause()
+
+    assert.equal(t1.duration, 1000)
   });
-  
+
   it('infers 1000 duration when from is 500 and to is 1500', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate()
-    timeline.to(1500, {
-      from: 500,
-      targets: target,
-      props: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
-    })
-    
-    timeline.pause()
+    const t1 = timeline()
+      .to(1500, {
+        from: 500,
+        targets: target,
+        props: [
+          { opacity: 0 },
+          { opacity: 1 }
+        ]
+      })
 
-    assert.equal(timeline.duration, 1500)
+    t1.pause()
+
+    assert.equal(t1.duration, 1500)
   });
 });

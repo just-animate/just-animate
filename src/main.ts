@@ -1,4 +1,4 @@
-import { Timeline } from './lib/timeline'
+import { timeline } from './lib/timeline'
 import { forEach, list } from './lib/lists'
 import * as types from './lib/types'
 
@@ -7,14 +7,14 @@ import * as types from './lib/types'
  * @param options Animtion options or an array of options
  */
 export function animate(options?: types.AddAnimationOptions | types.AddAnimationOptions[]) {
-  const timeline = new Timeline()
+  const t1 = timeline()
   if (options) {
     forEach(list(options), opt => {
       opt.from = opt.from || 0
-      timeline.add(opt)
+      t1.add(opt)
     })
   }
-  return timeline
+  return t1
 }
 
 /**s
@@ -22,13 +22,13 @@ export function animate(options?: types.AddAnimationOptions | types.AddAnimation
  * @param seqOptions an array of animations options
  */
 export function sequence(seqOptions: types.AddAnimationOptions[]) {
-  const timeline = new Timeline()
+  const t1 = timeline()
   forEach(seqOptions, opt => {
-    timeline.add(opt)
+    t1.add(opt)
   })
-  return timeline
+  return t1
 }
 
 // export utils and types
-export { types }
+export { timeline, types }
 export { addPlugin, removePlugin } from './lib/plugins'

@@ -117,7 +117,7 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
     
     const transformEffect = {}
     forEach(transformEffects, effect => {
-      let val = undefined;
+      let val: string = _;
       for (var prop in effect.values) {
         const unit = parseUnit(effect.values[prop])
         if (unit.value === _) {

@@ -147,21 +147,21 @@ function addProperties(
   from: number
 ): void {
   // iterate over each property split it into keyframes
-  for (const name in props) {
+  for (var name in props) {
     if (!props.hasOwnProperty(name)) {
       continue
     }
 
-    const val = props[name]
+    var val = props[name]
     // skip undefined options
     if (!isDefined(val)) {
       continue
     }
 
-    const keyframes = target.keyframes
-    const valAsArray = list(val)
-    for (let i = 0, ilen = valAsArray.length; i < ilen; i++) {
-      let offset: number
+    var keyframes = target.keyframes
+    var valAsArray = list(val)
+    for (var i = 0, ilen = valAsArray.length; i < ilen; i++) {
+      var offset: number
       if (i === ilen - 1) {
         offset = 1
       } else if (i === 0) {
@@ -170,7 +170,7 @@ function addProperties(
         offset = i / (ilen - 1.0)
       }
 
-      const time = flr(duration * offset + from)
+      var time = flr(duration * offset + from)
 
       // add property name if not present
       pushDistinct(target.propNames, name)
@@ -178,7 +178,7 @@ function addProperties(
       // find matching keyframe
       var indexOfFrame = indexOf(keyframes, k => k.prop === name && k.time === time)
 
-      const value = valAsArray[i]
+      var value = valAsArray[i]
       if (indexOfFrame !== -1) {
         keyframes[indexOfFrame].value = value
         continue
@@ -203,7 +203,7 @@ function addProperties(
     }
 
     // insert start frame if not present
-    const to = from + duration
+    var to = from + duration
     if (!tail(keyframes, k => k.prop === name && k.time === to)) {
       keyframes.push({
         index,

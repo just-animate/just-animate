@@ -63,8 +63,8 @@ export function indexOf<T>(items: T[], predicate: { (t: T): boolean }) {
 
 export function sortBy<T>(fieldName: keyof T) {
   return (a: T, b: T) => {
-    const a1 = a[fieldName],
-      b1 = b[fieldName]
+    const a1 = a[fieldName]
+    const b1 = b[fieldName]
     return a1 < b1 ? -1 : a1 > b1 ? 1 : 0
   }
 }
