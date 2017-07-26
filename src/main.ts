@@ -1,10 +1,6 @@
-import { addPlugin, Timeline } from './core'
-import { waapiPlugin } from './plugins/waapi'
-import * as types from './types'
-import { forEach, list } from './utils/lists'
-
-// configure plugins
-addPlugin(waapiPlugin)
+import { Timeline } from './lib/timeline'
+import { forEach, list } from './lib/lists'
+import * as types from './lib/types'
 
 /** 
  * Returns a new timeline of animation(s) using the options provided
@@ -34,6 +30,5 @@ export function sequence(seqOptions: types.AddAnimationOptions[]) {
 }
 
 // export utils and types
-export { random, shuffle } from './utils/random'
-export { splitText } from './core'
 export { types }
+export { addPlugin, removePlugin } from './lib/plugins'
