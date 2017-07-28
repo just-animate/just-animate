@@ -1,7 +1,7 @@
 import { AnimationOptions, Effect, KeyframeOptions, PropertyEffects, PropertyOptions, TargetConfiguration } from './types'
 import { resolveProperty } from './resolve-property'
 import { getPlugins } from './plugins'
-import { forEach, indexOf, list, head, tail, pushDistinct } from './lists'
+import { forEach, indexOf, list, head, tail, pushDistinct, push } from './lists'
 import { isDefined, isArrayLike } from './inspect'
 import { flr, max } from './math'
 import { _ } from './constants';
@@ -46,9 +46,10 @@ export function toEffects(configs: TargetConfiguration[]): Effect[] {
         const firstFrame = head(effectKeyframes, c => c.offset === 0)
         if (firstFrame === _ || firstFrame.value === _) {
           // add keyframe if offset 0 is missing
-          forEach(plugins, plugin => {
+          for (var i = 0, ilen = plugins.length; i < ilen; i++) {
+            var plugin = plugins[i]
             if (plugin.isHandled(target, prop)) {
-              const value = plugin.getValue(target, prop)
+              var value = plugin.getValue(target, prop)
               if (firstFrame === _) {
                 effectKeyframes.splice(0, 0, {
                   offset: 0,
@@ -56,15 +57,13 @@ export function toEffects(configs: TargetConfiguration[]): Effect[] {
                 })
               } else {
                 firstFrame.value = value
-              }
-
-              return false
+              } 
+              break
             }
-            return _
-          })
+          }
         }
 
-        result.push({
+        push(result, {
           target,
           prop,
           from,
@@ -129,7 +128,7 @@ function addKeyframes(
         continue
       }
 
-      keyframes.push({
+      push(keyframes, {
         index,
         prop: name,
         time,
@@ -184,7 +183,7 @@ function addProperties(
         continue
       }
 
-      keyframes.push({
+      push(keyframes, {
         index,
         prop: name,
         time,
@@ -194,7 +193,7 @@ function addProperties(
 
     // insert start frame if not present
     if (!head(keyframes, k => k.prop === name && k.time === from)) {
-      keyframes.push({
+      push(keyframes, {
         index,
         prop: name,
         time: from,
@@ -205,7 +204,7 @@ function addProperties(
     // insert start frame if not present
     var to = from + duration
     if (!tail(keyframes, k => k.prop === name && k.time === to)) {
-      keyframes.push({
+      push(keyframes, {
         index,
         prop: name,
         time: to,

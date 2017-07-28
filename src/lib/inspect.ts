@@ -14,7 +14,7 @@ export function isString(a: any) {
   return typeof a === 'string'
 }
 export function isArrayLike(a: any) {
-  return isDefined(a) && !isString(a) && !isFunction(a) && isNumber(a.length)
+  return a && isFinite(a.length) && !isString(a)
 }
 export function isSVG(target: SVGElement | any) {
   return target instanceof SVGElement

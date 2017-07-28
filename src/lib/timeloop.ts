@@ -1,5 +1,6 @@
 import { caf, now, raf } from './utils'
 import { _ } from './constants'
+import { push } from './lists';
 
 const active: TimeLoopCallback[] = []
 const elapses: number[] = []
@@ -11,8 +12,7 @@ export type TimeLoopCallback = (delta: number, elapsed: number) => any
 
 function cancel() {
   caf(lastHandle)
-  lastHandle = _
-  lastTime = _
+  lastHandle = lastTime = _
 }
 
 function update() {
@@ -47,8 +47,8 @@ function update() {
 export function loopOn(fn: TimeLoopCallback) {
   const indexOfSub = active.indexOf(fn)
   if (indexOfSub === -1) {
-    active.push(fn)
-    elapses.push(0)
+    push(active, fn)
+    push(elapses, 0)
   }
 
   if (!lastHandle) {

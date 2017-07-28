@@ -3,13 +3,10 @@ export const S_PENDING = 2
 export const S_RUNNING = 3
 export const S_PAUSED = 4
 export const S_FINISHED = 5
-export const D_NORMAL = 'normal'
-export const D_ALTERNATIVE = 'alternate'
 
 export const _ = undefined as undefined
 
-export const measureExpression = /^[ ]*([\-]{0,1}[0-9]*[\.]{0,1}[0-9]*){1}[ ]*([a-z%]+){0,1}$/i
-export const unitExpression = /^[ ]*([+-][=]){0,1}[ ]*([\-]{0,1}[0-9]*[\.]{0,1}[0-9]+){1}[ ]*([a-z%]+){0,1}$/i
+export const measureExpression = /^([+|-]*[0-9]*[.]*?[0-9]+)([a-z%]+)*$/i
 
 export const ALTERNATE = 'alternate'
 export const CANCEL = 'cancel'

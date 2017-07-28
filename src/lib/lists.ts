@@ -100,12 +100,25 @@ export function pushDistinct<T extends string | number>(indexed: T[], item: T): 
   return item
 }
 
+export function mapFlatten<TInput, TOutput>(items: TInput[], mapper: (input: TInput) => TOutput | TOutput[]) {
+  var results: TOutput[] = []
+  for (var i = 0, ilen = items.length; i < ilen; i++) {
+    var result = mapper(items[i])
+    if (isArrayLike(result)) {
+      pushAll(results, result as TOutput[])
+    } else {
+      push(results, result as TOutput)
+    }
+  }
+  return results
+}
+
 /**
  * Pushes multiple items into the array
  * @param items 
  * @param newItems 
  */
-export function pushAll<T>(items: T[], newItems: T[]) {
+function pushAll<T>(items: T[], newItems: T[]) {
   for (let i = 0, ilen = newItems.length; i < ilen; i++) {
     if (isDefined(newItems[i])) {
       push(items, newItems[i])

@@ -5,7 +5,7 @@ export function now() {
 /**
  * Wrapper for raf with fallback to setTimeout
  */
-export function raf(fn: FrameRequestCallback): number {
+export function raf(fn: FrameRequestCallback) {
   return requestAnimationFrame(fn)
 }
 

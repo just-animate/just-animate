@@ -9,3 +9,7 @@ function camelCaseReplacer(_: string, p1: string, p2: string) {
 export function toCamelCase(value: string): string {
   return isString(value) ? (value as string).replace(camelCaseRegex, camelCaseReplacer) : ''
 }
+
+export function csvToList(data: string) {
+  return data.split(',')
+}

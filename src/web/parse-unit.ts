@@ -1,7 +1,5 @@
 import { isDefined } from '../lib/inspect';
-import { _ } from '../lib/constants';
-
-const measureExpression = /^([+|-]*[0-9]*[.]*?[0-9]+)([a-z%]+)*$/i
+import { _, measureExpression } from '../lib/constants';
 
 export interface Unit {
   value: number | undefined,

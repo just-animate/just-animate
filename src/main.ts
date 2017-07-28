@@ -23,12 +23,10 @@ export function animate(options?: types.AddAnimationOptions | types.AddAnimation
  */
 export function sequence(seqOptions: types.AddAnimationOptions[]) {
   const t1 = timeline()
-  forEach(seqOptions, opt => {
-    t1.add(opt)
-  })
+  forEach(seqOptions, opt => t1.add(opt))
   return t1
 }
 
 // export utils and types
-export { timeline, types }
+export { timeline }
 export { addPlugin, removePlugin } from './lib/plugins'

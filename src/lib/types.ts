@@ -105,19 +105,20 @@ export interface Effect {
  * @param opts the animation definition
  */
 export interface ITimeline {
-  currentTime: number,
-  duration: number,
-  playbackRate: number,
-  _nextTime: number,
-  _state: number,
-  _config: TargetConfiguration[],
-  _effects: AnimationTimelineController[],
-  _times: number,
-  _iteration: number,
-  _time: number,
-  _rate: number,
-  _dir: 'normal' | 'alternate',
-  _listeners: { [key: string]: { (time: number): void }[] },
+  currentTime?: number
+  duration?: number
+  playbackRate?: number
+  _nextTime?: number
+  _state?: number
+  _config?: TargetConfiguration[]
+  _effects?: AnimationTimelineController[]
+  _repeat?: number
+  _iteration?: number
+  _time?: number
+  _rate?: number
+  _alternate?: boolean
+  _listeners?: { [key: string]: { (time: number): void }[] }
+  _tick?: (delta: number) => void
   /**
    * Adds an animation at the end of the timeline, unless from/to are specified
    * @param opts the animation definition
@@ -182,7 +183,7 @@ export interface ITimeline {
    * @param iterations number of iterations to play the animation.  Use Infinity to loop forever
    * @param dir the direction the animation should play.  "normal" (default) or "alternate" (yoyo)
    */
-  play(iterations: number, dir: 'normal' | 'alternate'): this
+  play(options?: {repeat?: number, alternate?: boolean }): this
 
   /**
    * Reverses the animation playbackRate.  If the animation is currently playing, it will reverse the animation
@@ -199,11 +200,4 @@ export interface ITimeline {
    * Gets the pre-processed effects of the current configuration.  This is mostly used for testing purposes.
    */
   getEffects(): Effect[]
-
-  _update(type: string): this
-
-  _calcTimes(): void
-  _setup(): void
-
-  _tick( delta: number): void
 }
