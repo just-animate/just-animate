@@ -128,7 +128,7 @@ const timelineProto: ITimeline = {
   finish(this: ITimeline) {
     return updateTimeline(this, FINISH)
   },
-  on(this: ITimeline, eventName: string, listener: () => void) {
+  on(this: ITimeline, eventName: string, listener: (time: number) => void) {
     const self = this
     const { _listeners } = self
 
@@ -139,7 +139,7 @@ const timelineProto: ITimeline = {
 
     return self
   },
-  off(this: ITimeline, eventName: string, listener: () => void) {
+  off(this: ITimeline, eventName: string, listener: (time: number) => void) {
     const self = this
     const listeners = self._listeners[eventName]
     if (listeners) {
@@ -154,11 +154,14 @@ const timelineProto: ITimeline = {
     return updateTimeline(this, PAUSE)
   },
   play(this: ITimeline, options?: { repeat?: number, alternate?: boolean }) {
-    options = options || {}
-
     const self = this
-    self._repeat = options.repeat || 1
-    self._alternate = !!options.alternate
+    if (options) {
+      self._repeat = options.repeat
+      self._alternate = options.alternate === true
+    }
+     
+    self._repeat = self._repeat || 1
+    self._alternate = self._alternate || false
     self._state = S_RUNNING
     return updateTimeline(self, PLAY)
   },
@@ -296,6 +299,11 @@ function updateTimeline(self: ITimeline, type: string) {
     self._time = 0
     self._iteration = _
     self._effects = _
+  }
+  
+  // call extra update event on finish 
+  if (type === FINISH) {
+    forEach(self._listeners[UPDATE], c => c(time)) 
   }
 
   // notify event listeners

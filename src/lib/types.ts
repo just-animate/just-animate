@@ -164,14 +164,14 @@ export interface ITimeline {
    * @param eventName timeline event name
    * @param listener callback for when the event occurs
    */
-  on( eventName: string, listener: () => void): this
+  on( eventName: string, listener: (time: number) => void): this
 
   /**
    * Unregister for timeline events
    * @param eventName timeline event name
    * @param listener callback to unregister
    */
-  off( eventName: string, listener: () => void): this
+  off( eventName: string, listener: (time: number) => void): this
 
   /**
    * Pauses execution of the animation. If the animation has never been active, this will

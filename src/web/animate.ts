@@ -6,7 +6,6 @@ import { PENDING, FINISH } from '../lib/constants';
 
 // minimum amount of time left on an animation required to call .play()
 const frameSize = 17;
-const halfFrame = 8
 
 export function animate(effect: Effect): AnimationController {
   const { keyframes, prop, from, to, target } = effect
@@ -33,7 +32,7 @@ export function animate(effect: Effect): AnimationController {
     update(localTime: number, rate: number, isPlaying: boolean) { 
       const animator = getAnimator()
       
-      if (abs(animator.currentTime -  localTime) > halfFrame) {    
+      if (abs(animator.currentTime -  localTime) > 1) {    
         // sync if paused or seeking
         animator.currentTime = localTime
       }
@@ -42,7 +41,7 @@ export function animate(effect: Effect): AnimationController {
 
         // if current time is too close to the end, move it by 1 ms to prevent flickering
         // this is a fix for FireFox
-        const currentTime = animator.currentTime
+        const currentTime =  animator.currentTime
         if (currentTime < 1) {
           animator.currentTime = 1
         } else if (currentTime >= duration - 1) {

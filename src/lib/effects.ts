@@ -16,7 +16,7 @@ export function toEffects(configs: TargetConfiguration[]): Effect[] {
     // construct property animation options
     var effects: PropertyEffects = {}
     forEach(keyframes, p => {
-      const effect = (effects[p.prop] || (effects[p.prop] = []))
+      const effect = (effects[p.prop] || (effects[p.prop] = {}))
       const offset = (p.time - from) / (duration || 1)
       const value = resolveProperty(p.value, target, p.index)
 
