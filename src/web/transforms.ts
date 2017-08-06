@@ -23,8 +23,8 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
   forEach(transformNames, name => {
     const effect = effects[name]
     if (effect) {
-      forEach(Object.keys(effect), k => {
-        pushDistinct(offsets, +k)
+      forEach(Object.keys(effect), e => {
+        pushDistinct(offsets, +e)
       })
     }
   })

@@ -1,6 +1,5 @@
 import { AnimationTarget } from './types'
 import { mapFlatten } from './lists'
-import { getPlugins } from './plugins'
 import {
   isArrayLike,
   // isDOM,
@@ -15,7 +14,7 @@ import {
 export function getTargets(target: AnimationTarget): any[] {
   // if is a string, send to plugin for resolation
   return isString(target)
-    ? mapFlatten(getPlugins(), plugin => plugin.getTargets(target as string))
+    ? Array.prototype.slice.call(document.querySelectorAll(target as string))
       // if function, call it and call this function
       : isFunction(target)
         ? getTargets((target as { (): AnimationTarget })())

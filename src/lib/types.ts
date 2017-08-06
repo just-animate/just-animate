@@ -1,10 +1,5 @@
-export interface KeyframeOptions {
-  offset?: number
-  [val: string]: KeyframeValueResolver<string | number>
-}
-
 export interface PropertyOptions {
-  [name: string]: KeyframeValueResolver<string | number> | KeyframeValueResolver<string | number>[]
+  [name: string]: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
 }
 
 export interface Keyframe {
@@ -15,11 +10,19 @@ export interface Keyframe {
 export type AnimationTarget = any
 export type KeyframeValue = string | number
 
-export interface KeyframeFunction<T> {
-  (target?: any, index?: number): KeyframeValueResolver<T>
+export interface PropertyFunction<T> {
+  (target: any, index: number, len: number): T
 }
 
-export type KeyframeValueResolver<T> = T | KeyframeFunction<T>
+export interface PropertyObject {
+  value: string | number
+  offset?: number
+  easing?: string
+}
+
+export type PropertyValue = string | number | PropertyObject
+
+export type PropertyResolver<T> = T | PropertyFunction<T>
 
 export interface AnimationController {
   cancel(): void
@@ -31,20 +34,18 @@ export interface AnimationTimelineController extends AnimationController {
   to: number
 }
 
-export interface Plugin {
+export interface JustAnimatePlugin {
+  name: string 
   onWillAnimate?: { (target: TargetConfiguration, effects: PropertyEffects): void }
-
-  animate(effect: Effect): AnimationController
-  isHandled(target: AnimationTarget, propName: string): boolean  
+  animate(effect: Effect): AnimationController 
   getValue(target: AnimationTarget, key: string): string | number
-  getTargets(selector: string): any[]
 }
 
 export interface PropertyKeyframe {
   time: number
   prop: string
   index: number
-  value: KeyframeValueResolver<string | number>
+  value: string | number
 }
 export interface PropertyEffects {
   [name: string]: {
@@ -54,6 +55,7 @@ export interface PropertyEffects {
 
 export interface TargetConfiguration {
   target: AnimationTarget
+  targetLength: number
   propNames: string[]
   from: number
   to: number
@@ -64,15 +66,11 @@ export interface TargetConfiguration {
 
 export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
-  props: KeyframeOptions[] | PropertyOptions
   stagger?: number
-  delay?: KeyframeValueResolver<number>
-  endDelay?: KeyframeValueResolver<number>
-}
-
-export interface ToAnimationOptions extends BaseAnimationOptions {
-  duration?: number
-  from?: number
+  delay?: PropertyResolver<number>
+  endDelay?: PropertyResolver<number>
+  props?: PropertyOptions
+  web?: PropertyOptions
 }
 
 export interface AddAnimationOptions extends BaseAnimationOptions {
@@ -85,15 +83,17 @@ export interface AnimationOptions {
   from: number
   to: number
   duration: number
-  targets: AnimationTarget[]
-  props: PropertyOptions | KeyframeOptions[]
+  targets: AnimationTarget[] 
   stagger?: number
-  delay?: KeyframeValueResolver<number>
-  endDelay?: KeyframeValueResolver<number>
+  delay?: PropertyResolver<number>
+  endDelay?: PropertyResolver<number>
+  props?: PropertyOptions
+  web?: PropertyOptions
 }
 
 export interface Effect {
   target: AnimationTarget
+  plugin: string
   prop: string;
   keyframes: Keyframe[]
   to: number
@@ -110,7 +110,9 @@ export interface ITimeline {
   playbackRate?: number
   _nextTime?: number
   _state?: number
-  _config?: TargetConfiguration[]
+  _configs?: {
+    [plugin: string]: TargetConfiguration[]
+  }
   _effects?: AnimationTimelineController[]
   _repeat?: number
   _iteration?: number
@@ -133,18 +135,6 @@ export interface ITimeline {
    * @param options the animation definition.
    */
   fromTo( from: number, to: number, options: BaseAnimationOptions): this
-
-  /**
-   * Defines an animation ending at the "to" parameter.
-   *
-   * The following rules are used to find the starting point:
-   * - If "from" is not provided, "duration" is used instead.
-   * - If neither "from" nor "duration" are specified, the duration of the animation is used as the starting point.
-   *
-   * @param to the end time in milliseconds
-   * @param opts the animation definition
-   */
-  to( to: number, opts: ToAnimationOptions): this
 
   /**
    * Cancels an animation, removes all effects, and resets internal state

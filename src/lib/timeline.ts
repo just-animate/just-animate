@@ -7,7 +7,7 @@ import { getPlugins } from './plugins'
 import { resolveProperty } from './resolve-property'
 import { loopOn, loopOff } from './timeloop'
 import { toEffects, addPropertyKeyframes } from './effects'
-import { sortBy, forEach, head, push } from './lists'
+import { sortBy, forEach, head, push, mapFlatten } from './lists'
 import { isDefined } from './inspect'
 import { getTargets } from './get-targets'
 import { max, inRange, minMax, rnd, flr } from './math'
@@ -18,9 +18,9 @@ import {
   BaseAnimationOptions,
   Effect,
   PropertyKeyframe,
-  ToAnimationOptions,
   AnimationTimelineController,
-  ITimeline
+  ITimeline,
+  TargetConfiguration
 } from './types'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
@@ -75,7 +75,7 @@ const timelineProto: ITimeline = {
   },
   fromTo(this: ITimeline, from: number, to: number, options: BaseAnimationOptions) {
     const self = this
-    const config = self._config
+    const plugins = getPlugins();
 
     // ensure to/from are in milliseconds (as numbers)
     const options2 = options as AnimationOptions
@@ -83,44 +83,40 @@ const timelineProto: ITimeline = {
     options2.to = to
     options2.duration = options2.to - options2.from
 
-    // add all targets as property keyframes
-    forEach(getTargets(options.targets), (target, i) => {
-      const delay = resolveProperty(options2.delay, target, i) || 0
-      const targetConfig =
-        head(config, t2 => t2.target === target) ||
-        push(config, {
-          from: max(options2.from + delay, 0),
-          to: max(options2.to + delay, 0),
-          duration: options2.to - options2.from,
-          endDelay: resolveProperty(options2.endDelay, target, i) || 0,
-          target,
-          keyframes: [],
-          propNames: []
-        })
+    for (let pluginName in plugins) {
+      const plugin = plugins[pluginName]
+      if (!options.hasOwnProperty(pluginName)) {
+        continue
+      }
+      const config = self._configs[pluginName] || (self._configs[pluginName] = [] as TargetConfiguration[])
 
-      addPropertyKeyframes(targetConfig, i, options2)
-    })
+      // add all targets as property keyframes
+      forEach(getTargets(options.targets), (target, i, ilen) => {
+        const delay = resolveProperty(options2.delay, target, i, ilen) || 0
 
-    // sort property keyframes
-    forEach(config, c => c.keyframes.sort(propKeyframeSort))
+        const targetConfig =
+          head(config, t2 => t2.target === target) ||
+          push(config, {
+            from: max(options2.from + delay, 0),
+            to: max(options2.to + delay, 0),
+            duration: options2.to - options2.from,
+            endDelay: resolveProperty(options2.endDelay, target, i, ilen) || 0,
+            target,
+            targetLength: ilen,
+            keyframes: [],
+            propNames: []
+          })
+
+        addPropertyKeyframes(plugin.name, targetConfig, i, options2)
+      })
+
+      // sort property keyframes
+      forEach(config, c => c.keyframes.sort(propKeyframeSort))
+    }
 
     // recalculate property keyframe times and total duration
     calculateTimes(self)
     return self
-  },
-  to(this: ITimeline, to: number, opts: ToAnimationOptions) {
-    const { duration } = this
-
-    let fromTime: number
-    if (isDefined(opts.from)) {
-      fromTime = opts.from
-    } else if (isDefined(opts.duration)) {
-      fromTime = to - opts.duration
-    } else {
-      fromTime = duration
-    }
-
-    return this.fromTo(fromTime, to, opts)
   },
   cancel(this: ITimeline) {
     return updateTimeline(this, CANCEL)
@@ -159,7 +155,7 @@ const timelineProto: ITimeline = {
       self._repeat = options.repeat
       self._alternate = options.alternate === true
     }
-     
+
     self._repeat = self._repeat || 1
     self._alternate = self._alternate || false
     self._state = S_RUNNING
@@ -176,7 +172,9 @@ const timelineProto: ITimeline = {
     return self
   },
   getEffects(this: ITimeline): Effect[] {
-    return toEffects(this._config)
+    const { _configs } = this
+    const plugins = getPlugins()
+    return mapFlatten(Object.keys(_configs), k => toEffects(plugins[k], _configs[k]))
   }
 };
 
@@ -184,61 +182,63 @@ function calculateTimes(self: ITimeline) {
   let timelineTo = 0
   let maxNextTime = 0
 
-  forEach(self._config, target => {
-    const { keyframes } = target
+  for (let pluginName in self._configs) {
+    forEach(self._configs[pluginName], target => {
+      const { keyframes } = target
 
-    var targetFrom: number
-    var targetTo: number
+      var targetFrom: number
+      var targetTo: number
 
-    forEach(keyframes, keyframe => {
-      const time = keyframe.time
-      if (time < targetFrom || targetFrom === _) {
-        targetFrom = time
-      }
-      if (time > targetTo || targetTo === _) {
-        targetTo = time
-        if (time > timelineTo) {
-          timelineTo = time
+      forEach(keyframes, keyframe => {
+        const time = keyframe.time
+        if (time < targetFrom || targetFrom === _) {
+          targetFrom = time
         }
-      }
+        if (time > targetTo || targetTo === _) {
+          targetTo = time
+          if (time > timelineTo) {
+            timelineTo = time
+          }
+        }
+      })
+
+      target.to = targetTo
+      target.from = targetFrom
+      target.duration = targetTo - targetFrom
+
+      maxNextTime = max(targetTo + target.endDelay, maxNextTime)
     })
-
-    target.to = targetTo
-    target.from = targetFrom
-    target.duration = targetTo - targetFrom
-
-    maxNextTime = max(targetTo + target.endDelay, maxNextTime)
-  })
+  }
 
   self._nextTime = maxNextTime
   self.duration = timelineTo
 }
 function setupEffects(self: ITimeline) {
-  if (!self._effects) {
-    const effects = toEffects(self._config)
-    const plugins = getPlugins()
-    const animations: AnimationTimelineController[] = []
-
-    forEach(effects, effect => {
-      forEach(plugins, p => {
-        // return false to stop the loop, undefined to continue
-        if (p.isHandled(effect.target, effect.prop)) {
-          const controller = p.animate(effect) as AnimationTimelineController
-          if (controller) {
-            controller.from = effect.from
-            controller.to = effect.to
-            push(animations, controller)
-          }
-
-          return false
-        }
-        return _
-      })
-    })
-
-    self._time = self._rate < 0 ? self.duration : 0
-    self._effects = animations
+  if (self._effects) {
+    return
   }
+
+  const animations: AnimationTimelineController[] = []
+  const plugins = getPlugins()
+  for (let pluginName in plugins) {  
+    const plugin = plugins[pluginName]
+    const config = self._configs[pluginName]
+    if (!config) {
+      continue
+    }
+
+    forEach(toEffects(plugin, config), effect => {
+      const controller = plugin.animate(effect) as AnimationTimelineController
+      if (controller) {
+        controller.from = effect.from
+        controller.to = effect.to
+        push(animations, controller)
+      }
+    })
+  }
+
+  self._time = self._rate < 0 ? self.duration : 0
+  self._effects = animations
 }
 function updateTimeline(self: ITimeline, type: string) {
 
@@ -300,10 +300,10 @@ function updateTimeline(self: ITimeline, type: string) {
     self._iteration = _
     self._effects = _
   }
-  
+
   // call extra update event on finish 
   if (type === FINISH) {
-    forEach(self._listeners[UPDATE], c => c(time)) 
+    forEach(self._listeners[UPDATE], c => c(time))
   }
 
   // notify event listeners
@@ -370,7 +370,7 @@ function tick(self: ITimeline, delta: number) {
     if (self._alternate) {
       self._rate = (self._rate || 0) * -1
     }
-    
+
     // reset the clock
     time = self._rate < 0 ? duration : 0
   }
@@ -409,7 +409,7 @@ export function timeline(): ITimeline {
   self._time = 0
   self._alternate = false
   self._state = S_IDLE
-  self._config = []
+  self._configs = {}
   self._listeners = {}
   self._tick = (delta) => tick(self, delta)
   return self

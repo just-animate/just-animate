@@ -16,10 +16,10 @@ describe('transforms', () => {
         targets: target,
         duration: 1000,
         stagger: 80,
-        props: [
-          { transform: 'none' },
-          { y: 360 }
-        ]
+        web: {
+          transform: ['none'],
+          y: [undefined, 360]
+        }
       })
 
       timeline.getEffects()
@@ -37,11 +37,9 @@ describe('transforms', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      props: [
-        { transform: 'none' },
-        { transform: 'rotate(180deg)' },
-        { transform: 'none' }
-      ]
+      web: {
+        transform: ['none', 'rotate(180deg)', 'none']
+      }
     })
 
     const actual = timeline.getEffects()
@@ -50,6 +48,7 @@ describe('transforms', () => {
       target: target,
       from: 0,
       to: 1000,
+      plugin: 'web',
       prop: 'transform',
       keyframes: [
         { offset: 0, value: 'none' },
@@ -60,7 +59,7 @@ describe('transforms', () => {
 
     document.body.removeChild(target)
   });
-  
+
   it('leaves units intact', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
@@ -68,11 +67,9 @@ describe('transforms', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      props: [
-        { x: '10vh' },
-        { x: '-20vh' },
-        { x: '0.5vh' }
-      ]
+      web: {
+        x: ['10vh', '-20vh', '0.5vh']
+      }
     })
 
     const actual = timeline.getEffects()
@@ -81,6 +78,7 @@ describe('transforms', () => {
       target: target,
       from: 0,
       to: 1000,
+      plugin: 'web',
       prop: 'transform',
       keyframes: [
         { offset: 0, value: 'translateX(10vh)' },
@@ -100,7 +98,7 @@ describe('transforms', () => {
       targets: target,
       duration: 1000,
       stagger: 80,
-      props: {
+      web: {
         y: [0, 200, 0],
         rotate: [0, 180, 360]
       }
@@ -124,7 +122,7 @@ describe('transforms', () => {
       targets: target,
       duration: 1000,
       stagger: 80,
-      props: {
+      web: {
         y: [0, 200, 0],
         rotate: [0, 360]
       }
@@ -149,11 +147,10 @@ describe('transforms', () => {
       targets: target,
       duration: 1000,
       stagger: 80,
-      props: [
-        { y: 0, rotate: 0 },
-        { y: 200 },
-        { y: 0, rotate: 360 }
-      ]
+      web: {
+        y: [0, 200, 0],
+        rotate: [0, 360]
+      }
     })
 
     timeline.pause()
@@ -174,11 +171,13 @@ describe('transforms', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      props: [
-        { rotate: 180 },
-        { y: 120 },
-        { y: 0 }
-      ]
+      web: {
+        rotate: [180, 180],
+        y: [
+          { offset: .5, value: 120 },
+          { offset: 1, value: 0 }
+        ]
+      }
     })
     const actual = timeline.getEffects()
 
@@ -186,6 +185,7 @@ describe('transforms', () => {
       target: target,
       from: 0,
       to: 1000,
+      plugin: 'web',
       prop: 'transform',
       keyframes: [
         { offset: 0, value: 'rotate(180deg)' },

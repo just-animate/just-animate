@@ -1,17 +1,15 @@
-import { Plugin } from './types'
-import { push } from './lists';
+import { JustAnimatePlugin } from './types'
 
-const plugins: Plugin[] = []
+const plugins: { [plugName: string]: JustAnimatePlugin } = {}
+
 export function getPlugins() {
   return plugins
 }
-export function addPlugin(plugin: Plugin) {
-  return push(plugins, plugin)
+
+export function addPlugin(plugin: JustAnimatePlugin) {
+  plugins[plugin.name] = plugin
 }
 
-export function removePlugin(plugin: Plugin) {
-  var indexOfPlugin = plugins.indexOf(plugin)
-  if (indexOfPlugin !== -1) {
-    plugins.splice(indexOfPlugin, 1);
-  }
+export function removePlugin(plugin: JustAnimatePlugin) {
+  delete plugins[plugin.name]
 }

@@ -12,10 +12,9 @@ describe('staggering', () => {
       targets: targets,
       duration: 1000,
       stagger: 100,
-      props: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
+      props: {
+        opacity: [0, 1]
+      }
     })
 
     const actual = timeline.getEffects()
@@ -25,6 +24,7 @@ describe('staggering', () => {
         target: {},
         from: 100,
         to: 1100,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },
@@ -35,6 +35,7 @@ describe('staggering', () => {
         target: {},
         from: 200,
         to: 1200,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },
@@ -45,6 +46,7 @@ describe('staggering', () => {
         target: {},
         from: 300,
         to: 1300,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },
@@ -55,6 +57,7 @@ describe('staggering', () => {
         target: {},
         from: 400,
         to: 1400,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },

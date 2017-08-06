@@ -6,20 +6,21 @@ describe('basic', () => {
   it('resolves single target', () => {
     /* Test code */
     const target1 = {}
-    const timeline = animate()
-      .to(1000, {
-        targets: target1,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
-      })
+
+    const timeline = animate({
+      duration: 1000,
+      targets: target1,
+      props: {
+        opacity: [0, 1]
+      }
+    })
 
     const actual = timeline.getEffects()[0]
     assert.deepEqual(actual, {
       target: target1,
       from: 0,
       to: 1000,
+      plugin: 'props',
       prop: 'opacity',
       keyframes: [
         { offset: 0, value: 0 },
@@ -36,25 +37,24 @@ describe('basic', () => {
       .add({
         duration: 1000,
         targets: target,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        props: {
+          opacity: [0, 1]
+        }
       })
 
     const actual = timeline.getEffects()
-
-    const expected = [{
+ 
+    assert.deepEqual<{}>(actual, [{
       target,
       from: 0,
       to: 1000,
-       prop: 'opacity',
+      plugin: 'props',
+      prop: 'opacity',
       keyframes: [
         { offset: 0, value: 0 },
         { offset: 1, value: 1 }
       ]
-    }]
-    assert.deepEqual<{}>(actual, expected)
+    }])
   })
 
   it('decomposes and then re-composes a single set of keyframes for multiple targets', () => {
@@ -63,28 +63,29 @@ describe('basic', () => {
     const target2 = { id: 'element2' }
 
     const timeline = animate()
-      .to(1000, {
+      .add({
+        duration: 1000,
         targets: [target1],
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        props: {
+          opacity: [0, 1]
+        }
       })
-      .to(2000, {
+      .add({
+        duration: 1000,
         targets: [target2],
-        props: [
-          { number: 0 },
-          { number: 200 }
-        ]
+        props: {
+          number: [0, 200]
+        }
       })
 
     const actual = timeline.getEffects()
-
-    const expected = [{
+ 
+    assert.deepEqual<{}>(actual, [{
       target: target1,
       from: 0,
       to: 1000,
-       prop: 'opacity',
+      plugin: 'props',
+      prop: 'opacity',
       keyframes: [
         { offset: 0, value: 0 },
         { offset: 1, value: 1 }
@@ -94,14 +95,13 @@ describe('basic', () => {
       target: target2,
       from: 1000,
       to: 2000,
+      plugin: 'props',      
       prop: 'number',
       keyframes: [
         { offset: 0, value: 0 },
         { offset: 1, value: 200 }
       ]
-    }]
-
-    assert.deepEqual<{}>(actual, expected)
+    }])
   })
 
   it('functions on properties resolve target', () => {
@@ -113,20 +113,21 @@ describe('basic', () => {
       return (target as any).opacity;
     }
 
-    const timeline = animate()
-      .to(1000, {
-        targets: [target1, target2],
-        props: [
-          { opacity: opacityFromTarget },
-          { opacity: 1 }
-        ]
-      })
+    const timeline = animate({
+      duration: 1000,
+      targets: [target1, target2],
+      props: {
+        opacity: [opacityFromTarget, 1]
+      }
+    })
 
-    const actual = timeline.getEffects()
-    const expected = [{
+    const actual = timeline.getEffects() 
+    
+    assert.deepEqual<{}>(actual, [{
       target: { opacity: .1 },
       from: 0,
       to: 1000,
+      plugin: 'props',            
       prop: 'opacity',
       keyframes: [
         { offset: 0, value: .1 },
@@ -136,14 +137,13 @@ describe('basic', () => {
       target: { opacity: .2 },
       from: 0,
       to: 1000,
+      plugin: 'props',            
       prop: 'opacity',
       keyframes: [
         { offset: 0, value: .2 },
         { offset: 1, value: 1 }
       ]
-    }]
-
-    assert.deepEqual<{}>(actual, expected)
+    }])
   })
 
   it('functions on properties resolve index', () => {
@@ -155,20 +155,20 @@ describe('basic', () => {
       return .1 * (index + 1)
     }
 
-    const timeline = animate()
-      .to(1000, {
-        targets: [target1, target2],
-        props: [
-          { opacity: opacityFromIndex },
-          { opacity: 1 }
-        ]
-      })
+    const timeline = animate({
+      duration: 1000,
+      targets: [target1, target2],
+      props: {
+        opacity: [opacityFromIndex, 1]
+      }
+    })
 
     const actual = timeline.getEffects()
     const expected = [{
       target: {},
       from: 0,
       to: 1000,
+      plugin: 'props',  
       prop: 'opacity',
       keyframes: [
         { offset: 0, value: .1 },
@@ -178,7 +178,8 @@ describe('basic', () => {
       target: {},
       from: 0,
       to: 1000,
-       prop: 'opacity',
+      plugin: 'props',  
+      prop: 'opacity',
       keyframes: [
         { offset: 0, value: .2 },
         { offset: 1, value: 1 }
@@ -188,27 +189,32 @@ describe('basic', () => {
     assert.deepEqual<{}>(actual, expected)
   })
 
-  it('only last value for opacity at an offset is kept, others are ignored', () => {
+  it('only first value for opacity at an offset is kept, others are ignored', () => {
     /* Test code */
     const target1 = {}
-    const timeline = animate()
-      .to(1000, {
-        targets: [target1],
-        props: [
-          { opacity: 0, offset: 0 },
-          { opacity: 1, offset: 0 },
-          { opacity: 1 }
+    const timeline = animate({
+      duration: 1000,
+      targets: [target1],
+      props: {
+        opacity: [
+          { value: 0, offset: 0 },
+          { value: 1, offset: 0 },
+          { value: 1, offset: 1 },
+          { value: 0, offset: 1 }
         ]
-      })
+      }
+    })
 
     const actual = timeline.getEffects()[0]
+
     const expected = {
       target: {},
       from: 0,
       to: 1000,
-       prop: 'opacity',
+      plugin: 'props',  
+      prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 1 },
+        { offset: 0, value: 0 },
         { offset: 1, value: 1 }
       ]
     }

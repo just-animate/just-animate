@@ -16,10 +16,9 @@ describe('timeline.add()', () => {
       .add({
         targets: target,
         duration: 1000,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        web: {
+          opacity: [0, 1]
+        }
       })
 
     timeline.pause()
@@ -45,10 +44,9 @@ describe('timeline.add()', () => {
         targets: target,
         from: 500,
         duration: 1000,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        web: {
+          opacity: [0, 1]
+        }
       })
 
     timeline.pause()

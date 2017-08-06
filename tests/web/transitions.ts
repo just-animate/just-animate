@@ -16,7 +16,7 @@ describe('transitions', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      props: {
+      web: {
         opacity: 0
       }
     })

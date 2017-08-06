@@ -27,7 +27,4 @@ export const aliases = {
 // animatable length properties
 // tslint:disable-next-line:max-line-length
 export const cssLengths = csvToList(`backgroundSize,border,borderBottom,borderBottomLeftRadius,borderBottomRightRadius,borderBottomWidth,borderLeft,borderLeftWidth,borderRadius,borderRight,borderRightWidth,borderTop,borderTopLeftRadius,borderTopRightRadius,borderTopWidth,borderWidth,bottom,columnGap,columnRuleWidth,columnWidth,columns,flexBasis,font,fontSize,gridColumnGap,gridGap,gridRowGap,height,left,letterSpacing,lineHeight,margin,marginBottom,marginLeft,marginRight,marginTop,maskSize,maxHeight,maxWidth,minHeight,minWidth,outline,outlineOffset,outlineWidth,padding,paddingBottom,paddingLeft,paddingRight,paddingTop,perspective,right,shapeMargin,tabSize,top,width,wordSpacing`)
-// tslint:disable-next-line:max-line-length
-export const cssOtherProps = csvToList('all,backdropFilter,background,backgroundColor,backgroundPosition,borderBottomColor,borderColor,borderLeftColor,borderRightColor,borderTopColor,boxShadow,caretColor,clip,clipPath,color,columnCount,columnRule,columnRuleColor,filter,flex,flexGrow,flexShrink,fontSizeAdjust,fontStretch,fontVariationSettings,fontWeight,mask,maskPosition,objectPosition,offset,offsetAnchor,offsetDistance,offsetPath,offsetPosition,offsetRotate,opacity,order,outlineColor,perspectiveOrigin,scrollSnapCoordinate,scrollSnapDestination,shapeImageThreshold,shapeOutside,textDecoration,textDecorationColor,textEmphasis,textEmphasisColor,textIndent,textShadow,transformOrigin,verticalAlign,visibility,zIndex')
-
-export const cssProps = [TRANSFORM].concat(transforms, cssLengths, cssOtherProps)
+export const cssProps = [TRANSFORM].concat(transforms, cssLengths)

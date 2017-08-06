@@ -13,24 +13,27 @@ describe('basic', () => {
     /* Test code */
     const target = document.createElement('div')
     document.body.appendChild(target)
-
+ 
     const timeline = animate()
       .fromTo(200, 500, {
-        targets: [target],
-        props: [
-          { opacity: 0, left: 0 },
-          { offset: .2, left: 40 },
-          { opacity: .5, left: 0 },
-          { offset: .8, left: 90 },
-          { opacity: 1, left: 100 }
-        ]
+        targets: target,
+        web: {
+          opacity: [0, .5, 1],
+          left: [
+            0,
+            { offset: .2, value: 40 },
+            0,
+            { offset: .8, value: 90 },
+            100
+          ]
+        }
       })
       .fromTo(600, 1000, {
         targets: [target],
-        props: [
-          { opacity: 1, left: 100 },
-          { opacity: 0, left: 0 }
-        ]
+        web: {
+          opacity: [1, 0],
+          left: [100, 0]
+        }
       })
 
     const actual = timeline.getEffects()
@@ -39,10 +42,11 @@ describe('basic', () => {
       target: target,
       from: 200,
       to: 1000,
+      plugin: 'web',
       prop: 'opacity',
       keyframes: [
         { offset: 0, value: 0 },
-        { offset: 0.15, value: 0.5 },
+        { offset: 0.1875, value: 0.5 },
         { offset: 0.375, value: 1 },
         { offset: 0.5, value: 1 },
         { offset: 1, value: 0 }
@@ -51,6 +55,7 @@ describe('basic', () => {
       target: target,
       from: 200,
       to: 1000,
+      plugin: 'web',      
       prop: 'left',
       keyframes: [
         { offset: 0, value: '0px' },
@@ -77,20 +82,20 @@ describe('basic', () => {
     el2.classList.add('single-target-element')
     document.body.appendChild(el2)
 
-    const timeline = animate()
-      .to(1000, {
-        targets: '.single-target-element',
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
-      })
+    const timeline = animate({
+      duration: 1000,
+      targets: '.single-target-element',
+      web: {
+        opacity: [0, 1]
+      }
+    })
 
     const actual = timeline.getEffects()
     const expected = [{
       target: el1,
       from: 0,
       to: 1000,
+      plugin: 'web',      
       prop: 'opacity',
       keyframes: [
         { offset: 0, value: 0 },
@@ -100,6 +105,7 @@ describe('basic', () => {
       target: el2,
       from: 0,
       to: 1000,
+      plugin: 'web',      
       prop: 'opacity',
       keyframes: [
         { offset: 0, value: 0 },
@@ -119,10 +125,9 @@ describe('basic', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      props: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
+      web: {
+        opacity: [0, 1]
+      }
     })
 
     timeline.pause()
@@ -138,10 +143,9 @@ describe('basic', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      props: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
+      web: {
+        opacity: [0, 1]
+      }
     })
 
     timeline.pause()
@@ -156,10 +160,9 @@ describe('basic', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      props: [
-        { opacity: 0 },
-        { opacity: 1 }
-      ]
+      web: {
+        opacity: [0, 1]
+      }
     })
 
     timeline.pause()
@@ -175,11 +178,9 @@ describe('basic', () => {
     const timeline = animate({
       targets: target,
       duration: 1000,
-      props: [
-        { opacity: 0 },
-        { opacity: 1, offset: .4 },
-        { opacity: 0 }
-      ]
+      web: {
+        opacity: [0, { offset: .4, value: 1 }, 0]
+      }
     })
 
     timeline.pause()

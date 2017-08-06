@@ -1,34 +1,29 @@
-import { AnimationOptions, Effect, KeyframeOptions, PropertyEffects, PropertyOptions, TargetConfiguration } from './types'
+import { AnimationOptions, Effect, PropertyEffects, PropertyResolver, PropertyValue, TargetConfiguration, PropertyObject, JustAnimatePlugin } from './types'
 import { resolveProperty } from './resolve-property'
-import { getPlugins } from './plugins'
 import { forEach, indexOf, list, head, tail, pushDistinct, push } from './lists'
-import { isDefined, isArrayLike } from './inspect'
+import { isDefined, isObject, isNumber } from './inspect'
 import { flr, max } from './math'
 import { _ } from './constants';
 
-export function toEffects(configs: TargetConfiguration[]): Effect[] {
+export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguration[]): Effect[] {
   const result: Effect[] = []
-  const plugins = getPlugins()
 
   forEach(configs, targetConfig => {
-    const { from, to, duration, keyframes, target } = targetConfig
+    const { from, to, duration, keyframes, target, targetLength } = targetConfig
 
     // construct property animation options
     var effects: PropertyEffects = {}
     forEach(keyframes, p => {
-      const effect = (effects[p.prop] || (effects[p.prop] = {}))
+      const effect2 = (effects[p.prop] || (effects[p.prop] = {}))
       const offset = (p.time - from) / (duration || 1)
-      const value = resolveProperty(p.value, target, p.index)
-
-      effect[offset] = value
+      const value2 = resolveProperty(p.value, target, p.index, targetLength)
+      effect2[offset] = value2
     })
 
     // process handlers
-    forEach(plugins, plugin => {
-      if (plugin.onWillAnimate) {
-        plugin.onWillAnimate(targetConfig, effects)
-      }
-    })
+    if (plugin.onWillAnimate) {
+      plugin.onWillAnimate(targetConfig, effects)
+    }
 
     for (var prop in effects) {
       var effect = effects[prop]
@@ -46,24 +41,19 @@ export function toEffects(configs: TargetConfiguration[]): Effect[] {
         const firstFrame = head(effectKeyframes, c => c.offset === 0)
         if (firstFrame === _ || firstFrame.value === _) {
           // add keyframe if offset 0 is missing
-          for (var i = 0, ilen = plugins.length; i < ilen; i++) {
-            var plugin = plugins[i]
-            if (plugin.isHandled(target, prop)) {
-              var value = plugin.getValue(target, prop)
-              if (firstFrame === _) {
-                effectKeyframes.splice(0, 0, {
-                  offset: 0,
-                  value: value
-                })
-              } else {
-                firstFrame.value = value
-              } 
-              break
-            }
+          var value = plugin.getValue(target, prop)
+          if (firstFrame === _) {
+            effectKeyframes.splice(0, 0, {
+              offset: 0,
+              value: value
+            })
+          } else {
+            firstFrame.value = value
           }
         }
 
         push(result, {
+          plugin: plugin.name,
           target,
           prop,
           from,
@@ -78,143 +68,109 @@ export function toEffects(configs: TargetConfiguration[]): Effect[] {
 }
 
 export function addPropertyKeyframes(
+  pluginName: string,
   target: TargetConfiguration,
   index: number,
   options: AnimationOptions
 ) {
-  const props = options.props
+  const props = options[pluginName]
   const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0
-  const delayMs = resolveProperty(options.delay, target, index) || 0
+  const delayMs = resolveProperty(options.delay, target, index, target.targetLength) || 0
   const from = max(staggerMs + delayMs + options.from, 0)
   const duration = options.to - options.from
 
-  if (isArrayLike(props)) {
-    // fill in missing offsets
-    inferOffsets(options.props as KeyframeOptions[])
-    addKeyframes(target, index, props as KeyframeOptions[], duration, from)
-  } else {
-    addProperties(target, index, props as PropertyOptions, duration, from)
+  // iterate over each property split it into keyframes
+  for (var name in props) {
+    if (props.hasOwnProperty(name)) {
+      addProperty(target, index, name, props[name], duration, from)
+    }
   }
 }
 
-function addKeyframes(
+function addProperty(
   target: TargetConfiguration,
   index: number,
-  props: KeyframeOptions[],
+  name: string,
+  val: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[],
   duration: number,
   from: number
 ) {
-  forEach(props, keyframe => {
-    const time = flr(duration * keyframe.offset + from)
-    const keyframes = target.keyframes
+  // skip undefined options
+  if (!isDefined(val)) {
+    return
+  }
 
-    for (var name in keyframe) {
-      if (name === 'offset') {
-        continue
-      }
+  // add property to list of properties
+  pushDistinct(target.propNames, name)
 
-      var value = keyframe[name] as string | number
-      if (!isDefined(value)) {
-        continue
-      }
+  // resolve options to keyframes
+  const keyframes = list(val).map((v, i, vals) => {
+    const valOrObj = resolveProperty(v, target.target, index, target.targetLength)
+    const valObj = valOrObj as PropertyObject
+    const isObj2 = isObject(valOrObj)
 
-      // add property name if not present 
-      pushDistinct(target.propNames, name)
+    const value = isObj2 ? valObj.value : valOrObj as string | number
 
-      // find matching keyframe
-      var existingFrame = head(keyframes, k => k.prop === name && k.time === time)
-      if (existingFrame) {
-        existingFrame.value = value
-        continue
-      }
+    const offset = isObj2 && isNumber(valObj.offset)
+      // object has an explicit offset  
+      ? valObj.offset
+      : i === vals.length - 1
+        // last in array is offset: 1       
+        ? 1
+        : i === 0
+          // first in the array is offset: 0
+          ? 0
+          : _;
 
-      push(keyframes, {
-        index,
-        prop: name,
-        time,
-        value
-      })
-    }
+    const easing = valObj.easing || 'linear'
+
+    return { offset, value, easing }
   })
-}
 
-function addProperties(
-  target: TargetConfiguration,
-  index: number,
-  props: PropertyOptions,
-  duration: number,
-  from: number
-): void {
-  // iterate over each property split it into keyframes
-  for (var name in props) {
-    if (!props.hasOwnProperty(name)) {
-      continue
+  // insert offsets where not present
+  inferOffsets(keyframes)
+
+  keyframes.forEach(keyframe => {
+    const { offset, value } = keyframe
+    const time = flr(duration * offset + from)
+    const indexOfFrame = indexOf(target.keyframes, k => k.prop === name && k.time === time)
+
+    if (indexOfFrame !== -1) {
+      keyframes[indexOfFrame].value = value
+      return
     }
 
-    var val = props[name]
-    // skip undefined options
-    if (!isDefined(val)) {
-      continue
-    }
+    push(target.keyframes, {
+      index,
+      prop: name,
+      time,
+      value
+    })
+  })
 
-    var keyframes = target.keyframes
-    var valAsArray = list(val)
-    for (var i = 0, ilen = valAsArray.length; i < ilen; i++) {
-      var offset: number
-      if (i === ilen - 1) {
-        offset = 1
-      } else if (i === 0) {
-        offset = 0
-      } else {
-        offset = i / (ilen - 1.0)
-      }
+  // insert start frame if not present
+  if (!head(target.keyframes, k => k.prop === name && k.time === from)) {
+    push(target.keyframes, {
+      index,
+      prop: name,
+      time: from,
+      value: _
+    })
+  }
 
-      var time = flr(duration * offset + from)
-
-      // add property name if not present
-      pushDistinct(target.propNames, name)
-
-      // find matching keyframe
-      var indexOfFrame = indexOf(keyframes, k => k.prop === name && k.time === time)
-
-      var value = valAsArray[i]
-      if (indexOfFrame !== -1) {
-        keyframes[indexOfFrame].value = value
-        continue
-      }
-
-      push(keyframes, {
-        index,
-        prop: name,
-        time,
-        value
-      })
-    }
-
-    // insert start frame if not present
-    if (!head(keyframes, k => k.prop === name && k.time === from)) {
-      push(keyframes, {
-        index,
-        prop: name,
-        time: from,
-        value: _
-      })
-    }
-
-    // insert start frame if not present
-    var to = from + duration
-    if (!tail(keyframes, k => k.prop === name && k.time === to)) {
-      push(keyframes, {
-        index,
-        prop: name,
-        time: to,
-        value: _
-      })
-    }
+  // insert start frame if not present
+  var to = from + duration
+  if (!tail(target.keyframes, k => k.prop === name && k.time === to)) {
+    push(target.keyframes, {
+      index,
+      prop: name,
+      time: to,
+      value: _
+    })
   }
 }
 
-function inferOffsets(keyframes: KeyframeOptions[]) {
+function inferOffsets(keyframes: PropertyObject[]) {
   if (!keyframes.length) {
     return
   }

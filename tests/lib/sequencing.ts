@@ -11,18 +11,16 @@ describe('sequencing', () => {
       {
         duration: 1000,
         targets: target1,
-        props: [
-          { opacity: 1 },
-          { opacity: 0 }
-        ]
+        props: {
+          opacity: [1, 0]
+        }
       },
       {
         duration: 1000,
         targets: target2,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        props: {
+          opacity: [0, 1]
+        }
       }
     ]);
 
@@ -32,7 +30,8 @@ describe('sequencing', () => {
         target: target1,
         from: 0,
         to: 1000,
-         prop: 'opacity',
+        plugin: 'props',
+        prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1 },
           { offset: 1, value: 0 }
@@ -42,7 +41,8 @@ describe('sequencing', () => {
         target: target2,
         from: 1000,
         to: 2000,
-         prop: 'opacity',
+        plugin: 'props',  
+        prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },
           { offset: 1, value: 1 }
@@ -60,18 +60,16 @@ describe('sequencing', () => {
         duration: 1000,
         stagger: 100,
         targets: target1,
-        props: [
-          { opacity: 1 },
-          { opacity: 0 }
-        ]
+        props: {
+          opacity: [1, 0]
+        }
       },
       {
         duration: 1000,
         targets: target2,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        props: {
+          opacity: [0, 1]
+        }
       }
     ]);
 
@@ -81,6 +79,7 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 100,
         to: 1100,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1 },
@@ -91,6 +90,7 @@ describe('sequencing', () => {
         target: { id: 'target2' },
         from: 200,
         to: 1200,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1 },
@@ -101,6 +101,7 @@ describe('sequencing', () => {
         target: { id: 'target3' },
         from: 300,
         to: 1300,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1 },
@@ -111,6 +112,7 @@ describe('sequencing', () => {
         target: { id: 'target4' },
         from: 1300,
         to: 2300,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },
@@ -130,19 +132,17 @@ describe('sequencing', () => {
       {
         duration: 1000,
         targets: target1,
-        props: [
-          { opacity: 1 },
-          { opacity: 0 }
-        ]
+        props: {
+          opacity: [1, 0]
+        }
       },
       {
         duration: 1000,
         delay: -500,
         targets: target2,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        props: {
+          opacity: [0, 1]
+        }
       }
     ]);
 
@@ -152,6 +152,7 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1 },
@@ -162,6 +163,7 @@ describe('sequencing', () => {
         target: { id: 'target2' },
         from: 500,
         to: 1500,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },
@@ -182,18 +184,16 @@ describe('sequencing', () => {
         duration: 1000,
         endDelay: 500,
         targets: target1,
-        props: [
-          { opacity: 1 },
-          { opacity: 0 }
-        ]
+        props: {
+          opacity: [1, 0]
+        }
       },
       {
         duration: 1000,
         targets: target2,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        props: {
+          opacity: [0, 1]
+        }
       }
     ]);
 
@@ -203,6 +203,7 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1 },
@@ -213,6 +214,7 @@ describe('sequencing', () => {
         target: { id: 'target2' },
         from: 1500,
         to: 2500,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },
@@ -232,18 +234,16 @@ describe('sequencing', () => {
         duration: 1000,
         endDelay: -500,
         targets: target1,
-        props: [
-          { opacity: 1 },
-          { opacity: 0 }
-        ]
+        props: {
+          opacity: [1, 0]
+        }
       },
       {
         duration: 1000,
         targets: target2,
-        props: [
-          { opacity: 0 },
-          { opacity: 1 }
-        ]
+        props: {
+          opacity: [0, 1]
+        }
       }
     ]);
 
@@ -253,6 +253,7 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1 },
@@ -263,6 +264,7 @@ describe('sequencing', () => {
         target: { id: 'target2' },
         from: 500,
         to: 1500,
+        plugin: 'props',  
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0 },

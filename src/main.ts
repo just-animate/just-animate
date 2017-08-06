@@ -1,6 +1,11 @@
 import { timeline } from './lib/timeline'
 import { forEach, list } from './lib/lists'
+import { propsPlugin } from './props'
+import { addPlugin } from './lib/plugins'
 import * as types from './lib/types'
+
+// register props handler
+addPlugin(propsPlugin)
 
 /** 
  * Returns a new timeline of animation(s) using the options provided
@@ -28,5 +33,5 @@ export function sequence(seqOptions: types.AddAnimationOptions[]) {
 }
 
 // export utils and types
-export { timeline }
-export { addPlugin, removePlugin } from './lib/plugins'
+export { timeline, addPlugin }
+export { removePlugin } from './lib/plugins'

@@ -126,8 +126,8 @@ function pushAll<T>(items: T[], newItems: T[]) {
   }
 }
 
-export type Action<T1> = (input?: T1, index?: number) => void
-export type ActionWithBreak<T1> = (input?: T1, index?: number) => void | false
+export type Action<T1> = (input: T1, index: number, len: number) => void
+export type ActionWithBreak<T1> = (input: T1, index: number, len: number) => void | false
 
 /**
  * iterates over all items until [false] is returned or it runs out of items
@@ -139,7 +139,7 @@ export function forEach<T1>(items: IList<T1>, action: ActionWithBreak<T1>): void
 export function forEach<T1>(items: IList<T1>, action: Action<T1> | ActionWithBreak<T1>): void {
   if (items) {
     for (let i = 0, ilen = items.length; i < ilen; i++) {
-      if (action(items[i], i) === false) {
+      if (action(items[i], i, ilen) === false) {
         break
       }
     }
