@@ -72,6 +72,5 @@
   "typeRoots": [
     "node_modules/@types"
   ],
-  "version": "2.0.0-alpha-5",
-  "false": {}
+  "version": "2.0.0-beta-1"
 }
