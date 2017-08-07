@@ -1,10 +1,8 @@
-#
-Just Animate 2.x
+# Just Animate 2
 
 _Making Animation Simple_
 
-[![npm version](https://badge.fury.io/js/just-animate.svg)](https://badge.fury.io/js/just-animate)
-[![Build Status](https://travis-ci.org/just-animate/just-animate.svg?branch=master)](https://travis-ci.org/just-animate/just-animate)
+[![npm version](https://badge.fury.io/js/just-animate.svg)](https://badge.fury.io/js/just-animate) [![Build Status](https://travis-ci.org/just-animate/just-animate.svg?branch=master)](https://travis-ci.org/just-animate/just-animate) [![Downloads](https://img.shields.io/npm/dm/just-animate.svg)](https://www.npmjs.com/package/just-animate)
 
 ## Main Features
 
@@ -18,6 +16,10 @@ _Making Animation Simple_
 * Alternate and repeat a complex series of animations (yo-yo)
 
 > This project is powered by your stars [so ^ star it please](https://github.com/just-animate/just-animate/stargazers).
+
+## Documentation
+
+Read the [Full Documentation](https://just-animate.gitbooks.io/just-animate-2) on Gitbooks
 
 ## Need Help?
 
