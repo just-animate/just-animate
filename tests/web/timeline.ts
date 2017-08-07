@@ -15,6 +15,7 @@ describe('timeline.add()', () => {
     const timeline = animate()
       .add({
         targets: target,
+        easing: 'linear',
         duration: 1000,
         web: {
           opacity: [0, 1]
@@ -39,9 +40,9 @@ describe('timeline.add()', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate()
-      .add({
+    const timeline = animate({
         targets: target,
+        easing: 'linear',
         from: 500,
         duration: 1000,
         web: {

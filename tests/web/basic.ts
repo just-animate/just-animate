@@ -13,10 +13,11 @@ describe('basic', () => {
     /* Test code */
     const target = document.createElement('div')
     document.body.appendChild(target)
- 
+
     const timeline = animate()
       .fromTo(200, 500, {
         targets: target,
+        easing: 'linear',
         web: {
           opacity: [0, .5, 1],
           left: [
@@ -30,6 +31,7 @@ describe('basic', () => {
       })
       .fromTo(600, 1000, {
         targets: [target],
+        easing: 'linear',
         web: {
           opacity: [1, 0],
           left: [100, 0]
@@ -37,38 +39,36 @@ describe('basic', () => {
       })
 
     const actual = timeline.getEffects()
-
-    const expected = [{
+ 
+    assert.deepEqual(actual, [{
       target: target,
       from: 200,
       to: 1000,
       plugin: 'web',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0 },
-        { offset: 0.1875, value: 0.5 },
-        { offset: 0.375, value: 1 },
-        { offset: 0.5, value: 1 },
-        { offset: 1, value: 0 }
+        { offset: 0, value: 0, easing: 'linear' },
+        { offset: 0.1875, value: 0.5, easing: 'linear' },
+        { offset: 0.375, value: 1, easing: 'linear' },
+        { offset: 0.5, value: 1, easing: 'linear' },
+        { offset: 1, value: 0, easing: 'linear' }
       ]
     }, {
       target: target,
       from: 200,
       to: 1000,
-      plugin: 'web',      
+      plugin: 'web',
       prop: 'left',
       keyframes: [
-        { offset: 0, value: '0px' },
-        { offset: 0.075, value: '40px' },
-        { offset: 0.15, value: '0px' },
-        { offset: 0.3, value: '90px' },
-        { offset: 0.375, value: '100px' },
-        { offset: 0.5, value: '100px' },
-        { offset: 1, value: '0px' }
+        { offset: 0, value: '0px', easing: 'linear' },
+        { offset: 0.075, value: '40px', easing: 'linear' },
+        { offset: 0.15, value: '0px', easing: 'linear' },
+        { offset: 0.3, value: '90px', easing: 'linear' },
+        { offset: 0.375, value: '100px', easing: 'linear' },
+        { offset: 0.5, value: '100px', easing: 'linear' },
+        { offset: 1, value: '0px', easing: 'linear' }
       ]
-    }];
-
-    assert.deepEqual(actual, expected)
+    }])
     document.body.removeChild(target)
   })
 
@@ -85,37 +85,38 @@ describe('basic', () => {
     const timeline = animate({
       duration: 1000,
       targets: '.single-target-element',
+      easing: 'linear',
       web: {
         opacity: [0, 1]
       }
     })
 
     const actual = timeline.getEffects()
-    const expected = [{
-      target: el1,
-      from: 0,
-      to: 1000,
-      plugin: 'web',      
-      prop: 'opacity',
-      keyframes: [
-        { offset: 0, value: 0 },
-        { offset: 1, value: 1 }
-      ]
-    }, {
-      target: el2,
-      from: 0,
-      to: 1000,
-      plugin: 'web',      
-      prop: 'opacity',
-      keyframes: [
-        { offset: 0, value: 0 },
-        { offset: 1, value: 1 }
-      ]
-    }]
 
     document.body.removeChild(el1)
     document.body.removeChild(el2)
-    assert.deepEqual(actual, expected)
+    
+    assert.deepEqual(actual, [{
+      plugin: 'web',      
+      target: el1,
+      prop: 'opacity',      
+      from: 0,
+      to: 1000,
+      keyframes: [
+        { offset: 0, value: 0, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
+      ]
+    }, {
+      plugin: 'web',        
+      target: el2,
+      prop: 'opacity',      
+      from: 0,
+      to: 1000,
+      keyframes: [
+        { offset: 0, value: 0, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
+      ]
+    }])
   })
 
   it('handles seeking to 0%', () => {
@@ -124,6 +125,7 @@ describe('basic', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       web: {
         opacity: [0, 1]
@@ -142,6 +144,7 @@ describe('basic', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       web: {
         opacity: [0, 1]
@@ -159,6 +162,7 @@ describe('basic', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       web: {
         opacity: [0, 1]
@@ -177,6 +181,7 @@ describe('basic', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       web: {
         opacity: [0, { offset: .4, value: 1 }, 0]

@@ -13,11 +13,9 @@ export function animate(effect: Effect): AnimationController {
 
   const getAnimator = lazy(() => {
     const a = (target as any).animate(
-      keyframes.map(({ offset, value }) => ({ offset, [prop]: value })),
+      keyframes.map(({ offset, value, easing }) => ({ offset, [prop]: value, easing })),
       {
-        duration,
-        delay: 0,
-        endDelay: 0,
+        duration, 
         fill: 'both'
       }
     )
@@ -29,12 +27,13 @@ export function animate(effect: Effect): AnimationController {
     cancel() {
       getAnimator().cancel()
     },
-    update(localTime: number, rate: number, isPlaying: boolean) { 
+    update(offset: number, rate: number, isPlaying: boolean) { 
       const animator = getAnimator()
+      const time = duration * offset
       
-      if (abs(animator.currentTime -  localTime) > 1) {    
+      if (abs(animator.currentTime -  time) > 1) {    
         // sync if paused or seeking
-        animator.currentTime = localTime
+        animator.currentTime = time
       }
 
       if (isPlaying && animator.playbackRate !== rate) {
@@ -54,8 +53,8 @@ export function animate(effect: Effect): AnimationController {
 
       const needsToPlay = isPlaying
         && !(animator.playState === RUNNING || animator.playState === FINISH)
-        && !(rate < 0 && localTime < frameSize)
-        && !(rate >= 0 && localTime > duration - frameSize);
+        && !(rate < 0 && time < frameSize)
+        && !(rate >= 0 && time > duration - frameSize);
         
       if (needsToPlay) {              
         animator.play()

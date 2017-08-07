@@ -28,7 +28,9 @@ export const propsPlugin: JustAnimatePlugin = {
 
     return {
       cancel(): void {
-        propSetter(initial)
+        if (initial !== _) {
+          propSetter(initial)
+        }
         initial = _
       },
       update(localTime: number, _playbackRate: number, _isActive: boolean): void {
@@ -37,7 +39,13 @@ export const propsPlugin: JustAnimatePlugin = {
     }
   },
   getValue(target: HTMLElement, prop: string) {
-    return target[prop]
+    if ((!isDOM(target) || typeof target[prop] !== 'undefined')) {
+      return target[prop];
+    }
+    if (cssVarExp.test(prop)) {
+      return target.style.getPropertyValue(prop)
+    }
+    return target.getAttribute(hyphenate(prop))
   }
 }
 

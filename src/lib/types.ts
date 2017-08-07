@@ -5,6 +5,8 @@ export interface PropertyOptions {
 export interface Keyframe {
   offset: number
   value: string | number
+  
+  easing: string
 }
 
 export type AnimationTarget = any
@@ -26,7 +28,7 @@ export type PropertyResolver<T> = T | PropertyFunction<T>
 
 export interface AnimationController {
   cancel(): void
-  update(localTime: number, playbackRate: number, isActive: boolean): void
+  update(time: number, playbackRate: number, isActive: boolean): void
 }
 
 export interface AnimationTimelineController extends AnimationController {
@@ -42,6 +44,7 @@ export interface JustAnimatePlugin {
 }
 
 export interface PropertyKeyframe {
+  easing?: string
   time: number
   prop: string
   index: number
@@ -49,13 +52,16 @@ export interface PropertyKeyframe {
 }
 export interface PropertyEffects {
   [name: string]: {
-    [offset: number]: string | number
-  }
+    easing: string
+    offset: number
+    value: string | number
+  }[]
 }
 
 export interface TargetConfiguration {
   target: AnimationTarget
   targetLength: number
+  easing: string
   propNames: string[]
   from: number
   to: number
@@ -66,10 +72,12 @@ export interface TargetConfiguration {
 
 export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
-  stagger?: number
+  
   delay?: PropertyResolver<number>
-  endDelay?: PropertyResolver<number>
+  easing?: string  
+  endDelay?: PropertyResolver<number>  
   props?: PropertyOptions
+  stagger?: number  
   web?: PropertyOptions
 }
 
@@ -83,6 +91,7 @@ export interface AnimationOptions {
   from: number
   to: number
   duration: number
+  easing?: string
   targets: AnimationTarget[] 
   stagger?: number
   delay?: PropertyResolver<number>

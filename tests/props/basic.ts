@@ -11,6 +11,7 @@ describe('basic', () => {
  
     const timeline = animate({
       targets: target,
+      easing: 'linear',      
       duration: 1000,
       props: {
         dataValue: [100, 200]
@@ -31,6 +32,7 @@ describe('basic', () => {
  
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       props: {
         '--opacity': [0, 1]
@@ -52,6 +54,7 @@ describe('basic', () => {
  
     const timeline = animate({
       targets: target,
+      easing: 'linear',      
       duration: 1000,
       props: {
         innerHTML: ['first', 'middle', 'last']
@@ -72,6 +75,7 @@ describe('basic', () => {
  
     const timeline = animate({
       targets: target,
+      easing: 'linear',      
       duration: 1000,
       props: {
         innerHTML: ['first', 'middle', 'last']

@@ -15,6 +15,7 @@ describe('transitions', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       web: {
         opacity: 0

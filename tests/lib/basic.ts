@@ -8,6 +8,7 @@ describe('basic', () => {
     const target1 = {}
 
     const timeline = animate({
+      easing: 'linear',
       duration: 1000,
       targets: target1,
       props: {
@@ -23,8 +24,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0 },
-        { offset: 1, value: 1 }
+        { offset: 0, value: 0, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
       ]
     })
   })
@@ -36,6 +37,7 @@ describe('basic', () => {
     const timeline = animate()
       .add({
         duration: 1000,
+        easing: 'linear',
         targets: target,
         props: {
           opacity: [0, 1]
@@ -51,8 +53,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0 },
-        { offset: 1, value: 1 }
+        { offset: 0, value: 0, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
       ]
     }])
   })
@@ -64,6 +66,7 @@ describe('basic', () => {
 
     const timeline = animate()
       .add({
+        easing: 'linear',
         duration: 1000,
         targets: [target1],
         props: {
@@ -71,6 +74,7 @@ describe('basic', () => {
         }
       })
       .add({
+        easing: 'linear',
         duration: 1000,
         targets: [target2],
         props: {
@@ -87,8 +91,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0 },
-        { offset: 1, value: 1 }
+        { offset: 0, value: 0, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
       ]
     },
     {
@@ -98,8 +102,8 @@ describe('basic', () => {
       plugin: 'props',      
       prop: 'number',
       keyframes: [
-        { offset: 0, value: 0 },
-        { offset: 1, value: 200 }
+        { offset: 0, value: 0, easing: 'linear'  },
+        { offset: 1, value: 200, easing: 'linear'  }
       ]
     }])
   })
@@ -115,6 +119,7 @@ describe('basic', () => {
 
     const timeline = animate({
       duration: 1000,
+      easing: 'linear',
       targets: [target1, target2],
       props: {
         opacity: [opacityFromTarget, 1]
@@ -130,8 +135,8 @@ describe('basic', () => {
       plugin: 'props',            
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: .1 },
-        { offset: 1, value: 1 }
+        { offset: 0, value: .1, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
       ]
     }, {
       target: { opacity: .2 },
@@ -140,8 +145,8 @@ describe('basic', () => {
       plugin: 'props',            
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: .2 },
-        { offset: 1, value: 1 }
+        { offset: 0, value: .2, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
       ]
     }])
   })
@@ -157,6 +162,7 @@ describe('basic', () => {
 
     const timeline = animate({
       duration: 1000,
+      easing: 'linear',
       targets: [target1, target2],
       props: {
         opacity: [opacityFromIndex, 1]
@@ -171,8 +177,8 @@ describe('basic', () => {
       plugin: 'props',  
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: .1 },
-        { offset: 1, value: 1 }
+        { offset: 0, value: .1, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
       ]
     }, {
       target: {},
@@ -181,8 +187,8 @@ describe('basic', () => {
       plugin: 'props',  
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: .2 },
-        { offset: 1, value: 1 }
+        { offset: 0, value: .2, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
       ]
     }]
 
@@ -193,6 +199,7 @@ describe('basic', () => {
     /* Test code */
     const target1 = {}
     const timeline = animate({
+      easing: 'linear',
       duration: 1000,
       targets: [target1],
       props: {
@@ -205,19 +212,18 @@ describe('basic', () => {
       }
     })
 
-    const actual = timeline.getEffects()[0]
-
-    const expected = {
+    const actual = timeline.getEffects()
+ 
+    assert.deepEqual<{}>(actual, [{
       target: {},
       from: 0,
       to: 1000,
       plugin: 'props',  
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0 },
-        { offset: 1, value: 1 }
+        { offset: 0, value: 0, easing: 'linear' },
+        { offset: 1, value: 1, easing: 'linear' }
       ]
-    }
-    assert.deepEqual<{}>(actual, expected)
+    }])
   })
 })

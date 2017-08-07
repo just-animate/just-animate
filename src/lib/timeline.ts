@@ -10,7 +10,7 @@ import { toEffects, addPropertyKeyframes } from './effects'
 import { sortBy, forEach, head, push, mapFlatten } from './lists'
 import { isDefined } from './inspect'
 import { getTargets } from './get-targets'
-import { max, inRange, minMax, rnd, flr } from './math'
+import { max, inRange, minMax, flr } from './math'
 
 import {
   AddAnimationOptions,
@@ -99,6 +99,7 @@ const timelineProto: ITimeline = {
           push(config, {
             from: max(options2.from + delay, 0),
             to: max(options2.to + delay, 0),
+            easing: options2.easing || 'ease',
             duration: options2.to - options2.from,
             endDelay: resolveProperty(options2.endDelay, target, i, ilen) || 0,
             target,
@@ -280,8 +281,9 @@ function updateTimeline(self: ITimeline, type: string) {
     forEach(self._effects, effect => {
       const { from, to } = effect
       const isAnimationActive = isTimelineActive && inRange(flr(time), from, to)
-      const localTime = rnd(minMax(time - from, 0, to - from))
-      effect.update(localTime, self._rate, isAnimationActive)
+      const offset = minMax((time - from) / (to - from), 0, 1)
+      
+      effect.update(offset, self._rate, isAnimationActive)
     })
   }
 

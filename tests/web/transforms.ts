@@ -14,6 +14,7 @@ describe('transforms', () => {
     function throwsError() {
       const timeline = animate({
         targets: target,
+        easing: 'linear',
         duration: 1000,
         stagger: 80,
         web: {
@@ -36,6 +37,7 @@ describe('transforms', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       web: {
         transform: ['none', 'rotate(180deg)', 'none']
@@ -51,9 +53,9 @@ describe('transforms', () => {
       plugin: 'web',
       prop: 'transform',
       keyframes: [
-        { offset: 0, value: 'none' },
-        { offset: .5, value: 'rotate(180deg)' },
-        { offset: 1, value: 'none' }
+        { offset: 0, value: 'none', easing: 'linear' },
+        { offset: .5, value: 'rotate(180deg)', easing: 'linear' },
+        { offset: 1, value: 'none', easing: 'linear' }
       ]
     }]);
 
@@ -66,13 +68,14 @@ describe('transforms', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       web: {
         x: ['10vh', '-20vh', '0.5vh']
       }
     })
-
-    const actual = timeline.getEffects()
+    
+    const actual = timeline.getEffects() 
 
     assert.deepEqual(actual, [{
       target: target,
@@ -81,9 +84,9 @@ describe('transforms', () => {
       plugin: 'web',
       prop: 'transform',
       keyframes: [
-        { offset: 0, value: 'translateX(10vh)' },
-        { offset: .5, value: 'translateX(-20vh)' },
-        { offset: 1, value: 'translateX(0.5vh)' }
+        { offset: 0, value: 'translateX(10vh)', easing: 'linear' },
+        { offset: .5, value: 'translateX(-20vh)', easing: 'linear' },
+        { offset: 1, value: 'translateX(0.5vh)', easing: 'linear' }
       ]
     }]);
 
@@ -96,6 +99,7 @@ describe('transforms', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       stagger: 80,
       web: {
@@ -120,6 +124,7 @@ describe('transforms', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       stagger: 80,
       web: {
@@ -145,6 +150,7 @@ describe('transforms', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       stagger: 80,
       web: {
@@ -170,6 +176,7 @@ describe('transforms', () => {
 
     const timeline = animate({
       targets: target,
+      easing: 'linear',
       duration: 1000,
       web: {
         rotate: [180, 180],
@@ -178,8 +185,9 @@ describe('transforms', () => {
           { offset: 1, value: 0 }
         ]
       }
-    })
-    const actual = timeline.getEffects()
+    }) 
+    
+    const actual = timeline.getEffects() 
 
     assert.deepEqual(actual, [{
       target: target,
@@ -188,9 +196,9 @@ describe('transforms', () => {
       plugin: 'web',
       prop: 'transform',
       keyframes: [
-        { offset: 0, value: 'rotate(180deg)' },
-        { offset: .5, value: 'rotate(180deg) translateY(120px)' },
-        { offset: 1, value: 'rotate(180deg) translateY(0px)' }
+        { offset: 0, value: 'rotate(180deg)', easing: 'linear' },
+        { offset: .5, value: 'rotate(180deg) translateY(120px)', easing: 'linear' },
+        { offset: 1, value: 'rotate(180deg) translateY(0px)', easing: 'linear' }
       ]
     }]);
 

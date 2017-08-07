@@ -1,15 +1,15 @@
 import { PropertyEffects, TargetConfiguration } from '../lib/types';
-import { includes, pushDistinct, forEach } from '../lib/lists';
+import { includes, pushDistinct, forEach, head } from '../lib/lists';
 import { _ } from '../lib/constants';
-import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG } from './constants';
+import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG, transformLengths } from './constants';
 import { isDefined } from '../lib/inspect';
 import { parseUnit } from './parse-unit';
 
 export function combineTransforms(target: TargetConfiguration, effects: PropertyEffects) {
   // get all transform shorthands
   const transformNames = target.propNames.filter(t => includes(transforms, t))
-  
-  if (!transformNames.length) { 
+
+  if (!transformNames.length) {
     return
   }
 
@@ -20,11 +20,14 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
 
   // get a list of offsets
   const offsets: number[] = []
+  const easings: { [offset: string]: string } = {}
+
   forEach(transformNames, name => {
-    const effect = effects[name]
-    if (effect) {
-      forEach(Object.keys(effect), e => {
-        pushDistinct(offsets, +e)
+    const effects2 = effects[name]
+    if (effects2) {
+      forEach(effects2, effect => {
+        easings[effect.offset] = effect.easing
+        pushDistinct(offsets, effect.offset)
       })
     }
   })
@@ -33,17 +36,19 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
   offsets.sort()
 
   // create effects for each transform function at each offset
-  // this should guarantee transforms are processed in the order that they are scene
+  // this should guarantee transforms are processed in the order that they are observed
   // from the original properties or keyframes
   const transformEffects = offsets.map(offset => {
     // create effect
     const values = {} as { [name: number]: string | number }
     forEach(transformNames, name => {
-      values[name] = effects[name][offset]
+      const effect = head(effects[name], e => e.offset === offset)
+      values[name] = effect ? effect.value : _
     })
 
     return {
       offset,
+      easing: easings[offset],
       values
     }
   })
@@ -56,7 +61,6 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
     // foreach keyframe if has transform property
     for (const transform in effect.values) {
       let value = effect.values[transform];
-
       if (isDefined(value)) {
         continue
       }
@@ -77,15 +81,15 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
           endingPos = k
           break
         }
-      } 
-      
+      }
+
       // determine which values were found
       const startingPosFound = startingPos !== _
       const endingPosFound = endingPos !== _
       if (startingPosFound && endingPosFound) {
         // if both start and end are found, fill the value based on the relative offset
         const startEffect = transformEffects[startingPos]
-        const endEffect = transformEffects[endingPos]  
+        const endEffect = transformEffects[endingPos]
         const startVal = parseUnit(startEffect.values[transform]);
         const endVal = parseUnit(endEffect.values[transform]);
 
@@ -114,8 +118,8 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
     forEach(transformNames, name => {
       effects[name] = _
     })
-    
-    const transformEffect = {}
+
+    const transformEffects2: any[] = []
     forEach(transformEffects, effect => {
       let val: string = _;
       for (var prop in effect.values) {
@@ -124,13 +128,20 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
           continue;
         }
         if (!unit.unit) {
-          unit.unit = includes(transformAngles, prop) ? DEG : PX
+          unit.unit = includes(transformLengths, prop)
+            ? PX : includes(transformAngles, prop)
+              ? DEG : ''
         }
- 
+
         val = (val ? (val + ' ') : '') + (aliases[prop] || prop) + '(' + unit.value + unit.unit + ')'
       }
-      transformEffect[effect.offset] = val
+      transformEffects2.push({
+        offset: effect.offset,
+        value: val,
+        easing: effect.easing
+      })
     })
-    effects[TRANSFORM] = transformEffect
+
+    effects[TRANSFORM] = transformEffects2
   }
 }

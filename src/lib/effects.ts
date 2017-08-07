@@ -1,9 +1,11 @@
 import { AnimationOptions, Effect, PropertyEffects, PropertyResolver, PropertyValue, TargetConfiguration, PropertyObject, JustAnimatePlugin } from './types'
 import { resolveProperty } from './resolve-property'
-import { forEach, indexOf, list, head, tail, pushDistinct, push } from './lists'
+import { forEach, indexOf, list, head, tail, pushDistinct, push, sortBy } from './lists'
 import { isDefined, isObject, isNumber } from './inspect'
 import { flr, max } from './math'
 import { _ } from './constants';
+
+const offsetSorter = sortBy<{ offset: number }>('offset')
 
 export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguration[]): Effect[] {
   const result: Effect[] = []
@@ -14,10 +16,19 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
     // construct property animation options
     var effects: PropertyEffects = {}
     forEach(keyframes, p => {
-      const effect2 = (effects[p.prop] || (effects[p.prop] = {}))
+      const effects2 = (effects[p.prop] || (effects[p.prop] = []))
       const offset = (p.time - from) / (duration || 1)
-      const value2 = resolveProperty(p.value, target, p.index, targetLength)
-      effect2[offset] = value2
+      const easing = p.easing
+      const value = resolveProperty(p.value, target, p.index, targetLength)
+      
+      const effect2 = head(effects2, e => e.offset === offset) || push(effects2, {
+        easing,
+        offset,
+        value
+      })
+      
+      effect2.easing = easing
+      effect2.value = value  
     })
 
     // process handlers
@@ -28,27 +39,22 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
     for (var prop in effects) {
       var effect = effects[prop]
       if (effect) {
-        // remap the keyframes field to remove multiple values
-        // add to list of Effects
-        const effectKeyframes = Object.keys(effect)
-          .map(e => +e)
-          .sort()
-          .map(e => ({
-            offset: e,
-            value: effect[e]
-          }))
+        
+        effect.sort(offsetSorter)
 
-        const firstFrame = head(effectKeyframes, c => c.offset === 0)
+        const firstFrame = head(effect, c => c.offset === 0)
         if (firstFrame === _ || firstFrame.value === _) {
           // add keyframe if offset 0 is missing
-          var value = plugin.getValue(target, prop)
+          var value2 = plugin.getValue(target, prop)
           if (firstFrame === _) {
-            effectKeyframes.splice(0, 0, {
+            effect.splice(0, 0, {
               offset: 0,
-              value: value
+              value: value2,
+              easing: targetConfig.easing
             })
           } else {
-            firstFrame.value = value
+            firstFrame.value = value2
+            firstFrame.easing = targetConfig.easing
           }
         }
 
@@ -58,7 +64,7 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
           prop,
           from,
           to,
-          keyframes: effectKeyframes
+          keyframes: effect
         })
       }
     }
@@ -78,11 +84,12 @@ export function addPropertyKeyframes(
   const delayMs = resolveProperty(options.delay, target, index, target.targetLength) || 0
   const from = max(staggerMs + delayMs + options.from, 0)
   const duration = options.to - options.from
+  const easing = options.easing || 'ease'
 
   // iterate over each property split it into keyframes
   for (var name in props) {
     if (props.hasOwnProperty(name)) {
-      addProperty(target, index, name, props[name], duration, from)
+      addProperty(target, index, name, props[name], duration, from, easing)
     }
   }
 }
@@ -93,7 +100,8 @@ function addProperty(
   name: string,
   val: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[],
   duration: number,
-  from: number
+  from: number,
+  defaultEasing: string
 ) {
   // skip undefined options
   if (!isDefined(val)) {
@@ -122,7 +130,7 @@ function addProperty(
           ? 0
           : _;
 
-    const easing = valObj.easing || 'linear'
+    const easing = valObj.easing || defaultEasing
 
     return { offset, value, easing }
   })
@@ -131,7 +139,7 @@ function addProperty(
   inferOffsets(keyframes)
 
   keyframes.forEach(keyframe => {
-    const { offset, value } = keyframe
+    const { offset, value, easing } = keyframe
     const time = flr(duration * offset + from)
     const indexOfFrame = indexOf(target.keyframes, k => k.prop === name && k.time === time)
 
@@ -141,6 +149,7 @@ function addProperty(
     }
 
     push(target.keyframes, {
+      easing,
       index,
       prop: name,
       time,
@@ -151,6 +160,7 @@ function addProperty(
   // insert start frame if not present
   if (!head(target.keyframes, k => k.prop === name && k.time === from)) {
     push(target.keyframes, {
+      easing: defaultEasing,
       index,
       prop: name,
       time: from,
@@ -162,6 +172,7 @@ function addProperty(
   var to = from + duration
   if (!tail(target.keyframes, k => k.prop === name && k.time === to)) {
     push(target.keyframes, {
+      easing: defaultEasing,
       index,
       prop: name,
       time: to,

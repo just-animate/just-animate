@@ -10,7 +10,8 @@ describe('staggering', () => {
 
     const timeline = animate({
       targets: targets,
-      duration: 1000,
+      duration: 1000, 
+      easing: 'linear',
       stagger: 100,
       props: {
         opacity: [0, 1]
@@ -24,44 +25,44 @@ describe('staggering', () => {
         target: {},
         from: 100,
         to: 1100,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0 },
-          { offset: 1, value: 1 }
+          { offset: 0, value: 0, easing: 'linear' },
+          { offset: 1, value: 1, easing: 'linear' }
         ]
       },
       {
         target: {},
         from: 200,
         to: 1200,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0 },
-          { offset: 1, value: 1 }
+          { offset: 0, value: 0, easing: 'linear' },
+          { offset: 1, value: 1, easing: 'linear' }
         ]
       },
       {
         target: {},
         from: 300,
         to: 1300,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0 },
-          { offset: 1, value: 1 }
+          { offset: 0, value: 0, easing: 'linear' },
+          { offset: 1, value: 1, easing: 'linear' }
         ]
       },
       {
         target: {},
         from: 400,
         to: 1400,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0 },
-          { offset: 1, value: 1 }
+          { offset: 0, value: 0, easing: 'linear' },
+          { offset: 1, value: 1, easing: 'linear' }
         ]
       }
     ])
