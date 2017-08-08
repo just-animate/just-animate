@@ -235,4 +235,55 @@ describe('basic', () => {
 
     assert.equal(+getComputedStyle(target).opacity, 0)
   });
+  
+  it('handles split definition on the same property', () => {
+    const target = document.createElement('div')
+    document.body.appendChild(target)
+
+    const t1 = timeline()
+    
+    t1.fromTo(200, 800, {
+      targets: target,
+      easing: 'linear',
+      web: {
+        opacity: [0, 1]
+      }
+    })
+    
+    t1.fromTo(800, 1000, {
+      targets: target,
+      easing: 'linear',
+      web: {
+        opacity: [1, 0]
+      }
+    })
+    
+    const actual = t1.getEffects()
+    assert.deepEqual(actual, [
+      {
+        plugin: 'web',
+        target: target,
+        prop: 'opacity',
+        from: 200,
+        to: 1000,
+        keyframes: [
+          {
+            easing: 'linear',
+            offset: 0,
+            value: 0
+          },
+          {
+            easing: 'linear',
+            offset: 0.75,
+            value: 1
+          },
+          {
+            easing: 'linear',
+            offset: 1,
+            value: 0
+          }
+        ]
+      }
+    ])
+  });
 });

@@ -160,7 +160,7 @@ function addProperty(
     const indexOfFrame = indexOf(target.keyframes, k => k.prop === name && k.time === time)
 
     if (indexOfFrame !== -1) {
-      keyframes[indexOfFrame].value = value
+      target.keyframes[indexOfFrame].value = value
       return
     }
 

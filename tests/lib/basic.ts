@@ -195,7 +195,7 @@ describe('basic', () => {
     assert.deepEqual<{}>(actual, expected)
   })
 
-  it('only first value for opacity at an offset is kept, others are ignored', () => {
+  it('only last value for opacity at an offset is kept, others are ignored', () => {
     /* Test code */
     const target1 = {}
     const timeline = animate({
@@ -221,8 +221,8 @@ describe('basic', () => {
       plugin: 'props',  
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: 1, easing: 'linear' },
+        { offset: 1, value: 0, easing: 'linear' }
       ]
     }])
   })
