@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 const assert = chai.assert
 
-import { animate } from '../../src/main'
+import { animate, timeline } from '../../src/main'
 import { addPlugin, removePlugin } from '../../src/lib/plugins'
 import { waapiPlugin } from '../../src/web/index'
 
@@ -14,7 +14,7 @@ describe('basic', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate()
+    const t1 = animate()
       .fromTo(200, 500, {
         targets: target,
         easing: 'linear',
@@ -38,8 +38,8 @@ describe('basic', () => {
         }
       })
 
-    const actual = timeline.getEffects()
- 
+    const actual = t1.getEffects()
+
     assert.deepEqual(actual, [{
       target: target,
       from: 200,
@@ -82,7 +82,7 @@ describe('basic', () => {
     el2.classList.add('single-target-element')
     document.body.appendChild(el2)
 
-    const timeline = animate({
+    const t1 = animate({
       duration: 1000,
       targets: '.single-target-element',
       easing: 'linear',
@@ -91,15 +91,15 @@ describe('basic', () => {
       }
     })
 
-    const actual = timeline.getEffects()
+    const actual = t1.getEffects()
 
     document.body.removeChild(el1)
     document.body.removeChild(el2)
-    
+
     assert.deepEqual(actual, [{
-      plugin: 'web',      
+      plugin: 'web',
       target: el1,
-      prop: 'opacity',      
+      prop: 'opacity',
       from: 0,
       to: 1000,
       keyframes: [
@@ -107,9 +107,9 @@ describe('basic', () => {
         { offset: 1, value: 1, easing: 'linear' }
       ]
     }, {
-      plugin: 'web',        
+      plugin: 'web',
       target: el2,
-      prop: 'opacity',      
+      prop: 'opacity',
       from: 0,
       to: 1000,
       keyframes: [
@@ -123,7 +123,7 @@ describe('basic', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate({
+    const t1 = animate({
       targets: target,
       easing: 'linear',
       duration: 1000,
@@ -132,8 +132,8 @@ describe('basic', () => {
       }
     })
 
-    timeline.pause()
-    timeline.currentTime = 0
+    t1.pause()
+    t1.currentTime = 0
 
     assert.equal(+getComputedStyle(target).opacity, 0)
   });
@@ -142,7 +142,7 @@ describe('basic', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate({
+    const t1 = animate({
       targets: target,
       easing: 'linear',
       duration: 1000,
@@ -151,8 +151,8 @@ describe('basic', () => {
       }
     })
 
-    timeline.pause()
-    timeline.currentTime = 500
+    t1.pause()
+    t1.currentTime = 500
     assert.equal(+getComputedStyle(target).opacity, .5)
   });
 
@@ -160,7 +160,7 @@ describe('basic', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate({
+    const t1 = animate({
       targets: target,
       easing: 'linear',
       duration: 1000,
@@ -169,9 +169,9 @@ describe('basic', () => {
       }
     })
 
-    timeline.pause()
+    t1.pause()
 
-    timeline.currentTime = 1000
+    t1.currentTime = 1000
     assert.equal(+getComputedStyle(target).opacity, 1)
   });
 
@@ -179,7 +179,7 @@ describe('basic', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate({
+    const t1 = animate({
       targets: target,
       easing: 'linear',
       duration: 1000,
@@ -188,23 +188,51 @@ describe('basic', () => {
       }
     })
 
-    timeline.pause()
+    t1.pause()
 
-    timeline.currentTime = 0
+    t1.currentTime = 0
     assert.approximately(+getComputedStyle(target).opacity, 0, .0001)
 
-    timeline.currentTime = 200
+    t1.currentTime = 200
     assert.approximately(+getComputedStyle(target).opacity, .5, .0001)
 
-    timeline.currentTime = 400
+    t1.currentTime = 400
     assert.approximately(+getComputedStyle(target).opacity, 1, .0001)
 
-    timeline.currentTime = 700
+    t1.currentTime = 700
     assert.approximately(+getComputedStyle(target).opacity, .5, .0001)
 
-    timeline.currentTime = 1000
+    t1.currentTime = 1000
     assert.approximately(+getComputedStyle(target).opacity, 0, .0001)
 
     document.body.removeChild(target)
+  });
+
+  it('handles split definitions on the same target', () => {
+    const target = document.createElement('div')
+    document.body.appendChild(target)
+
+    const t1 = timeline()
+    
+    t1.fromTo(200, 800, {
+      targets: target,
+      easing: 'linear',
+      web: {
+        opacity: [0, 1]
+      }
+    })
+    
+    t1.fromTo(800, 1000, {
+      targets: target,
+      easing: 'linear',
+      web: {
+        x: [0, 100]
+      }
+    })
+
+    t1.pause()
+    t1.currentTime = 0
+
+    assert.equal(+getComputedStyle(target).opacity, 0)
   });
 });

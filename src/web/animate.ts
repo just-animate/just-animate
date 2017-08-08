@@ -12,9 +12,9 @@ export function animate(effect: Effect): AnimationController {
   const duration = to - from
 
   const getAnimator = lazy(() => {
-    const a = (target as any).animate(
-      keyframes.map(({ offset, value, easing }) => ({ offset, [prop]: value, easing })),
-      {
+    const frames = keyframes.map(({ offset, value, easing }) => ({ offset, [prop]: value, easing }))
+    
+    const a = (target as any).animate(frames, {
         duration, 
         fill: 'both'
       }

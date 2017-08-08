@@ -42,7 +42,7 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
         
         effect.sort(offsetSorter)
 
-        const firstFrame = head(effect, c => c.offset === 0)
+        var firstFrame = head(effect, c => c.offset === 0)
         if (firstFrame === _ || firstFrame.value === _) {
           // add keyframe if offset 0 is missing
           var value2 = plugin.getValue(target, prop)
@@ -55,6 +55,22 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
           } else {
             firstFrame.value = value2
             firstFrame.easing = targetConfig.easing
+          }
+        }
+        
+        var lastFrame = tail(effect, c => c.offset === 1)
+        if (lastFrame === _ || lastFrame.value === _) {
+          // add keyframe if offset 1 is missing
+          var value3 = effect[effect.length - 1].value
+          if (lastFrame === _) {
+            push(effect, {
+              offset: 1,
+              value: value3,
+              easing: targetConfig.easing
+            })
+          } else {
+            lastFrame.value = value3
+            lastFrame.easing = targetConfig.easing
           }
         }
 
