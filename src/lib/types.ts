@@ -2,10 +2,13 @@ export interface PropertyOptions {
   [name: string]: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
 }
 
+export interface SetOptions {
+  [name: string]: PropertyResolver<string | number>
+}
+
 export interface Keyframe {
   offset: number
   value: string | number
-  
   easing: string
 }
 
@@ -81,6 +84,14 @@ export interface BaseAnimationOptions {
   web?: PropertyOptions
 }
 
+export interface BaseSetOptions {
+  targets: AnimationTarget | AnimationTarget[]
+  at?: number
+  easing?: string  
+  props?: SetOptions 
+  web?: SetOptions
+}
+
 export interface AddAnimationOptions extends BaseAnimationOptions {
   from?: number
   to?: number
@@ -134,7 +145,7 @@ export interface ITimeline {
    * Adds an animation at the end of the timeline, unless from/to are specified
    * @param opts the animation definition
    */
-  add( opts: AddAnimationOptions): this
+  add(opts: AddAnimationOptions | AddAnimationOptions[]): this
   /**
    * Defines an animation that occurs starting at "from" and ending at "to".
    *
@@ -143,8 +154,10 @@ export interface ITimeline {
    * @param to the ending time in milliseconds
    * @param options the animation definition.
    */
-  fromTo( from: number, to: number, options: BaseAnimationOptions): this
-
+  fromTo( from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]): this
+  
+  set(options: BaseSetOptions | BaseSetOptions[]): this
+  
   /**
    * Cancels an animation, removes all effects, and resets internal state
    */

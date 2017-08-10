@@ -7,7 +7,7 @@ import { getPlugins } from './plugins'
 import { resolveProperty } from './resolve-property'
 import { loopOn, loopOff } from './timeloop'
 import { toEffects, addPropertyKeyframes } from './effects'
-import { sortBy, forEach, head, push, mapFlatten } from './lists'
+import { sortBy, forEach, head, push, mapFlatten, list, includes } from './lists'
 import { isDefined } from './inspect'
 import { getTargets } from './get-targets'
 import { max, inRange, minMax, flr } from './math'
@@ -20,7 +20,8 @@ import {
   PropertyKeyframe,
   AnimationTimelineController,
   ITimeline,
-  TargetConfiguration
+  TargetConfiguration,
+  BaseSetOptions
 } from './types'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
@@ -43,77 +44,48 @@ const timelineProto: ITimeline = {
     self._rate = +rate || 1
     updateTimeline(self, REVERSE)
   },
-  add(this: ITimeline, opts: AddAnimationOptions) {
+  add(this: ITimeline, opts: AddAnimationOptions | AddAnimationOptions[]) {
     const self = this
-    const _nextTime = self._nextTime
-    const hasTo = isDefined(opts.to)
-    const hasFrom = isDefined(opts.from)
-    const hasDuration = isDefined(opts.duration)
 
-    // pretty exaustive rules for importing times
-    let from: number, to: number
-    if (hasFrom && hasTo) {
-      from = opts.from
-      to = opts.to
-    } else if (hasFrom && hasDuration) {
-      from = opts.from
-      to = from + opts.duration
-    } else if (hasTo && hasDuration) {
-      to = opts.to
-      from = to - opts.duration
-    } else if (hasTo && !hasDuration) {
-      from = _nextTime
-      to = from + opts.to
-    } else if (hasDuration) {
-      from = _nextTime
-      to = from + opts.duration
-    } else {
-      throw new Error('Missing duration')
-    }
+    list(opts).forEach(opt => {
+      const _nextTime = self._nextTime
+      const hasTo = isDefined(opt.to)
+      const hasFrom = isDefined(opt.from)
+      const hasDuration = isDefined(opt.duration)
 
-    return self.fromTo(from, to, opts)
-  },
-  fromTo(this: ITimeline, from: number, to: number, options: BaseAnimationOptions) {
-    const self = this
-    const plugins = getPlugins();
-
-    // ensure to/from are in milliseconds (as numbers)
-    const options2 = options as AnimationOptions
-    options2.from = from
-    options2.to = to
-    options2.duration = options2.to - options2.from
-
-    for (let pluginName in plugins) {
-      const plugin = plugins[pluginName]
-      if (!options.hasOwnProperty(pluginName)) {
-        continue
+      // pretty exaustive rules for importing times
+      let from: number, to: number
+      if (hasFrom && hasTo) {
+        from = opt.from
+        to = opt.to
+      } else if (hasFrom && hasDuration) {
+        from = opt.from
+        to = from + opt.duration
+      } else if (hasTo && hasDuration) {
+        to = opt.to
+        from = to - opt.duration
+      } else if (hasTo && !hasDuration) {
+        from = _nextTime
+        to = from + opt.to
+      } else if (hasDuration) {
+        from = _nextTime
+        to = from + opt.duration
+      } else {
+        throw new Error('Missing duration')
       }
-      const config = self._configs[pluginName] || (self._configs[pluginName] = [] as TargetConfiguration[])
+      insert(self, from, to, opt as AnimationOptions)
+    })
+    
+    // recalculate property keyframe times and total duration
+    calculateTimes(self)
+    return self
+  },
+  fromTo(this: ITimeline, from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]) {
+    const self = this
 
-      // add all targets as property keyframes
-      forEach(getTargets(options.targets), (target, i, ilen) => {
-        const delay = resolveProperty(options2.delay, target, i, ilen) || 0
-
-        const targetConfig =
-          head(config, t2 => t2.target === target) ||
-          push(config, {
-            from: max(options2.from + delay, 0),
-            to: max(options2.to + delay, 0),
-            easing: options2.easing || 'ease',
-            duration: options2.to - options2.from,
-            endDelay: resolveProperty(options2.endDelay, target, i, ilen) || 0,
-            target,
-            targetLength: ilen,
-            keyframes: [],
-            propNames: []
-          })
-
-        addPropertyKeyframes(plugin.name, targetConfig, i, options2)
-      })
-
-      // sort property keyframes
-      forEach(config, c => c.keyframes.sort(propKeyframeSort))
-    }
+    list(options).forEach(options2 => {
+      insert(self, from, to, options2 as AnimationOptions)
+    })
 
     // recalculate property keyframe times and total duration
     calculateTimes(self)
@@ -172,12 +144,83 @@ const timelineProto: ITimeline = {
     self.currentTime = time
     return self
   },
+  set(this: ITimeline, options: BaseSetOptions | BaseSetOptions[]) {
+    const self = this
+    const pluginNames = Object.keys(getPlugins())
+    
+    list(options).forEach(opts => {
+      const at = opts.at || self._nextTime 
+      const opts2 = {} as AnimationOptions
+      
+      for (var name in opts) {
+        if (includes(pluginNames, name)) {
+          // if property is going to be handled by a plugin, replace each of its properties with an array with an empty spot
+          // this empty will be resolved when the timeline creates effects
+          const props = opts[name]
+          const props2 = {} as typeof props
+          for (var propName in props) {   
+            props2[propName] = [_, props[propName]]
+          }
+          opts2[name] = props2
+        } else {
+          opts2[name] = opts[name]
+        }
+      }
+      // insert from (time - super small decimal) + the time specified, this should create a tween that is effectively
+      // so small as to not occur in most cases.  This should "look like" setting it
+      insert(self, max(at - .00000000001, 0), at, opts2)
+    })
+    
+    calculateTimes(self)
+    return self
+  },
   getEffects(this: ITimeline): Effect[] {
     const { _configs } = this
     const plugins = getPlugins()
     return mapFlatten(Object.keys(_configs), k => toEffects(plugins[k], _configs[k]))
   }
 };
+
+function insert(self: ITimeline, from: number, to: number, options2: AnimationOptions) {
+    const plugins = getPlugins();
+
+    // ensure to/from are in milliseconds (as numbers) 
+    options2.from = from
+    options2.to = to
+    options2.duration = options2.to - options2.from
+
+    for (let pluginName in plugins) {
+      const plugin = plugins[pluginName]
+      if (!options2.hasOwnProperty(pluginName)) {
+        continue
+      }
+      const config = self._configs[pluginName] || (self._configs[pluginName] = [] as TargetConfiguration[])
+
+      // add all targets as property keyframes
+      forEach(getTargets(options2.targets), (target, i, ilen) => {
+        const delay = resolveProperty(options2.delay, target, i, ilen) || 0
+
+        const targetConfig =
+          head(config, (t2: TargetConfiguration) => t2.target === target) ||
+          push(config, {
+            from: max(options2.from + delay, 0),
+            to: max(options2.to + delay, 0),
+            easing: options2.easing || 'ease',
+            duration: options2.to - options2.from,
+            endDelay: resolveProperty(options2.endDelay, target, i, ilen) || 0,
+            target,
+            targetLength: ilen,
+            keyframes: [],
+            propNames: []
+          })
+
+        addPropertyKeyframes(plugin.name, targetConfig, i, options2)
+      })
+
+      // sort property keyframes
+      forEach(config, (c: TargetConfiguration) => c.keyframes.sort(propKeyframeSort))
+    } 
+  }
 
 function calculateTimes(self: ITimeline) {
   let timelineTo = 0
@@ -221,7 +264,7 @@ function setupEffects(self: ITimeline) {
 
   const animations: AnimationTimelineController[] = []
   const plugins = getPlugins()
-  for (let pluginName in plugins) {  
+  for (let pluginName in plugins) {
     const plugin = plugins[pluginName]
     const config = self._configs[pluginName]
     if (!config) {
@@ -282,7 +325,7 @@ function updateTimeline(self: ITimeline, type: string) {
       const { from, to } = effect
       const isAnimationActive = isTimelineActive && inRange(flr(time), from, to)
       const offset = minMax((time - from) / (to - from), 0, 1)
-      
+
       effect.update(offset, self._rate, isAnimationActive)
     })
   }

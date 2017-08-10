@@ -58,6 +58,25 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
           }
         }
         
+        // fill empty frames with the previous value
+        for (var x = effect.length - 1; x > 0; x--) {
+          var currentValue = effect[x]
+          if (currentValue.value === _) {
+            var y = x
+            var previousValue
+            for (; x > -1; x--) {
+              previousValue = effect[x]
+              if (previousValue.value !== _) {
+                break
+              }
+            }
+            for (var z = x; z <= y; z++) {          
+              effect[z].value = previousValue.value
+            }
+          }
+        }
+        
+        // guarantee a frame at offset 1
         var lastFrame = tail(effect, c => c.offset === 1)
         if (lastFrame === _ || lastFrame.value === _) {
           // add keyframe if offset 1 is missing
@@ -146,7 +165,7 @@ function addProperty(
           ? 0
           : _;
 
-    const easing = valObj.easing || defaultEasing
+    const easing = (valObj && valObj.easing) || defaultEasing
 
     return { offset, value, easing }
   })
