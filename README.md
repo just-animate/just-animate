@@ -17,6 +17,10 @@ _Making Animation Simple_
 
 > This project is powered by your stars [so ^ star it please](https://github.com/just-animate/just-animate/stargazers).
 
+## Quick Start Templates
+
+- [Rubber band ball demo](https://codepen.io/notoriousb1t/pen/vJJEdo/?editors=0110)
+
 ## Documentation
 
 Read the [Full Documentation](https://just-animate.gitbooks.io/just-animate-2) on Gitbooks
