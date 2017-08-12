@@ -6,10 +6,15 @@ export interface SetOptions {
   [name: string]: PropertyResolver<string | number>
 }
 
+export interface Interpolator {
+  (left: any, right: any, offset: number): any
+}
+
 export interface Keyframe {
   offset: number
   value: string | number
   easing: string
+  interpolate: Interpolator
 }
 
 export type AnimationTarget = any
@@ -23,6 +28,7 @@ export interface PropertyObject {
   value: string | number
   offset?: number
   easing?: string
+  interpolate?: Interpolator
 }
 
 export type PropertyValue = string | number | PropertyObject
@@ -52,13 +58,17 @@ export interface PropertyKeyframe {
   prop: string
   index: number
   value: string | number
+  interpolate: Interpolator
 }
 export interface PropertyEffects {
-  [name: string]: {
-    easing: string
-    offset: number
-    value: string | number
-  }[]
+  [name: string]: PropertyEffect[]
+}
+
+export interface PropertyEffect {
+  offset: number
+  easing: string
+  value: string | number
+  interpolate: Interpolator
 }
 
 export interface TargetConfiguration {

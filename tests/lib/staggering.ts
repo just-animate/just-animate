@@ -28,8 +28,8 @@ describe('staggering', () => {
         plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       },
       {
@@ -39,8 +39,8 @@ describe('staggering', () => {
         plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       },
       {
@@ -50,8 +50,8 @@ describe('staggering', () => {
         plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       },
       {
@@ -61,8 +61,8 @@ describe('staggering', () => {
         plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
     ])

@@ -28,6 +28,7 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
       const effects2 = effects[p.prop] || (effects[p.prop] = [])
       const offset = (p.time - from) / (duration || 1)
       const easing = p.easing
+      const interpolate = p.interpolate
       const value = resolveProperty(p.value, target, p.index, targetLength)
 
       const effect2 =
@@ -35,11 +36,13 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
         push(effects2, {
           easing,
           offset,
-          value
+          value,
+          interpolate
         })
 
       effect2.easing = easing
       effect2.value = value
+      effect2.interpolate = interpolate
     })
 
     // process handlers
@@ -60,11 +63,13 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
             effect.splice(0, 0, {
               offset: 0,
               value: value2,
-              easing: targetConfig.easing
+              easing: targetConfig.easing,
+              interpolate: _
             })
           } else {
             firstFrame.value = value2
             firstFrame.easing = targetConfig.easing
+            firstFrame.interpolate = _
           }
         }
 
@@ -82,6 +87,7 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
             }
             for (var z = x; z <= y; z++) {
               effect[z].value = previousValue.value
+              effect[z].interpolate = previousValue.interpolate
             }
           }
         }
@@ -95,11 +101,13 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
             push(effect, {
               offset: 1,
               value: value3,
-              easing: targetConfig.easing
+              easing: targetConfig.easing,
+              interpolate: _
             })
           } else {
             lastFrame.value = value3
             lastFrame.easing = targetConfig.easing
+            firstFrame.interpolate = _
           }
         }
 
@@ -176,16 +184,17 @@ function addProperty(
               0
             : _
 
+    const interpolate = (valObj && valObj.interpolate) || _
     const easing = (valObj && valObj.easing) || defaultEasing
 
-    return { offset, value, easing }
+    return { offset, value, easing, interpolate }
   })
 
   // insert offsets where not present
   inferOffsets(keyframes)
 
   keyframes.forEach(keyframe => {
-    const { offset, value, easing } = keyframe
+    const { offset, value, easing, interpolate } = keyframe
     const time = flr(duration * offset + from)
     const indexOfFrame = indexOf(target.keyframes, k => k.prop === name && k.time === time)
 
@@ -199,7 +208,8 @@ function addProperty(
       index,
       prop: name,
       time,
-      value
+      value,
+      interpolate
     })
   })
 
@@ -210,19 +220,21 @@ function addProperty(
       index,
       prop: name,
       time: from,
-      value: _
+      value: _,
+      interpolate: _
     })
   }
 
-  // insert start frame if not present
+  // insert end frame if not present
   var to = from + duration
   if (!tail(target.keyframes, k => k.prop === name && k.time === to)) {
     push(target.keyframes, {
-      easing: defaultEasing,
+      easing: _,
       index,
       prop: name,
       time: to,
-      value: _
+      value: _,
+      interpolate: _
     })
   }
 }

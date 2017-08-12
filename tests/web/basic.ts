@@ -47,11 +47,11 @@ describe('basic', () => {
       plugin: 'web',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 0.1875, value: 0.5, easing: 'linear' },
-        { offset: 0.375, value: 1, easing: 'linear' },
-        { offset: 0.5, value: 1, easing: 'linear' },
-        { offset: 1, value: 0, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+        { offset: 0.1875, value: 0.5, easing: 'linear', interpolate: undefined },
+        { offset: 0.375, value: 1, easing: 'linear', interpolate: undefined },
+        { offset: 0.5, value: 1, easing: 'linear', interpolate: undefined },
+        { offset: 1, value: 0, easing: 'linear', interpolate: undefined }
       ]
     }, {
       target: target,
@@ -60,13 +60,13 @@ describe('basic', () => {
       plugin: 'web',
       prop: 'left',
       keyframes: [
-        { offset: 0, value: '0px', easing: 'linear' },
-        { offset: 0.075, value: '40px', easing: 'linear' },
-        { offset: 0.15, value: '0px', easing: 'linear' },
-        { offset: 0.3, value: '90px', easing: 'linear' },
-        { offset: 0.375, value: '100px', easing: 'linear' },
-        { offset: 0.5, value: '100px', easing: 'linear' },
-        { offset: 1, value: '0px', easing: 'linear' }
+        { offset: 0, value: '0px', easing: 'linear', interpolate: undefined },
+        { offset: 0.075, value: '40px', easing: 'linear', interpolate: undefined },
+        { offset: 0.15, value: '0px', easing: 'linear', interpolate: undefined },
+        { offset: 0.3, value: '90px', easing: 'linear', interpolate: undefined },
+        { offset: 0.375, value: '100px', easing: 'linear', interpolate: undefined },
+        { offset: 0.5, value: '100px', easing: 'linear', interpolate: undefined },
+        { offset: 1, value: '0px', easing: 'linear', interpolate: undefined }
       ]
     }])
     document.body.removeChild(target)
@@ -103,8 +103,8 @@ describe('basic', () => {
       from: 0,
       to: 1000,
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
       ]
     }, {
       plugin: 'web',
@@ -113,8 +113,8 @@ describe('basic', () => {
       from: 0,
       to: 1000,
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
       ]
     }])
   })
@@ -270,17 +270,20 @@ describe('basic', () => {
           {
             easing: 'linear',
             offset: 0,
-            value: 0
+            value: 0,
+            interpolate: undefined
           },
           {
             easing: 'linear',
             offset: 0.75,
-            value: 1
+            value: 1,
+            interpolate: undefined
           },
           {
             easing: 'linear',
             offset: 1,
-            value: 0
+            value: 0,
+            interpolate: undefined
           }
         ]
       }

@@ -24,8 +24,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
       ]
     })
   })
@@ -53,8 +53,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
       ]
     }])
   })
@@ -91,8 +91,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
       ]
     },
     {
@@ -102,8 +102,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'number',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 200, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 200, easing: 'linear', interpolate: undefined  }
       ]
     }])
   })
@@ -135,8 +135,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: .1, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: .1, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
       ]
     }, {
       target: { opacity: .2 },
@@ -145,8 +145,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: .2, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: .2, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
       ]
     }])
   })
@@ -169,16 +169,17 @@ describe('basic', () => {
       }
     })
 
-    const actual = t1.getEffects()
-    const expected = [{
+    const actual = t1.getEffects() 
+    
+    assert.deepEqual<{}>(actual, [{
       target: {},
       from: 0,
       to: 1000,
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: .1, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: .1, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
       ]
     }, {
       target: {},
@@ -187,12 +188,10 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: .2, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: .2, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
       ]
-    }]
-
-    assert.deepEqual<{}>(actual, expected)
+    }])
   })
 
   it('only last value for opacity at an offset is kept, others are ignored', () => {
@@ -221,8 +220,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 1, easing: 'linear' },
-        { offset: 1, value: 0, easing: 'linear' }
+        { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
       ]
     }])
   })
@@ -259,8 +258,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
       ]
     },
     {
@@ -270,8 +269,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'number',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 200, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 200, easing: 'linear', interpolate: undefined  }
       ]
     }])
   })
@@ -306,8 +305,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'opacity',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 1, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
       ]
     },
     {
@@ -317,8 +316,8 @@ describe('basic', () => {
       plugin: 'props',
       prop: 'number',
       keyframes: [
-        { offset: 0, value: 0, easing: 'linear' },
-        { offset: 1, value: 200, easing: 'linear' }
+        { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+        { offset: 1, value: 200, easing: 'linear', interpolate: undefined  }
       ]
     }])
   })

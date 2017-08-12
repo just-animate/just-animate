@@ -35,8 +35,8 @@ describe('sequencing', () => {
         plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear' },
-          { offset: 1, value: 0, easing: 'linear' }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
         ]
       },
       {
@@ -46,8 +46,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
         ]
       }
     ])
@@ -78,7 +78,7 @@ describe('sequencing', () => {
     ]);
 
     const actual = timeline.getEffects()
-    const expected = [
+    assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
         from: 100,
@@ -86,8 +86,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear' },
-          { offset: 1, value: 0, easing: 'linear' }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
         ]
       },
       {
@@ -97,8 +97,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear' },
-          { offset: 1, value: 0, easing: 'linear' }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
         ]
       },
       {
@@ -108,8 +108,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear' },
-          { offset: 1, value: 0, easing: 'linear' }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
         ]
       },
       {
@@ -119,13 +119,11 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
         ]
       }
-    ]
-
-    assert.deepEqual<{}>(actual, expected)
+    ])
   })
 
   it('handles negative delays in sequencing', () => {
@@ -162,8 +160,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear' },
-          { offset: 1, value: 0, easing: 'linear' }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined }
         ]
       },
       {
@@ -173,8 +171,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
     ])
@@ -213,8 +211,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear' },
-          { offset: 1, value: 0, easing: 'linear' }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined }
         ]
       },
       {
@@ -224,8 +222,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
     ])
@@ -264,8 +262,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear' },
-          { offset: 1, value: 0, easing: 'linear' }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined }
         ]
       },
       {
@@ -275,8 +273,8 @@ describe('sequencing', () => {
         plugin: 'props',  
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear' },
-          { offset: 1, value: 1, easing: 'linear' }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
     ])

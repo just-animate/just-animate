@@ -53,9 +53,9 @@ describe('transforms', () => {
       plugin: 'web',
       prop: 'transform',
       keyframes: [
-        { offset: 0, value: 'none', easing: 'linear' },
-        { offset: .5, value: 'rotate(180deg)', easing: 'linear' },
-        { offset: 1, value: 'none', easing: 'linear' }
+        { offset: 0, value: 'none', easing: 'linear', interpolate: undefined },
+        { offset: .5, value: 'rotate(180deg)', easing: 'linear', interpolate: undefined },
+        { offset: 1, value: 'none', easing: 'linear', interpolate: undefined }
       ]
     }]);
 
