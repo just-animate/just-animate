@@ -1,9 +1,9 @@
-import { PropertyEffects, TargetConfiguration } from '../lib/types';
-import { includes, pushDistinct, forEach, head } from '../lib/lists';
-import { _ } from '../lib/constants';
-import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG, transformLengths } from './constants';
-import { isDefined } from '../lib/inspect';
-import { parseUnit } from './parse-unit';
+import { PropertyEffects, TargetConfiguration } from '../lib/types'
+import { includes, pushDistinct, forEach, head } from '../lib/lists'
+import { _ } from '../lib/constants'
+import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG, transformLengths } from './constants'
+import { isDefined } from '../lib/inspect'
+import { parseUnit } from './parse-unit'
 
 export function combineTransforms(target: TargetConfiguration, effects: PropertyEffects) {
   // get all transform shorthands
@@ -60,7 +60,7 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
 
     // foreach keyframe if has transform property
     for (const transform in effect.values) {
-      let value = effect.values[transform];
+      let value = effect.values[transform]
       if (isDefined(value)) {
         continue
       }
@@ -70,7 +70,7 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
       for (var j = i - 1; j > -1; j--) {
         if (isDefined(transformEffects[j].values[transform])) {
           startingPos = j
-          break;
+          break
         }
       }
 
@@ -90,19 +90,19 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
         // if both start and end are found, fill the value based on the relative offset
         const startEffect = transformEffects[startingPos]
         const endEffect = transformEffects[endingPos]
-        const startVal = parseUnit(startEffect.values[transform]);
-        const endVal = parseUnit(endEffect.values[transform]);
+        const startVal = parseUnit(startEffect.values[transform])
+        const endVal = parseUnit(endEffect.values[transform])
 
         for (let g = startingPos + 1; g < endingPos; g++) {
-          const currentOffset = offsets[g];
+          const currentOffset = offsets[g]
 
           // calculate offset delta (how much animation progress to apply)
-          const offsetDelta = (currentOffset - startEffect.offset) / (endEffect.offset - startEffect.offset);
-          const currentValue = startVal.value + (endVal.value - startVal.value) * offsetDelta;
+          const offsetDelta = (currentOffset - startEffect.offset) / (endEffect.offset - startEffect.offset)
+          const currentValue = startVal.value + (endVal.value - startVal.value) * offsetDelta
 
           const currentValueWithUnit = currentValue + (endVal.unit || startVal.unit || '')
-          const currentKeyframe = transformEffects[g];
-          currentKeyframe.values[transform] = currentValueWithUnit;
+          const currentKeyframe = transformEffects[g]
+          currentKeyframe.values[transform] = currentValueWithUnit
         }
       } else if (startingPosFound) {
         // if either start or end was not found, fill from the last known position
@@ -121,19 +121,17 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
 
     const transformEffects2: any[] = []
     forEach(transformEffects, effect => {
-      let val: string = _;
+      let val: string = _
       for (var prop in effect.values) {
         const unit = parseUnit(effect.values[prop])
         if (unit.value === _) {
-          continue;
+          continue
         }
         if (!unit.unit) {
-          unit.unit = includes(transformLengths, prop)
-            ? PX : includes(transformAngles, prop)
-              ? DEG : ''
+          unit.unit = includes(transformLengths, prop) ? PX : includes(transformAngles, prop) ? DEG : ''
         }
 
-        val = (val ? (val + ' ') : '') + (aliases[prop] || prop) + '(' + unit.value + unit.unit + ')'
+        val = (val ? val + ' ' : '') + (aliases[prop] || prop) + '(' + unit.value + unit.unit + ')'
       }
       transformEffects2.push({
         offset: effect.offset,

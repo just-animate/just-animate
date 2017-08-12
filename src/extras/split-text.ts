@@ -19,18 +19,14 @@ export function splitText(target: HTMLElement | string) {
   const elements =
     typeof target === 'string'
       ? document.querySelectorAll(target as string) as any
-      : target instanceof Element
-        ? [target as HTMLElement]
-        : typeof (target as any[]).length === 'number'
-          ? target :
-          [];
-  
+      : target instanceof Element ? [target as HTMLElement] : typeof (target as any[]).length === 'number' ? target : []
+
   // get paragraphs, words, and characters for each element
   for (let i = 0, ilen = elements.length; i < ilen; i++) {
     var e = elements[i]
     if (!e) {
-        continue
-      }
+      continue
+    }
 
     // remove tabs, spaces, and newlines
     var contents = e.textContent!.replace(/[\r\n\s\t]+/gi, ' ').trim()
@@ -43,7 +39,7 @@ export function splitText(target: HTMLElement | string) {
 
     // handle each word
     for (let x = 0, xlen = ws.length; x < xlen; x++) {
-      var w = ws[x]  
+      var w = ws[x]
       if (!w) {
         continue
       }
@@ -54,10 +50,10 @@ export function splitText(target: HTMLElement | string) {
       }
 
       // create new div for word/run"
-      // add to the result   
+      // add to the result
       var word = element()
       words.push(word)
-      e.appendChild(word)     
+      e.appendChild(word)
 
       // create new div for character"
       // add to the result

@@ -1,8 +1,8 @@
-import { isDefined } from '../lib/inspect';
-import { _, measureExpression } from '../lib/constants';
+import { isDefined } from '../lib/inspect'
+import { _, measureExpression } from '../lib/constants'
 
 export interface Unit {
-  value: number | undefined,
+  value: number | undefined
   unit: string
 }
 
@@ -19,14 +19,14 @@ export function parseUnit(val: string | number): Unit {
     return output
   }
   if (Number(val)) {
-    output.value = +val;
+    output.value = +val
     return output
   }
 
   const match = measureExpression.exec(val as string) as RegExpExecArray
   if (match) {
-    output.unit = match[2] || _;
-    output.value = match[1] ? parseFloat(match[1]) : _;
+    output.unit = match[2] || _
+    output.value = match[1] ? parseFloat(match[1]) : _
   }
 
   return output

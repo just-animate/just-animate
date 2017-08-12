@@ -1,13 +1,13 @@
-import { ITimeline } from '../lib/types';
+import { ITimeline } from '../lib/types'
 
-var isInitialized: boolean;
-var scrubberControl: HTMLInputElement;
-var scrubberValue: HTMLInputElement;
-var play: HTMLElement;
-var pause: HTMLElement;
-var reverse: HTMLElement;
-var timeline: ITimeline;
-var pausedForScrubbing = false;
+var isInitialized: boolean
+var scrubberControl: HTMLInputElement
+var scrubberValue: HTMLInputElement
+var play: HTMLElement
+var pause: HTMLElement
+var reverse: HTMLElement
+var timeline: ITimeline
+var pausedForScrubbing = false
 
 const controlTemplate = `<div id="ja-controls">
    <div id="ja-play">
@@ -32,16 +32,16 @@ const controlTemplate = `<div id="ja-controls">
       <button data-ja-rate value=".5">50%</button>
       <button data-ja-rate value="1" class="active">100%</button>
    </div>
-</div>`;
+</div>`
 
-const colorFillLower = '#2a6495';
-const colorFillUpper = '#7AC7C4';
-const boxShadow1 = '1px 1px 1px #000000, 0px 0px 1px #0d0d0d';
-const thumbHeight = '24px';
-const thumbWidth = '4px';
-const trackHeight = '4px';
-const thumbColor = '#9ba6c0';
-const border = '0.2px solid #010101';
+const colorFillLower = '#2a6495'
+const colorFillUpper = '#7AC7C4'
+const boxShadow1 = '1px 1px 1px #000000, 0px 0px 1px #0d0d0d'
+const thumbHeight = '24px'
+const thumbWidth = '4px'
+const trackHeight = '4px'
+const thumbColor = '#9ba6c0'
+const border = '0.2px solid #010101'
 
 const stylesTemplate = `<style style="display:none">
 #ja-controls { 
@@ -198,123 +198,121 @@ const stylesTemplate = `<style style="display:none">
   background: ${colorFillUpper};
 }
 
-</style>`;
+</style>`
 
 function id(identifier: string) {
-  return document.getElementById(identifier) as HTMLElement;
+  return document.getElementById(identifier) as HTMLElement
 }
 
 function on(element: Element, event: string, listener: any) {
-  element.addEventListener(event, listener);
+  element.addEventListener(event, listener)
 }
 
 function onValueChanged(value: number) {
-  value = Math.floor(+value);
-  scrubberValue.value = value + '';
-  scrubberControl.value = value + '';
+  value = Math.floor(+value)
+  scrubberValue.value = value + ''
+  scrubberControl.value = value + ''
 }
 
 function init() {
-  var $wrapper = document.createElement('div');
-  $wrapper.id = 'ja-controls';
-  $wrapper.innerHTML = stylesTemplate + controlTemplate;
-  document.body.appendChild($wrapper);
+  var $wrapper = document.createElement('div')
+  $wrapper.id = 'ja-controls'
+  $wrapper.innerHTML = stylesTemplate + controlTemplate
+  document.body.appendChild($wrapper)
 
-  scrubberControl = id('ja-scrubber') as HTMLInputElement;
-  scrubberValue = id('ja-seek') as HTMLInputElement;
-  play = id('ja-play');
-  pause = id('ja-pause');
-  reverse = id('ja-reverse');
+  scrubberControl = id('ja-scrubber') as HTMLInputElement
+  scrubberValue = id('ja-seek') as HTMLInputElement
+  play = id('ja-play')
+  pause = id('ja-pause')
+  reverse = id('ja-reverse')
 
-  scrubberValue.value = '0';
+  scrubberValue.value = '0'
 
   // update the current value when the slider is dragged
   const scrubberChanged = (evt: Event) => {
-    var value = +(evt.currentTarget as HTMLInputElement).value;
-    timeline.currentTime = value;
-    onValueChanged(value);
-  };
+    var value = +(evt.currentTarget as HTMLInputElement).value
+    timeline.currentTime = value
+    onValueChanged(value)
+  }
 
-  on(scrubberControl, 'input', scrubberChanged);
-  on(scrubberControl, 'change', scrubberChanged);
+  on(scrubberControl, 'input', scrubberChanged)
+  on(scrubberControl, 'change', scrubberChanged)
 
   on(scrubberValue, 'mousedown', () => {
     if (timeline) {
-      timeline.pause();
+      timeline.pause()
     }
-  });
+  })
 
   on(scrubberControl, 'mousedown', () => {
     if (timeline) {
       if (timeline._state === 3 /* running */) {
-        pausedForScrubbing = true;
+        pausedForScrubbing = true
       }
-      timeline.pause();
+      timeline.pause()
     }
-  });
+  })
 
   on(scrubberControl, 'mouseup', () => {
     if (timeline && pausedForScrubbing) {
-      pausedForScrubbing = false;
-      timeline.play();
+      pausedForScrubbing = false
+      timeline.play()
     }
-  });
+  })
 
   on(scrubberValue, 'input', (evt: Event) => {
-    var value = +(evt.currentTarget as HTMLInputElement).value;
-    timeline.currentTime = value;
-    onValueChanged(value);
-  });
+    var value = +(evt.currentTarget as HTMLInputElement).value
+    timeline.currentTime = value
+    onValueChanged(value)
+  })
 
   on(play, 'click', () => {
     if (timeline) {
-      timeline.play();
+      timeline.play()
     }
-  });
+  })
 
   on(pause, 'click', () => {
     if (timeline) {
-      timeline.pause();
+      timeline.pause()
     }
-  });
+  })
 
   on(reverse, 'click', () => {
     if (timeline) {
-      timeline.reverse();
+      timeline.reverse()
     }
-  });
+  })
 
-  const rates = [].slice.call(
-    document.querySelectorAll('#ja-controls [data-ja-rate]')
-  )
-  
+  const rates = [].slice.call(document.querySelectorAll('#ja-controls [data-ja-rate]'))
+
   rates.forEach((rate: HTMLButtonElement) => {
     on(rate, 'click', () => {
       // toggle off other actives and toggle on this active
-      rates.forEach((rate2: HTMLButtonElement) => rate2.classList.remove('active'));
-      rate.classList.add('active');
+      rates.forEach((rate2: HTMLButtonElement) => rate2.classList.remove('active'))
+      rate.classList.add('active')
 
       if (timeline) {
-        const sign = timeline.playbackRate < 0 ? -1 : 1;
-        console.log(sign);
-        timeline.playbackRate = +rate.value * sign;
+        const sign = timeline.playbackRate < 0 ? -1 : 1
+        console.log(sign)
+        timeline.playbackRate = +rate.value * sign
       }
-    });
-  });
+    })
+  })
 }
 
 export function player(timeline2: ITimeline) {
   if (!isInitialized) {
-    init();
-    isInitialized = true;
+    init()
+    isInitialized = true
   }
 
   if (timeline) {
-    timeline.off('update', onValueChanged);
+    timeline.off('update', onValueChanged)
   }
 
-  scrubberControl.setAttribute('max', String(timeline2.duration));
-  scrubberControl.value = String(timeline2.currentTime);
-  timeline2.on('update', onValueChanged);
-  timeline = timeline2;
+  scrubberControl.setAttribute('max', String(timeline2.duration))
+  scrubberControl.value = String(timeline2.currentTime)
+  timeline2.on('update', onValueChanged)
+  timeline = timeline2
 }

@@ -1,9 +1,18 @@
-import { AnimationOptions, Effect, PropertyEffects, PropertyResolver, PropertyValue, TargetConfiguration, PropertyObject, JustAnimatePlugin } from './types'
+import {
+  AnimationOptions,
+  Effect,
+  PropertyEffects,
+  PropertyResolver,
+  PropertyValue,
+  TargetConfiguration,
+  PropertyObject,
+  JustAnimatePlugin
+} from './types'
 import { resolveProperty } from './resolve-property'
 import { forEach, indexOf, list, head, tail, pushDistinct, push, sortBy } from './lists'
 import { isDefined, isObject, isNumber } from './inspect'
 import { flr, max } from './math'
-import { _ } from './constants';
+import { _ } from './constants'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 
@@ -16,19 +25,21 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
     // construct property animation options
     var effects: PropertyEffects = {}
     forEach(keyframes, p => {
-      const effects2 = (effects[p.prop] || (effects[p.prop] = []))
+      const effects2 = effects[p.prop] || (effects[p.prop] = [])
       const offset = (p.time - from) / (duration || 1)
       const easing = p.easing
       const value = resolveProperty(p.value, target, p.index, targetLength)
-      
-      const effect2 = head(effects2, e => e.offset === offset) || push(effects2, {
-        easing,
-        offset,
-        value
-      })
-      
+
+      const effect2 =
+        head(effects2, e => e.offset === offset) ||
+        push(effects2, {
+          easing,
+          offset,
+          value
+        })
+
       effect2.easing = easing
-      effect2.value = value  
+      effect2.value = value
     })
 
     // process handlers
@@ -39,7 +50,6 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
     for (var prop in effects) {
       var effect = effects[prop]
       if (effect) {
-        
         effect.sort(offsetSorter)
 
         var firstFrame = head(effect, c => c.offset === 0)
@@ -57,7 +67,7 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
             firstFrame.easing = targetConfig.easing
           }
         }
-        
+
         // fill empty frames with the previous value
         for (var x = effect.length - 1; x > 0; x--) {
           var currentValue = effect[x]
@@ -70,12 +80,12 @@ export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguratio
                 break
               }
             }
-            for (var z = x; z <= y; z++) {          
+            for (var z = x; z <= y; z++) {
               effect[z].value = previousValue.value
             }
           }
         }
-        
+
         // guarantee a frame at offset 1
         var lastFrame = tail(effect, c => c.offset === 1)
         if (lastFrame === _ || lastFrame.value === _) {
@@ -154,16 +164,17 @@ function addProperty(
 
     const value = isObj2 ? valObj.value : valOrObj as string | number
 
-    const offset = isObj2 && isNumber(valObj.offset)
-      // object has an explicit offset  
-      ? valObj.offset
-      : i === vals.length - 1
-        // last in array is offset: 1       
-        ? 1
-        : i === 0
-          // first in the array is offset: 0
-          ? 0
-          : _;
+    const offset =
+      isObj2 && isNumber(valObj.offset)
+        ? // object has an explicit offset
+          valObj.offset
+        : i === vals.length - 1
+          ? // last in array is offset: 1
+            1
+          : i === 0
+            ? // first in the array is offset: 0
+              0
+            : _
 
     const easing = (valObj && valObj.easing) || defaultEasing
 

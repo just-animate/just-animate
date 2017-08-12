@@ -1,7 +1,7 @@
-import { PropertyEffects } from '../lib/types';
-import { includes } from '../lib/lists';
-import { isNumber, isDefined } from '../lib/inspect';
-import { cssLengths, PX } from './constants';
+import { PropertyEffects } from '../lib/types'
+import { includes } from '../lib/lists'
+import { isNumber, isDefined } from '../lib/inspect'
+import { cssLengths, PX } from './constants'
 
 export function appendUnits(effects: PropertyEffects) {
   // suffix lengths

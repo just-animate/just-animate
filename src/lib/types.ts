@@ -40,9 +40,9 @@ export interface AnimationTimelineController extends AnimationController {
 }
 
 export interface JustAnimatePlugin {
-  name: string 
+  name: string
   onWillAnimate?: { (target: TargetConfiguration, effects: PropertyEffects): void }
-  animate(effect: Effect): AnimationController 
+  animate(effect: Effect): AnimationController
   getValue(target: AnimationTarget, key: string): string | number
 }
 
@@ -75,20 +75,20 @@ export interface TargetConfiguration {
 
 export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
-  
+
   delay?: PropertyResolver<number>
-  easing?: string  
-  endDelay?: PropertyResolver<number>  
+  easing?: string
+  endDelay?: PropertyResolver<number>
   props?: PropertyOptions
-  stagger?: number  
+  stagger?: number
   web?: PropertyOptions
 }
 
 export interface BaseSetOptions {
   targets: AnimationTarget | AnimationTarget[]
   at?: number
-  easing?: string  
-  props?: SetOptions 
+  easing?: string
+  props?: SetOptions
   web?: SetOptions
 }
 
@@ -103,7 +103,7 @@ export interface AnimationOptions {
   to: number
   duration: number
   easing?: string
-  targets: AnimationTarget[] 
+  targets: AnimationTarget[]
   stagger?: number
   delay?: PropertyResolver<number>
   endDelay?: PropertyResolver<number>
@@ -114,7 +114,7 @@ export interface AnimationOptions {
 export interface Effect {
   target: AnimationTarget
   plugin: string
-  prop: string;
+  prop: string
   keyframes: Keyframe[]
   to: number
   from: number
@@ -154,10 +154,10 @@ export interface ITimeline {
    * @param to the ending time in milliseconds
    * @param options the animation definition.
    */
-  fromTo( from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]): this
-  
+  fromTo(from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]): this
+
   set(options: BaseSetOptions | BaseSetOptions[]): this
-  
+
   /**
    * Cancels an animation, removes all effects, and resets internal state
    */
@@ -176,14 +176,14 @@ export interface ITimeline {
    * @param eventName timeline event name
    * @param listener callback for when the event occurs
    */
-  on( eventName: string, listener: (time: number) => void): this
+  on(eventName: string, listener: (time: number) => void): this
 
   /**
    * Unregister for timeline events
    * @param eventName timeline event name
    * @param listener callback to unregister
    */
-  off( eventName: string, listener: (time: number) => void): this
+  off(eventName: string, listener: (time: number) => void): this
 
   /**
    * Pauses execution of the animation. If the animation has never been active, this will
@@ -195,7 +195,7 @@ export interface ITimeline {
    * @param iterations number of iterations to play the animation.  Use Infinity to loop forever
    * @param dir the direction the animation should play.  "normal" (default) or "alternate" (yoyo)
    */
-  play(options?: {repeat?: number, alternate?: boolean }): this
+  play(options?: { repeat?: number; alternate?: boolean }): this
 
   /**
    * Reverses the animation playbackRate.  If the animation is currently playing, it will reverse the animation

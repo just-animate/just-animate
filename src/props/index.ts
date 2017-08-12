@@ -13,11 +13,11 @@ export const propsPlugin: JustAnimatePlugin = {
     const interpolate = interpolator(effect.to - effect.from, effect.keyframes)
 
     let propSetter: (value: any) => void
-    
-    // ignore attribute and variable setters if is not DOM or if the 
+
+    // ignore attribute and variable setters if is not DOM or if the
     // target has a property with that exact name
     if (!isDOM(target) || typeof target[prop] !== 'undefined') {
-      propSetter = setProperty(effect.target, prop) 
+      propSetter = setProperty(effect.target, prop)
     } else if (cssVarExp.test(prop)) {
       propSetter = setVariable(effect.target, prop)
     } else {
@@ -34,13 +34,13 @@ export const propsPlugin: JustAnimatePlugin = {
         initial = _
       },
       update(localTime: number, _playbackRate: number, _isActive: boolean): void {
-        propSetter(interpolate(localTime)) 
+        propSetter(interpolate(localTime))
       }
     }
   },
   getValue(target: HTMLElement, prop: string) {
-    if ((!isDOM(target) || typeof target[prop] !== 'undefined')) {
-      return target[prop];
+    if (!isDOM(target) || typeof target[prop] !== 'undefined') {
+      return target[prop]
     }
     if (cssVarExp.test(prop)) {
       return target.style.getPropertyValue(prop)
@@ -61,5 +61,5 @@ function setVariable(target: HTMLElement, name: string) {
 }
 
 function setProperty(target: {}, name: string) {
-  return (value: any) => target[name] = value
+  return (value: any) => (target[name] = value)
 }

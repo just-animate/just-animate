@@ -1,6 +1,6 @@
 import { caf, now, raf } from './utils'
 import { _ } from './constants'
-import { push } from './lists';
+import { push } from './lists'
 
 type TimeKeeper = { __last?: number }
 const active: (TimeLoopCallback & TimeKeeper)[] = []
@@ -17,7 +17,6 @@ function cancel() {
 
 function update() {
   const len = active.length
-
   lastTime = lastTime || now()
 
   // if not is subscribed, kill the cycle
@@ -29,12 +28,12 @@ function update() {
 
   const thisTime = now()
   const delta = thisTime - lastTime
-  
-  // ensure running and requestAnimationFrame is called  
+
+  // ensure running and requestAnimationFrame is called
   lastTime = thisTime
   lastHandle = raf(update)
 
-  for (let i = len; i > -1; i--) {
+  for (let i = len - 1; i > -1; i--) {
     // update delta and save result
     const activeFn = active[i]
     const existingElapsed = activeFn.__last
@@ -47,9 +46,13 @@ function update() {
 }
 
 export function loopOn(fn: TimeLoopCallback) {
+  if (!fn) {
+    return
+  }
+
   const indexOfSub = active.indexOf(fn)
   if (indexOfSub === -1) {
-    (fn as TimeKeeper).__last = 0
+    ;(fn as TimeKeeper).__last = 0
     push(active, fn)
   }
 
@@ -59,10 +62,14 @@ export function loopOn(fn: TimeLoopCallback) {
 }
 
 export function loopOff(fn: TimeLoopCallback) {
+  if (!fn) {
+    return
+  }
+
   const indexOfSub = active.indexOf(fn)
   if (indexOfSub !== -1) {
-    (fn as TimeKeeper).__last = 0
-    active.splice(indexOfSub, 1)    
+    ;(fn as TimeKeeper).__last = 0
+    active.splice(indexOfSub, 1)
   }
   if (!active.length) {
     cancel()
