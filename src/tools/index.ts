@@ -293,8 +293,7 @@ function init() {
       rate.classList.add('active')
 
       if (timeline) {
-        const sign = timeline.playbackRate < 0 ? -1 : 1
-        console.log(sign)
+        const sign = timeline.playbackRate < 0 ? -1 : 1 
         timeline.playbackRate = +rate.value * sign
       }
     })

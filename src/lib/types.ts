@@ -1,5 +1,15 @@
-export interface PropertyOptions {
+export interface WebPropertyOptions {
   [name: string]: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
+}
+
+export interface PropertyOptions {
+  [name: string]: PropertyValueOptions | PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
+}
+
+export interface PropertyValueOptions { 
+  value: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
+  easing?: string
+  interpolate?: Interpolator
 }
 
 export interface SetOptions {
@@ -91,7 +101,7 @@ export interface BaseAnimationOptions {
   endDelay?: PropertyResolver<number>
   props?: PropertyOptions
   stagger?: number
-  web?: PropertyOptions
+  web?: WebPropertyOptions
 }
 
 export interface BaseSetOptions {
@@ -118,7 +128,7 @@ export interface AnimationOptions {
   delay?: PropertyResolver<number>
   endDelay?: PropertyResolver<number>
   props?: PropertyOptions
-  web?: PropertyOptions
+  web?: WebPropertyOptions
 }
 
 export interface Effect {
