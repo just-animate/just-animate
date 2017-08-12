@@ -19,7 +19,7 @@ const getEasing = memoize(cssFunction);
 // memoize all results of the function, also memoize the function itself
 const getInterpolator = memoize((fn: Interpolator) => memoize(fn) as Interpolator)
 
-function integerInterpolator(l: number, r: number, o: number) {
+export function interpolate(l: number, r: number, o: number) {
   return l + (r - l) * o;
 }
 
@@ -36,7 +36,7 @@ export function interpolator(duration: number, keyframes: Keyframe[]) {
     if (isFunction(k.interpolate)) {
       return getInterpolator(k.interpolate)
     } else if (isNumber(k.value)) {
-      return integerInterpolator;
+      return interpolate;
     } else {
       return fallbackInterpolator;
     } 

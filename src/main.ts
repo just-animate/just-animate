@@ -35,3 +35,4 @@ export function sequence(seqOptions: types.AddAnimationOptions[]) {
 // export utils and types
 export { timeline, addPlugin }
 export { removePlugin } from './lib/plugins'
+export { interpolate } from './lib/interpolate'
