@@ -3,6 +3,7 @@ import { Keyframe, Interpolator } from './types';
 import { isNumber, isFunction } from './inspect';
 // import { rnd } from './math';
 import { memoize } from './functional';
+import { forEach } from './lists';
 
 function findEndIndex(ns: number[], n: number) {
   const ilen = ns.length;
@@ -13,11 +14,13 @@ function findEndIndex(ns: number[], n: number) {
   }
   return ilen - 1;
 }
- 
+
 const getEasing = memoize(cssFunction);
 
 // memoize all results of the function, also memoize the function itself
-const getInterpolator = memoize((fn: Interpolator) => memoize(fn) as Interpolator)
+const getInterpolator = memoize(
+  (fn: Interpolator) => memoize(fn) as Interpolator
+);
 
 export function interpolate(l: number, r: number, o: number) {
   return l + (r - l) * o;
@@ -29,27 +32,31 @@ function fallbackInterpolator(l: any, r: any, o: number) {
 
 export function interpolator(duration: number, keyframes: Keyframe[]) {
   const times = keyframes.map(k => k.offset * duration);
-  const values = keyframes.map(k => k.value);
-  const easings = keyframes.map(k => getEasing(k.easing));
- 
-  const interpolators = keyframes.map(k => {
-    if (isFunction(k.interpolate)) {
-      return getInterpolator(k.interpolate)
-    } else if (isNumber(k.value)) {
-      return interpolate;
-    } else {
-      return fallbackInterpolator;
-    } 
-  });
 
-  return function(offset: number) {
-    const time = duration * offset;
-    const r = findEndIndex(times, time);
+  forEach(keyframes, k => {
+    if (!isFunction(k.interpolate)) {
+      k.simpleFn = true
+      k.interpolate = isNumber(k.value) ? interpolate : fallbackInterpolator
+    } else {
+      k.simpleFn = false
+      k.interpolate = getInterpolator(k.interpolate as Interpolator)
+    } 
+  }) 
+
+  return function(timelineOffset: number) {
+    const absTime = duration * timelineOffset;
+    const r = findEndIndex(times, absTime);
     const l = r ? r - 1 : 0;
     const rt = times[r];
     const lt = times[l];
-    const localOffset = (time - lt) / (rt - lt);
-    const relativeOffset = easings[l](localOffset);
-    return interpolators[l](values[l], values[r], relativeOffset);
+    const lk = keyframes[l]
+    
+    const time = (absTime - lt) / (rt - lt);
+    const progression = lk.easing ? getEasing(lk.easing)(time) : time;
+    
+    if (lk.simpleFn) {
+      return lk.interpolate(lk.value, keyframes[r].value, progression);
+    }
+    return lk.interpolate(lk.value, keyframes[r].value)(progression);
   };
 }

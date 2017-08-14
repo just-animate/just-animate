@@ -17,14 +17,15 @@ export interface SetOptions {
 }
 
 export interface Interpolator {
-  (left: any, right: any, offset: number): any
+  (left: any, right: any): (offset: number) => any
 }
 
 export interface Keyframe {
   offset: number
   value: string | number
   easing: string
-  interpolate: Interpolator
+  interpolate: Function
+  simpleFn?: boolean
 }
 
 export type AnimationTarget = any

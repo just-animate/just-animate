@@ -8,8 +8,8 @@ describe('interpolators', () => {
     /* Test code */
     const target = { background: '' };
 
-    function hueInterpolator(left: number, right: number, offset: number) {
-      return (
+    function hueInterpolator(left: number, right: number) {
+      return (offset: number) => (
         'hsl(' + Math.round(left + (right - left) * offset) + ', 50%, 50%)'
       );
     }
@@ -42,8 +42,8 @@ describe('interpolators', () => {
     /* Test code */
     const target = { background: '' };
 
-    function hueInterpolator(left: number, right: number, offset: number) {
-      return (
+    function hueInterpolator(left: number, right: number) {
+      return (offset: number) => (
         'hsl(' + Math.round(left + (right - left) * offset) + ', 50%, 50%)'
       );
     }
@@ -79,8 +79,8 @@ describe('interpolators', () => {
     /* Test code */
     const target = { background: '' };
 
-    function hueInterpolator(left: number, right: number, offset: number) {
-      return (
+    function hueInterpolator(left: number, right: number) {
+      return (offset: number) => (
         'hsl(' + Math.round(left + (right - left) * offset) + ', 50%, 50%)'
       );
     }
