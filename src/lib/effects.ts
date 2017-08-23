@@ -9,48 +9,29 @@ import {
   JustAnimatePlugin,
   PropertyValueOptions,
   Interpolator
-} from "./types";
-import { resolveProperty } from "./resolve-property";
-import {
-  forEach,
-  indexOf,
-  list,
-  head,
-  tail,
-  pushDistinct,
-  push,
-  sortBy
-} from "./lists";
-import { isDefined, isObject, isNumber, isArrayLike } from "./inspect";
-import { flr, max } from "./math";
-import { _ } from "./constants";
+} from './types'
+import { resolveProperty } from './resolve-property'
+import { forEach, indexOf, list, head, tail, pushDistinct, push, sortBy } from './lists'
+import { isDefined, isObject, isNumber, isArrayLike } from './inspect'
+import { flr, max } from './math'
+import { _ } from './constants'
 
-const offsetSorter = sortBy<{ offset: number }>("offset");
+const offsetSorter = sortBy<{ offset: number }>('offset')
 
-export function toEffects(
-  plugin: JustAnimatePlugin,
-  configs: TargetConfiguration[]
-): Effect[] {
-  const result: Effect[] = [];
+export function toEffects(plugin: JustAnimatePlugin, configs: TargetConfiguration[]): Effect[] {
+  const result: Effect[] = []
 
   forEach(configs, targetConfig => {
-    const {
-      from,
-      to,
-      duration,
-      keyframes,
-      target,
-      targetLength
-    } = targetConfig;
+    const { from, to, duration, keyframes, target, targetLength } = targetConfig
 
     // construct property animation options
-    var effects: PropertyEffects = {};
+    var effects: PropertyEffects = {}
     forEach(keyframes, p => {
-      const effects2 = effects[p.prop] || (effects[p.prop] = []);
-      const offset = (p.time - from) / (duration || 1);
-      const easing = p.easing;
-      const interpolate = p.interpolate;
-      const value = resolveProperty(p.value, target, p.index, targetLength);
+      const effects2 = effects[p.prop] || (effects[p.prop] = [])
+      const offset = (p.time - from) / (duration || 1)
+      const easing = p.easing
+      const interpolate = p.interpolate
+      const value = resolveProperty(p.value, target, p.index, targetLength)
 
       const effect2 =
         head(effects2, e => e.offset === offset) ||
@@ -59,76 +40,76 @@ export function toEffects(
           offset,
           value,
           interpolate
-        });
+        })
 
-      effect2.easing = easing;
-      effect2.value = value;
-      effect2.interpolate = interpolate;
-    });
+      effect2.easing = easing
+      effect2.value = value
+      effect2.interpolate = interpolate
+    })
 
     // process handlers
     if (plugin.onWillAnimate) {
-      plugin.onWillAnimate(targetConfig, effects);
+      plugin.onWillAnimate(targetConfig, effects)
     }
 
     for (var prop in effects) {
-      var effect = effects[prop];
+      var effect = effects[prop]
       if (effect) {
-        effect.sort(offsetSorter);
+        effect.sort(offsetSorter)
 
-        var firstFrame = head(effect, c => c.offset === 0);
+        var firstFrame = head(effect, c => c.offset === 0)
         if (firstFrame === _ || firstFrame.value === _) {
           // add keyframe if offset 0 is missing
-          var value2 = plugin.getValue(target, prop);
+          var value2 = plugin.getValue(target, prop)
           if (firstFrame === _) {
             effect.splice(0, 0, {
               offset: 0,
               value: value2,
               easing: targetConfig.easing,
               interpolate: _
-            });
+            })
           } else {
-            firstFrame.value = value2;
-            firstFrame.easing = targetConfig.easing;
-            firstFrame.interpolate = _;
+            firstFrame.value = value2
+            firstFrame.easing = targetConfig.easing
+            firstFrame.interpolate = _
           }
         }
 
         // fill empty frames with the previous value
         for (var x = effect.length - 1; x > 0; x--) {
-          var currentValue = effect[x];
+          var currentValue = effect[x]
           if (currentValue.value === _) {
-            var y = x;
-            var previousValue;
+            var y = x
+            var previousValue
             for (; x > -1; x--) {
-              previousValue = effect[x];
+              previousValue = effect[x]
               if (previousValue.value !== _) {
-                break;
+                break
               }
             }
             for (var z = x; z <= y; z++) {
-              effect[z].value = previousValue.value;
-              effect[z].interpolate = previousValue.interpolate;
+              effect[z].value = previousValue.value
+              effect[z].interpolate = previousValue.interpolate
             }
           }
         }
 
         // guarantee a frame at offset 1
-        var lastFrame = tail(effect, c => c.offset === 1);
+        var lastFrame = tail(effect, c => c.offset === 1)
         if (lastFrame === _ || lastFrame.value === _) {
           // add keyframe if offset 1 is missing
-          var value3 = effect[effect.length - 1].value;
+          var value3 = effect[effect.length - 1].value
           if (lastFrame === _) {
             push(effect, {
               offset: 1,
               value: value3,
               easing: targetConfig.easing,
               interpolate: _
-            });
+            })
           } else {
-            lastFrame.value = value3;
-            lastFrame.easing = targetConfig.easing;
-            firstFrame.interpolate = _;
+            lastFrame.value = value3
+            lastFrame.easing = targetConfig.easing
+            firstFrame.interpolate = _
           }
         }
 
@@ -139,12 +120,12 @@ export function toEffects(
           from,
           to,
           keyframes: effect
-        });
+        })
       }
     }
-  });
+  })
 
-  return result;
+  return result
 }
 
 export function addPropertyKeyframes(
@@ -153,18 +134,17 @@ export function addPropertyKeyframes(
   index: number,
   options: AnimationOptions
 ) {
-  const props = options[pluginName];
-  const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0;
-  const delayMs =
-    resolveProperty(options.delay, target, index, target.targetLength) || 0;
-  const from = max(staggerMs + delayMs + options.from, 0);
-  const duration = options.to - options.from;
-  const easing = options.easing || "ease";
+  const props = options[pluginName]
+  const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0
+  const delayMs = resolveProperty(options.delay, target, index, target.targetLength) || 0
+  const from = max(staggerMs + delayMs + options.from, 0)
+  const duration = options.to - options.from
+  const easing = options.easing || 'ease'
 
   // iterate over each property split it into keyframes
   for (var name in props) {
     if (props.hasOwnProperty(name)) {
-      addProperty(target, index, name, props[name], duration, from, easing);
+      addProperty(target, index, name, props[name], duration, from, easing)
     }
   }
 }
@@ -180,41 +160,36 @@ function addProperty(
 ) {
   // skip undefined options
   if (!isDefined(val)) {
-    return;
+    return
   }
 
-  let defaultInterpolator: Interpolator = _;
+  let defaultInterpolator: Interpolator = _
 
   // add property to list of properties
-  pushDistinct(target.propNames, name);
+  pushDistinct(target.propNames, name)
 
-  let values: PropertyResolver<PropertyValue>[];
+  let values: PropertyResolver<PropertyValue>[]
   if (isArrayLike(val) || !isObject(val)) {
-    values = list(val);
+    values = list(val)
   } else {
     // todo: add in object notation here
-    const objVal = val as PropertyValueOptions;
+    const objVal = val as PropertyValueOptions
     if (objVal.easing) {
-      defaultEasing = objVal.easing;
+      defaultEasing = objVal.easing
     }
     if (objVal.interpolate) {
-      defaultInterpolator = objVal.interpolate;
+      defaultInterpolator = objVal.interpolate
     }
-    values = list(objVal.value);
+    values = list(objVal.value)
   }
 
   // resolve options to keyframes
   const keyframes = values.map((v, i, vals) => {
-    const valOrObj = resolveProperty(
-      v,
-      target.target,
-      index,
-      target.targetLength
-    );
-    const valObj = valOrObj as PropertyObject;
-    const isObj2 = isObject(valOrObj);
+    const valOrObj = resolveProperty(v, target.target, index, target.targetLength)
+    const valObj = valOrObj as PropertyObject
+    const isObj2 = isObject(valOrObj)
 
-    const value = isObj2 ? valObj.value : valOrObj as string | number;
+    const value = isObj2 ? valObj.value : valOrObj as string | number
 
     const offset =
       isObj2 && isNumber(valObj.offset)
@@ -226,28 +201,25 @@ function addProperty(
           : i === 0
             ? // first in the array is offset: 0
               0
-            : _;
+            : _
 
-    const interpolate = (valObj && valObj.interpolate) || defaultInterpolator;
-    const easing = (valObj && valObj.easing) || defaultEasing;
+    const interpolate = (valObj && valObj.interpolate) || defaultInterpolator
+    const easing = (valObj && valObj.easing) || defaultEasing
 
-    return { offset, value, easing, interpolate };
-  });
+    return { offset, value, easing, interpolate }
+  })
 
   // insert offsets where not present
-  inferOffsets(keyframes);
+  inferOffsets(keyframes)
 
   keyframes.forEach(keyframe => {
-    const { offset, value, easing, interpolate } = keyframe;
-    const time = flr(duration * offset + from);
-    const indexOfFrame = indexOf(
-      target.keyframes,
-      k => k.prop === name && k.time === time
-    );
+    const { offset, value, easing, interpolate } = keyframe
+    const time = flr(duration * offset + from)
+    const indexOfFrame = indexOf(target.keyframes, k => k.prop === name && k.time === time)
 
     if (indexOfFrame !== -1) {
-      target.keyframes[indexOfFrame].value = value;
-      return;
+      target.keyframes[indexOfFrame].value = value
+      return
     }
 
     push(target.keyframes, {
@@ -257,8 +229,8 @@ function addProperty(
       time,
       value,
       interpolate
-    });
-  });
+    })
+  })
 
   // insert start frame if not present
   if (!head(target.keyframes, k => k.prop === name && k.time === from)) {
@@ -269,11 +241,11 @@ function addProperty(
       time: from,
       value: _,
       interpolate: _
-    });
+    })
   }
 
   // insert end frame if not present
-  var to = from + duration;
+  var to = from + duration
   if (!tail(target.keyframes, k => k.prop === name && k.time === to)) {
     push(target.keyframes, {
       easing: _,
@@ -282,60 +254,59 @@ function addProperty(
       time: to,
       value: _,
       interpolate: _
-    });
+    })
   }
 }
 
 function inferOffsets(keyframes: PropertyObject[]) {
   if (!keyframes.length) {
-    return;
+    return
   }
 
   // search for offset 0 or assume it is the first one in the list
-  const first = head(keyframes, k => k.offset === 0) || keyframes[0];
+  const first = head(keyframes, k => k.offset === 0) || keyframes[0]
   if (!isDefined(first.offset)) {
     // if no offset is set on first keyframe, it is assumed to be 0
-    first.offset = 0;
+    first.offset = 0
   }
 
   // search for offset 1 or assume it is the last one in the list
-  const last =
-    tail(keyframes, k => k.offset === 1) || keyframes[keyframes.length - 1];
+  const last = tail(keyframes, k => k.offset === 1) || keyframes[keyframes.length - 1]
   if (keyframes.length > 1 && !isDefined(last.offset)) {
     // if no offset is set on last keyframe, it is assumed to be 1
-    last.offset = 1;
+    last.offset = 1
   }
 
   // fill in the rest of the offsets
   for (let i = 1, ilen = keyframes.length; i < ilen; i++) {
-    const target = keyframes[i];
+    const target = keyframes[i]
     if (isDefined(target.offset)) {
       // skip entries that have an offset
-      continue;
+      continue
     }
 
     // search for the next offset with a value
     for (let j = i + 1; j < ilen; j++) {
       // pass if offset is not set
-      const endTime = keyframes[j].offset;
+      const endTime = keyframes[j].offset
       if (!isDefined(endTime)) {
-        continue;
+        continue
       }
 
       // calculate timing/position info
-      const startTime = keyframes[i - 1].offset;
-      const timeDelta = endTime - startTime;
-      const deltaLength = j - i + 1;
+      const startTime = keyframes[i - 1].offset
+      const timeDelta = endTime - startTime
+      const deltaLength = j - i + 1
 
       // set the values of all keyframes between i and j (exclusive)
       for (let k = 1; k < deltaLength; k++) {
         // set to percentage of change over time delta + starting time
-        keyframes[k - 1 + i].offset = k / j * timeDelta + startTime;
+        keyframes[k - 1 + i].offset = k / j * timeDelta + startTime
       }
 
       // move i past this keyframe since all frames between should be processed
-      i = j;
-      break;
+      i = j
+      break
     }
   }
 }

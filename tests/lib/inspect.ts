@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import { isArrayLike, isDefined, isFunction, isNumber, isString } from '../../src/lib/inspect';
+import { isArrayLike, isDefined, isFunction, isNumber, isString } from '../../src/lib/inspect'
 const { assert } = chai
 
 describe('type', () => {
@@ -9,9 +9,12 @@ describe('type', () => {
     })
 
     it('returns true when an array-like object is passed', () => {
-      assert.equal(true, isArrayLike({
-        length: 0
-      }))
+      assert.equal(
+        true,
+        isArrayLike({
+          length: 0
+        })
+      )
     })
 
     it('returns false when a normal object is passed', () => {
@@ -38,11 +41,18 @@ describe('type', () => {
 
   describe('isFunction()', () => {
     it('returns true when a function', () => {
-      assert.equal(true, isFunction(() => { /* empty */ }))
+      assert.equal(
+        true,
+        isFunction(() => {
+          /* empty */
+        })
+      )
     })
     it('returns true when a function', () => {
       const s = class {
-        methodTwo() { /* empty */ }
+        methodTwo() {
+          /* empty */
+        }
       }
 
       assert.equal(true, isFunction(s))

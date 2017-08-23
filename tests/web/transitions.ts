@@ -1,5 +1,5 @@
-import * as assert from 'assert';
-import { animate } from '../../src/main';
+import * as assert from 'assert'
+import { animate } from '../../src/main'
 import { addPlugin, removePlugin } from '../../src/lib/plugins'
 import { waapiPlugin } from '../../src/web/index'
 
@@ -25,14 +25,14 @@ describe('transitions', () => {
     timeline.pause()
 
     timeline.currentTime = 0
-    assert.equal(getComputedStyle(target).opacity, '1');
+    assert.equal(getComputedStyle(target).opacity, '1')
 
     timeline.currentTime = 500
-    assert.equal(getComputedStyle(target).opacity, '0.5');
+    assert.equal(getComputedStyle(target).opacity, '0.5')
 
     timeline.currentTime = 1000
-    assert.equal(getComputedStyle(target).opacity, '0');
+    assert.equal(getComputedStyle(target).opacity, '0')
 
     document.body.removeChild(target)
-  });
-});
+  })
+})

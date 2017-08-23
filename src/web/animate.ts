@@ -49,10 +49,11 @@ export function animate(effect: Effect): AnimationController {
         animator.playbackRate = rate
       }
 
-      const needsToPlay = isPlaying
-        && !(animator.playState === RUNNING || animator.playState === FINISH)
-        && !(rate < 0 && time < frameSize)
-        && !(rate >= 0 && time > duration - frameSize)
+      const needsToPlay =
+        isPlaying &&
+        !(animator.playState === RUNNING || animator.playState === FINISH) &&
+        !(rate < 0 && time < frameSize) &&
+        !(rate >= 0 && time > duration - frameSize)
 
       if (needsToPlay) {
         animator.play()

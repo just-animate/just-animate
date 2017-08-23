@@ -24,7 +24,7 @@ describe('sequencing', () => {
           opacity: [0, 1]
         }
       }
-    ]);
+    ])
 
     const actual = timeline.getEffects()
     assert.deepEqual(actual, [
@@ -35,19 +35,19 @@ describe('sequencing', () => {
         plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
-          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined }
         ]
       },
       {
         target: target2,
         from: 1000,
         to: 2000,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
-          { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
     ])
@@ -75,7 +75,7 @@ describe('sequencing', () => {
           opacity: [0, 1]
         }
       }
-    ]);
+    ])
 
     const actual = timeline.getEffects()
     assert.deepEqual<{}>(actual, [
@@ -83,44 +83,44 @@ describe('sequencing', () => {
         target: { id: 'target1' },
         from: 100,
         to: 1100,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
-          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined }
         ]
       },
       {
         target: { id: 'target2' },
         from: 200,
         to: 1200,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
-          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined }
         ]
       },
       {
         target: { id: 'target3' },
         from: 300,
         to: 1300,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 1, easing: 'linear', interpolate: undefined  },
-          { offset: 1, value: 0, easing: 'linear', interpolate: undefined  }
+          { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 0, easing: 'linear', interpolate: undefined }
         ]
       },
       {
         target: { id: 'target4' },
         from: 1300,
         to: 2300,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
-          { offset: 0, value: 0, easing: 'linear', interpolate: undefined  },
-          { offset: 1, value: 1, easing: 'linear', interpolate: undefined  }
+          { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
     ])
@@ -133,7 +133,7 @@ describe('sequencing', () => {
     const timeline = sequence([
       {
         duration: 1000,
-        easing: 'linear',        
+        easing: 'linear',
         targets: target1,
         props: {
           opacity: [1, 0]
@@ -148,16 +148,16 @@ describe('sequencing', () => {
           opacity: [0, 1]
         }
       }
-    ]);
+    ])
 
-    const actual = timeline.getEffects() 
+    const actual = timeline.getEffects()
 
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
@@ -168,7 +168,7 @@ describe('sequencing', () => {
         target: { id: 'target2' },
         from: 500,
         to: 1500,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
@@ -185,7 +185,7 @@ describe('sequencing', () => {
     const timeline = sequence([
       {
         duration: 1000,
-        easing: 'linear',        
+        easing: 'linear',
         endDelay: 500,
         targets: target1,
         props: {
@@ -194,21 +194,21 @@ describe('sequencing', () => {
       },
       {
         duration: 1000,
-        easing: 'linear',        
+        easing: 'linear',
         targets: target2,
         props: {
           opacity: [0, 1]
         }
       }
-    ]);
+    ])
 
-    const actual = timeline.getEffects() 
+    const actual = timeline.getEffects()
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
@@ -219,7 +219,7 @@ describe('sequencing', () => {
         target: { id: 'target2' },
         from: 1500,
         to: 2500,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0, easing: 'linear', interpolate: undefined },
@@ -245,21 +245,21 @@ describe('sequencing', () => {
       },
       {
         duration: 1000,
-        easing: 'linear',        
+        easing: 'linear',
         targets: target2,
         props: {
           opacity: [0, 1]
         }
       }
-    ]);
+    ])
 
-    const actual = timeline.getEffects() 
+    const actual = timeline.getEffects()
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
         from: 0,
         to: 1000,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 1, easing: 'linear', interpolate: undefined },
@@ -270,7 +270,7 @@ describe('sequencing', () => {
         target: { id: 'target2' },
         from: 500,
         to: 1500,
-        plugin: 'props',  
+        plugin: 'props',
         prop: 'opacity',
         keyframes: [
           { offset: 0, value: 0, easing: 'linear', interpolate: undefined },

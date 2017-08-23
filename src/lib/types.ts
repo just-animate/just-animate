@@ -6,7 +6,7 @@ export interface PropertyOptions {
   [name: string]: PropertyValueOptions | PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
 }
 
-export interface PropertyValueOptions { 
+export interface PropertyValueOptions {
   value: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
   easing?: string
   interpolate?: Interpolator

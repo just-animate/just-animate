@@ -4,13 +4,11 @@ const { assert } = chai
 
 describe('staggering', () => {
   it('staggers targets', () => {
-    const targets = [
-      {}, {}, {}, {}
-    ]
+    const targets = [{}, {}, {}, {}]
 
     const timeline = animate({
       targets: targets,
-      duration: 1000, 
+      duration: 1000,
       easing: 'linear',
       stagger: 100,
       props: {
@@ -66,5 +64,5 @@ describe('staggering', () => {
         ]
       }
     ])
-  });
-});
+  })
+})

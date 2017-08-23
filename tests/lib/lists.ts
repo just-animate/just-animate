@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import { forEach, head, tail, list } from '../../src/lib/lists';
+import { forEach, head, tail, list } from '../../src/lib/lists'
 const { assert, expect } = chai
 
 describe('forEach()', () => {
@@ -8,7 +8,7 @@ describe('forEach()', () => {
     forEach([1, 2, 3, 4], s => results.push(s))
     assert.deepEqual([1, 2, 3, 4], results)
   })
-  
+
   it('stops execution when false is returned', () => {
     const results: number[] = []
     forEach([1, 2, 3, 4], s => {
