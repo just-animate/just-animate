@@ -1,6 +1,6 @@
 import { waapiPlugin } from './index'
 
-declare const window: Window & { just: any };
+declare const window: Window & { just: any }
 
 // configure plugin
 if (typeof window !== 'undefined' && typeof (window as any).just !== 'undefined') {

@@ -30,7 +30,6 @@ import {
   PropertyKeyframe,
   AnimationTimelineController,
   ITimeline,
-  TargetConfiguration,
   BaseSetOptions
 } from './types'
 
@@ -187,48 +186,48 @@ const timelineProto: ITimeline = {
   getEffects(this: ITimeline): Effect[] {
     const { _configs } = this
     const plugins = getPlugins()
-    return mapFlatten(Object.keys(_configs), k => toEffects(plugins[k], _configs[k]))
+    return mapFlatten(_configs, c => toEffects(plugins[c.plugin], c))
   }
 }
 
-function insert(self: ITimeline, from: number, to: number, options2: AnimationOptions) {
+function insert(self: ITimeline, from: number, to: number, opts: AnimationOptions) {
   const plugins = getPlugins()
+  const config = self._configs
 
   // ensure to/from are in milliseconds (as numbers)
-  options2.from = from
-  options2.to = to
-  options2.duration = options2.to - options2.from
+  opts.from = from
+  opts.to = to
+  opts.duration = opts.to - opts.from
 
   for (let pluginName in plugins) {
     const plugin = plugins[pluginName]
-    if (!options2.hasOwnProperty(pluginName)) {
+    if (!opts.hasOwnProperty(pluginName)) {
       continue
     }
-    const config = self._configs[pluginName] || (self._configs[pluginName] = [] as TargetConfiguration[])
-
     // add all targets as property keyframes
-    forEach(getTargets(options2.targets), (target, i, ilen) => {
-      const delay = resolveProperty(options2.delay, target, i, ilen) || 0
+    forEach(getTargets(opts.targets), (target, i, ilen) => {
+      const delay = resolveProperty(opts.delay, target, i, ilen) || 0
 
       const targetConfig =
-        head(config, (t2: TargetConfiguration) => t2.target === target) ||
+        head(config, c => c.target === target && c.plugin === plugin.name) ||
         push(config, {
-          from: max(options2.from + delay, 0),
-          to: max(options2.to + delay, 0),
-          easing: options2.easing || 'ease',
-          duration: options2.to - options2.from,
-          endDelay: resolveProperty(options2.endDelay, target, i, ilen) || 0,
+          from: max(opts.from + delay, 0),
+          to: max(opts.to + delay, 0),
+          easing: opts.easing || 'ease',
+          duration: opts.to - opts.from,
+          endDelay: resolveProperty(opts.endDelay, target, i, ilen) || 0,
           target,
           targetLength: ilen,
           keyframes: [],
-          propNames: []
+          propNames: [],
+          plugin: plugin.name
         })
 
-      addPropertyKeyframes(plugin.name, targetConfig, i, options2)
+      addPropertyKeyframes(targetConfig, i, opts)
     })
 
     // sort property keyframes
-    forEach(config, (c: TargetConfiguration) => c.keyframes.sort(propKeyframeSort))
+    forEach(config, c => c.keyframes.sort(propKeyframeSort))
   }
 }
 
@@ -236,33 +235,31 @@ function calculateTimes(self: ITimeline) {
   let timelineTo = 0
   let maxNextTime = 0
 
-  for (let pluginName in self._configs) {
-    forEach(self._configs[pluginName], target => {
-      const { keyframes } = target
+  forEach(self._configs, config => {
+    const { keyframes } = config
 
-      var targetFrom: number
-      var targetTo: number
+    var targetFrom: number
+    var targetTo: number
 
-      forEach(keyframes, keyframe => {
-        const time = keyframe.time
-        if (time < targetFrom || targetFrom === _) {
-          targetFrom = time
+    forEach(keyframes, keyframe => {
+      const time = keyframe.time
+      if (time < targetFrom || targetFrom === _) {
+        targetFrom = time
+      }
+      if (time > targetTo || targetTo === _) {
+        targetTo = time
+        if (time > timelineTo) {
+          timelineTo = time
         }
-        if (time > targetTo || targetTo === _) {
-          targetTo = time
-          if (time > timelineTo) {
-            timelineTo = time
-          }
-        }
-      })
-
-      target.to = targetTo
-      target.from = targetFrom
-      target.duration = targetTo - targetFrom
-
-      maxNextTime = max(targetTo + target.endDelay, maxNextTime)
+      }
     })
-  }
+
+    config.to = targetTo
+    config.from = targetFrom
+    config.duration = targetTo - targetFrom
+
+    maxNextTime = max(targetTo + config.endDelay, maxNextTime)
+  })
 
   self._nextTime = maxNextTime
   self.duration = timelineTo
@@ -271,25 +268,20 @@ function setupEffects(self: ITimeline) {
   if (self._effects) {
     return
   }
+  
+  const effects = self.getEffects()
+  const plugins = getPlugins()  
 
   const animations: AnimationTimelineController[] = []
-  const plugins = getPlugins()
-  for (let pluginName in plugins) {
-    const plugin = plugins[pluginName]
-    const config = self._configs[pluginName]
-    if (!config) {
-      continue
+  
+  forEach(effects, effect => {
+    const controller = plugins[effect.plugin].animate(effect) as AnimationTimelineController
+    if (controller) {
+      controller.from = effect.from
+      controller.to = effect.to
+      push(animations, controller)
     }
-
-    forEach(toEffects(plugin, config), effect => {
-      const controller = plugin.animate(effect) as AnimationTimelineController
-      if (controller) {
-        controller.from = effect.from
-        controller.to = effect.to
-        push(animations, controller)
-      }
-    })
-  }
+  })
 
   self._time = self._rate < 0 ? self.duration : 0
   self._effects = animations
@@ -321,6 +313,7 @@ function updateTimeline(self: ITimeline, type: string) {
   const isTimelineActive = self._state === S_RUNNING
   const isTimelineInEffect = self._state !== S_IDLE
   const time = self.currentTime
+  const rate = self._rate
 
   // setup effects if required
   if (isTimelineInEffect && self._effects === _) {
@@ -335,7 +328,7 @@ function updateTimeline(self: ITimeline, type: string) {
       const isAnimationActive = isTimelineActive && inRange(flr(time), from, to)
       const offset = minMax((time - from) / (to - from), 0, 1)
 
-      effect.update(offset, self._rate, isAnimationActive)
+      effect.update(offset, rate, isAnimationActive)
     })
   }
 
@@ -461,7 +454,7 @@ export function timeline(): ITimeline {
   self._time = 0
   self._alternate = false
   self._state = S_IDLE
-  self._configs = {}
+  self._configs = []
   self._listeners = {}
   self._tick = delta => tick(self, delta)
   return self

@@ -86,6 +86,7 @@ export interface TargetConfiguration {
   target: AnimationTarget
   targetLength: number
   easing: string
+  plugin: string
   propNames: string[]
   from: number
   to: number
@@ -151,9 +152,7 @@ export interface ITimeline {
   playbackRate?: number
   _nextTime?: number
   _state?: number
-  _configs?: {
-    [plugin: string]: TargetConfiguration[]
-  }
+  _configs?: TargetConfiguration[]
   _effects?: AnimationTimelineController[]
   _repeat?: number
   _iteration?: number
