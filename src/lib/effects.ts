@@ -6,19 +6,20 @@ import {
   PropertyValue,
   TargetConfiguration,
   PropertyObject,
-  JustAnimatePlugin,
   PropertyValueOptions,
   Interpolator
 } from './types'
 import { resolveProperty } from './resolve-property'
-import { forEach, indexOf, list, head, tail, pushDistinct, push, sortBy } from './lists'
+import { forEach, indexOf, list, head, tail, push, sortBy } from './lists'
 import { isDefined, isObject, isNumber, isArrayLike } from './inspect'
 import { flr, max } from './math'
 import { _ } from './constants'
+import { getPlugins } from './plugins'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 
-export function toEffects(plugin: JustAnimatePlugin, targetConfig: TargetConfiguration): Effect[] {
+export function toEffects(targetConfig: TargetConfiguration): Effect[] {
+  const plugins = getPlugins()
   const result: Effect[] = []
 
   const { from, to, duration, keyframes, target, targetLength } = targetConfig
@@ -47,8 +48,11 @@ export function toEffects(plugin: JustAnimatePlugin, targetConfig: TargetConfigu
   })
 
   // process handlers
-  if (plugin.onWillAnimate) {
-    plugin.onWillAnimate(targetConfig, effects)
+  for (var pluginName in plugins) {
+    var plugin = plugins[pluginName]
+    if (plugin.onWillAnimate && targetConfig.keyframes.some(c => c.plugin === pluginName)) {
+      plugin.onWillAnimate(targetConfig, effects)
+    }
   }
 
   for (var prop in effects) {
@@ -127,7 +131,6 @@ export function toEffects(plugin: JustAnimatePlugin, targetConfig: TargetConfigu
 }
 
 export function addPropertyKeyframes(target: TargetConfiguration, index: number, options: AnimationOptions) {
-  const props = options[target.plugin]
   const staggerMs = (options.stagger && options.stagger * (index + 1)) || 0
   const delayMs = resolveProperty(options.delay, target, index, target.targetLength) || 0
   const from = max(staggerMs + delayMs + options.from, 0)
@@ -135,15 +138,22 @@ export function addPropertyKeyframes(target: TargetConfiguration, index: number,
   const easing = options.easing || 'ease'
 
   // iterate over each property split it into keyframes
-  for (var name in props) {
-    if (props.hasOwnProperty(name)) {
-      addProperty(target, index, name, props[name], duration, from, easing)
+  const plugins = getPlugins()  
+  for (var pluginName in plugins) {
+    if (options.hasOwnProperty(pluginName)) {
+      const props = options[pluginName]
+      for (var name in props) {
+        if (props.hasOwnProperty(name)) {
+          addProperty(target, pluginName, index, name, props[name], duration, from, easing)
+        }
+      }
     }
   }
 }
 
 function addProperty(
   target: TargetConfiguration,
+  plugin: string,
   index: number,
   name: string,
   val: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[],
@@ -157,9 +167,6 @@ function addProperty(
   }
 
   let defaultInterpolator: Interpolator = _
-
-  // add property to list of properties
-  pushDistinct(target.propNames, name)
 
   let values: PropertyResolver<PropertyValue>[]
   if (isArrayLike(val) || !isObject(val)) {
@@ -216,6 +223,7 @@ function addProperty(
     }
 
     push(target.keyframes, {
+      plugin,
       easing,
       index,
       prop: name,
@@ -228,6 +236,7 @@ function addProperty(
   // insert start frame if not present
   if (!head(target.keyframes, k => k.prop === name && k.time === from)) {
     push(target.keyframes, {
+      plugin,
       easing: defaultEasing,
       index,
       prop: name,
@@ -241,6 +250,7 @@ function addProperty(
   var to = from + duration
   if (!tail(target.keyframes, k => k.prop === name && k.time === to)) {
     push(target.keyframes, {
+      plugin,
       easing: _,
       index,
       prop: name,

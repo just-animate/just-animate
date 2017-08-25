@@ -162,7 +162,7 @@ describe('transforms', () => {
         rotate: [0, 360]
       }
     })
-
+    
     timeline.pause()
 
     timeline.currentTime = 0

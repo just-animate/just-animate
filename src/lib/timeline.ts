@@ -183,15 +183,12 @@ const timelineProto: ITimeline = {
     calculateTimes(self)
     return self
   },
-  getEffects(this: ITimeline): Effect[] {
-    const { _configs } = this
-    const plugins = getPlugins()
-    return mapFlatten(_configs, c => toEffects(plugins[c.plugin], c))
+  getEffects(this: ITimeline): Effect[] { 
+    return mapFlatten(this._configs, toEffects)
   }
 }
 
 function insert(self: ITimeline, from: number, to: number, opts: AnimationOptions) {
-  const plugins = getPlugins()
   const config = self._configs
 
   // ensure to/from are in milliseconds (as numbers)
@@ -199,36 +196,28 @@ function insert(self: ITimeline, from: number, to: number, opts: AnimationOption
   opts.to = to
   opts.duration = opts.to - opts.from
 
-  for (let pluginName in plugins) {
-    const plugin = plugins[pluginName]
-    if (!opts.hasOwnProperty(pluginName)) {
-      continue
-    }
-    // add all targets as property keyframes
-    forEach(getTargets(opts.targets), (target, i, ilen) => {
-      const delay = resolveProperty(opts.delay, target, i, ilen) || 0
+  // add all targets as property keyframes
+  forEach(getTargets(opts.targets), (target, i, ilen) => {
+    const delay = resolveProperty(opts.delay, target, i, ilen) || 0
 
-      const targetConfig =
-        head(config, c => c.target === target && c.plugin === plugin.name) ||
-        push(config, {
-          from: max(opts.from + delay, 0),
-          to: max(opts.to + delay, 0),
-          easing: opts.easing || 'ease',
-          duration: opts.to - opts.from,
-          endDelay: resolveProperty(opts.endDelay, target, i, ilen) || 0,
-          target,
-          targetLength: ilen,
-          keyframes: [],
-          propNames: [],
-          plugin: plugin.name
-        })
+    const targetConfig =
+      head(config, c => c.target === target) ||
+      push(config, {
+        from: max(opts.from + delay, 0),
+        to: max(opts.to + delay, 0),
+        easing: opts.easing || 'ease',
+        duration: opts.to - opts.from,
+        endDelay: resolveProperty(opts.endDelay, target, i, ilen) || 0,
+        target,
+        targetLength: ilen,
+        keyframes: []
+      })
 
-      addPropertyKeyframes(targetConfig, i, opts)
-    })
+    addPropertyKeyframes(targetConfig, i, opts)
 
     // sort property keyframes
     forEach(config, c => c.keyframes.sort(propKeyframeSort))
-  }
+  })
 }
 
 function calculateTimes(self: ITimeline) {

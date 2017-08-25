@@ -67,6 +67,7 @@ export interface PropertyKeyframe {
   easing?: string
   time: number
   prop: string
+  plugin: string
   index: number
   value: string | number
   interpolate: Interpolator
@@ -86,8 +87,6 @@ export interface TargetConfiguration {
   target: AnimationTarget
   targetLength: number
   easing: string
-  plugin: string
-  propNames: string[]
   from: number
   to: number
   endDelay: number

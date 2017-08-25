@@ -129,6 +129,19 @@ function pushAll<T>(items: T[], newItems: T[]) {
 export type Action<T1> = (input: T1, index: number, len: number) => void
 export type ActionWithBreak<T1> = (input: T1, index: number, len: number) => void | false
 
+export function map<T1, T2>(items: IList<T1>, func: (t1: T1) => T2): T2[] {
+  var results: T2[] = []
+  if (items) {
+    for (var i = 0, ilen = items.length; i < ilen; i++) {
+      var result = func(items[i])
+      if (result !== _) {
+        results[results.length] = result
+      }
+    }
+  }
+  return results
+}
+
 /**
  * iterates over all items until [false] is returned or it runs out of items
  * @param items 

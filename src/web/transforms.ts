@@ -6,16 +6,18 @@ import { isDefined } from '../lib/inspect'
 import { parseUnit } from './parse-unit'
 
 export function combineTransforms(target: TargetConfiguration, effects: PropertyEffects) {
+  const propNames: string[] = []
+  target.keyframes.forEach(t => pushDistinct(propNames, t.prop))
+  
   // get all transform shorthands
-  const transformNames = target.propNames.filter(t => includes(transforms, t))
-
+  const transformNames = propNames.filter(t => includes(transforms, t))
   if (!transformNames.length) {
     return
   }
 
-  if (includes(target.propNames, TRANSFORM)) {
+  if (includes(propNames, TRANSFORM)) {
     // disallow mixing tranform with shorthand properties
-    throw new Error('mixing transform and shorthand properties is not allowed')
+    throw new Error('mixing transform and shorthand props is not allowed')
   }
 
   // get a list of offsets
