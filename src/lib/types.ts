@@ -12,6 +12,10 @@ export interface PropertyValueOptions {
   interpolate?: Interpolator
 }
 
+export interface Dictionary<T> {
+  [prop: string]: T
+}  
+
 export interface SetOptions {
   [name: string]: PropertyResolver<string | number>
 }
@@ -58,7 +62,7 @@ export interface AnimationTimelineController extends AnimationController {
 
 export interface JustAnimatePlugin {
   name: string
-  onWillAnimate?: { (target: TargetConfiguration, effects: PropertyEffects): void }
+  onWillAnimate?: { (target: TargetConfiguration, effects: PropertyEffects, propToPlugin?: Dictionary<string>): void }
   animate(effect: Effect): AnimationController
   getValue(target: AnimationTarget, key: string): string | number
 }
@@ -91,6 +95,7 @@ export interface TargetConfiguration {
   to: number
   endDelay: number
   duration: number
+  stagger: number
   keyframes: PropertyKeyframe[]
 }
 

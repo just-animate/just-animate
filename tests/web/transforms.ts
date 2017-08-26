@@ -87,9 +87,9 @@ describe('transforms', () => {
         plugin: 'web',
         prop: 'transform',
         keyframes: [
-          { offset: 0, value: 'translateX(10vh)', easing: 'linear' },
-          { offset: 0.5, value: 'translateX(-20vh)', easing: 'linear' },
-          { offset: 1, value: 'translateX(0.5vh)', easing: 'linear' }
+          { offset: 0, value: 'translateX(10vh)', easing: 'linear', interpolate: undefined },
+          { offset: 0.5, value: 'translateX(-20vh)', easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 'translateX(0.5vh)', easing: 'linear', interpolate: undefined }
         ]
       }
     ])
@@ -198,9 +198,9 @@ describe('transforms', () => {
         plugin: 'web',
         prop: 'transform',
         keyframes: [
-          { offset: 0, value: 'rotate(180deg)', easing: 'linear' },
-          { offset: 0.5, value: 'rotate(180deg) translateY(120px)', easing: 'linear' },
-          { offset: 1, value: 'rotate(180deg) translateY(0px)', easing: 'linear' }
+          { offset: 0, value: 'rotate(180deg)', easing: 'linear', interpolate: undefined },
+          { offset: 0.5, value: 'rotate(180deg) translateY(120px)', easing: 'linear', interpolate: undefined },
+          { offset: 1, value: 'rotate(180deg) translateY(0px)', easing: 'linear', interpolate: undefined }
         ]
       }
     ])

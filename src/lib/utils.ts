@@ -17,3 +17,18 @@ export function lazy<T>(initializer: () => T) {
   let value: T
   return () => value || (value = initializer())
 }
+
+export function assign<T1>(...objs: T1[]): T1;
+export function assign() {
+  var args = arguments
+  var result = {}
+  for (var i = 0, ilen = args.length; i < ilen; i++) {
+    var obj = args[i]
+    for (var name in obj) {
+      if (obj.hasOwnProperty(name)) {
+        result[name] = obj[name]
+      }
+    }
+  }
+  return result
+}

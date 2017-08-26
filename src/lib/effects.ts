@@ -7,7 +7,8 @@ import {
   TargetConfiguration,
   PropertyObject,
   PropertyValueOptions,
-  Interpolator
+  Interpolator,
+  Dictionary
 } from './types'
 import { resolveProperty } from './resolve-property'
 import { forEach, indexOf, list, head, tail, push, sortBy } from './lists'
@@ -16,28 +17,33 @@ import { flr, max } from './math'
 import { _ } from './constants'
 import { getPlugins } from './plugins'
 import { getTargets } from './get-targets'
+import { assign } from './utils'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 
 export function toEffects(targetConfig: TargetConfiguration): Effect[] {
+  const keyframes = targetConfig.keyframes
+  const from = targetConfig.from
+  const to = targetConfig.to
+  const stagger = targetConfig.stagger || 0
+  const duration = targetConfig.duration
+  
   const plugins = getPlugins()
   const result: Effect[] = []
 
-  forEach(getTargets(targetConfig.target), (target, _index, targetLength) => { 
-    const keyframes = targetConfig.keyframes
-    const from = targetConfig.from
-    const to = targetConfig.to
-    const duration = targetConfig.duration
-    
+  forEach(getTargets(targetConfig.target), (target, index, targetLength) => { 
     // construct property animation options
     var effects: PropertyEffects = {}
+    var propToPlugin: Dictionary<string> = {};
+    
     forEach(keyframes, p => {
       const effects2 = effects[p.prop] || (effects[p.prop] = [])
       const offset = (p.time - from) / (duration || 1)
       const easing = p.easing
       const interpolate = p.interpolate
       const value = resolveProperty(p.value, target, p.index, targetLength)
-
+      propToPlugin[p.prop] = p.plugin
+      
       const effect2 =
         head(effects2, e => e.offset === offset) ||
         push(effects2, {
@@ -56,7 +62,8 @@ export function toEffects(targetConfig: TargetConfiguration): Effect[] {
     for (var pluginName in plugins) {
       var plugin = plugins[pluginName]
       if (plugin.onWillAnimate && targetConfig.keyframes.some(c => c.plugin === pluginName)) {
-        plugin.onWillAnimate(targetConfig, effects)
+        var targetConfig2 = assign(targetConfig, { target }) as typeof targetConfig
+        plugin.onWillAnimate(targetConfig2, effects, propToPlugin)
       }
     }
 
@@ -120,13 +127,13 @@ export function toEffects(targetConfig: TargetConfiguration): Effect[] {
             firstFrame.interpolate = _
           }
         }
-
+        
         push(result, {
-          plugin: plugin.name,
+          plugin: propToPlugin[prop],
           target,
           prop,
-          from,
-          to,
+          from: from + (stagger ? (stagger + 1) * index : 0),
+          to: to + (stagger ? (stagger + 1) * index : 0),
           keyframes: effect
         })
       }

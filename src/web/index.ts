@@ -10,10 +10,10 @@ export const waapiPlugin: JustAnimatePlugin = {
   getValue(target: HTMLElement, key: string) {
     return getComputedStyle(target)[key]
   },
-  onWillAnimate(target, effects) {
+  onWillAnimate(target, effects, propToPlugin) {
     if (isDOM(target.target)) {
       appendUnits(effects)
-      combineTransforms(target, effects)
+      combineTransforms(target, effects, propToPlugin)
     }
   }
 }

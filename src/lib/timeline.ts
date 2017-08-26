@@ -206,6 +206,7 @@ function insert(self: ITimeline, from: number, to: number, opts: AnimationOption
         easing: opts.easing || 'ease',
         duration: opts.to - opts.from,
         endDelay: resolveProperty(opts.endDelay, target, i, ilen) || 0,
+        stagger: opts.stagger || 0,
         target,
         targetLength: ilen,
         keyframes: []

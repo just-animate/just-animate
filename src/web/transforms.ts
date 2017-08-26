@@ -1,11 +1,11 @@
-import { PropertyEffects, TargetConfiguration } from '../lib/types'
+import { PropertyEffects, TargetConfiguration, PropertyEffect, Dictionary } from '../lib/types'
 import { includes, pushDistinct, forEach, head } from '../lib/lists'
 import { _ } from '../lib/constants'
 import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG, transformLengths } from './constants'
 import { isDefined } from '../lib/inspect'
 import { parseUnit } from './parse-unit'
 
-export function combineTransforms(target: TargetConfiguration, effects: PropertyEffects) {
+export function combineTransforms(target: TargetConfiguration, effects: PropertyEffects, propToPlugin: Dictionary<string>) {
   const propNames: string[] = []
   target.keyframes.forEach(t => pushDistinct(propNames, t.prop))
   
@@ -17,7 +17,7 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
 
   if (includes(propNames, TRANSFORM)) {
     // disallow mixing tranform with shorthand properties
-    throw new Error('mixing transform and shorthand props is not allowed')
+    throw new Error('transform + shorthand is not allowed')
   }
 
   // get a list of offsets
@@ -121,7 +121,7 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
       effects[name] = _
     })
 
-    const transformEffects2: any[] = []
+    const transformEffects2: PropertyEffect[] = []
     forEach(transformEffects, effect => {
       let val: string = _
       for (var prop in effect.values) {
@@ -138,10 +138,12 @@ export function combineTransforms(target: TargetConfiguration, effects: Property
       transformEffects2.push({
         offset: effect.offset,
         value: val,
-        easing: effect.easing
+        easing: effect.easing,
+        interpolate: _
       })
     })
 
     effects[TRANSFORM] = transformEffects2
+    propToPlugin[TRANSFORM] = 'web'
   }
 }
