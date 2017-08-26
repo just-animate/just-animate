@@ -5,10 +5,14 @@ import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG, transformLeng
 import { isDefined } from '../lib/inspect'
 import { parseUnit } from './parse-unit'
 
-export function combineTransforms(target: TargetConfiguration, effects: PropertyEffects, propToPlugin: Dictionary<string>) {
+export function combineTransforms(
+  target: TargetConfiguration,
+  effects: PropertyEffects,
+  propToPlugin: Dictionary<string>
+) {
   const propNames: string[] = []
   target.keyframes.forEach(t => pushDistinct(propNames, t.prop))
-  
+
   // get all transform shorthands
   const transformNames = propNames.filter(t => includes(transforms, t))
   if (!transformNames.length) {

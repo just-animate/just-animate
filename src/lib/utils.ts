@@ -18,7 +18,7 @@ export function lazy<T>(initializer: () => T) {
   return () => value || (value = initializer())
 }
 
-export function assign<T1>(...objs: T1[]): T1;
+export function assign<T1>(...objs: T1[]): T1
 export function assign() {
   var args = arguments
   var result = {}

@@ -359,10 +359,10 @@ describe('basic', () => {
       props: {
         opacity: 1
       }
-    })
+    }) 
 
     t1.pause()
-
+  
     t1.currentTime = 0
     assert.equal(target.opacity, 0)
 

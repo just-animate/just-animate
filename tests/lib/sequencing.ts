@@ -150,7 +150,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = timeline.getEffects()
+    const actual = timeline.getEffects() 
 
     assert.deepEqual<{}>(actual, [
       {

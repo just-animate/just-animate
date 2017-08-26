@@ -14,7 +14,7 @@ export interface PropertyValueOptions {
 
 export interface Dictionary<T> {
   [prop: string]: T
-}  
+}
 
 export interface SetOptions {
   [name: string]: PropertyResolver<string | number>

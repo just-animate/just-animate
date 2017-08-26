@@ -18,7 +18,7 @@ import { resolveProperty } from './resolve-property'
 import { loopOn, loopOff } from './timeloop'
 import { toEffects, addPropertyKeyframes } from './effects'
 import { sortBy, forEach, head, push, mapFlatten, list, includes } from './lists'
-import { isDefined } from './inspect' 
+import { isDefined } from './inspect'
 import { max, inRange, minMax, flr } from './math'
 
 import {
@@ -156,7 +156,7 @@ const timelineProto: ITimeline = {
     const self = this
     const pluginNames = Object.keys(getPlugins())
 
-    list(options).forEach(opts => {
+    forEach(list(options), opts => {
       const at = opts.at || self._nextTime
       const opts2 = {} as AnimationOptions
 
@@ -167,7 +167,8 @@ const timelineProto: ITimeline = {
           const props = opts[name]
           const props2 = {} as typeof props
           for (var propName in props) {
-            props2[propName] = [_, props[propName]]
+            var value = props[propName]
+            props2[propName] = [_, value]
           }
           opts2[name] = props2
         } else {
@@ -176,13 +177,13 @@ const timelineProto: ITimeline = {
       }
       // insert from (time - super small decimal) + the time specified, this should create a tween that is effectively
       // so small as to not occur in most cases.  This should "look like" setting it
-      insert(self, max(at - 0.00000000001, 0), at, opts2)
+      insert(self, at - 0.000000001, at, opts2)
     })
 
     calculateTimes(self)
     return self
   },
-  getEffects(this: ITimeline): Effect[] { 
+  getEffects(this: ITimeline): Effect[] {
     return mapFlatten(this._configs, toEffects)
   }
 }
@@ -196,7 +197,7 @@ function insert(self: ITimeline, from: number, to: number, opts: AnimationOption
   opts.duration = opts.to - opts.from
 
   // add all targets as property keyframes
-  forEach(list(opts.targets), (target, i, ilen) => { 
+  forEach(list(opts.targets), (target, i, ilen) => {
     const delay = resolveProperty(opts.delay, target, i, ilen) || 0
     const targetConfig =
       head(config, c => c.target === target) ||
@@ -256,12 +257,12 @@ function setupEffects(self: ITimeline) {
   if (self._effects) {
     return
   }
-  
+
   const effects = self.getEffects()
-  const plugins = getPlugins()  
+  const plugins = getPlugins()
 
   const animations: AnimationTimelineController[] = []
-  
+
   forEach(effects, effect => {
     const controller = plugins[effect.plugin].animate(effect) as AnimationTimelineController
     if (controller) {

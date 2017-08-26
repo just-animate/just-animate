@@ -52,7 +52,8 @@ export function loopOn(fn: TimeLoopCallback) {
 
   const indexOfSub = active.indexOf(fn)
   if (indexOfSub === -1) {
-    (fn as TimeKeeper).__last = 0
+    const tk = fn as TimeKeeper
+    tk.__last = 0
     push(active, fn)
   }
 
@@ -68,7 +69,8 @@ export function loopOff(fn: TimeLoopCallback) {
 
   const indexOfSub = active.indexOf(fn)
   if (indexOfSub !== -1) {
-    ;(fn as TimeKeeper).__last = 0
+    const tk = fn as TimeKeeper
+    tk.__last = 0
     active.splice(indexOfSub, 1)
   }
   if (!active.length) {
