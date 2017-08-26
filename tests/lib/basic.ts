@@ -14,9 +14,10 @@ describe('basic', () => {
       props: {
         opacity: [0, 1]
       }
-    })
-
-    const actual = t1.getEffects()[0]
+    }) 
+    
+    const actual = t1.getEffects()[0] 
+    
     assert.deepEqual(actual, {
       target: target1,
       from: 0,

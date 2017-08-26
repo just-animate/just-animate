@@ -52,7 +52,7 @@ export function loopOn(fn: TimeLoopCallback) {
 
   const indexOfSub = active.indexOf(fn)
   if (indexOfSub === -1) {
-    ;(fn as TimeKeeper).__last = 0
+    (fn as TimeKeeper).__last = 0
     push(active, fn)
   }
 

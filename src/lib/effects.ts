@@ -15,6 +15,7 @@ import { isDefined, isObject, isNumber, isArrayLike } from './inspect'
 import { flr, max } from './math'
 import { _ } from './constants'
 import { getPlugins } from './plugins'
+import { getTargets } from './get-targets'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 
@@ -22,110 +23,115 @@ export function toEffects(targetConfig: TargetConfiguration): Effect[] {
   const plugins = getPlugins()
   const result: Effect[] = []
 
-  const { from, to, duration, keyframes, target, targetLength } = targetConfig
+  forEach(getTargets(targetConfig.target), (target, _index, targetLength) => { 
+    const keyframes = targetConfig.keyframes
+    const from = targetConfig.from
+    const to = targetConfig.to
+    const duration = targetConfig.duration
+    
+    // construct property animation options
+    var effects: PropertyEffects = {}
+    forEach(keyframes, p => {
+      const effects2 = effects[p.prop] || (effects[p.prop] = [])
+      const offset = (p.time - from) / (duration || 1)
+      const easing = p.easing
+      const interpolate = p.interpolate
+      const value = resolveProperty(p.value, target, p.index, targetLength)
 
-  // construct property animation options
-  var effects: PropertyEffects = {}
-  forEach(keyframes, p => {
-    const effects2 = effects[p.prop] || (effects[p.prop] = [])
-    const offset = (p.time - from) / (duration || 1)
-    const easing = p.easing
-    const interpolate = p.interpolate
-    const value = resolveProperty(p.value, target, p.index, targetLength)
+      const effect2 =
+        head(effects2, e => e.offset === offset) ||
+        push(effects2, {
+          easing,
+          offset,
+          value,
+          interpolate
+        })
 
-    const effect2 =
-      head(effects2, e => e.offset === offset) ||
-      push(effects2, {
-        easing,
-        offset,
-        value,
-        interpolate
-      })
+      effect2.easing = easing
+      effect2.value = value
+      effect2.interpolate = interpolate
+    })
 
-    effect2.easing = easing
-    effect2.value = value
-    effect2.interpolate = interpolate
-  })
-
-  // process handlers
-  for (var pluginName in plugins) {
-    var plugin = plugins[pluginName]
-    if (plugin.onWillAnimate && targetConfig.keyframes.some(c => c.plugin === pluginName)) {
-      plugin.onWillAnimate(targetConfig, effects)
-    }
-  }
-
-  for (var prop in effects) {
-    var effect = effects[prop]
-    if (effect) {
-      effect.sort(offsetSorter)
-
-      var firstFrame = head(effect, c => c.offset === 0)
-      if (firstFrame === _ || firstFrame.value === _) {
-        // add keyframe if offset 0 is missing
-        var value2 = plugin.getValue(target, prop)
-        if (firstFrame === _) {
-          effect.splice(0, 0, {
-            offset: 0,
-            value: value2,
-            easing: targetConfig.easing,
-            interpolate: _
-          })
-        } else {
-          firstFrame.value = value2
-          firstFrame.easing = targetConfig.easing
-          firstFrame.interpolate = _
-        }
+    // process handlers
+    for (var pluginName in plugins) {
+      var plugin = plugins[pluginName]
+      if (plugin.onWillAnimate && targetConfig.keyframes.some(c => c.plugin === pluginName)) {
+        plugin.onWillAnimate(targetConfig, effects)
       }
+    }
 
-      // fill empty frames with the previous value
-      for (var x = effect.length - 1; x > 0; x--) {
-        var currentValue = effect[x]
-        if (currentValue.value === _) {
-          var y = x
-          var previousValue
-          for (; x > -1; x--) {
-            previousValue = effect[x]
-            if (previousValue.value !== _) {
-              break
+    for (var prop in effects) {
+      var effect = effects[prop]
+      if (effect) {
+        effect.sort(offsetSorter)
+
+        var firstFrame = head(effect, c => c.offset === 0)
+        if (firstFrame === _ || firstFrame.value === _) {
+          // add keyframe if offset 0 is missing
+          var value2 = plugin.getValue(target, prop)
+          if (firstFrame === _) {
+            effect.splice(0, 0, {
+              offset: 0,
+              value: value2,
+              easing: targetConfig.easing,
+              interpolate: _
+            })
+          } else {
+            firstFrame.value = value2
+            firstFrame.easing = targetConfig.easing
+            firstFrame.interpolate = _
+          }
+        }
+
+        // fill empty frames with the previous value
+        for (var x = effect.length - 1; x > 0; x--) {
+          var currentValue = effect[x]
+          if (currentValue.value === _) {
+            var y = x
+            var previousValue
+            for (; x > -1; x--) {
+              previousValue = effect[x]
+              if (previousValue.value !== _) {
+                break
+              }
+            }
+            for (var z = x; z <= y; z++) {
+              effect[z].value = previousValue.value
+              effect[z].interpolate = previousValue.interpolate
             }
           }
-          for (var z = x; z <= y; z++) {
-            effect[z].value = previousValue.value
-            effect[z].interpolate = previousValue.interpolate
+        }
+
+        // guarantee a frame at offset 1
+        var lastFrame = tail(effect, c => c.offset === 1)
+        if (lastFrame === _ || lastFrame.value === _) {
+          // add keyframe if offset 1 is missing
+          var value3 = effect[effect.length - 1].value
+          if (lastFrame === _) {
+            push(effect, {
+              offset: 1,
+              value: value3,
+              easing: targetConfig.easing,
+              interpolate: _
+            })
+          } else {
+            lastFrame.value = value3
+            lastFrame.easing = targetConfig.easing
+            firstFrame.interpolate = _
           }
         }
-      }
 
-      // guarantee a frame at offset 1
-      var lastFrame = tail(effect, c => c.offset === 1)
-      if (lastFrame === _ || lastFrame.value === _) {
-        // add keyframe if offset 1 is missing
-        var value3 = effect[effect.length - 1].value
-        if (lastFrame === _) {
-          push(effect, {
-            offset: 1,
-            value: value3,
-            easing: targetConfig.easing,
-            interpolate: _
-          })
-        } else {
-          lastFrame.value = value3
-          lastFrame.easing = targetConfig.easing
-          firstFrame.interpolate = _
-        }
+        push(result, {
+          plugin: plugin.name,
+          target,
+          prop,
+          from,
+          to,
+          keyframes: effect
+        })
       }
-
-      push(result, {
-        plugin: plugin.name,
-        target,
-        prop,
-        from,
-        to,
-        keyframes: effect
-      })
     }
-  }
+  })
 
   return result
 }
@@ -138,7 +144,7 @@ export function addPropertyKeyframes(target: TargetConfiguration, index: number,
   const easing = options.easing || 'ease'
 
   // iterate over each property split it into keyframes
-  const plugins = getPlugins()  
+  const plugins = getPlugins()
   for (var pluginName in plugins) {
     if (options.hasOwnProperty(pluginName)) {
       const props = options[pluginName]

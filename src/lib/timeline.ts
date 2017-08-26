@@ -18,8 +18,7 @@ import { resolveProperty } from './resolve-property'
 import { loopOn, loopOff } from './timeloop'
 import { toEffects, addPropertyKeyframes } from './effects'
 import { sortBy, forEach, head, push, mapFlatten, list, includes } from './lists'
-import { isDefined } from './inspect'
-import { getTargets } from './get-targets'
+import { isDefined } from './inspect' 
 import { max, inRange, minMax, flr } from './math'
 
 import {
@@ -197,9 +196,8 @@ function insert(self: ITimeline, from: number, to: number, opts: AnimationOption
   opts.duration = opts.to - opts.from
 
   // add all targets as property keyframes
-  forEach(getTargets(opts.targets), (target, i, ilen) => {
+  forEach(list(opts.targets), (target, i, ilen) => { 
     const delay = resolveProperty(opts.delay, target, i, ilen) || 0
-
     const targetConfig =
       head(config, c => c.target === target) ||
       push(config, {

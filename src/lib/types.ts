@@ -64,7 +64,7 @@ export interface JustAnimatePlugin {
 }
 
 export interface PropertyKeyframe {
-  easing?: string
+  easing: string
   time: number
   prop: string
   plugin: string
