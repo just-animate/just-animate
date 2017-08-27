@@ -96,6 +96,7 @@ export interface TargetConfiguration {
   endDelay: number
   duration: number
   stagger: number
+  propNames: string[]
   keyframes: PropertyKeyframe[]
 }
 

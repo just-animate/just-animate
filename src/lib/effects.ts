@@ -13,7 +13,7 @@ import {
   JustAnimatePlugin
 } from './types'
 import { resolveProperty } from './resolve-property'
-import { forEach, indexOf, list, head, tail, push, sortBy } from './lists'
+import { forEach, indexOf, list, head, tail, push, sortBy, pushDistinct } from './lists'
 import { isDefined, isObject, isNumber, isArrayLike } from './inspect'
 import { flr, max } from './math'
 import { _ } from './constants'
@@ -180,6 +180,7 @@ export function addPropertyKeyframes(target: TargetConfiguration, index: number,
       const props = options[pluginName]
       for (var name in props) {
         if (props.hasOwnProperty(name)) {
+          pushDistinct(target.propNames, name)        
           addProperty(target, pluginName, index, name, props[name], duration, from, easing)
         }
       }

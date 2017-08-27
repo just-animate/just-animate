@@ -9,17 +9,15 @@ export function combineTransforms(
   target: TargetConfiguration,
   effects: PropertyEffects,
   propToPlugin: Dictionary<string>
-) {
-  const propNames: string[] = []
-  target.keyframes.forEach(t => pushDistinct(propNames, t.prop))
+) { 
 
   // get all transform shorthands
-  const transformNames = propNames.filter(t => includes(transforms, t))
+  const transformNames = target.propNames.filter(t => includes(transforms, t))
   if (!transformNames.length) {
     return
   }
 
-  if (includes(propNames, TRANSFORM)) {
+  if (includes(target.propNames, TRANSFORM)) {
     // disallow mixing tranform with shorthand properties
     throw new Error('transform + shorthand is not allowed')
   }

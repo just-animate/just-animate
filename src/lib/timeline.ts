@@ -210,6 +210,7 @@ function insert(self: ITimeline, from: number, to: number, opts: AnimationOption
         stagger: opts.stagger || 0,
         target,
         targetLength: ilen,
+        propNames: [],
         keyframes: []
       })
 
