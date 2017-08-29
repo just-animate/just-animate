@@ -23,7 +23,7 @@ import { assign } from './utils'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 
-export function toEffects(targetConfig: TargetConfiguration): Effect[] {
+export function toEffects(targetConfig: TargetConfiguration): Effect[] {  
   const keyframes = targetConfig.keyframes
   const from = targetConfig.from
   const to = targetConfig.to

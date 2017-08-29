@@ -29,8 +29,12 @@ import {
   PropertyKeyframe,
   AnimationTimelineController,
   ITimeline,
-  BaseSetOptions
+  BaseSetOptions,
+  TimelineOptions
 } from './types'
+import { assign } from './utils'
+import { replaceWithRefs, resolveRefs } from './references'
+import { dump } from '../../tests/helpers'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
@@ -184,12 +188,18 @@ const timelineProto: ITimeline = {
     return self
   },
   getEffects(this: ITimeline): Effect[] {
-    return mapFlatten(this._configs, toEffects)
+    const self = this
+    return mapFlatten(self._configs, c =>
+      toEffects(
+        resolveRefs(self._refs, c, true)
+      )
+    )
   }
 }
 
 function insert(self: ITimeline, from: number, to: number, opts: AnimationOptions) {
-  const config = self._configs
+  const config = self._configs 
+  opts = replaceWithRefs(self._refs, opts, true) as AnimationOptions
 
   // ensure to/from are in milliseconds (as numbers)
   opts.from = from
@@ -435,7 +445,7 @@ function tick(self: ITimeline, delta: number) {
 /**
  * Animation timeline control.  Defines animation definition methods like .fromTo() and player controls like .play()
  */
-export function timeline(): ITimeline {
+export function timeline(opts: TimelineOptions = {}): ITimeline {
   const self: ITimeline = Object.create(timelineProto)
   // initialize default values
   self.duration = 0
@@ -445,7 +455,9 @@ export function timeline(): ITimeline {
   self._alternate = false
   self._state = S_IDLE
   self._configs = []
-  self._listeners = {}
+  self._listeners = {} 
+  self._refs = assign(opts.references)
   self._tick = delta => tick(self, delta)
+  
   return self
 }

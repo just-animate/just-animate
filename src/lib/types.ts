@@ -147,6 +147,14 @@ export interface Effect {
   from: number
 }
 
+export interface References {
+  [name: string]: any
+}
+
+export interface TimelineOptions {
+  references?: References
+}
+
 /**
  * Adds an animation at the end of the timeline, unless from/to are specified
  * @param opts the animation definition
@@ -159,6 +167,7 @@ export interface ITimeline {
   _state?: number
   _configs?: TargetConfiguration[]
   _effects?: AnimationTimelineController[]
+  _refs?: References
   _repeat?: number
   _iteration?: number
   _time?: number

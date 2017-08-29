@@ -20,7 +20,7 @@ describe('transitions', () => {
       web: {
         opacity: 0
       }
-    })
+    }) 
 
     timeline.pause()
 

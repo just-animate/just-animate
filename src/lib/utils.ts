@@ -24,11 +24,13 @@ export function assign() {
   var result = {}
   for (var i = 0, ilen = args.length; i < ilen; i++) {
     var obj = args[i]
-    for (var name in obj) {
-      if (obj.hasOwnProperty(name)) {
-        result[name] = obj[name]
+    if (obj) {
+      for (var name in obj) {
+        if (obj.hasOwnProperty(name)) {
+          result[name] = obj[name]
+        }
       }
-    }
+    } 
   }
   return result
 }
