@@ -12,7 +12,10 @@ addPlugin(propsPlugin)
  * Returns a new timeline of animation(s) using the options provided
  * @param options Animtion options or an array of options
  */
-export function animate(options?: types.AddAnimationOptions | types.AddAnimationOptions[], timeline1: ITimeline = timeline()) {
+export function animate(
+  options?: types.AddAnimationOptions | types.AddAnimationOptions[],
+  timeline1: ITimeline = timeline()
+) {
   if (options) {
     timeline1.add(options)
   }

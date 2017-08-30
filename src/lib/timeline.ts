@@ -31,7 +31,7 @@ import {
   ITimeline,
   BaseSetOptions,
   TimelineOptions
-} from './types' 
+} from './types'
 import { replaceWithRefs, resolveRefs } from './references'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
@@ -195,7 +195,7 @@ const timelineProto: ITimeline = {
 }
 
 function insert(self: ITimeline, from: number, to: number, opts: AnimationOptions) {
-  const config = self._configs 
+  const config = self._configs
   opts = replaceWithRefs(self._refs, opts, true) as AnimationOptions
 
   // ensure to/from are in milliseconds (as numbers)
@@ -452,17 +452,17 @@ export function timeline(opts: TimelineOptions = {}): ITimeline {
   self._alternate = false
   self._state = S_IDLE
   self._configs = []
-  self._listeners = {} 
-  
+  self._listeners = {}
+
   const refs = {}
   if (opts.references) {
     for (var name in opts.references) {
       refs['@' + name] = opts.references[name]
     }
-  } 
+  }
   self._refs = refs
-  
+
   self._tick = delta => tick(self, delta)
-  
+
   return self
 }

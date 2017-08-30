@@ -9,8 +9,7 @@ export function combineTransforms(
   target: TargetConfiguration,
   effects: PropertyEffects,
   propToPlugin: Dictionary<string>
-) { 
-
+) {
   // get all transform shorthands
   const transformNames = target.propNames.filter(t => includes(transforms, t))
   if (!transformNames.length) {

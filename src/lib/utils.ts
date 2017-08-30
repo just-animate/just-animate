@@ -30,7 +30,7 @@ export function assign() {
           result[name] = obj[name]
         }
       }
-    } 
+    }
   }
   return result
 }

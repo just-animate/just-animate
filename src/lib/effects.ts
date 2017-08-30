@@ -23,7 +23,7 @@ import { assign } from './utils'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 
-export function toEffects(targetConfig: TargetConfiguration): Effect[] {  
+export function toEffects(targetConfig: TargetConfiguration): Effect[] {
   const keyframes = targetConfig.keyframes
   const from = targetConfig.from
   const to = targetConfig.to
@@ -180,7 +180,7 @@ export function addPropertyKeyframes(target: TargetConfiguration, index: number,
       const props = options[pluginName]
       for (var name in props) {
         if (props.hasOwnProperty(name)) {
-          pushDistinct(target.propNames, name)        
+          pushDistinct(target.propNames, name)
           addProperty(target, pluginName, index, name, props[name], duration, from, easing)
         }
       }
