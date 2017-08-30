@@ -1,4 +1,4 @@
-import { timeline, addPlugin, removePlugin, interpolate } from '../../src/main'
+import { timeline, addPlugin, removePlugin } from '../../src/main'
 import * as chai from 'chai'
 import { waapiPlugin } from '../../src/web/index'
 const { assert } = chai
