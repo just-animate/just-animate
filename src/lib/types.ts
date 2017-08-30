@@ -9,7 +9,7 @@ export interface PropertyOptions {
 export interface PropertyValueOptions {
   value: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
   easing?: string
-  interpolate?: Interpolator
+  interpolate?: Interpolator | string
 }
 
 export interface Dictionary<T> {
@@ -43,7 +43,7 @@ export interface PropertyObject {
   value: string | number
   offset?: number
   easing?: string
-  interpolate?: Interpolator
+  interpolate?: Interpolator | string
 }
 
 export type PropertyValue = string | number | PropertyObject
@@ -74,7 +74,7 @@ export interface PropertyKeyframe {
   plugin: string
   index: number
   value: string | number
-  interpolate: Interpolator
+  interpolate: Interpolator | string
 }
 export interface PropertyEffects {
   [name: string]: PropertyEffect[]

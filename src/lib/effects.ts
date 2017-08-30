@@ -203,7 +203,7 @@ function addProperty(
     return
   }
 
-  let defaultInterpolator: Interpolator = _
+  let defaultInterpolator: Interpolator | string = _
 
   let values: PropertyResolver<PropertyValue>[]
   if (isArrayLike(val) || !isObject(val)) {

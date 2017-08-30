@@ -31,10 +31,8 @@ import {
   ITimeline,
   BaseSetOptions,
   TimelineOptions
-} from './types'
-import { assign } from './utils'
+} from './types' 
 import { replaceWithRefs, resolveRefs } from './references'
-import { dump } from '../../tests/helpers'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
@@ -59,7 +57,7 @@ const timelineProto: ITimeline = {
   add(this: ITimeline, opts: AddAnimationOptions | AddAnimationOptions[]) {
     const self = this
 
-    list(opts).forEach(opt => {
+    forEach(list(opts), opt => {
       const _nextTime = self._nextTime
       const hasTo = isDefined(opt.to)
       const hasFrom = isDefined(opt.from)
@@ -95,7 +93,7 @@ const timelineProto: ITimeline = {
   fromTo(this: ITimeline, from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]) {
     const self = this
 
-    list(options).forEach(options2 => {
+    forEach(list(options), options2 => {
       insert(self, from, to, options2 as AnimationOptions)
     })
 
@@ -189,11 +187,10 @@ const timelineProto: ITimeline = {
   },
   getEffects(this: ITimeline): Effect[] {
     const self = this
-    return mapFlatten(self._configs, c =>
-      toEffects(
-        resolveRefs(self._refs, c, true)
-      )
-    )
+    return mapFlatten(self._configs, c => {
+      const c2 = resolveRefs(self._refs, c, true)
+      return toEffects(c2)
+    })
   }
 }
 
@@ -456,7 +453,15 @@ export function timeline(opts: TimelineOptions = {}): ITimeline {
   self._state = S_IDLE
   self._configs = []
   self._listeners = {} 
-  self._refs = assign(opts.references)
+  
+  const refs = {}
+  if (opts.references) {
+    for (var name in opts.references) {
+      refs['@' + name] = opts.references[name]
+    }
+  } 
+  self._refs = refs
+  
   self._tick = delta => tick(self, delta)
   
   return self
