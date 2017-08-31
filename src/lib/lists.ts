@@ -7,7 +7,11 @@ export interface IList<T> {
 }
 
 export function includes<T>(items: T[], item: T) {
-  return items.indexOf(item) !== -1
+  return getIndex(items, item) !== -1
+}
+
+export function getIndex<T>(items: T[], item: T) {
+  return items.indexOf(item)
 }
 
 /**
@@ -78,7 +82,7 @@ export function sortBy<T>(fieldName: keyof T) {
  * @returns {T[]}
  */
 export function list<T>(indexed: IList<T> | T): T[] {
-  return isArrayLike(indexed) ? indexed as T[] : [indexed as T]
+  return !isDefined(indexed) ? _ : isArrayLike(indexed) ? indexed as T[] : [indexed as T]
 }
 
 /**
@@ -147,12 +151,13 @@ export function map<T1, T2>(items: IList<T1>, func: (t1: T1) => T2): T2[] {
  * @param items 
  * @param action 
  */
-export function forEach<T1>(items: IList<T1>, action: Action<T1>): void
-export function forEach<T1>(items: IList<T1>, action: ActionWithBreak<T1>): void
-export function forEach<T1>(items: IList<T1>, action: Action<T1> | ActionWithBreak<T1>): void {
+export function forEach<T1>(items: T1 | IList<T1>, action: Action<T1>): void
+export function forEach<T1>(items: T1 | IList<T1>, action: ActionWithBreak<T1>): void
+export function forEach<T1>(items: T1 | IList<T1>, action: Action<T1> | ActionWithBreak<T1>): void {
   if (items) {
-    for (let i = 0, ilen = items.length; i < ilen; i++) {
-      if (action(items[i], i, ilen) === false) {
+    const items2 = list(items)
+    for (let i = 0, ilen = items2.length; i < ilen; i++) {
+      if (action(items2[i], i, ilen) === false) {
         break
       }
     }

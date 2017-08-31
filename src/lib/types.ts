@@ -181,6 +181,11 @@ export interface ITimeline {
    */
   add(opts: AddAnimationOptions | AddAnimationOptions[]): this
   /**
+   * Adds an animation at the end of the timeline, unless from/to are specified
+   * @param opts the animation definition
+   */
+  animate(opts: AddAnimationOptions | AddAnimationOptions[]): this
+  /**
    * Defines an animation that occurs starting at "from" and ending at "to".
    *
    * Note: The delay, endDelay, and stagger properties may shift the from/to times
@@ -189,7 +194,15 @@ export interface ITimeline {
    * @param options the animation definition.
    */
   fromTo(from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]): this
-
+  /**
+   * Adds a sequence at the current position in the timeline.  Each animation option will be added sequentially
+   * @param seqOptions the animation definition.
+   */
+  sequence(this: ITimeline, seqOptions: AddAnimationOptions[]): this
+  /**
+   * Sets the current values at the current time. If "at" is specified, it is set to that point in the timeline
+   * @param options the set definitions.
+   */
   set(options: BaseSetOptions | BaseSetOptions[]): this
 
   /**

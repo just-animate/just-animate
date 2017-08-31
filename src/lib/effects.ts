@@ -251,7 +251,7 @@ function addProperty(
   inferOffsets(keyframes)
 
   // add all unique frames
-  keyframes.forEach(keyframe => {
+  forEach(keyframes, keyframe => {
     const { offset, value, easing, interpolate } = keyframe
     const time = flr(duration * offset + from)
     const indexOfFrame = indexOf(target.keyframes, k => k.prop === name && k.time === time)

@@ -17,7 +17,7 @@ import { getPlugins } from './plugins'
 import { resolveProperty } from './resolve-property'
 import { loopOn, loopOff } from './timeloop'
 import { toEffects, addPropertyKeyframes } from './effects'
-import { sortBy, forEach, head, push, mapFlatten, list, includes } from './lists'
+import { sortBy, forEach, head, push, mapFlatten, includes, getIndex } from './lists'
 import { isDefined } from './inspect'
 import { max, inRange, minMax, flr } from './math'
 
@@ -57,7 +57,7 @@ const timelineProto: ITimeline = {
   add(this: ITimeline, opts: AddAnimationOptions | AddAnimationOptions[]) {
     const self = this
 
-    forEach(list(opts), opt => {
+    forEach(opts, opt => {
       const _nextTime = self._nextTime
       const hasTo = isDefined(opt.to)
       const hasFrom = isDefined(opt.from)
@@ -90,10 +90,13 @@ const timelineProto: ITimeline = {
     calculateTimes(self)
     return self
   },
+  animate(this: ITimeline, opts: AddAnimationOptions | AddAnimationOptions[]) {
+    return this.add(opts)
+  },
   fromTo(this: ITimeline, from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]) {
     const self = this
 
-    forEach(list(options), options2 => {
+    forEach(options, options2 => {
       insert(self, from, to, options2 as AnimationOptions)
     })
 
@@ -112,7 +115,7 @@ const timelineProto: ITimeline = {
     const { _listeners } = self
 
     const listeners = _listeners[eventName] || (_listeners[eventName] = [])
-    if (listeners.indexOf(listener) === -1) {
+    if (includes(listeners, listener)) {
       push(listeners, listener)
     }
 
@@ -122,7 +125,7 @@ const timelineProto: ITimeline = {
     const self = this
     const listeners = self._listeners[eventName]
     if (listeners) {
-      const indexOfListener = listeners.indexOf(listener)
+      const indexOfListener = getIndex(listeners, listener)
       if (indexOfListener !== -1) {
         listeners.splice(indexOfListener, 1)
       }
@@ -154,11 +157,16 @@ const timelineProto: ITimeline = {
     self.currentTime = time
     return self
   },
+  sequence(this: ITimeline, seqOptions: AddAnimationOptions[]) {
+    const self = this 
+    forEach(seqOptions, opt => self.add(opt))
+    return self
+  },
   set(this: ITimeline, options: BaseSetOptions | BaseSetOptions[]) {
     const self = this
     const pluginNames = Object.keys(getPlugins())
 
-    forEach(list(options), opts => {
+    forEach(options, opts => {
       const at = opts.at || self._nextTime
       const opts2 = {} as AnimationOptions
 
@@ -204,7 +212,7 @@ function insert(self: ITimeline, from: number, to: number, opts: AnimationOption
   opts.duration = opts.to - opts.from
 
   // add all targets as property keyframes
-  forEach(list(opts.targets), (target, i, ilen) => {
+  forEach(opts.targets, (target, i, ilen) => {
     const delay = resolveProperty(opts.delay, target, i, ilen) || 0
     const targetConfig =
       head(config, c => c.target === target) ||

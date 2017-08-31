@@ -1,6 +1,6 @@
 import { caf, now, raf } from './utils'
 import { _ } from './constants'
-import { push } from './lists'
+import { push, getIndex, includes } from './lists'
 
 type TimeKeeper = { __last?: number }
 const active: (TimeLoopCallback & TimeKeeper)[] = []
@@ -49,9 +49,8 @@ export function loopOn(fn: TimeLoopCallback) {
   if (!fn) {
     return
   }
-
-  const indexOfSub = active.indexOf(fn)
-  if (indexOfSub === -1) {
+ 
+  if (includes(active, fn)) {
     const tk = fn as TimeKeeper
     tk.__last = 0
     push(active, fn)
@@ -67,7 +66,7 @@ export function loopOff(fn: TimeLoopCallback) {
     return
   }
 
-  const indexOfSub = active.indexOf(fn)
+  const indexOfSub = getIndex(active, fn)
   if (indexOfSub !== -1) {
     const tk = fn as TimeKeeper
     tk.__last = 0
