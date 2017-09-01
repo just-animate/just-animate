@@ -1,5 +1,5 @@
 export function now() {
-  return (performance && performance.now()) || Date.now()
+  return performance.now()
 }
 
 /**
@@ -18,6 +18,10 @@ export function lazy<T>(initializer: () => T) {
   return () => value || (value = initializer())
 }
 
+export function owns(obj: any, name: string) {
+  return obj.hasOwnProperty(name)
+}
+
 export function assign<T1>(...objs: T1[]): T1
 export function assign() {
   var args = arguments
@@ -26,7 +30,7 @@ export function assign() {
     var obj = args[i]
     if (obj) {
       for (var name in obj) {
-        if (obj.hasOwnProperty(name)) {
+        if (owns(obj, name)) {
           result[name] = obj[name]
         }
       }

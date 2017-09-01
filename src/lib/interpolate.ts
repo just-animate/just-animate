@@ -32,13 +32,13 @@ export function interpolator(duration: number, keyframes: Keyframe[]) {
   const times = keyframes.map(k => k.offset * duration)
 
   forEach(keyframes, k => {
-    if (!isFunction(k.interpolate)) {
-      k.simpleFn = true
-      k.interpolate = isNumber(k.value) ? interpolate : fallbackInterpolator
-    } else {
-      k.simpleFn = false
-      k.interpolate = getInterpolator(k.interpolate as Interpolator)
-    }
+    const isSimple = !isFunction(k.interpolate)
+    k.simpleFn = isSimple
+    k.interpolate = !isSimple
+      ? getInterpolator(k.interpolate as Interpolator)
+      : isNumber(k.value)
+        ? interpolate
+        : fallbackInterpolator
   })
 
   return function(timelineOffset: number) {

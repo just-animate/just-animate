@@ -163,18 +163,18 @@ export interface ITimeline {
   currentTime?: number
   duration?: number
   playbackRate?: number
-  _nextTime?: number
-  _state?: number
-  _configs?: TargetConfiguration[]
-  _effects?: AnimationTimelineController[]
+  _ctrls?: AnimationTimelineController[]
+  _round?: number  
+  _model?: TargetConfiguration[]  
+  _pos?: number  
   _refs?: References
   _repeat?: number
-  _iteration?: number
+  _state?: number  
+  _subs?: { [key: string]: { (time: number): void }[] }  
+  _tick?: (delta: number) => void  
   _time?: number
   _rate?: number
-  _alternate?: boolean
-  _listeners?: { [key: string]: { (time: number): void }[] }
-  _tick?: (delta: number) => void
+  _yoyo?: boolean
   /**
    * Adds an animation at the end of the timeline, unless from/to are specified
    * @param opts the animation definition

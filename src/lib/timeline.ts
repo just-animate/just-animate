@@ -13,13 +13,14 @@ import {
   PLAY
 } from './constants'
 
-import { getPlugins } from './plugins'
+import { plugins } from './plugins'
 import { resolveProperty } from './resolve-property'
 import { loopOn, loopOff } from './timeloop'
 import { toEffects, addPropertyKeyframes } from './effects'
-import { sortBy, forEach, head, push, mapFlatten, includes, getIndex } from './lists'
+import { sortBy, forEach, head, push, mapFlatten, includes, getIndex, pushDistinct } from './lists'
 import { isDefined } from './inspect'
 import { max, inRange, minMax, flr } from './math'
+import { replaceWithRefs, resolveRefs } from './references'
 
 import {
   AddAnimationOptions,
@@ -32,9 +33,45 @@ import {
   BaseSetOptions,
   TimelineOptions
 } from './types'
-import { replaceWithRefs, resolveRefs } from './references'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
+
+function animate(this: ITimeline, opts: AddAnimationOptions | AddAnimationOptions[]) {
+  const self = this
+  const _nextTime = self._pos
+  
+  forEach(opts, opt => {
+    const { to, from, duration } = opt
+    const hasTo = isDefined(to)
+    const hasFrom = isDefined(from)
+    const hasDuration = isDefined(duration)
+
+    // pretty exaustive rules for importing times
+    const to2 = hasTo && (hasFrom || hasDuration)
+      ? to
+      : hasDuration && hasFrom
+        ? from + duration 
+          : hasTo && !hasDuration
+            ? _nextTime + to
+            : hasDuration
+              ? _nextTime + duration
+              : _ 
+    
+    const from2 = hasFrom && (hasTo || hasDuration)
+        ? from
+        : hasTo && hasDuration
+          ? to - duration
+          : hasTo || hasDuration
+            ? _nextTime
+            : _;
+
+    insert(self, from2, to2, opt as AnimationOptions)
+  })
+
+  // recalculate property keyframe times and total duration
+  calculateTimes(self)
+  return self
+}
 
 const timelineProto: ITimeline = {
   get currentTime() {
@@ -54,45 +91,8 @@ const timelineProto: ITimeline = {
     self._rate = +rate || 1
     updateTimeline(self, REVERSE)
   },
-  add(this: ITimeline, opts: AddAnimationOptions | AddAnimationOptions[]) {
-    const self = this
-
-    forEach(opts, opt => {
-      const _nextTime = self._nextTime
-      const hasTo = isDefined(opt.to)
-      const hasFrom = isDefined(opt.from)
-      const hasDuration = isDefined(opt.duration)
-
-      // pretty exaustive rules for importing times
-      let from: number, to: number
-      if (hasFrom && hasTo) {
-        from = opt.from
-        to = opt.to
-      } else if (hasFrom && hasDuration) {
-        from = opt.from
-        to = from + opt.duration
-      } else if (hasTo && hasDuration) {
-        to = opt.to
-        from = to - opt.duration
-      } else if (hasTo && !hasDuration) {
-        from = _nextTime
-        to = from + opt.to
-      } else if (hasDuration) {
-        from = _nextTime
-        to = from + opt.duration
-      } else {
-        throw new Error('Missing duration')
-      }
-      insert(self, from, to, opt as AnimationOptions)
-    })
-
-    // recalculate property keyframe times and total duration
-    calculateTimes(self)
-    return self
-  },
-  animate(this: ITimeline, opts: AddAnimationOptions | AddAnimationOptions[]) {
-    return this.add(opts)
-  },
+  add: animate,
+  animate: animate,
   fromTo(this: ITimeline, from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]) {
     const self = this
 
@@ -112,18 +112,16 @@ const timelineProto: ITimeline = {
   },
   on(this: ITimeline, eventName: string, listener: (time: number) => void) {
     const self = this
-    const { _listeners } = self
-
-    const listeners = _listeners[eventName] || (_listeners[eventName] = [])
-    if (includes(listeners, listener)) {
-      push(listeners, listener)
-    }
-
+    const { _subs } = self 
+    pushDistinct(
+      _subs[eventName] || (_subs[eventName] = []),
+      listener
+    ) 
     return self
   },
   off(this: ITimeline, eventName: string, listener: (time: number) => void) {
     const self = this
-    const listeners = self._listeners[eventName]
+    const listeners = self._subs[eventName]
     if (listeners) {
       const indexOfListener = getIndex(listeners, listener)
       if (indexOfListener !== -1) {
@@ -139,11 +137,11 @@ const timelineProto: ITimeline = {
     const self = this
     if (options) {
       self._repeat = options.repeat
-      self._alternate = options.alternate === true
+      self._yoyo = options.alternate === true
     }
 
     self._repeat = self._repeat || 1
-    self._alternate = self._alternate || false
+    self._yoyo = self._yoyo || false
     self._state = S_RUNNING
     return updateTimeline(self, PLAY)
   },
@@ -164,10 +162,10 @@ const timelineProto: ITimeline = {
   },
   set(this: ITimeline, options: BaseSetOptions | BaseSetOptions[]) {
     const self = this
-    const pluginNames = Object.keys(getPlugins())
+    const pluginNames = Object.keys(plugins)
 
     forEach(options, opts => {
-      const at = opts.at || self._nextTime
+      const at = opts.at || self._pos
       const opts2 = {} as AnimationOptions
 
       for (var name in opts) {
@@ -195,15 +193,20 @@ const timelineProto: ITimeline = {
   },
   getEffects(this: ITimeline): Effect[] {
     const self = this
-    return mapFlatten(self._configs, c => {
-      const c2 = resolveRefs(self._refs, c, true)
-      return toEffects(c2)
-    })
+    return mapFlatten(self._model, c => 
+      toEffects(
+        resolveRefs(self._refs, c, true)
+      )
+    )
   }
 }
 
 function insert(self: ITimeline, from: number, to: number, opts: AnimationOptions) {
-  const config = self._configs
+  if (to === _) {
+    throw new Error('missing duration')
+  }
+  
+  const config = self._model
   opts = replaceWithRefs(self._refs, opts, true) as AnimationOptions
 
   // ensure to/from are in milliseconds (as numbers)
@@ -240,7 +243,7 @@ function calculateTimes(self: ITimeline) {
   let timelineTo = 0
   let maxNextTime = 0
 
-  forEach(self._configs, config => {
+  forEach(self._model, config => {
     const { keyframes } = config
 
     var targetFrom: number
@@ -266,17 +269,15 @@ function calculateTimes(self: ITimeline) {
     maxNextTime = max(targetTo + config.endDelay, maxNextTime)
   })
 
-  self._nextTime = maxNextTime
+  self._pos = maxNextTime
   self.duration = timelineTo
 }
 function setupEffects(self: ITimeline) {
-  if (self._effects) {
+  if (self._ctrls) {
     return
   }
 
   const effects = self.getEffects()
-  const plugins = getPlugins()
-
   const animations: AnimationTimelineController[] = []
 
   forEach(effects, effect => {
@@ -289,17 +290,17 @@ function setupEffects(self: ITimeline) {
   })
 
   self._time = self._rate < 0 ? self.duration : 0
-  self._effects = animations
+  self._ctrls = animations
 }
 function updateTimeline(self: ITimeline, type: string) {
   // update state and loop
   if (type === CANCEL) {
-    self._iteration = 0
+    self._round = 0
     self._state = S_IDLE
   } else if (type === FINISH) {
-    self._iteration = 0
+    self._round = 0
     self._state = S_FINISHED
-    if (!self._alternate) {
+    if (!self._yoyo) {
       self._time = self._rate < 0 ? 0 : self.duration
     }
   } else if (type === PAUSE) {
@@ -321,14 +322,14 @@ function updateTimeline(self: ITimeline, type: string) {
   const rate = self._rate
 
   // setup effects if required
-  if (isTimelineInEffect && self._effects === _) {
+  if (isTimelineInEffect && self._ctrls === _) {
     setupEffects(self)
   }
 
   // update effect clocks
   if (isTimelineInEffect) {
     // update effects
-    forEach(self._effects, effect => {
+    forEach(self._ctrls, effect => {
       const { from, to } = effect
       const isAnimationActive = isTimelineActive && inRange(flr(time), from, to)
       const offset = minMax((time - from) / (to - from), 0, 1)
@@ -347,19 +348,19 @@ function updateTimeline(self: ITimeline, type: string) {
 
   // teardown/destroy
   if (!isTimelineInEffect) {
-    forEach(self._effects, effect => effect.cancel())
+    forEach(self._ctrls, effect => effect.cancel())
     self._time = 0
-    self._iteration = _
-    self._effects = _
+    self._round = _
+    self._ctrls = _
   }
 
   // call extra update event on finish
   if (type === FINISH) {
-    forEach(self._listeners[UPDATE], c => c(time))
+    forEach(self._subs[UPDATE], c => c(time))
   }
 
   // notify event listeners
-  forEach(self._listeners[type], c => c(time))
+  forEach(self._subs[type], c => c(time))
   return self
 }
 
@@ -391,7 +392,7 @@ function tick(self: ITimeline, delta: number) {
   // set time use existing
   let time = self._time === _ ? (rate < 0 ? duration : 0) : self._time
 
-  let iteration = self._iteration || 0
+  let iteration = self._round || 0
 
   if (self._state === S_PENDING) {
     self._state = S_RUNNING
@@ -412,12 +413,12 @@ function tick(self: ITimeline, delta: number) {
   // check if timeline has finished
   let iterationEnded = false
   if (!inRange(time, 0, duration)) {
-    self._iteration = ++iteration
+    self._round = ++iteration
     time = isReversed ? 0 : duration
     iterationEnded = true
 
     // reverse direction on alternate
-    if (self._alternate) {
+    if (self._yoyo) {
       self._rate = (self._rate || 0) * -1
     }
 
@@ -426,12 +427,12 @@ function tick(self: ITimeline, delta: number) {
   }
 
   // call update
-  self._iteration = iteration
+  self._round = iteration
   self._time = time
 
   if (!iterationEnded) {
     // if not ended, return early
-    forEach(self._listeners[UPDATE], c => c(time))
+    forEach(self._subs[UPDATE], c => c(time))
     updateTimeline(self, UPDATE)
     return
   }
@@ -443,7 +444,7 @@ function tick(self: ITimeline, delta: number) {
   }
 
   // if not the last iteration reprocess this tick from the new starting point/direction
-  forEach(self._listeners[UPDATE], c => c(time))
+  forEach(self._subs[UPDATE], c => c(time))
   updateTimeline(self, UPDATE)
 }
 
@@ -454,13 +455,13 @@ export function timeline(opts: TimelineOptions = {}): ITimeline {
   const self: ITimeline = Object.create(timelineProto)
   // initialize default values
   self.duration = 0
-  self._nextTime = 0
+  self._pos = 0
   self._rate = 1
   self._time = 0
-  self._alternate = false
+  self._yoyo = false
   self._state = S_IDLE
-  self._configs = []
-  self._listeners = {}
+  self._model = []
+  self._subs = {}
 
   const refs = {}
   if (opts.references) {

@@ -1,6 +1,7 @@
 import { isString, isArrayLike, isFunction, isNumber, isDOM, isDefined } from './inspect'
 import { mapFlatten, map } from './lists'
 import { References } from './types'
+import { owns } from './utils'
 
 let refId = 0
 const objNameExp = /\[object ([a-z]+)\]/i
@@ -41,7 +42,7 @@ export function replaceWithRefs<T>(refs: References, target: T, recurseObjects: 
   }
   if (recurseObjects) {
     for (var name in target as {}) {
-      if (target.hasOwnProperty(name)) {
+      if (owns(target, name)) {
         target[name] = replaceWithRefs(refs, target[name], recurseObjects && name !== 'targets')
       }
     }
@@ -57,7 +58,7 @@ export function resolveRefs(refs: References, value: any, recurseObjects: boolea
   }
   if (isString(value)) {
     const str = value as string
-    return refs.hasOwnProperty(str) && str.charAt(0) === '@' ? refs[str] : str
+    return owns(refs, str) && str.charAt(0) === '@' ? refs[str] : str
   }
   if (isArrayLike(value)) {
     return map(value as any[], v => resolveRefs(refs, v, recurseObjects))
@@ -68,7 +69,7 @@ export function resolveRefs(refs: References, value: any, recurseObjects: boolea
 
   var obj2 = {}
   for (var name in value) {
-    if (value.hasOwnProperty(name)) {
+    if (owns(value, name)) {
       const value2 = value[name]
       obj2[name] = recurseObjects ? resolveRefs(refs, value2, name !== 'targets') : value2
     }

@@ -17,9 +17,9 @@ import { forEach, indexOf, list, head, tail, push, sortBy, pushDistinct } from '
 import { isDefined, isObject, isNumber, isArrayLike } from './inspect'
 import { flr, max } from './math'
 import { _ } from './constants'
-import { getPlugins } from './plugins'
+import { plugins } from './plugins'
 import { getTargets } from './get-targets'
-import { assign } from './utils'
+import { assign, owns } from './utils'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 
@@ -29,8 +29,6 @@ export function toEffects(targetConfig: TargetConfiguration): Effect[] {
   const to = targetConfig.to
   const stagger = targetConfig.stagger || 0
   const duration = targetConfig.duration
-
-  const plugins = getPlugins()
   const result: Effect[] = []
 
   forEach(getTargets(targetConfig.target), (target, index, targetLength) => {
@@ -174,12 +172,11 @@ export function addPropertyKeyframes(target: TargetConfiguration, index: number,
   const easing = options.easing || 'ease'
 
   // iterate over each property split it into keyframes
-  const plugins = getPlugins()
   for (var pluginName in plugins) {
-    if (options.hasOwnProperty(pluginName)) {
+    if (owns(options, pluginName)) {
       const props = options[pluginName]
       for (var name in props) {
-        if (props.hasOwnProperty(name)) {
+        if (owns(props, name)) {
           pushDistinct(target.propNames, name)
           addProperty(target, pluginName, index, name, props[name], duration, from, easing)
         }
@@ -273,7 +270,7 @@ function addProperty(
   })
 
   // insert start frame if not present
-  if (!head(target.keyframes, k => k.prop === name && k.time === from)) {
+  head(target.keyframes, k => k.prop === name && k.time === from) ||
     push(target.keyframes, {
       plugin,
       easing: defaultEasing,
@@ -283,11 +280,10 @@ function addProperty(
       value: _,
       interpolate: defaultInterpolator
     })
-  }
 
   // insert end frame if not present
   var to = from + duration
-  if (!tail(target.keyframes, k => k.prop === name && k.time === to)) {
+  tail(target.keyframes, k => k.prop === name && k.time === to) ||
     push(target.keyframes, {
       plugin,
       easing: defaultEasing,
@@ -297,7 +293,6 @@ function addProperty(
       value: _,
       interpolate: defaultInterpolator
     })
-  }
 }
 
 function inferOffsets(keyframes: PropertyObject[]) {
@@ -322,33 +317,31 @@ function inferOffsets(keyframes: PropertyObject[]) {
   // fill in the rest of the offsets
   for (let i = 1, ilen = keyframes.length; i < ilen; i++) {
     const target = keyframes[i]
-    if (isDefined(target.offset)) {
-      // skip entries that have an offset
-      continue
-    }
 
-    // search for the next offset with a value
-    for (let j = i + 1; j < ilen; j++) {
-      // pass if offset is not set
-      const endTime = keyframes[j].offset
-      if (!isDefined(endTime)) {
-        continue
+    // skip entries that have an offset
+    if (!isDefined(target.offset)) {
+      // search for the next offset with a value
+      for (let j = i + 1; j < ilen; j++) {
+        // pass if offset is not set
+        const endTime = keyframes[j].offset
+        if (isDefined(endTime)) {
+
+          // calculate timing/position info
+          const startTime = keyframes[i - 1].offset
+          const timeDelta = endTime - startTime
+          const deltaLength = j - i + 1
+
+          // set the values of all keyframes between i and j (exclusive)
+          for (let k = 1; k < deltaLength; k++) {
+            // set to percentage of change over time delta + starting time
+            keyframes[k - 1 + i].offset = k / j * timeDelta + startTime
+          }
+
+          // move i past this keyframe since all frames between should be processed
+          i = j
+          break
+        }  
       }
-
-      // calculate timing/position info
-      const startTime = keyframes[i - 1].offset
-      const timeDelta = endTime - startTime
-      const deltaLength = j - i + 1
-
-      // set the values of all keyframes between i and j (exclusive)
-      for (let k = 1; k < deltaLength; k++) {
-        // set to percentage of change over time delta + starting time
-        keyframes[k - 1 + i].offset = k / j * timeDelta + startTime
-      }
-
-      // move i past this keyframe since all frames between should be processed
-      i = j
-      break
     }
   }
 }

@@ -18,13 +18,14 @@ export function getIndex<T>(items: T[], item: T) {
  * Returns the first object in the list or undefined
  */
 export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean }): T {
-  if (!indexed || indexed.length < 1) {
+  const ilen = indexed && indexed.length
+  if (!ilen) {
     return _
   }
   if (predicate === _) {
     return indexed[0]
   }
-  for (let i = 0, ilen = indexed.length; i < ilen; i++) {
+  for (let i = 0; i < ilen; i++) {
     if (predicate(indexed[i])) {
       return indexed[i]
     }
@@ -37,7 +38,7 @@ export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean }): T {
  */
 export function tail<T>(indexed: IList<T>, predicate?: { (t: T): boolean }): T {
   var ilen = indexed && indexed.length
-  if (!indexed || ilen < 1) {
+  if (!ilen) {
     return _
   }
   if (predicate === _) {
@@ -95,7 +96,7 @@ export function push<T>(indexed: T[], item: T): T {
   return item
 }
 
-export function pushDistinct<T extends string | number>(indexed: T[], item: T): T {
+export function pushDistinct<T>(indexed: T[], item: T): T {
   const index = indexed.indexOf(item)
   if (index !== -1) {
     return item
