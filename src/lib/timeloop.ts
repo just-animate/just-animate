@@ -50,7 +50,7 @@ export function loopOn(fn: TimeLoopCallback) {
     return
   }
  
-  if (includes(active, fn)) {
+  if (!includes(active, fn)) {
     const tk = fn as TimeKeeper
     tk.__last = 0
     push(active, fn)
