@@ -1,4 +1,8 @@
+import { addPlugin } from './lib/plugins'
+import { waapiPlugin } from './web'
+
 export * from './main'
 export * from './props'
 export * from './extras'
-export * from './web/_browser'
+
+addPlugin(waapiPlugin)
