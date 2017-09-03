@@ -405,4 +405,29 @@ describe('basic', () => {
     t1.currentTime = 1000
     assert.equal(target.transformOrigin, 'center center')
   })
+  
+  it('player actually plays', (done) => {
+    /* Test code */
+    const target = { x: 0 }
+
+    const t1 = animate({
+      targets: target,
+      duration: 1000,
+      easing: 'linear',
+      props: {
+        x: 1000
+      }
+    })
+    
+    t1.play()
+    
+    setTimeout(
+      () => {
+        assert.approximately(target.x, 500, 50);
+        t1.cancel()
+        done()
+      },
+      500
+    );
+  })
 })
