@@ -17,7 +17,7 @@ import { plugins } from './plugins'
 import { resolveProperty } from './resolve-property'
 import { loopOn, loopOff } from './timeloop'
 import { toEffects, addPropertyKeyframes } from './effects'
-import { sortBy, forEach, head, push, mapFlatten, includes, getIndex, pushDistinct } from './lists'
+import { sortBy, all, find, push, mapFlatten, includes, getIndex, pushDistinct } from './lists'
 import { isDefined } from './inspect'
 import { max, inRange, minMax, flr } from './math'
 import { replaceWithRefs, resolveRefs } from './references'
@@ -40,7 +40,7 @@ function animate(this: ITimeline, opts: AddAnimationOptions | AddAnimationOption
   const self = this
   const _nextTime = self._pos
   
-  forEach(opts, opt => {
+  all(opts, opt => {
     const { to, from, duration } = opt
     const hasTo = isDefined(to)
     const hasFrom = isDefined(from)
@@ -96,7 +96,7 @@ const timelineProto: ITimeline = {
   fromTo(this: ITimeline, from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]) {
     const self = this
 
-    forEach(options, options2 => {
+    all(options, options2 => {
       insert(self, from, to, options2 as AnimationOptions)
     })
 
@@ -157,14 +157,14 @@ const timelineProto: ITimeline = {
   },
   sequence(this: ITimeline, seqOptions: AddAnimationOptions[]) {
     const self = this 
-    forEach(seqOptions, opt => self.add(opt))
+    all(seqOptions, opt => self.add(opt))
     return self
   },
   set(this: ITimeline, options: BaseSetOptions | BaseSetOptions[]) {
     const self = this
     const pluginNames = Object.keys(plugins)
 
-    forEach(options, opts => {
+    all(options, opts => {
       const at = opts.at || self._pos
       const opts2 = {} as AnimationOptions
 
@@ -215,10 +215,10 @@ function insert(self: ITimeline, from: number, to: number, opts: AnimationOption
   opts.duration = opts.to - opts.from
 
   // add all targets as property keyframes
-  forEach(opts.targets, (target, i, ilen) => {
+  all(opts.targets, (target, i, ilen) => {
     const delay = resolveProperty(opts.delay, target, i, ilen) || 0
     const targetConfig =
-      head(config, c => c.target === target) ||
+      find(config, c => c.target === target) ||
       push(config, {
         from: max(opts.from + delay, 0),
         to: max(opts.to + delay, 0),
@@ -235,7 +235,7 @@ function insert(self: ITimeline, from: number, to: number, opts: AnimationOption
     addPropertyKeyframes(targetConfig, i, opts)
 
     // sort property keyframes
-    forEach(config, c => c.keyframes.sort(propKeyframeSort))
+    all(config, c => c.keyframes.sort(propKeyframeSort))
   })
 }
 
@@ -243,13 +243,13 @@ function calculateTimes(self: ITimeline) {
   let timelineTo = 0
   let maxNextTime = 0
 
-  forEach(self._model, config => {
+  all(self._model, config => {
     const { keyframes } = config
 
     var targetFrom: number
     var targetTo: number
 
-    forEach(keyframes, keyframe => {
+    all(keyframes, keyframe => {
       const time = keyframe.time
       if (time < targetFrom || targetFrom === _) {
         targetFrom = time
@@ -280,7 +280,7 @@ function setupEffects(self: ITimeline) {
   const effects = self.getEffects()
   const animations: AnimationTimelineController[] = []
 
-  forEach(effects, effect => {
+  all(effects, effect => {
     const controller = plugins[effect.plugin].animate(effect) as AnimationTimelineController
     if (controller) {
       controller.from = effect.from
@@ -329,7 +329,7 @@ function updateTimeline(self: ITimeline, type: string) {
   // update effect clocks
   if (isTimelineInEffect) {
     // update effects
-    forEach(self._ctrls, effect => {
+    all(self._ctrls, effect => {
       const { from, to } = effect
       const isAnimationActive = isTimelineActive && inRange(flr(time), from, to)
       const offset = minMax((time - from) / (to - from), 0, 1)
@@ -348,7 +348,7 @@ function updateTimeline(self: ITimeline, type: string) {
 
   // teardown/destroy
   if (!isTimelineInEffect) {
-    forEach(self._ctrls, effect => effect.cancel())
+    all(self._ctrls, effect => effect.cancel())
     self._time = 0
     self._round = _
     self._ctrls = _
@@ -356,11 +356,11 @@ function updateTimeline(self: ITimeline, type: string) {
 
   // call extra update event on finish
   if (type === FINISH) {
-    forEach(self._subs[UPDATE], c => c(time))
+    all(self._subs[UPDATE], c => c(time))
   }
 
   // notify event listeners
-  forEach(self._subs[type], c => c(time))
+  all(self._subs[type], c => c(time))
   return self
 }
 
@@ -432,7 +432,7 @@ function tick(self: ITimeline, delta: number) {
 
   if (!iterationEnded) {
     // if not ended, return early
-    forEach(self._subs[UPDATE], c => c(time))
+    all(self._subs[UPDATE], c => c(time))
     updateTimeline(self, UPDATE)
     return
   }
@@ -444,7 +444,7 @@ function tick(self: ITimeline, delta: number) {
   }
 
   // if not the last iteration reprocess this tick from the new starting point/direction
-  forEach(self._subs[UPDATE], c => c(time))
+  all(self._subs[UPDATE], c => c(time))
   updateTimeline(self, UPDATE)
 }
 

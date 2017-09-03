@@ -13,7 +13,7 @@ import {
   JustAnimatePlugin
 } from './types'
 import { resolveProperty } from './resolve-property'
-import { forEach, indexOf, list, head, tail, push, sortBy, pushDistinct } from './lists'
+import { all, indexOf, list, find, push, sortBy, pushDistinct } from './lists'
 import { isDefined, isObject, isNumber, isArrayLike } from './inspect'
 import { flr, max } from './math'
 import { _ } from './constants'
@@ -31,12 +31,12 @@ export function toEffects(targetConfig: TargetConfiguration): Effect[] {
   const duration = targetConfig.duration
   const result: Effect[] = []
 
-  forEach(getTargets(targetConfig.target), (target, index, targetLength) => {
+  all(getTargets(targetConfig.target), (target, index, targetLength) => {
     // construct property animation options
     var effects: PropertyEffects = {}
     var propToPlugin: Dictionary<string> = {}
 
-    forEach(keyframes, p => {
+    all(keyframes, p => {
       const effects3 = effects[p.prop] || (effects[p.prop] = [])
       const offset = (p.time - from) / (duration || 1)
       const easing = p.easing
@@ -45,7 +45,7 @@ export function toEffects(targetConfig: TargetConfiguration): Effect[] {
       propToPlugin[p.prop] = p.plugin
 
       const effect2 =
-        head(effects3, e => e.offset === offset) ||
+        find(effects3, e => e.offset === offset) ||
         push(effects3, {
           easing,
           offset,
@@ -93,17 +93,15 @@ export function toEffects(targetConfig: TargetConfiguration): Effect[] {
 
   return result
 }
-
 function fillValues(items: PropertyEffect[]) {
   var lastValue: any
-  for (var x = 0, xlen = items.length; x < xlen; x++) {
-    var item = items[x]
+  all(items, item => {
     if (item.value !== _) {
       lastValue = item.value
     } else {
       item.value = lastValue
     }
-  }
+  })
 }
 
 function fillInterpolators(items: PropertyEffect[]) {
@@ -125,7 +123,7 @@ function ensureFirstFrame(
   plugin: JustAnimatePlugin,
   prop: string
 ) {
-  var firstFrame = head(items, c => c.offset === 0)
+  var firstFrame = find(items, c => c.offset === 0)
   if (firstFrame === _ || firstFrame.value === _) {
     // add keyframe if offset 0 is missing
     var value2 = plugin.getValue(target, prop)
@@ -146,7 +144,7 @@ function ensureFirstFrame(
 
 function ensureLastFrame(config: TargetConfiguration, items: PropertyEffect[]) {
   // guarantee a frame at offset 1
-  var lastFrame = tail(items, c => c.offset === 1)
+  var lastFrame = find(items, c => c.offset === 1, true)
   if (lastFrame === _ || lastFrame.value === _) {
     // add keyframe if offset 1 is missing
     var value3 = items[items.length - 1].value
@@ -248,7 +246,7 @@ function addProperty(
   inferOffsets(keyframes)
 
   // add all unique frames
-  forEach(keyframes, keyframe => {
+  all(keyframes, keyframe => {
     const { offset, value, easing, interpolate } = keyframe
     const time = flr(duration * offset + from)
     const indexOfFrame = indexOf(target.keyframes, k => k.prop === name && k.time === time)
@@ -270,7 +268,7 @@ function addProperty(
   })
 
   // insert start frame if not present
-  head(target.keyframes, k => k.prop === name && k.time === from) ||
+  find(target.keyframes, k => k.prop === name && k.time === from) ||
     push(target.keyframes, {
       plugin,
       easing: defaultEasing,
@@ -283,7 +281,7 @@ function addProperty(
 
   // insert end frame if not present
   var to = from + duration
-  tail(target.keyframes, k => k.prop === name && k.time === to) ||
+  find(target.keyframes, k => k.prop === name && k.time === to, true) ||
     push(target.keyframes, {
       plugin,
       easing: defaultEasing,
@@ -301,14 +299,14 @@ function inferOffsets(keyframes: PropertyObject[]) {
   }
 
   // search for offset 0 or assume it is the first one in the list
-  const first = head(keyframes, k => k.offset === 0) || keyframes[0]
+  const first = find(keyframes, k => k.offset === 0) || keyframes[0]
   if (!isDefined(first.offset)) {
     // if no offset is set on first keyframe, it is assumed to be 0
     first.offset = 0
   }
 
   // search for offset 1 or assume it is the last one in the list
-  const last = tail(keyframes, k => k.offset === 1) || keyframes[keyframes.length - 1]
+  const last = find(keyframes, k => k.offset === 1, true) || keyframes[keyframes.length - 1]
   if (keyframes.length > 1 && !isDefined(last.offset)) {
     // if no offset is set on last keyframe, it is assumed to be 1
     last.offset = 1

@@ -1,5 +1,5 @@
 import { isString, isArrayLike, isFunction, isNumber, isDOM, isDefined } from './inspect'
-import { mapFlatten, map } from './lists'
+import { mapFlatten, all, push } from './lists'
 import { References } from './types'
 import { owns } from './utils'
 
@@ -61,7 +61,9 @@ export function resolveRefs(refs: References, value: any, recurseObjects: boolea
     return owns(refs, str) && str.charAt(0) === '@' ? refs[str] : str
   }
   if (isArrayLike(value)) {
-    return map(value as any[], v => resolveRefs(refs, v, recurseObjects))
+    const results: any[] = []
+    all(value as any[], item => push(results, resolveRefs(refs, item, recurseObjects)))
+    return results
   }
   if (!recurseObjects || isDOM(value)) {
     return value

@@ -3,7 +3,7 @@ import { Keyframe, Interpolator } from './types'
 import { isNumber, isFunction } from './inspect'
 // import { rnd } from './math';
 import { memoize } from './functional'
-import { forEach } from './lists'
+import { all } from './lists'
 
 function findEndIndex(ns: number[], n: number) {
   const ilen = ns.length
@@ -31,7 +31,7 @@ function fallbackInterpolator(l: any, r: any, o: number) {
 export function interpolator(duration: number, keyframes: Keyframe[]) {
   const times = keyframes.map(k => k.offset * duration)
 
-  forEach(keyframes, k => {
+  all(keyframes, k => {
     const isSimple = !isFunction(k.interpolate)
     k.simpleFn = isSimple
     k.interpolate = !isSimple

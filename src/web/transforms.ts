@@ -1,5 +1,5 @@
 import { PropertyEffects, TargetConfiguration, PropertyEffect, Dictionary } from '../lib/types'
-import { includes, pushDistinct, forEach, head } from '../lib/lists'
+import { includes, pushDistinct, all, find } from '../lib/lists'
 import { _ } from '../lib/constants'
 import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG, transformLengths } from './constants'
 import { isDefined } from '../lib/inspect'
@@ -25,10 +25,10 @@ export function combineTransforms(
   const offsets: number[] = []
   const easings: { [offset: string]: string } = {}
 
-  forEach(transformNames, name => {
+  all(transformNames, name => {
     const effects2 = effects[name]
     if (effects2) {
-      forEach(effects2, effect => {
+      all(effects2, effect => {
         easings[effect.offset] = effect.easing
         pushDistinct(offsets, effect.offset)
       })
@@ -44,8 +44,8 @@ export function combineTransforms(
   const transformEffects = offsets.map(offset => {
     // create effect
     const values = {} as { [name: number]: string | number }
-    forEach(transformNames, name => {
-      const effect = head(effects[name], e => e.offset === offset)
+    all(transformNames, name => {
+      const effect = find(effects[name], e => e.offset === offset)
       values[name] = effect ? effect.value : _
     })
 
@@ -118,12 +118,12 @@ export function combineTransforms(
 
   if (transformEffects.length) {
     // remove transform shorthands
-    forEach(transformNames, name => {
+    all(transformNames, name => {
       effects[name] = _
     })
 
     const transformEffects2: PropertyEffect[] = []
-    forEach(transformEffects, effect => {
+    all(transformEffects, effect => {
       let val: string = _
       for (var prop in effect.values) {
         const unit = parseUnit(effect.values[prop])

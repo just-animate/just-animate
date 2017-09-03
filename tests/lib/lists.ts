@@ -1,44 +1,30 @@
 import * as chai from 'chai'
-import { forEach, head, tail, list } from '../../src/lib/lists'
+import { all, find, list } from '../../src/lib/lists'
 const { assert, expect } = chai
 
 describe('forEach()', () => {
   it('calls the function for each item', () => {
     const results: number[] = []
-    forEach([1, 2, 3, 4], s => results.push(s))
+    all([1, 2, 3, 4], s => results.push(s))
     assert.deepEqual([1, 2, 3, 4], results)
-  })
-
-  it('stops execution when false is returned', () => {
-    const results: number[] = []
-    forEach([1, 2, 3, 4], s => {
-      if (s === 3) {
-        return false
-      }
-      results.push(s)
-      return undefined
-    })
-    assert.deepEqual([1, 2], results)
   })
 })
 
-describe('head()', () => {
+describe('find()', () => {
   it('should return undefined if array is empty', () => {
-    assert.equal(undefined, head([]))
+    assert.equal(undefined, find([]))
   })
 
   it('should return the first item if array is not empty', () => {
-    assert.equal('1', head(['1']))
-  })
-})
-
-describe('tail()', () => {
+    assert.equal('1', find(['1']))
+  }) 
+  
   it('should return undefined if array is empty', () => {
-    assert.equal(undefined, tail([]))
+    assert.equal(undefined, find([], undefined, true))
   })
 
   it('should return the last item if array is not empty', () => {
-    assert.equal('1', tail(['0', '1']))
+    assert.equal('1', find(['0', '1'], undefined, true))
   })
 })
 

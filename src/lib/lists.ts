@@ -17,39 +17,29 @@ export function getIndex<T>(items: T[], item: T) {
 /**
  * Returns the first object in the list or undefined
  */
-export function head<T>(indexed: IList<T>, predicate?: { (t: T): boolean }): T {
+export function find<T>(indexed: IList<T>, predicate?: { (t: T): boolean }, reverse?: boolean): T {
   const ilen = indexed && indexed.length
   if (!ilen) {
     return _
   }
   if (predicate === _) {
-    return indexed[0]
+    return indexed[reverse ? ilen - 1 : 0]
   }
-  for (let i = 0; i < ilen; i++) {
-    if (predicate(indexed[i])) {
-      return indexed[i]
+  
+  if (reverse) {
+    for (let i = ilen - 1; i > -1; i--) {
+      if (predicate(indexed[i])) {
+        return indexed[i]
+      }
+    }
+  } else {
+    for (let i = 0; i < ilen; i++) {
+      if (predicate(indexed[i])) {
+        return indexed[i]
+      }
     }
   }
-  return _
-}
-
-/**
- * Returns the last object in the list or undefined
- */
-export function tail<T>(indexed: IList<T>, predicate?: { (t: T): boolean }): T {
-  var ilen = indexed && indexed.length
-  if (!ilen) {
-    return _
-  }
-  if (predicate === _) {
-    return indexed[ilen - 1]
-  }
-  for (var i = 0; i < ilen; i++) {
-    var item = indexed[i]
-    if (predicate(item)) {
-      return item
-    }
-  }
+  
   return _
 }
 
@@ -83,7 +73,7 @@ export function sortBy<T>(fieldName: keyof T) {
  * @returns {T[]}
  */
 export function list<T>(indexed: IList<T> | T): T[] {
-  return !isDefined(indexed) ? _ : isArrayLike(indexed) ? indexed as T[] : [indexed as T]
+  return !isDefined(indexed) ? [] : isArrayLike(indexed) ? indexed as T[] : [indexed as T]
 }
 
 /**
@@ -92,75 +82,43 @@ export function list<T>(indexed: IList<T> | T): T[] {
  * @param item 
  */
 export function push<T>(indexed: T[], item: T): T {
-  Array.prototype.push.call(indexed, item)
+  if (item !== _) {
+    Array.prototype.push.call(indexed, item)  
+  }
   return item
 }
 
 export function pushDistinct<T>(indexed: T[], item: T): T {
-  const index = indexed.indexOf(item)
-  if (index !== -1) {
-    return item
+  if (!includes(indexed, item)) {
+    push(indexed, item)
   }
-  push(indexed, item)
   return item
 }
 
 export function mapFlatten<TInput, TOutput>(items: TInput[], mapper: (input: TInput) => TOutput | TOutput[]) {
   var results: TOutput[] = []
-  for (var i = 0, ilen = items.length; i < ilen; i++) {
-    var result = mapper(items[i])
-    if (isArrayLike(result)) {
-      pushAll(results, result as TOutput[])
+  all(items, item => {
+    var result = mapper(item)
+    if (isArrayLike(result)) { 
+      all(result as TOutput[], item2 => push(results, item2))
     } else {
       push(results, result as TOutput)
     }
-  }
+  })
   return results
-}
-
-/**
- * Pushes multiple items into the array
- * @param items 
- * @param newItems 
- */
-function pushAll<T>(items: T[], newItems: T[]) {
-  for (let i = 0, ilen = newItems.length; i < ilen; i++) {
-    if (isDefined(newItems[i])) {
-      push(items, newItems[i])
-    }
-  }
 }
 
 export type Action<T1> = (input: T1, index: number, len: number) => void
-export type ActionWithBreak<T1> = (input: T1, index: number, len: number) => void | false
-
-export function map<T1, T2>(items: IList<T1>, func: (t1: T1) => T2): T2[] {
-  var results: T2[] = []
-  if (items) {
-    for (var i = 0, ilen = items.length; i < ilen; i++) {
-      var result = func(items[i])
-      if (result !== _) {
-        results[results.length] = result
-      }
-    }
-  }
-  return results
-}
 
 /**
  * iterates over all items until [false] is returned or it runs out of items
- * @param items 
- * @param action 
+ * @param items array-like object to iterate
+ * @param action function to perform for each item
+ * @param reverse if true, items start from the end and go to the beginning
  */
-export function forEach<T1>(items: T1 | IList<T1>, action: Action<T1>): void
-export function forEach<T1>(items: T1 | IList<T1>, action: ActionWithBreak<T1>): void
-export function forEach<T1>(items: T1 | IList<T1>, action: Action<T1> | ActionWithBreak<T1>): void {
-  if (items) {
-    const items2 = list(items)
-    for (let i = 0, ilen = items2.length; i < ilen; i++) {
-      if (action(items2[i], i, ilen) === false) {
-        break
-      }
-    }
+export function all<T1>(items: T1 | IList<T1>, action: Action<T1>): void {
+  const items2 = list(items) 
+  for (let i = 0, ilen = items2.length; i < ilen; i++) { 
+    action(items2[i], i, ilen)
   }
 }

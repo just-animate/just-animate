@@ -16,9 +16,6 @@ export function isString(a: any) {
 export function isArrayLike(a: any) {
   return a && isFinite(a.length) && !isString(a) && !isFunction(a)
 }
-export function isSVG(target: SVGElement | any) {
-  return target instanceof SVGElement
-}
 export function isDOM(target: Node | any) {
-  return target.nodeType || isSVG(target)
+  return target.nodeType || target instanceof SVGElement
 }
