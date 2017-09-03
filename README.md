@@ -17,17 +17,15 @@ _Making Animation Simple_
 
 > This project is powered by your stars [so ^ star it please](https://github.com/just-animate/just-animate/stargazers).
 
-## Quick Start Templates
+## Getting Started
 
-- [Rubber band ball demo](https://codepen.io/notoriousb1t/pen/vJJEdo/?editors=0110)
+- Read the documentation on [just-animate.com](https://just-animate.github.io/basic-usage/)
+- Try a live demo of it on CodePen: [Rubber band ball demo](https://codepen.io/notoriousb1t/pen/vJJEdo/?editors=0110)
+- See what other people have build  here: [Just Animate 2 Demos](https://codepen.io/collection/XdNGNb/)
 
-## Documentation
+## Need help or have ideas?
 
-Read the [Full Documentation](https://just-animate.gitbooks.io/just-animate-2) on Gitbooks
-
-## Need Help?
-
-Join the #just-animate channel on the [Animation at Work](https://damp-lake-50659.herokuapp.com/) slack, tweet [@notoriousb1t](https://twitter.com/notoriousb1t) on Twitter, or create an issue.
+Join the #just-animate channel on the [Animation at Work](https://damp-lake-50659.herokuapp.com/) slack, tweet [@notoriousb1t](https://twitter.com/notoriousb1t) on Twitter, or [create an issue on GitHub](https://github.com/just-animate/just-animate/issues).
 
 ## License
 
