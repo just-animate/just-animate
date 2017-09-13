@@ -1,6 +1,6 @@
 import { PropertyEffects } from '../lib/types'
-import { includes } from '../lib/lists'
-import { isNumber, isDefined } from '../lib/inspect'
+import { includes } from '../lib/utils/lists'
+import { isNumber, isDefined } from '../lib/utils/inspect'
 import { cssLengths, PX } from './constants'
 
 export function appendUnits(effects: PropertyEffects) {

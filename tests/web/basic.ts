@@ -4,6 +4,7 @@ const assert = chai.assert
 import { animate, timeline } from '../../src/main'
 import { addPlugin, removePlugin } from '../../src/lib/plugins'
 import { waapiPlugin } from '../../src/web/index'
+import { getEffects, fromModel } from '../../src/lib/effects'
 
 describe('basic', () => {
   before(() => addPlugin(waapiPlugin))
@@ -32,7 +33,7 @@ describe('basic', () => {
         }
       })
 
-    const actual = t1.getEffects()
+    const actual = getEffects(fromModel(t1))
 
     assert.deepEqual(actual, [
       {
@@ -88,7 +89,7 @@ describe('basic', () => {
       }
     })
 
-    const actual = t1.getEffects()
+    const actual = getEffects(fromModel(t1))
 
     document.body.removeChild(el1)
     document.body.removeChild(el2)
@@ -258,7 +259,7 @@ describe('basic', () => {
       }
     })
 
-    const actual = t1.getEffects()
+    const actual = getEffects(fromModel(t1))
     assert.deepEqual(actual, [
       {
         plugin: 'web',

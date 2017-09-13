@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import { isArrayLike, isDefined, isFunction, isNumber, isString } from '../../src/lib/inspect'
+import { isArrayLike, isDefined, isFunction, isNumber, isString } from '../../../src/lib/utils/inspect'
 const { assert } = chai
 
 describe('type', () => {

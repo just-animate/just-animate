@@ -1,8 +1,8 @@
 import { PropertyEffects, TargetConfiguration, PropertyEffect, Dictionary } from '../lib/types'
-import { includes, pushDistinct, all, find } from '../lib/lists'
-import { _ } from '../lib/constants'
+import { includes, pushDistinct, all, find } from '../lib/utils/lists'
+import { _ } from '../lib/utils/constants'
 import { TRANSFORM, transforms, aliases, PX, transformAngles, DEG, transformLengths } from './constants'
-import { isDefined } from '../lib/inspect'
+import { isDefined } from '../lib/utils/inspect'
 import { parseUnit } from './parse-unit'
 
 export function combineTransforms(

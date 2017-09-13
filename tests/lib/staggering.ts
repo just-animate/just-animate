@@ -1,12 +1,13 @@
 import { animate } from '../../src/main'
 import * as chai from 'chai'
+import { getEffects, fromModel } from '../../src/lib/effects'
 const { assert } = chai
 
 describe('staggering', () => {
   it('staggers targets', () => {
     const targets = [{}, {}, {}, {}]
 
-    const timeline = animate({
+    const t1 = animate({
       targets: targets,
       duration: 1000,
       easing: 'linear',
@@ -16,7 +17,7 @@ describe('staggering', () => {
       }
     })
 
-    const actual = timeline.getEffects()
+    const actual = getEffects(fromModel(t1))
 
     assert.deepEqual(actual, [
       {

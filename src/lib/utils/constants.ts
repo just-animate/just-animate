@@ -10,6 +10,7 @@ export const measureExpression = /^([+|-]*[0-9]*[.]*?[0-9]+)([a-z%]+)*$/i
 
 export const ALTERNATE = 'alternate'
 export const CANCEL = 'cancel'
+export const CONFIG = 'config'
 export const FATAL = 'fatal'
 export const FINISH = 'finish'
 export const FINISHED = 'finished'

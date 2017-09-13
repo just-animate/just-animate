@@ -1,8 +1,8 @@
 import { AnimationController, Effect } from '../lib/types'
-import { lazy } from '../lib/utils'
-import { abs } from '../lib/math'
+import { lazy } from '../lib/utils/utils'
+import { abs } from '../lib/utils/math'
 import { RUNNING } from './constants'
-import { PENDING, FINISH } from '../lib/constants'
+import { PENDING, FINISH } from '../lib/utils/constants'
 
 // minimum amount of time left on an animation required to call .play()
 const frameSize = 17

@@ -101,7 +101,7 @@ describe('interpolators', () => {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('viewBox', '0 0 200 200')
     document.body.appendChild(svg)
-
+ 
     const t1 = animate({
       targets: svg,
       duration: 1000,

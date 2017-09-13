@@ -1,9 +1,9 @@
 import { cssFunction } from 'just-curves'
 import { Keyframe, Interpolator } from './types'
-import { isNumber, isFunction } from './inspect'
+import { isNumber, isFunction } from './utils/inspect'
 // import { rnd } from './math';
-import { memoize } from './functional'
-import { all } from './lists'
+import { memoize } from './utils/functional'
+import { all } from './utils/lists'
 
 function findEndIndex(ns: number[], n: number) {
   const ilen = ns.length

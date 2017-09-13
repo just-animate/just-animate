@@ -1,9 +1,9 @@
 import { JustAnimatePlugin, Effect, AnimationController } from '../lib/types'
-import { _ } from '../lib/constants'
+import { _ } from '../lib/utils/constants'
 import { interpolator } from '../lib/interpolate'
-import { isDOM } from '../lib/inspect'
-import { hyphenate } from '../lib/strings'
-import { includes } from '../lib/lists'
+import { isDOM } from '../lib/utils/inspect'
+import { hyphenate } from '../lib/utils/strings'
+import { includes } from '../lib/utils/lists'
 
 const PROPERTY = 0
 const ATTRIBUTE = 1

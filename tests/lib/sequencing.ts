@@ -1,5 +1,6 @@
 import { sequence } from '../../src/main'
 import * as chai from 'chai'
+import { fromModel, getEffects } from '../../src/lib/effects'
 const { assert } = chai
 
 describe('sequencing', () => {
@@ -7,7 +8,7 @@ describe('sequencing', () => {
     /* Test code */
     const target1 = {}
     const target2 = {}
-    const timeline = sequence([
+    const t1 = sequence([
       {
         easing: 'linear',
         duration: 1000,
@@ -26,7 +27,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = timeline.getEffects()
+    const actual = getEffects(fromModel(t1))
     assert.deepEqual(actual, [
       {
         target: target1,
@@ -57,7 +58,7 @@ describe('sequencing', () => {
     /* Test code */
     const target1 = [{ id: 'target1' }, { id: 'target2' }, { id: 'target3' }]
     const target2 = { id: 'target4' }
-    const timeline = sequence([
+    const t1 = sequence([
       {
         duration: 1000,
         easing: 'linear',
@@ -77,7 +78,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = timeline.getEffects()
+    const actual = getEffects(fromModel(t1))
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
@@ -130,7 +131,7 @@ describe('sequencing', () => {
     /* Test code */
     const target1 = [{ id: 'target1' }]
     const target2 = { id: 'target2' }
-    const timeline = sequence([
+    const t1 = sequence([
       {
         duration: 1000,
         easing: 'linear',
@@ -150,7 +151,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = timeline.getEffects() 
+    const actual = getEffects(fromModel(t1))
 
     assert.deepEqual<{}>(actual, [
       {
@@ -182,7 +183,7 @@ describe('sequencing', () => {
     /* Test code */
     const target1 = [{ id: 'target1' }]
     const target2 = { id: 'target2' }
-    const timeline = sequence([
+    const t1 = sequence([
       {
         duration: 1000,
         easing: 'linear',
@@ -202,7 +203,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = timeline.getEffects()
+    const actual = getEffects(fromModel(t1))
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
@@ -233,7 +234,7 @@ describe('sequencing', () => {
     /* Test code */
     const target1 = [{ id: 'target1' }]
     const target2 = { id: 'target2' }
-    const timeline = sequence([
+    const t1 = sequence([
       {
         duration: 1000,
         endDelay: -500,
@@ -253,7 +254,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = timeline.getEffects()
+    const actual = getEffects(fromModel(t1))
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },

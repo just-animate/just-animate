@@ -1,5 +1,5 @@
 import { JustAnimatePlugin } from '../lib/types'
-import { isDOM } from '../lib/inspect'
+import { isDOM } from '../lib/utils/inspect'
 import { animate } from './animate'
 import { appendUnits } from './append-units'
 import { combineTransforms } from './transforms'

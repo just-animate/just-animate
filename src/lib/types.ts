@@ -56,6 +56,7 @@ export interface AnimationController {
 }
 
 export interface AnimationTimelineController extends AnimationController {
+  config: TargetConfiguration
   from: number
   to: number
 }
@@ -139,6 +140,7 @@ export interface AnimationOptions {
 }
 
 export interface Effect {
+  // config: TargetConfiguration
   target: AnimationTarget
   plugin: string
   prop: string
@@ -152,7 +154,32 @@ export interface References {
 }
 
 export interface TimelineOptions {
+  name?: string
   references?: References
+}
+
+export type TimelineEvent = 'cancel' | 'config' | 'finish' | 'pause' | 'reverse' | 'update' | 'play'
+
+export interface ITimelineModel {
+  _ctrls: AnimationTimelineController[]
+  _duration: number  
+  _round: number  
+  _configs: TargetConfiguration[]  
+  _pos: number  
+  _refs: References
+  _repeat: number
+  _state: number  
+  _subs: { [eventName: string]: { (time: number): void }[] }
+  _time: number
+  _rate: number
+  _yoyo: boolean
+  
+  _tick?: (delta: number) => void  
+}
+
+export interface PlayOptions {
+  repeat?: number;
+  alternate?: boolean
 }
 
 /**
@@ -160,21 +187,11 @@ export interface TimelineOptions {
  * @param opts the animation definition
  */
 export interface ITimeline {
-  currentTime?: number
-  duration?: number
-  playbackRate?: number
-  _ctrls?: AnimationTimelineController[]
-  _round?: number  
-  _model?: TargetConfiguration[]  
-  _pos?: number  
-  _refs?: References
-  _repeat?: number
-  _state?: number  
-  _subs?: { [key: string]: { (time: number): void }[] }  
-  _tick?: (delta: number) => void  
-  _time?: number
-  _rate?: number
-  _yoyo?: boolean
+  currentTime: number
+  duration: number
+  playbackRate: number
+  _model?: ITimelineModel   
+  
   /**
    * Adds an animation at the end of the timeline, unless from/to are specified
    * @param opts the animation definition
@@ -223,14 +240,14 @@ export interface ITimeline {
    * @param eventName timeline event name
    * @param listener callback for when the event occurs
    */
-  on(eventName: string, listener: (time: number) => void): this
+  on(eventName: TimelineEvent, listener: (time: number) => void): this
 
   /**
    * Unregister for timeline events
    * @param eventName timeline event name
    * @param listener callback to unregister
    */
-  off(eventName: string, listener: (time: number) => void): this
+  off(eventName: TimelineEvent, listener: (time: number) => void): this
 
   /**
    * Pauses execution of the animation. If the animation has never been active, this will
@@ -254,9 +271,4 @@ export interface ITimeline {
    * @param time the time in milliseconds to seek to.
    */
   seek(time: number): this
-
-  /**
-   * Gets the pre-processed effects of the current configuration.  This is mostly used for testing purposes.
-   */
-  getEffects(): Effect[]
 }

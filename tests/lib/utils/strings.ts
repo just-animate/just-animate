@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import { toCamelCase } from '../../src/lib/strings'
+import { toCamelCase } from '../../../src/lib/utils/strings'
 const { assert } = chai
 
 describe('strings', () => {

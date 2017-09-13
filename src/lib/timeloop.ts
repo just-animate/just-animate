@@ -1,6 +1,6 @@
-import { caf, now, raf } from './utils'
-import { _ } from './constants'
-import { push, getIndex, includes } from './lists'
+import { caf, now, raf } from './utils/utils'
+import { _ } from './utils/constants'
+import { push, getIndex, includes } from './utils/lists'
 
 type TimeKeeper = { __last?: number }
 const active: (TimeLoopCallback & TimeKeeper)[] = []

@@ -1,12 +1,12 @@
 import { AnimationTarget } from './types'
-import { mapFlatten } from './lists'
+import { mapFlatten } from './utils/lists'
 import {
   isArrayLike,
   // isDOM,
   isFunction,
   isObject,
   isString
-} from './inspect'
+} from './utils/inspect'
 /**
  * Recursively resolves the element source from dom, selector, jquery, array, and function sources
  * 

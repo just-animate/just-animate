@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import { all, find, list } from '../../src/lib/lists'
+import { all, find, list } from '../../../src/lib/utils/lists'
 const { assert, expect } = chai
 
 describe('forEach()', () => {

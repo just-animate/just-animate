@@ -1,5 +1,5 @@
-import { isDefined } from '../lib/inspect'
-import { _, measureExpression } from '../lib/constants'
+import { isDefined } from '../lib/utils/inspect'
+import { _, measureExpression } from '../lib/utils/constants'
 
 export interface Unit {
   value: number | undefined

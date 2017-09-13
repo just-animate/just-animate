@@ -1,4 +1,4 @@
-import { csvToList } from '../lib/strings'
+import { csvToList } from '../lib/utils/strings'
 
 export const RUNNING = 'running'
 
