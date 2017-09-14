@@ -1,6 +1,7 @@
 import { animate } from '../../src/main'
 import * as chai from 'chai'
-import { getEffects, fromModel } from '../../src/lib/effects'
+import { getEffects } from '../../src/lib/model/effects'
+import { getModel } from '../../src/lib/model/store'
 const { assert } = chai
 
 describe('staggering', () => {
@@ -17,7 +18,7 @@ describe('staggering', () => {
       }
     })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual(actual, [
       {

@@ -246,7 +246,7 @@ function init() {
 
   on(scrubberControl, 'mousedown', () => {
     if (timeline) {
-      if (timeline._model._state === 3 /* running */) {
+      if (timeline.state === 3 /* running */) {
         pausedForScrubbing = true
       }
       timeline.pause()

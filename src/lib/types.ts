@@ -55,7 +55,7 @@ export interface AnimationController {
   update(time: number, playbackRate: number, isActive: boolean): void
 }
 
-export interface AnimationTimelineController extends AnimationController {
+export interface AnimationPlayer extends AnimationController {
   config: TargetConfiguration
   from: number
   to: number
@@ -161,20 +161,18 @@ export interface TimelineOptions {
 export type TimelineEvent = 'cancel' | 'config' | 'finish' | 'pause' | 'reverse' | 'update' | 'play'
 
 export interface ITimelineModel {
-  _ctrls: AnimationTimelineController[]
-  _duration: number  
-  _round: number  
-  _configs: TargetConfiguration[]  
-  _pos: number  
-  _refs: References
-  _repeat: number
-  _state: number  
-  _subs: { [eventName: string]: { (time: number): void }[] }
-  _time: number
-  _rate: number
-  _yoyo: boolean
-  
-  _tick?: (delta: number) => void  
+  id: string
+  configs: TargetConfiguration[]  
+  duration: number  
+  pos: number  
+  rate: number  
+  refs: References
+  repeat: number
+  round: number  
+  state: number
+  time: number
+  yoyo: boolean  
+  players: AnimationPlayer[]   
 }
 
 export interface PlayOptions {
@@ -189,8 +187,9 @@ export interface PlayOptions {
 export interface ITimeline {
   currentTime: number
   duration: number
-  playbackRate: number
-  _model?: ITimelineModel   
+  playbackRate: number 
+  state: number
+  id?: string
   
   /**
    * Adds an animation at the end of the timeline, unless from/to are specified

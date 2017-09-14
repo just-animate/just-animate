@@ -2,7 +2,8 @@ import * as assert from 'assert'
 import { animate } from '../../src/main'
 import { addPlugin, removePlugin } from '../../src/lib/plugins'
 import { waapiPlugin } from '../../src/web/index'
-import { fromModel, getEffects } from '../../src/lib/effects'
+import { getEffects } from '../../src/lib/model/effects'
+import { getModel } from '../../src/lib/model/store'
 
 describe('transforms', () => {
   before(() => addPlugin(waapiPlugin))
@@ -13,7 +14,7 @@ describe('transforms', () => {
     document.body.appendChild(target)
 
     function throwsError() {
-      const timeline = animate({
+      const t1 = animate({
         targets: target,
         easing: 'linear',
         duration: 1000,
@@ -24,7 +25,7 @@ describe('transforms', () => {
         }
       })
 
-      getEffects(fromModel(timeline))
+      getEffects(getModel(t1.id))
     }
 
     assert.throws(throwsError, 'mixing transform and shorthand properties is not allowed')
@@ -45,7 +46,7 @@ describe('transforms', () => {
       }
     })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual(actual, [
       {
@@ -78,7 +79,7 @@ describe('transforms', () => {
       }
     })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual(actual, [
       {
@@ -189,7 +190,7 @@ describe('transforms', () => {
       }
     })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual(actual, [
       {

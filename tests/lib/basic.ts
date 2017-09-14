@@ -1,6 +1,7 @@
 import { animate, timeline } from '../../src/main'
 import * as chai from 'chai'
-import { fromModel, getEffects } from '../../src/lib/effects'
+import { getEffects } from '../../src/lib/model/effects'
+import { getModel } from '../../src/lib/model/store'
 const { assert } = chai
 
 describe('basic', () => {
@@ -17,7 +18,7 @@ describe('basic', () => {
       }
     }) 
     
-    const actual = getEffects(fromModel(t1))[0] 
+    const actual = getEffects(getModel(t1.id))[0] 
     
     assert.deepEqual(actual, {
       target: target1,
@@ -45,7 +46,7 @@ describe('basic', () => {
       }
     })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual<{}>(actual, [
       {
@@ -85,7 +86,7 @@ describe('basic', () => {
         }
       })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual<{}>(actual, [
       {
@@ -131,7 +132,7 @@ describe('basic', () => {
       }
     })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual<{}>(actual, [
       {
@@ -177,7 +178,7 @@ describe('basic', () => {
       }
     })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual<{}>(actual, [
       {
@@ -217,7 +218,7 @@ describe('basic', () => {
       }
     })
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual<{}>(actual, [
       {
@@ -259,7 +260,7 @@ describe('basic', () => {
       }
     ])
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual<{}>(actual, [
       {
@@ -310,7 +311,7 @@ describe('basic', () => {
       }
     ])
 
-    const actual = getEffects(fromModel(t1))
+    const actual = getEffects(getModel(t1.id))
 
     assert.deepEqual<{}>(actual, [
       {

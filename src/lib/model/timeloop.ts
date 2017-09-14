@@ -1,14 +1,13 @@
-import { caf, now, raf } from './utils/utils'
-import { _ } from './utils/constants'
-import { push, getIndex, includes } from './utils/lists'
-
-type TimeKeeper = { __last?: number }
-const active: (TimeLoopCallback & TimeKeeper)[] = []
+import { caf, now, raf } from '../utils/utils'
+import { _ } from '../utils/constants'
+import { push, getIndex, includes } from '../utils/lists'
+import { tick } from '../model/update'
+ 
+const active: string[] = []
+const deltas: Record<string, number> = {}
 
 let lastHandle: number = _
 let lastTime: number = _
-
-export type TimeLoopCallback = (delta: number, elapsed: number) => any
 
 function cancel() {
   caf(lastHandle)
@@ -35,25 +34,20 @@ function update() {
 
   for (let i = len - 1; i > -1; i--) {
     // update delta and save result
-    const activeFn = active[i]
-    const existingElapsed = activeFn.__last
+    const activeId = active[i]
+    const existingElapsed = deltas[activeId]
     const updatedElapsed = existingElapsed + delta
-    activeFn.__last = updatedElapsed
+    deltas[activeId] = updatedElapsed
 
     // call sub with updated delta
-    activeFn(delta, updatedElapsed)
+    tick(activeId, updatedElapsed)
   }
 }
 
-export function loopOn(fn: TimeLoopCallback) {
-  if (!fn) {
-    return
-  }
- 
-  if (!includes(active, fn)) {
-    const tk = fn as TimeKeeper
-    tk.__last = 0
-    push(active, fn)
+export function loopOn(id: string) { 
+  if (!includes(active, id)) {
+    deltas[id] = 0 
+    push(active, id)
   }
 
   if (!lastHandle) {
@@ -61,15 +55,10 @@ export function loopOn(fn: TimeLoopCallback) {
   }
 }
 
-export function loopOff(fn: TimeLoopCallback) {
-  if (!fn) {
-    return
-  }
-
-  const indexOfSub = getIndex(active, fn)
+export function loopOff(id: string) { 
+  const indexOfSub = getIndex(active, id)
   if (indexOfSub !== -1) {
-    const tk = fn as TimeKeeper
-    tk.__last = 0
+    delete deltas[id]
     active.splice(indexOfSub, 1)
   }
   if (!active.length) {
