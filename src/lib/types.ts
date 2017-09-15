@@ -176,8 +176,9 @@ export interface ITimelineModel {
 }
 
 export interface PlayOptions {
-  repeat?: number;
+  repeat?: number
   alternate?: boolean
+  destroy?: boolean
 }
 
 /**
@@ -201,6 +202,11 @@ export interface ITimeline {
    * @param opts the animation definition
    */
   animate(opts: AddAnimationOptions | AddAnimationOptions[]): this
+  
+  /**
+   * Destroys the internal model of the timeline
+   */
+  destroy(): void;
   /**
    * Defines an animation that occurs starting at "from" and ending at "to".
    *
@@ -242,6 +248,13 @@ export interface ITimeline {
   on(eventName: TimelineEvent, listener: (time: number) => void): this
 
   /**
+   * Register for timeline event only one time
+   * @param eventName timeline event name
+   * @param listener callback for when the event occurs
+   */
+  once(eventName: TimelineEvent, listener: (time: number) => void): this
+  
+  /**
    * Unregister for timeline events
    * @param eventName timeline event name
    * @param listener callback to unregister
@@ -258,7 +271,7 @@ export interface ITimeline {
    * @param iterations number of iterations to play the animation.  Use Infinity to loop forever
    * @param dir the direction the animation should play.  "normal" (default) or "alternate" (yoyo)
    */
-  play(options?: { repeat?: number; alternate?: boolean }): this
+  play(options?: PlayOptions): this
 
   /**
    * Reverses the animation playbackRate.  If the animation is currently playing, it will reverse the animation

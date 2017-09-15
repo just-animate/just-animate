@@ -16,6 +16,10 @@ export function subscribe(id: string, eventName: string, listener: (data: any) =
   pushDistinct(subscribers[eventName] || (subscribers[eventName] = []), listener)
 }
 
+export function unsubscribeAll(id: string) {
+  delete handlers[id]
+}
+
 export function unsubscribe(id: string, eventName: string, listener: (data: any) => void) {
   const subscribers = handlers[id]
   if (subscribers) {

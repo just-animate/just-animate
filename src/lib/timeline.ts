@@ -11,8 +11,8 @@ import {
   PlayOptions
 } from './types'
  
-import { createModel, getModel } from './model/store'
-import { unsubscribe, subscribe } from './dispatcher'
+import { createModel, getModel, destroyModel } from './model/store'
+import { unsubscribe, subscribe, unsubscribeAll } from './dispatcher'
 import { updateTime, updateRate, updateTimeline, playTimeline, reverseTimeline } from './model/update'
 import { appendConfig, insertConfigs, insertSetConfigs } from './model/config'
 
@@ -51,12 +51,25 @@ const timelineProto: ITimeline = {
     updateTimeline(this.id, CANCEL)
     return this
   },
+  destroy() {
+    updateTimeline(this.id, CANCEL)
+    unsubscribeAll(this.id)
+    destroyModel(this.id) 
+  },
   finish() {
     updateTimeline(this.id, FINISH)
     return this
   },
   on(eventName: TimelineEvent, listener: (time: number) => void) { 
     subscribe(this.id, eventName, listener)
+    return this
+  },
+  once(eventName: TimelineEvent, listener: (time: number) => void) {
+    const id = this.id
+    subscribe(id, eventName, function s(time) {
+      unsubscribe(id, eventName, s)
+      listener(time)
+    })
     return this
   },
   off(eventName: TimelineEvent, listener: (time: number) => void) { 
@@ -67,9 +80,14 @@ const timelineProto: ITimeline = {
     updateTimeline(this.id, PAUSE)
     return this
   },
-  play(options?: PlayOptions) {
-    playTimeline(this.id, options)
-    return this
+  play(options?: PlayOptions) { 
+    const self = this
+    if (options && options.destroy) {
+      self.on('finish', () => self.destroy())
+    }
+    
+    playTimeline(self.id, options)
+    return self
   },
   reverse() {
     reverseTimeline(this.id)

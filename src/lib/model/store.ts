@@ -39,3 +39,7 @@ export function getModel(id: string) {
   }
   return model;
 }
+
+export function destroyModel(id: string) {
+  delete stores[id]
+}

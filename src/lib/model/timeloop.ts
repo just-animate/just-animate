@@ -40,7 +40,7 @@ function update() {
     deltas[activeId] = updatedElapsed
 
     // call sub with updated delta
-    tick(activeId, updatedElapsed)
+    tick(activeId, delta)
   }
 }
 

@@ -421,7 +421,7 @@ describe('basic', () => {
       }
     })
     
-    t1.play()
+    t1.play({ destroy: true })
     
     setTimeout(
       () => {
@@ -431,5 +431,82 @@ describe('basic', () => {
       },
       500
     );
+  })
+  
+  it('accessing a destroyed animation throws an error', () => {
+    const t1 = animate({
+      targets: { x: 200 },
+      duration: 1000,
+      props: { x: 0 }
+    })
+    
+    t1.play().destroy();
+    
+    assert.throws(function () {
+      t1.duration
+    });
+    
+    assert.throws(function () {
+      t1.currentTime
+    });
+    
+    assert.throws(function () {
+       t1.playbackRate
+    });
+    
+    assert.throws(function () {
+      t1.play();
+    });
+  })
+  
+  it('auto-destroy removes an animation after it finished playing', (done) => {
+    const t1 = animate({
+      targets: { x: 200 },
+      duration: 200,
+      props: { x: 0 }
+    })
+    
+    t1.play({ destroy: true }) 
+    
+    // destroy uses an event handler internally, so this event needs to be hooked up afterward
+    t1.on('finish', function () {
+      assert.throws(function () {
+        t1.duration
+      });
+      
+      assert.throws(function () {
+        t1.currentTime
+      });
+      
+      assert.throws(function () {
+         t1.playbackRate
+      });
+      
+      assert.throws(function () {
+        t1.play();
+      });
+      
+      done();
+    })
+  })
+  
+  it('once() only handles the event one time', (done) => {
+    const t1 = animate({
+      targets: { x: 200 },
+      duration: 200,
+      props: { x: 0 }
+    })
+    
+    var iterations = 0
+    t1.once('update', () => { 
+      iterations++
+    })
+    
+    t1.on('finish', () => { 
+      assert.equal(iterations, 1);
+      done();
+    })
+    
+    t1.play({ destroy: true }) 
   })
 })
