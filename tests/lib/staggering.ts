@@ -67,4 +67,21 @@ describe('staggering', () => {
       }
     ])
   })
+  
+  it('increases the duration to fit staggered targets when active', () => {
+    const targets = [{}, {}, {}, {}]
+
+    const t1 = animate({
+      targets: targets,
+      duration: 1000,
+      easing: 'linear',
+      stagger: 100,
+      props: {
+        opacity: [0, 1]
+      }
+    })
+    
+    t1.pause()
+    assert.deepEqual(t1.duration, 1400)
+  })
 })

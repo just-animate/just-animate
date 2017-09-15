@@ -91,8 +91,8 @@ function toEffects(config: TargetConfiguration): Effect[] {
           plugin: propToPlugin[prop],
           target,
           prop,
-          from: from + (stagger ? (stagger + 1) * index : 0),
-          to: to + (stagger ? (stagger + 1) * index : 0),
+          from: from + (stagger ? stagger * index : 0),
+          to: to + (stagger ? stagger * index : 0),
           keyframes: effects2
         })
       }

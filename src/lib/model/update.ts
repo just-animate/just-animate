@@ -13,7 +13,7 @@ import {
   RATE,
   PLAY
 } from '../utils/constants'
-import { inRange, minMax, flr } from '../utils/math'
+import { inRange, minMax, flr, max } from '../utils/math'
 import { publish } from '../dispatcher'
 import { PlayOptions, ITimelineModel, AnimationPlayer } from '../types'
 import { all, push } from '../utils/lists'
@@ -224,7 +224,12 @@ function setupEffects(model: ITimelineModel) {
       controller.to = effect.to
       push(animations, controller)
     }
-  }) 
+  })
+  
+  // change duration to max to
+  model.duration = max.apply(_, animations
+    .filter(a => isFinite(a.to))
+    .map(a => a.to))
   
   model.players = animations
   updateTime(model.id, _) 
