@@ -1,4 +1,3 @@
-import { CANCEL, FINISH, PAUSE } from './utils/constants'
 import { all } from './utils/lists'
 
 import {
@@ -11,9 +10,18 @@ import {
   PlayOptions
 } from './types'
  
-import { createModel, getModel, destroyModel } from './model/store'
-import { unsubscribe, subscribe, unsubscribeAll } from './dispatcher'
-import { updateTime, updateRate, updateTimeline, playTimeline, reverseTimeline } from './model/update'
+import { createModel, getModel } from './model/store'
+import { unsubscribe, subscribe } from './dispatcher'
+import {
+  updateTime,
+  updateRate,
+  playTimeline,
+  reverseTimeline,
+  cancelModel,
+  pauseModel,
+  finishModel,
+  onDestroy
+} from './model/update'
 import { appendConfig, insertConfigs, insertSetConfigs } from './model/config'
 
 const timelineProto: ITimeline = {
@@ -48,16 +56,14 @@ const timelineProto: ITimeline = {
     return this
   },
   cancel() {
-    updateTimeline(this.id, CANCEL)
+    cancelModel(this.id) 
     return this
   },
   destroy() {
-    updateTimeline(this.id, CANCEL)
-    unsubscribeAll(this.id)
-    destroyModel(this.id) 
+    onDestroy(this.id)
   },
   finish() {
-    updateTimeline(this.id, FINISH)
+    finishModel(this.id)
     return this
   },
   on(eventName: TimelineEvent, listener: (time: number) => void) { 
@@ -77,15 +83,11 @@ const timelineProto: ITimeline = {
     return this
   },
   pause() {
-    updateTimeline(this.id, PAUSE)
+    pauseModel(this.id)
     return this
   },
   play(options?: PlayOptions) { 
     const self = this
-    if (options && options.destroy) {
-      self.on('finish', () => self.destroy())
-    }
-    
     playTimeline(self.id, options)
     return self
   },

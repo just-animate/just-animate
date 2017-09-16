@@ -172,7 +172,8 @@ export interface ITimelineModel {
   state: number
   time: number
   yoyo: boolean  
-  players: AnimationPlayer[]   
+  players: AnimationPlayer[]
+  destroy?: boolean
 }
 
 export interface PlayOptions {

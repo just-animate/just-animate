@@ -1,6 +1,6 @@
-export const S_IDLE = 1
-export const S_PENDING = 2
-export const S_RUNNING = 3
+export const S_INACTIVE = 1
+export const S_STARTING = 2
+export const S_PLAYING = 3
 export const S_PAUSED = 4
 export const S_FINISHED = 5
 

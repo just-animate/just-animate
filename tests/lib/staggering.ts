@@ -66,6 +66,8 @@ describe('staggering', () => {
         ]
       }
     ])
+    
+    t1.destroy()
   })
   
   it('increases the duration to fit staggered targets when active', () => {
@@ -83,5 +85,7 @@ describe('staggering', () => {
     
     t1.pause()
     assert.deepEqual(t1.duration, 1400)
+    
+    t1.destroy()
   })
 })

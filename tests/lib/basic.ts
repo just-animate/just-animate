@@ -16,10 +16,10 @@ describe('basic', () => {
       props: {
         opacity: [0, 1]
       }
-    }) 
-    
-    const actual = getEffects(getModel(t1.id))[0] 
-    
+    })
+
+    const actual = getEffects(getModel(t1.id))[0]
+
     assert.deepEqual(actual, {
       target: target1,
       from: 0,
@@ -31,6 +31,8 @@ describe('basic', () => {
         { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
       ]
     })
+
+    t1.destroy()
   })
 
   it('decomposes and then re-composes a single set of keyframes', () => {
@@ -61,6 +63,8 @@ describe('basic', () => {
         ]
       }
     ])
+
+    t1.destroy()
   })
 
   it('decomposes and then re-composes a single set of keyframes for multiple targets', () => {
@@ -112,6 +116,8 @@ describe('basic', () => {
         ]
       }
     ])
+
+    t1.destroy()
   })
 
   it('functions on properties resolve target', () => {
@@ -158,6 +164,8 @@ describe('basic', () => {
         ]
       }
     ])
+
+    t1.destroy()
   })
 
   it('functions on properties resolve index', () => {
@@ -204,6 +212,8 @@ describe('basic', () => {
         ]
       }
     ])
+
+    t1.destroy()
   })
 
   it('only last value for opacity at an offset is kept, others are ignored', () => {
@@ -233,6 +243,8 @@ describe('basic', () => {
         ]
       }
     ])
+
+    t1.destroy()
   })
 
   it('add() accepts an array', () => {
@@ -286,6 +298,8 @@ describe('basic', () => {
         ]
       }
     ])
+
+    t1.destroy()
   })
 
   it('fromTo() accepts an array', () => {
@@ -337,6 +351,8 @@ describe('basic', () => {
         ]
       }
     ])
+
+    t1.destroy()
   })
 
   it('sets props at specific times', () => {
@@ -361,10 +377,10 @@ describe('basic', () => {
       props: {
         opacity: 1
       }
-    }) 
+    })
 
     t1.pause()
-  
+
     t1.currentTime = 0
     assert.equal(target.opacity, 0)
 
@@ -373,6 +389,8 @@ describe('basic', () => {
 
     t1.currentTime = 1000
     assert.equal(target.opacity, 1)
+
+    t1.destroy()
   })
 
   it('sets props dynamically at the current time', () => {
@@ -406,9 +424,11 @@ describe('basic', () => {
 
     t1.currentTime = 1000
     assert.equal(target.transformOrigin, 'center center')
+
+    t1.destroy()
   })
-  
-  xit('player actually plays', (done) => {
+
+  xit('player actually plays', done => {
     /* Test code */
     const target = { x: 0 }
 
@@ -420,93 +440,92 @@ describe('basic', () => {
         x: 1000
       }
     })
-    
+
     t1.play({ destroy: true })
-    
-    setTimeout(
-      () => {
-        assert.approximately(target.x, 500, 50);
-        t1.cancel()
-        done()
-      },
-      500
-    );
+
+    setTimeout(() => {
+      assert.approximately(target.x, 500, 50)
+      t1.destroy()
+      done()
+    },         500)
   })
-  
+
   it('accessing a destroyed animation throws an error', () => {
     const t1 = animate({
       targets: { x: 200 },
       duration: 1000,
       props: { x: 0 }
     })
-    
-    t1.play().destroy();
-    
-    assert.throws(function () {
+
+    t1.play().destroy()
+
+    assert.throws(function() {
       t1.duration
-    });
-    
-    assert.throws(function () {
+    })
+
+    assert.throws(function() {
       t1.currentTime
-    });
-    
-    assert.throws(function () {
-       t1.playbackRate
-    });
-    
-    assert.throws(function () {
-      t1.play();
-    });
+    })
+
+    assert.throws(function() {
+      t1.playbackRate
+    })
+
+    assert.throws(function() {
+      t1.play()
+    })
   })
-  
-  it('auto-destroy removes an animation after it finished playing', (done) => {
+
+  it('auto-destroy removes an animation after it finished playing', done => {
     const t1 = animate({
       targets: { x: 200 },
       duration: 200,
       props: { x: 0 }
     })
-    
-    t1.play({ destroy: true }) 
-    
-    // destroy uses an event handler internally, so this event needs to be hooked up afterward
-    t1.on('finish', function () {
-      assert.throws(function () {
-        t1.duration
-      });
-      
-      assert.throws(function () {
-        t1.currentTime
-      });
-      
-      assert.throws(function () {
-         t1.playbackRate
-      });
-      
-      assert.throws(function () {
-        t1.play();
-      });
-      
-      done();
-    })
-  })
+ 
+    t1.on('finish', function() {
+      setTimeout(() => {
+        assert.throws(function() {
+          t1.duration
+        })
   
-  it('once() only handles the event one time', (done) => {
-    const t1 = animate({
-      targets: { x: 200 },
-      duration: 200,
-      props: { x: 0 }
+        assert.throws(function() {
+          t1.currentTime
+        })
+  
+        assert.throws(function() {
+          t1.playbackRate
+        })
+  
+        assert.throws(function() {
+          t1.play()
+        })
+  
+        done()
+      })
     })
     
+    t1.play({ destroy: true })
+  })
+
+  it('once() only handles the event one time', done => {
     var iterations = 0
-    t1.once('update', () => { 
-      iterations++
-    })
-    
-    t1.on('finish', () => { 
-      assert.equal(iterations, 1);
-      done();
-    })
-    
-    t1.play({ destroy: true }) 
+
+    const t1 = timeline()
+      .animate({
+        targets: { x: 200 },
+        duration: 200,
+        props: { x: 0 }
+      })
+      .once('update', () => {
+        iterations++
+      })
+      .on('finish', () => {
+        assert.equal(iterations, 1)
+        t1.destroy()
+        done()
+      })
+
+    t1.play()
   })
 })

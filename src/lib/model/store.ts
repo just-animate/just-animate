@@ -1,8 +1,8 @@
 import { ITimelineModel, TimelineOptions } from '../types'
 import { uuid } from '../utils/uuid'
-import { S_IDLE, _ } from '../utils/constants'
+import { S_INACTIVE, _ } from '../utils/constants'
 
-const stores: Record<string, ITimelineModel> = {}
+const stores: Record<string, ITimelineModel> = {} 
 
 export function createModel(opts: TimelineOptions): string {
     const refs = {}
@@ -11,6 +11,7 @@ export function createModel(opts: TimelineOptions): string {
         refs['@' + name] = opts.references[name]
       }
     }
+  
     const id = uuid()
     
     // initialize store with default values + references
@@ -20,7 +21,7 @@ export function createModel(opts: TimelineOptions): string {
       pos: 0,
       rate: 1,
       yoyo: false,
-      state: S_IDLE,
+      state: S_INACTIVE,
       configs: [],
       players: _,
       repeat: _,
@@ -34,12 +35,12 @@ export function createModel(opts: TimelineOptions): string {
 
 export function getModel(id: string) {
   const model = stores[id]
-  if (!model) {
+  if (!model) { 
     throw new Error('Could not find timeline')
   }
   return model;
 }
 
 export function destroyModel(id: string) {
-  delete stores[id]
+  delete stores[id] 
 }
