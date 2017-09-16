@@ -113,7 +113,7 @@ describe('interpolators', () => {
         }
       }
     }) 
- 
+    
     t1.pause()
     assert.equal(svg.getAttribute('viewBox'), '0 0 200 200')
 

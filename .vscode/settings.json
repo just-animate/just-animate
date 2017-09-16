@@ -3,5 +3,6 @@
   "prettier.tabWidth": 2,
   "prettier.singleQuote": true,
   "prettier.printWidth": 120,
-  "tslint.autoFixOnSave": true
+  "tslint.autoFixOnSave": true,
+  "mocha.enabled": true
 }

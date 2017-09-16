@@ -7,18 +7,15 @@ import {
   PropertyEffect,
   JustAnimatePlugin,
   ITimelineModel
-} from '../types'
+} from '../core/types'
 
-import { resolveProperty } from '../resolve-property'
+import { _ } from '../utils/constants'
 import { all, find, push, sortBy, mapFlatten } from '../utils/lists' 
-import {
-  _ 
-} from '../utils/constants'
-
-import { plugins } from '../plugins'
-import { getTargets } from '../get-targets'
+import { resolveProperty } from '../utils/resolve-property'
 import { assign } from '../utils/utils'
-import { resolveRefs } from '../references'
+import { plugins } from '../core/plugins'
+import { resolveRefs } from '../core/references'
+import { getTargets } from '../utils/get-targets'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 

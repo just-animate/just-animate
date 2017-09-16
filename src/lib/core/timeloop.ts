@@ -1,7 +1,7 @@
 import { caf, now, raf } from '../utils/utils'
-import { _ } from '../utils/constants'
-import { push, getIndex, includes } from '../utils/lists'
-import { tick } from '../model/update'
+import { _, TICK } from '../utils/constants'
+import { push, getIndex, includes } from '../utils/lists' 
+import { dispatch } from './broker'
  
 const active: string[] = []
 const deltas: Record<string, number> = {}
@@ -40,7 +40,7 @@ function update() {
     deltas[activeId] = updatedElapsed
 
     // call sub with updated delta
-    tick(activeId, delta)
+    dispatch(TICK, activeId, delta)
   }
 }
 

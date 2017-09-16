@@ -1,4 +1,4 @@
-import { ITimelineModel, TimelineOptions } from '../types'
+import { ITimelineModel, TimelineOptions } from '../core/types'
 import { uuid } from '../utils/uuid'
 import { S_INACTIVE, _ } from '../utils/constants'
 

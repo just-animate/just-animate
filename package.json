@@ -37,7 +37,6 @@
   "homepage": "http://just-animate.com",
   "license": "MIT",
   "main": "./lib/main.js",
-  "jsnext:main": "./lib.es2015/main.js",
   "module": "./lib.es2015/main.js",
   "name": "just-animate",
   "repository": {

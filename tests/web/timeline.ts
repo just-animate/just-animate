@@ -1,6 +1,6 @@
 import { animate } from '../../src/main'
 import { waapiPlugin } from '../../src/web'
-import { addPlugin, removePlugin } from '../../src/lib/plugins'
+import { addPlugin, removePlugin } from '../../src/lib/core/plugins'
 import * as chai from 'chai'
 const { assert } = chai
 

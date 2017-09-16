@@ -1,6 +1,6 @@
 import * as assert from 'assert'
 import { animate } from '../../src/main'
-import { addPlugin, removePlugin } from '../../src/lib/plugins'
+import { addPlugin, removePlugin } from '../../src/lib/core/plugins'
 import { waapiPlugin } from '../../src/web/index'
 import { getEffects } from '../../src/lib/model/effects'
 import { getModel } from '../../src/lib/model/store'

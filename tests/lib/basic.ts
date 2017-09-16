@@ -503,7 +503,7 @@ describe('basic', () => {
   
         done()
       })
-    })
+    })  
     
     t1.play({ destroy: true })
   })

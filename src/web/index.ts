@@ -1,4 +1,4 @@
-import { JustAnimatePlugin } from '../lib/types'
+import { JustAnimatePlugin } from '../lib/core/types'
 import { isDOM } from '../lib/utils/inspect'
 import { animate } from './animate'
 import { appendUnits } from './append-units'

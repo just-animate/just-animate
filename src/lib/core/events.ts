@@ -1,4 +1,4 @@
-import { pushDistinct, getIndex, all } from './utils/lists'
+import { pushDistinct, getIndex, all } from '../utils/lists'
 
 const handlers = {}
 

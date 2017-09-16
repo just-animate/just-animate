@@ -1,6 +1,6 @@
-import { JustAnimatePlugin, Effect, AnimationController } from '../lib/types'
+import { JustAnimatePlugin, Effect, AnimationController } from '../lib/core/types'
+import { interpolator } from '../lib/core/interpolate'
 import { _ } from '../lib/utils/constants'
-import { interpolator } from '../lib/interpolate'
 import { isDOM } from '../lib/utils/inspect'
 import { hyphenate } from '../lib/utils/strings'
 import { includes } from '../lib/utils/lists'

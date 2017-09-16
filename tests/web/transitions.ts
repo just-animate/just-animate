@@ -1,6 +1,6 @@
 import * as assert from 'assert'
 import { animate } from '../../src/main'
-import { addPlugin, removePlugin } from '../../src/lib/plugins'
+import { addPlugin, removePlugin } from '../../src/lib/core/plugins'
 import { waapiPlugin } from '../../src/web/index'
 
 describe('transitions', () => {

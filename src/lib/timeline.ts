@@ -1,4 +1,3 @@
-import { all } from './utils/lists'
 
 import {
   AddAnimationOptions,
@@ -8,21 +7,14 @@ import {
   TimelineEvent, 
   ITimeline,
   PlayOptions
-} from './types'
+} from './core/types'
  
-import { createModel, getModel } from './model/store'
-import { unsubscribe, subscribe } from './dispatcher'
-import {
-  updateTime,
-  updateRate,
-  playTimeline,
-  reverseTimeline,
-  cancelModel,
-  pauseModel,
-  finishModel,
-  onDestroy
-} from './model/update'
+import { unsubscribe, subscribe } from './core/events'
+import { dispatch } from './core/broker'
 import { appendConfig, insertConfigs, insertSetConfigs } from './model/config'
+import { createModel, getModel } from './model/store'
+import { all } from './utils/lists'
+import { CANCEL, DESTROY, FINISH, PAUSE, UPDATE_RATE, UPDATE_TIME, REVERSE, PLAY } from './utils/constants'
 
 const timelineProto: ITimeline = {
   get state(): number {
@@ -35,13 +27,13 @@ const timelineProto: ITimeline = {
     return getModel(this.id).time
   },
   set currentTime(time: number) {
-    updateTime(this.id, time)
+    dispatch(UPDATE_TIME, this.id, time)
   },
   get playbackRate() {
     return getModel(this.id).rate
   },
   set playbackRate(rate: number) {
-    updateRate(this.id, rate)
+    dispatch(UPDATE_RATE, this.id, rate)
   },
   add(opts: AddAnimationOptions | AddAnimationOptions[]) {
     appendConfig(this.id, opts)
@@ -56,14 +48,14 @@ const timelineProto: ITimeline = {
     return this
   },
   cancel() {
-    cancelModel(this.id) 
+    dispatch(CANCEL, this.id)
     return this
   },
   destroy() {
-    onDestroy(this.id)
+    dispatch(DESTROY, this.id)
   },
   finish() {
-    finishModel(this.id)
+    dispatch(FINISH, this.id)
     return this
   },
   on(eventName: TimelineEvent, listener: (time: number) => void) { 
@@ -83,20 +75,19 @@ const timelineProto: ITimeline = {
     return this
   },
   pause() {
-    pauseModel(this.id)
+    dispatch(PAUSE, this.id) 
     return this
   },
   play(options?: PlayOptions) { 
-    const self = this
-    playTimeline(self.id, options)
-    return self
+    dispatch(PLAY, this.id, options)
+    return this
   },
   reverse() {
-    reverseTimeline(this.id)
+    dispatch(REVERSE, this.id)
     return this
   },
   seek(time: number) {
-    updateTime(this.id, time)
+    dispatch(UPDATE_TIME, this.id, time)
     return this
   },
   sequence(seqOptions: AddAnimationOptions[]) {

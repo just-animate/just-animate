@@ -1,7 +1,7 @@
-import { isString, isArrayLike, isFunction, isNumber, isDOM, isDefined } from './utils/inspect'
-import { mapFlatten, all, push } from './utils/lists'
 import { References } from './types'
-import { owns } from './utils/utils'
+import { isString, isArrayLike, isFunction, isNumber, isDOM, isDefined } from '../utils/inspect'
+import { mapFlatten, all, push } from '../utils/lists'
+import { owns } from '../utils/utils'
 
 let refId = 0
 const objNameExp = /\[object ([a-z]+)\]/i

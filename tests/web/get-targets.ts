@@ -1,6 +1,6 @@
 import * as assert from 'assert'
-import { getTargets } from '../../src/lib/get-targets'
-import { addPlugin, removePlugin } from '../../src/lib/plugins'
+import { getTargets } from '../../src/lib/utils/get-targets'
+import { addPlugin, removePlugin } from '../../src/lib/core/plugins'
 import { waapiPlugin } from '../../src/web/index'
 
 describe('getTargets()', () => {

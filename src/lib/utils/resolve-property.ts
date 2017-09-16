@@ -1,5 +1,5 @@
-import { AnimationTarget, PropertyResolver, PropertyFunction } from './types'
-import { isFunction } from './utils/inspect'
+import { AnimationTarget, PropertyResolver, PropertyFunction } from '../core/types'
+import { isFunction } from './inspect'
 
 /**
  *  Resolves the property/value of an animation

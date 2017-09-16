@@ -1,4 +1,3 @@
-import { sortBy, all, includes, find, push, pushDistinct, indexOf, list } from '../utils/lists'
 import {
   PropertyKeyframe,
   AddAnimationOptions,
@@ -12,16 +11,18 @@ import {
   Interpolator,
   PropertyValueOptions,
   PropertyObject
-} from '../types'
-import { getModel } from './store'
-import { isDefined, isObject, isArrayLike, isNumber } from '../utils/inspect'
+} from '../core/types'
+
+import { publish } from '../core/events'
+import { plugins } from '../core/plugins'
+import { replaceWithRefs } from '../core/references'
 import { CONFIG, _ } from '../utils/constants'
-import { publish } from '../dispatcher'
-import { plugins } from '../plugins'
-import { replaceWithRefs } from '../references'
-import { resolveProperty } from '../resolve-property'
+import { isDefined, isObject, isArrayLike, isNumber } from '../utils/inspect'
+import { sortBy, all, includes, find, push, pushDistinct, indexOf, list } from '../utils/lists'
+import { resolveProperty } from '../utils/resolve-property'
 import { max, flr } from '../utils/math'
 import { owns } from '../utils/utils'
+import { getModel } from './store'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time') 
 

@@ -1,7 +1,7 @@
 import * as chai from 'chai'
 const { assert } = chai
 
-import { resolveProperty } from '../../src/lib/resolve-property'
+import { resolveProperty } from '../../src/lib/utils/resolve-property'
 
 describe('resolve', () => {
   it('leaves primitive values pristine', () => {

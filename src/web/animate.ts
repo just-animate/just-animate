@@ -1,4 +1,4 @@
-import { AnimationController, Effect } from '../lib/types'
+import { AnimationController, Effect } from '../lib/core/types'
 import { lazy } from '../lib/utils/utils'
 import { abs } from '../lib/utils/math'
 import { RUNNING } from './constants'

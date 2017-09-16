@@ -1,4 +1,4 @@
-import { ITimeline } from '../lib/types'
+import { ITimeline } from '../lib/core/types'
 
 var isInitialized: boolean
 var scrubberControl: HTMLInputElement
