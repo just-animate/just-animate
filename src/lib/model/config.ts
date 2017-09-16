@@ -18,9 +18,9 @@ import { plugins } from '../core/plugins'
 import { replaceWithRefs } from '../core/references'
 import { CONFIG, _ } from '../utils/constants'
 import { isDefined, isObject, isArrayLike, isNumber } from '../utils/inspect'
-import { sortBy, all, includes, find, push, pushDistinct, indexOf, list } from '../utils/lists'
+import { sortBy, all, includes, find, push, pushDistinct, list } from '../utils/lists'
 import { resolveProperty } from '../utils/resolve-property'
-import { max, flr } from '../utils/math'
+import { max, flr, min } from '../utils/math'
 import { owns } from '../utils/utils'
 import { getModel } from './store'
 
@@ -28,7 +28,7 @@ const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
 export function appendConfig(id: string, opts: AddAnimationOptions | AddAnimationOptions[]) { 
     const model = getModel(id)
-    const _nextTime = model.pos
+    const _nextTime = model.cursor
     
     all(opts, opt => {
       const { to, from, duration } = opt
@@ -59,7 +59,7 @@ export function appendConfig(id: string, opts: AddAnimationOptions | AddAnimatio
     })
   
     // recalculate property keyframe times and total duration
-    calculateTimes(model)
+    recalculateTimes(model)
     publish(model.id, CONFIG, model.time)
   }
   
@@ -69,7 +69,7 @@ export function insertConfigs(id: string, from: number, to: number, options: Bas
       insert(model, from, to, options2 as AnimationOptions)
     }) 
     // recalculate property keyframe times and total duration
-    calculateTimes(model)
+    recalculateTimes(model)
     publish(model.id, CONFIG, model.time)
   }
   
@@ -78,7 +78,7 @@ export function insertSetConfigs(id: string, options: BaseSetOptions | BaseSetOp
     const pluginNames = Object.keys(plugins)
   
     all(options, opts => {
-      const at = opts.at || model.pos
+      const at = opts.at || model.cursor
       const opts2 = {} as AnimationOptions
   
       for (var name in opts) {
@@ -101,7 +101,7 @@ export function insertSetConfigs(id: string, options: BaseSetOptions | BaseSetOp
       insert(model, at - 0.000000001, at, opts2)
     })
   
-    calculateTimes(model)
+    recalculateTimes(model)
     publish(model.id, CONFIG, model.time)
   }
 
@@ -156,9 +156,9 @@ function addPropertyKeyframes(config: TargetConfiguration, index: number, option
     if (owns(options, pluginName)) {
       const props = options[pluginName]
       for (var name in props) {
-        if (owns(props, name)) {
-          pushDistinct(config.propNames, name)
-          addProperty(config, pluginName, index, name, props[name], duration, from, easing)
+        var propVal = props[name]
+        if (owns(props, name) && isDefined(propVal)) { 
+          addProperty(config, pluginName, index, name, propVal, duration, from, easing)
         }
       }
     }
@@ -166,7 +166,7 @@ function addPropertyKeyframes(config: TargetConfiguration, index: number, option
 }
 
 function addProperty(
-  target: TargetConfiguration,
+  config: TargetConfiguration,
   plugin: string,
   index: number,
   name: string,
@@ -175,17 +175,11 @@ function addProperty(
   from: number,
   defaultEasing: string
 ) {
-  // skip undefined options
-  if (!isDefined(val)) {
-    return
-  }
-
-  let defaultInterpolator: Interpolator | string = _
-
+  let defaultInterpolator: Interpolator | string
   let values: PropertyResolver<PropertyValue>[]
-  if (isArrayLike(val) || !isObject(val)) {
-    values = list(val)
-  } else {
+  
+  const isValueObject = !isArrayLike(val) && isObject(val)
+  if (isValueObject) {
     const objVal = val as PropertyValueOptions
     if (objVal.easing) {
       defaultEasing = objVal.easing
@@ -194,11 +188,13 @@ function addProperty(
       defaultInterpolator = objVal.interpolate
     }
     values = list(objVal.value)
+  } else {
+    values = list(val) 
   }
 
   // resolve options to keyframes
   const keyframes = values.map((v, i, vals) => {
-    const valOrObj = resolveProperty(v, target.target, index, target.targetLength)
+    const valOrObj = resolveProperty(v, config.target, index, config.targetLength)
     const valObj = valOrObj as PropertyObject
     const isObj2 = isObject(valOrObj)
 
@@ -228,29 +224,25 @@ function addProperty(
 
   // add all unique frames
   all(keyframes, keyframe => {
-    const { offset, value, easing, interpolate } = keyframe
+    const { offset, value} = keyframe
     const time = flr(duration * offset + from)
-    const indexOfFrame = indexOf(target.keyframes, k => k.prop === name && k.time === time)
+    const frame = find(config.keyframes, k => k.prop === name && k.time === time)
+      || push(config.keyframes, {
+        plugin,
+        easing: keyframe.easing,
+        index,
+        prop: name,
+        time,
+        value,
+        interpolate: keyframe.interpolate
+      })
 
-    if (indexOfFrame !== -1) {
-      target.keyframes[indexOfFrame].value = value
-      return
-    }
-
-    push(target.keyframes, {
-      plugin,
-      easing,
-      index,
-      prop: name,
-      time,
-      value,
-      interpolate
-    })
+    frame.value = value
   })
 
   // insert start frame if not present
-  find(target.keyframes, k => k.prop === name && k.time === from) ||
-    push(target.keyframes, {
+  find(config.keyframes, k => k.prop === name && k.time === from) ||
+    push(config.keyframes, {
       plugin,
       easing: defaultEasing,
       index,
@@ -262,8 +254,8 @@ function addProperty(
 
   // insert end frame if not present
   var to = from + duration
-  find(target.keyframes, k => k.prop === name && k.time === to, true) ||
-    push(target.keyframes, {
+  find(config.keyframes, k => k.prop === name && k.time === to, true) ||
+    push(config.keyframes, {
       plugin,
       easing: defaultEasing,
       index,
@@ -271,7 +263,9 @@ function addProperty(
       time: to,
       value: _,
       interpolate: defaultInterpolator
-    })
+  })
+  
+  pushDistinct(config.propNames, name)
 }
 
 function inferOffsets(keyframes: PropertyObject[]) {
@@ -324,36 +318,31 @@ function inferOffsets(keyframes: PropertyObject[]) {
   }
 }
 
-function calculateTimes(model: ITimelineModel) {
-  let timelineTo = 0
-  let maxNextTime = 0
+/**
+ * Recalculates the bounds of all animation configurations and the boundaries of the timeline as well
+ */
+function recalculateTimes(model: ITimelineModel) {
+  var maxTo = 0
+  var cursor = 0
 
-  all(model.configs, config => {
-    const { keyframes } = config
+  var configs = model.configs   
+  for (var i = 0, ilen = configs.length; i < ilen; i++) { 
+    var config = configs[i]
+    
+    // find min and max bounds of an individual target config
+    var times = config.keyframes.map(k => k.time)
+    var to = max.apply(_, times)
+    var from = min.apply(_, times)
+    config.to = to
+    config.from = from
+    config.duration = to - from
 
-    var targetFrom: number
-    var targetTo: number
+    // update the timeline max and next position if larger than current value
+    maxTo = max(to, maxTo)
+    cursor = max(to + config.endDelay, cursor)
+  }
 
-    all(keyframes, keyframe => {
-      const time = keyframe.time
-      if (time < targetFrom || targetFrom === _) {
-        targetFrom = time
-      }
-      if (time > targetTo || targetTo === _) {
-        targetTo = time
-        if (time > timelineTo) {
-          timelineTo = time
-        }
-      }
-    })
-
-    config.to = targetTo
-    config.from = targetFrom
-    config.duration = targetTo - targetFrom
-
-    maxNextTime = max(targetTo + config.endDelay, maxNextTime)
-  })
-
-  model.pos = maxNextTime
-  model.duration = timelineTo
+  // update the next position and
+  model.cursor = cursor
+  model.duration = maxTo
 }

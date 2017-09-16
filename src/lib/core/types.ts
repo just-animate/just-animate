@@ -161,24 +161,74 @@ export interface TimelineOptions {
 export type TimelineEvent = 'cancel' | 'config' | 'finish' | 'pause' | 'reverse' | 'update' | 'play'
 
 export interface ITimelineModel {
+  /**
+   * Internal identifier used by Just Animate
+   */
   id: string
+  /**
+   * Target configurations.  This includes all properties, plugins, and keyframes to use during animation.
+   */
   configs: TargetConfiguration[]  
+  /**
+   * Total active time of an animation.  In certain circumstances, the duration may increase during the active state.
+   */
   duration: number  
-  pos: number  
+  /**
+   * Next position to insert new animations.  This is the same as duration unless an animation specifies a negative endDelay.
+   * A negative endDelay can cause this to move prior to duration.
+   * A positive endDelay will cause the duration to match
+   */
+  cursor: number  
+  /**
+   * The playrate of the Timeline. Positive numbers are forward and negative numbers are in reverse
+   */
   rate: number  
+  /**
+   * References (@strings) to used as placeholders for values in the Timeline
+   */
   refs: References
+  /**
+   * Number of times to repeat the timeline when played.
+   */
   repeat: number
+  /**
+   * Number of repetitions currently played.
+   */
   round: number  
+  /**
+   * Current state of the Timeline (inactive, starting, running, paused, etc.)
+   */
   state: number
+  /**
+   * Current time of the Timeline
+   */
   time: number
+  /**
+   * True if the timeline should alternate directions for each iteration
+   */
   yoyo: boolean  
+  /**
+   * Animation players used to actually animate things
+   */
   players: AnimationPlayer[]
+  /**
+   * True if the timeline should be destroyed on finish
+   */
   destroy?: boolean
 }
 
 export interface PlayOptions {
+  /**
+   * Number of times to repeat the Timeline.
+   */
   repeat?: number
+  /**
+   * True if the timeline should alternate directions for each iteration
+   */
   alternate?: boolean
+  /**
+   * True if the timeline should be destroyed on finish
+   */
   destroy?: boolean
 }
 
