@@ -1,7 +1,7 @@
 import { sequence } from '../../src/main'
 import * as chai from 'chai'
 import { getEffects } from '../../src/lib/model/effects'
-import { getModel } from '../../src/lib/model/store'
+import { getState } from '../../src/lib/store'
 const { assert } = chai
 
 describe('sequencing', () => {
@@ -28,7 +28,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = getEffects(getModel(t1.id))
+    const actual = getEffects(getState(t1.id))
     assert.deepEqual(actual, [
       {
         target: target1,
@@ -79,7 +79,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = getEffects(getModel(t1.id))
+    const actual = getEffects(getState(t1.id))
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
@@ -152,7 +152,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = getEffects(getModel(t1.id))
+    const actual = getEffects(getState(t1.id))
 
     assert.deepEqual<{}>(actual, [
       {
@@ -204,7 +204,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = getEffects(getModel(t1.id))
+    const actual = getEffects(getState(t1.id))
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
@@ -255,7 +255,7 @@ describe('sequencing', () => {
       }
     ])
 
-    const actual = getEffects(getModel(t1.id))
+    const actual = getEffects(getState(t1.id))
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },

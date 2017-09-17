@@ -1,12 +1,14 @@
 import { ITimelineModel } from '../core/types'
-import { publish } from '../core/events'
+import { publish } from './publish'
 import { loopOff } from '../core/timeloop'
-import { S_PLAYING, UPDATE, _ } from '../utils/constants'
+import { S_PLAYING, _ } from '../utils/constants'
 import { inRange, minMax, flr } from '../utils/math'
 import { all } from '../utils/lists'
 import { setup } from './setup'
+import { UPDATE } from '../actions'
+import { IReducer } from '../core/types'
 
-export const update = (model: ITimelineModel) => {
+export const update: IReducer = (model: ITimelineModel) => {
   if (model.players === _) {
     // setup players if timeline is inactive 
     setup(model)
@@ -39,5 +41,5 @@ export const update = (model: ITimelineModel) => {
   })
 
   // send update event
-  publish(model.id, UPDATE, time)
+  publish(model, UPDATE, time)
 }

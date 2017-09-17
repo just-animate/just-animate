@@ -4,8 +4,9 @@ import { getEffects } from '../model/effects'
 import { all, push } from '../utils/lists'
 import { max } from '../utils/math'
 import { _ } from '../utils/constants'
+import { IReducer } from '../core/types'
 
-export const setup = (model: ITimelineModel) => {
+export const setup: IReducer = (model: ITimelineModel) => {
   const players: AnimationPlayer[] = []
 
   // determine all needed effects and iterate over them

@@ -1,9 +1,10 @@
 import { ITimelineModel } from '../core/types'
-import { publish } from '../core/events'
-import { REVERSE } from '../utils/constants'
+import { publish } from './publish' 
 import { update } from './update'
+import { REVERSE } from '../actions'
+import { IReducer } from '../core/types'
 
-export const reverse = (model: ITimelineModel) => {
+export const reverse: IReducer = (model: ITimelineModel) => {
   // reverse the playrate by multiplaying by -1
   model.rate *= -1
   
@@ -11,5 +12,5 @@ export const reverse = (model: ITimelineModel) => {
   update(model)
   
   // send reverse event
-  publish(model.id, REVERSE, model.time)
+  publish(model, REVERSE, model.time)
 }

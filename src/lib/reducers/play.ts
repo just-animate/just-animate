@@ -1,10 +1,12 @@
 import { PlayOptions, ITimelineModel } from '../core/types'
 import { loopOn } from '../core/timeloop'
-import { publish } from '../core/events'
-import { S_PLAYING, PLAY } from '../utils/constants'
+import { publish } from './publish'
+import { S_PLAYING } from '../utils/constants'
 import { update } from './update'
+import { PLAY } from '../actions'
+import { IReducer } from '../core/types'
 
-export const play = (model: ITimelineModel, options: PlayOptions) => {
+export const play: IReducer = (model: ITimelineModel, options: PlayOptions) => {
   if (options) {
     // transfer options to model
     model.repeat = options.repeat
@@ -34,5 +36,5 @@ export const play = (model: ITimelineModel, options: PlayOptions) => {
   update(model)
   
   // send play event
-  publish(model.id, PLAY, model.time)
+  publish(model, PLAY, model.time)
 }

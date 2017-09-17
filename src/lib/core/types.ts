@@ -128,8 +128,7 @@ export interface AddAnimationOptions extends BaseAnimationOptions {
 
 export interface AnimationOptions {
   from: number
-  to: number
-  duration: number
+  to: number 
   easing?: string
   targets: AnimationTarget[]
   stagger?: number
@@ -154,18 +153,26 @@ export interface References {
 }
 
 export interface TimelineOptions {
-  name?: string
+  id?: string
   references?: References
 }
 
 export type TimelineEvent = 'cancel' | 'config' | 'finish' | 'pause' | 'reverse' | 'update' | 'play'
+
+export interface IReducer {
+  (model: ITimelineModel, data?: any): void
+}
+
+export interface ITimelineEventListener {
+  (data: any): void
+}
 
 export interface ITimelineModel {
   /**
    * Internal identifier used by Just Animate
    */
   id: string
-  /**
+  /** 
    * Target configurations.  This includes all properties, plugins, and keyframes to use during animation.
    */
   configs: TargetConfiguration[]  
@@ -199,6 +206,8 @@ export interface ITimelineModel {
    * Current state of the Timeline (inactive, starting, running, paused, etc.)
    */
   state: number
+  
+  subs: Record<TimelineEvent, ITimelineEventListener[]>
   /**
    * Current time of the Timeline
    */

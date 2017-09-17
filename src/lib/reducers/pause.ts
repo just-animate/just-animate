@@ -1,10 +1,12 @@
 import { ITimelineModel } from '../core/types'
-import { publish } from '../core/events'
+import { publish } from './publish'
 import { loopOff } from '../core/timeloop'
-import { S_PAUSED, PAUSE } from '../utils/constants'
+import { S_PAUSED } from '../utils/constants'
 import { update } from './update'
+import { PAUSE } from '../actions'
+import { IReducer } from '../core/types'
 
-export const pause = (model: ITimelineModel) => {
+export const pause: IReducer = (model: ITimelineModel) => {
   // set state to paused
   model.state = S_PAUSED
 
@@ -16,5 +18,5 @@ export const pause = (model: ITimelineModel) => {
   update(model)
   
   // send pause event
-  publish(model.id, PAUSE, model.time)
+  publish(model, PAUSE, model.time)
 }

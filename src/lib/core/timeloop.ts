@@ -1,6 +1,7 @@
-import { _, TICK } from '../utils/constants'
-import { push, getIndex, includes } from '../utils/lists' 
-import { dispatch } from './broker'
+import { _ } from '../utils/constants'
+import { push, getIndex, includes } from '../utils/lists'
+import { dispatch } from '../store'
+import { TICK } from '../actions'
  
 const raf = requestAnimationFrame
 const caf = cancelAnimationFrame

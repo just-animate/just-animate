@@ -3,8 +3,9 @@ import { _ } from '../utils/constants'
 import { inRange } from '../utils/math'
 import { finish } from './finish'
 import { update } from './update'
+import { IReducer } from '../core/types'
 
-export const tick = (model: ITimelineModel, delta: number) => {
+export const tick: IReducer = (model: ITimelineModel, delta: number) => {
   // calculate running range
   const duration = model.duration
   const repeat = model.repeat

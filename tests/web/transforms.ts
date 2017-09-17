@@ -3,7 +3,7 @@ import { animate } from '../../src/main'
 import { addPlugin, removePlugin } from '../../src/lib/core/plugins'
 import { waapiPlugin } from '../../src/web/index'
 import { getEffects } from '../../src/lib/model/effects'
-import { getModel } from '../../src/lib/model/store'
+import { getState } from '../../src/lib/store'
 
 describe('transforms', () => {
   before(() => addPlugin(waapiPlugin))
@@ -25,7 +25,7 @@ describe('transforms', () => {
         }
       })
 
-      getEffects(getModel(t1.id))
+      getEffects(getState(t1.id))
     }
 
     assert.throws(throwsError, 'mixing transform and shorthand properties is not allowed')
@@ -46,7 +46,7 @@ describe('transforms', () => {
       }
     })
 
-    const actual = getEffects(getModel(t1.id))
+    const actual = getEffects(getState(t1.id))
 
     assert.deepEqual(actual, [
       {
@@ -79,7 +79,7 @@ describe('transforms', () => {
       }
     })
 
-    const actual = getEffects(getModel(t1.id))
+    const actual = getEffects(getState(t1.id))
 
     assert.deepEqual(actual, [
       {
@@ -190,7 +190,7 @@ describe('transforms', () => {
       }
     })
 
-    const actual = getEffects(getModel(t1.id))
+    const actual = getEffects(getState(t1.id))
 
     assert.deepEqual(actual, [
       {

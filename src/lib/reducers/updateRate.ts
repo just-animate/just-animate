@@ -1,7 +1,8 @@
 import { ITimelineModel } from '../core/types'
 import { update } from './update' 
+import { IReducer } from '../core/types'
 
-export const updateRate = (model: ITimelineModel, rate: number) => {
+export const updateRate:  IReducer = (model: ITimelineModel, rate: number) => {
   // set the rate
   model.rate = rate || 1
   

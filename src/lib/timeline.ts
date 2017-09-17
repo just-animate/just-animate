@@ -4,47 +4,64 @@ import {
   BaseAnimationOptions,
   BaseSetOptions,
   TimelineOptions,
-  TimelineEvent, 
+  TimelineEvent,
   ITimeline,
-  PlayOptions
+  PlayOptions,
+  AnimationOptions
 } from './core/types'
  
-import { unsubscribe, subscribe } from './core/events'
-import { dispatch } from './core/broker'
-import { appendConfig, insertConfigs, insertSetConfigs } from './model/config'
-import { createModel, getModel } from './model/store'
+import { uuid } from './utils/uuid'
 import { all } from './utils/lists'
-import { CANCEL, DESTROY, FINISH, PAUSE, UPDATE_RATE, UPDATE_TIME, REVERSE, PLAY } from './utils/constants'
+import {
+  CANCEL,
+  DESTROY,
+  FINISH,
+  PAUSE,
+  UPDATE_RATE,
+  UPDATE_TIME,
+  REVERSE,
+  PLAY,
+  APPEND,
+  SET,
+  INSERT,
+  ON,
+  OFF
+} from './actions'
+import { dispatch, addState, getState } from './store'
 
 const timelineProto: ITimeline = {
   get state(): number {
-    return getModel(this.id).state;
+    return getState(this.id).state;
   },
   get duration(): number {
-    return getModel(this.id).duration
+    return getState(this.id).duration
   },
   get currentTime() {
-    return getModel(this.id).time
+    return getState(this.id).time
   },
   set currentTime(time: number) {
     dispatch(UPDATE_TIME, this.id, time)
   },
   get playbackRate() {
-    return getModel(this.id).rate
+    return getState(this.id).rate
   },
   set playbackRate(rate: number) {
     dispatch(UPDATE_RATE, this.id, rate)
   },
   add(opts: AddAnimationOptions | AddAnimationOptions[]) {
-    appendConfig(this.id, opts)
+    dispatch(APPEND, this.id, opts)
     return this
   },
   animate(opts: AddAnimationOptions | AddAnimationOptions[]) {
-    appendConfig(this.id, opts)
+    dispatch(APPEND, this.id, opts)
     return this
   },
   fromTo(from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]) {
-    insertConfigs(this.id, from, to, options)
+    all(options as AnimationOptions[], options2 => {
+      options2.to = to
+      options2.from = from
+    })
+    dispatch(INSERT, this.id, options) 
     return this
   },
   cancel() {
@@ -58,20 +75,20 @@ const timelineProto: ITimeline = {
     dispatch(FINISH, this.id)
     return this
   },
-  on(eventName: TimelineEvent, listener: (time: number) => void) { 
-    subscribe(this.id, eventName, listener)
+  on(name: TimelineEvent, fn: (time: number) => void) { 
+    dispatch(ON, this.id, { name, fn })
     return this
   },
   once(eventName: TimelineEvent, listener: (time: number) => void) {
-    const id = this.id
-    subscribe(id, eventName, function s(time) {
-      unsubscribe(id, eventName, s)
+    const self = this
+    self.on(eventName, function s(time) {
+      self.off(eventName, s)
       listener(time)
-    })
-    return this
+    }) 
+    return self
   },
-  off(eventName: TimelineEvent, listener: (time: number) => void) { 
-    unsubscribe(this.id, eventName, listener)
+  off(name: TimelineEvent, fn: (time: number) => void) { 
+    dispatch(OFF, this.id, { name, fn })
     return this
   },
   pause() {
@@ -91,11 +108,11 @@ const timelineProto: ITimeline = {
     return this
   },
   sequence(seqOptions: AddAnimationOptions[]) {
-    all(seqOptions, opt => appendConfig(this.id, opt))
+    all(seqOptions, opt => dispatch(APPEND, this.id, opt))
     return this
   },
-  set(options: BaseSetOptions | BaseSetOptions[]) {
-    insertSetConfigs(this.id, options)
+  set(opts: BaseSetOptions | BaseSetOptions[]) {
+    dispatch(SET, this.id, opts)
     return this
   }
 }
@@ -105,6 +122,10 @@ const timelineProto: ITimeline = {
  */
 export function timeline(opts?: TimelineOptions): ITimeline {
   const t1 = Object.create(timelineProto)
-  t1.id = createModel(opts || {})
+  opts = opts || {}
+  
+  opts.id = opts.id || uuid()
+  t1.id = opts.id
+  addState(opts)
   return t1
 }

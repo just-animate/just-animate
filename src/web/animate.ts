@@ -1,7 +1,6 @@
 import { AnimationController, Effect } from '../lib/core/types' 
 import { abs } from '../lib/utils/math'
-import { RUNNING } from './constants'
-import { PENDING, FINISH } from '../lib/utils/constants'
+import { RUNNING } from './constants' 
 import { memoize } from '../lib/utils/functional'
 
 // minimum amount of time left on an animation required to call .play()
@@ -51,7 +50,7 @@ export function animate(effect: Effect): AnimationController {
 
       const needsToPlay =
         isPlaying &&
-        !(animator.playState === RUNNING || animator.playState === FINISH) &&
+        !(animator.playState === RUNNING || animator.playState === 'finish') &&
         !(rate < 0 && time < frameSize) &&
         !(rate >= 0 && time > duration - frameSize)
 
@@ -59,7 +58,7 @@ export function animate(effect: Effect): AnimationController {
         animator.play()
       }
 
-      const needsToPause = !isPlaying && (animator.playState === RUNNING || animator.playState === PENDING)
+      const needsToPause = !isPlaying && (animator.playState === RUNNING || animator.playState === 'pending')
       if (needsToPause) {
         animator.pause()
       }
