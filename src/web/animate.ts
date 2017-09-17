@@ -1,8 +1,8 @@
-import { AnimationController, Effect } from '../lib/core/types'
-import { lazy } from '../lib/utils/utils'
+import { AnimationController, Effect } from '../lib/core/types' 
 import { abs } from '../lib/utils/math'
 import { RUNNING } from './constants'
 import { PENDING, FINISH } from '../lib/utils/constants'
+import { memoize } from '../lib/utils/functional'
 
 // minimum amount of time left on an animation required to call .play()
 const frameSize = 17
@@ -11,7 +11,7 @@ export function animate(effect: Effect): AnimationController {
   const { keyframes, prop, from, to, target } = effect
   const duration = to - from
 
-  const getAnimator = lazy(() => {
+  const getAnimator = memoize(() => {
     const frames = keyframes.map(({ offset, value, easing }) => ({ offset, [prop]: value, easing }))
 
     const a = (target as any).animate(frames, {
@@ -31,7 +31,7 @@ export function animate(effect: Effect): AnimationController {
       const time = duration * offset
 
       if (abs(animator.currentTime - time) > 1) {
-        // sync if paused or seeking
+        // re-sync if timeline and WAAPI are out of sync
         animator.currentTime = time
       }
 

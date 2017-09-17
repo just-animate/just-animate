@@ -17,11 +17,10 @@ import { publish } from '../core/events'
 import { plugins } from '../core/plugins'
 import { replaceWithRefs } from '../core/references'
 import { CONFIG, _ } from '../utils/constants'
-import { isDefined, isObject, isArrayLike, isNumber } from '../utils/inspect'
+import { isDefined, isObject, isArrayLike, isNumber, isOwner } from '../utils/inspect'
 import { sortBy, all, includes, find, push, pushDistinct, list } from '../utils/lists'
 import { resolveProperty } from '../utils/resolve-property'
 import { max, flr, min } from '../utils/math'
-import { owns } from '../utils/utils'
 import { getModel } from './store'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time') 
@@ -153,11 +152,11 @@ function addPropertyKeyframes(config: TargetConfiguration, index: number, option
 
   // iterate over each property split it into keyframes
   for (var pluginName in plugins) {
-    if (owns(options, pluginName)) {
+    if (isOwner(options, pluginName)) {
       const props = options[pluginName]
       for (var name in props) {
         var propVal = props[name]
-        if (owns(props, name) && isDefined(propVal)) { 
+        if (isOwner(props, name) && isDefined(propVal)) { 
           addProperty(config, pluginName, index, name, propVal, duration, from, easing)
         }
       }

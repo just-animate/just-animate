@@ -7,27 +7,37 @@ import { all } from '../utils/lists'
 import { setup } from './setup'
 
 export const update = (model: ITimelineModel) => {
-  // setup effects if required
   if (model.players === _) {
+    // setup players if timeline is inactive 
     setup(model)
   }
 
-  // check current state
-  const isActive = model.state === S_PLAYING
+  // check if current state is playing
+  const isPlaying = model.state === S_PLAYING
+  const time = model.time
 
   // remove tick from loop if no timelines are active
-  if (!isActive) {
+  if (!isPlaying) {
     loopOff(model.id)
   }
 
-  // update effects`
-  all(model.players, effect => {
-    const { from, to } = effect
-    const isAnimationActive = isActive && inRange(flr(model.time), from, to)
-    const offset = minMax((model.time - from) / (to - from), 0, 1)
-
-    effect.update(offset, model.rate, isAnimationActive)
+  // update players`
+  all(model.players, player => {
+    const from = player.from
+    const to = player.to 
+    
+    // a player is considered active if the time is in bounds of from/to
+    // this value is calculated to allow the player to know if 0 and 1 are before or after their range
+    const isActive = isPlaying && inRange(flr(time), from, to)
+    
+    // calculate the offset relative to the player
+    const offset = minMax((time - from) / (to - from), 0, 1)
+    
+    // pass to the player, so it can decide how to update
+    // note: this gets called for all players whether they are inactive or not
+    player.update(offset, model.rate, isActive)
   })
 
-  publish(model.id, UPDATE, model.time)
+  // send update event
+  publish(model.id, UPDATE, time)
 }

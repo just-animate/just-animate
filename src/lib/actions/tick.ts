@@ -1,5 +1,5 @@
 import { ITimelineModel } from '../core/types'
-import { S_STARTING, S_PLAYING, _ } from '../utils/constants'
+import { _ } from '../utils/constants'
 import { inRange } from '../utils/math'
 import { finish } from './finish'
 import { update } from './update'
@@ -9,55 +9,41 @@ export const tick = (model: ITimelineModel, delta: number) => {
   const duration = model.duration
   const repeat = model.repeat
   const rate = model.rate
+
+  // determine the current time, round, and direction
+  let time = model.time === _ ? (rate < 0 ? duration : 0) : model.time
+  let round = model.round || 0
   const isReversed = rate < 0
 
-  // set time use existing
-  let time = model.time === _ ? (rate < 0 ? duration : 0) : model.time
-
-  let iteration = model.round || 0
-
-  if (model.state === S_STARTING) {
-    model.state = S_PLAYING
-
-    // reset position properties if necessary
-    if (time === _ || (isReversed && time > duration) || (!isReversed && time < 0)) {
-      // if at finish, reset to start time
-      time = isReversed ? duration : 0
-    }
-    if (iteration === repeat) {
-      // if at finish reset iterations to 0
-      iteration = 0
-    }
-  }
-
+  // update the time by adding the delta by the rate of time
   time += delta * rate
 
   // check if timeline has finished
   let iterationEnded = false
   if (!inRange(time, 0, duration)) {
-    model.round = ++iteration
+    model.round = ++round
     time = isReversed ? 0 : duration
     iterationEnded = true
 
-    // reverse direction on alternate
     if (model.yoyo) {
+      // reverse direction when alternating and the iteration has completed    
       model.rate = (model.rate || 0) * -1
     }
 
-    // reset the clock
+    // reset the clock based on the current direction
     time = model.rate < 0 ? duration : 0
   }
 
-  // call update
+  // save time and round
   model.time = time
-  model.round = iteration
+  model.round = round
 
-  if (iterationEnded && repeat === iteration) {
-    // end the cycle 
+  if (iterationEnded && repeat === round) {
+    // end the cycle by calling finish
     finish(model)  
     return
   }
 
-  // if not the last iteration reprocess this tick from the new starting point/direction
+  // if not the last iteration, call update to update the players
   update(model)
 }

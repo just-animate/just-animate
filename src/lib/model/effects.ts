@@ -9,13 +9,13 @@ import {
   ITimelineModel
 } from '../core/types'
 
-import { _ } from '../utils/constants'
-import { all, find, push, sortBy, mapFlatten } from '../utils/lists' 
-import { resolveProperty } from '../utils/resolve-property'
-import { assign } from '../utils/utils'
 import { plugins } from '../core/plugins'
 import { resolveRefs } from '../core/references'
+import { _ } from '../utils/constants'
 import { getTargets } from '../utils/get-targets'
+import { all, find, push, sortBy, mapFlatten } from '../utils/lists' 
+import { assign } from '../utils/assign'
+import { resolveProperty } from '../utils/resolve-property'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 

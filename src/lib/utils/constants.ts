@@ -1,8 +1,7 @@
 export const S_INACTIVE = 1
-export const S_STARTING = 2
+export const S_PAUSED = 2
 export const S_PLAYING = 3
-export const S_PAUSED = 4
-export const S_FINISHED = 5
+export const S_FINISHED = 4
 
 export const _ = undefined as undefined
 

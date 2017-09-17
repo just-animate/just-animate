@@ -19,3 +19,6 @@ export function isArrayLike(a: any) {
 export function isDOM(target: Node | any) {
   return target.nodeType || target instanceof SVGElement
 }
+export function isOwner(obj: any, name: string) {
+  return obj.hasOwnProperty(name)
+}

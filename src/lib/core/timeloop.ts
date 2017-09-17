@@ -1,8 +1,11 @@
-import { caf, now, raf } from '../utils/utils'
 import { _, TICK } from '../utils/constants'
 import { push, getIndex, includes } from '../utils/lists' 
 import { dispatch } from './broker'
  
+const raf = requestAnimationFrame
+const caf = cancelAnimationFrame
+const now = () => performance.now()
+
 const active: string[] = []
 const deltas: Record<string, number> = {}
 
