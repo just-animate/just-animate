@@ -1,12 +1,12 @@
 import { ITimelineModel } from '../core/types'
 import { max, min } from '../utils/math'
 import { _ } from '../utils/constants'
-import { IReducer } from '../core/types'
+import { IReducer, IReducerContext } from '../core/types'
 
 /**
  * Recalculates the bounds of all animation configurations and the boundaries of the timeline as well
  */
-export const recalculateTimes: IReducer = (model: ITimelineModel) => {
+export const recalculateTimes: IReducer = (model: ITimelineModel, _data: any, _ctx: IReducerContext) => {
   var maxTo = 0
   var cursor = 0
 

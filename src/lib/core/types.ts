@@ -159,8 +159,13 @@ export interface TimelineOptions {
 
 export type TimelineEvent = 'cancel' | 'config' | 'finish' | 'pause' | 'reverse' | 'update' | 'play'
 
+export interface IReducerContext {
+  events: string[]  
+  dirty: boolean
+}
+
 export interface IReducer {
-  (model: ITimelineModel, data?: any): void
+  (model: ITimelineModel, data: any, ctx: IReducerContext): void
 }
 
 export interface ITimelineEventListener {

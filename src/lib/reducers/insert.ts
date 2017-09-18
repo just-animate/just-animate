@@ -18,11 +18,11 @@ import { isObject, isNumber, isArrayLike, isOwner, isDefined } from '../utils/in
 import { plugins } from '../core/plugins'
 import { publish } from './publish'
 import { recalculateTimes } from './recalculate-times'
-import { IReducer } from '../core/types'
+import { IReducer, IReducerContext } from '../core/types'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
-export const insert: IReducer = (model: ITimelineModel, options: AnimationOptions[]) => {
+export const insert: IReducer = (model: ITimelineModel, options: AnimationOptions[], _ctx: IReducerContext) => {
   all(options, opts => {
     if (opts.to === _) {
       throw new Error('missing duration')
@@ -37,7 +37,7 @@ export const insert: IReducer = (model: ITimelineModel, options: AnimationOption
   })
 
   // recalculate property keyframe times and total duration
-  recalculateTimes(model)
+  recalculateTimes(model, _, _ctx)
   publish(model, CONFIG, model.time)
 }
 

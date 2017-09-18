@@ -1,11 +1,15 @@
 import { AddAnimationOptions, AnimationOptions, ITimelineModel } from '../core/types'
 import { _ } from '../utils/constants'
-import { isDefined } from '../utils/inspect' 
+import { isDefined } from '../utils/inspect'
 import { list } from '../utils/lists'
 import { insert } from './insert'
-import { IReducer } from '../core/types'
+import { IReducer, IReducerContext } from '../core/types'
 
-export const append: IReducer = (model: ITimelineModel, data: AddAnimationOptions | AddAnimationOptions[]) => {
+export const append: IReducer = (
+  model: ITimelineModel,
+  data: AddAnimationOptions | AddAnimationOptions[],
+  ctx: IReducerContext
+) => {
   const cursor = model.cursor
   const opts2 = list(data).map(opt => {
     const { to, from, duration } = opt
@@ -24,10 +28,10 @@ export const append: IReducer = (model: ITimelineModel, data: AddAnimationOption
     opt2.from =
       hasFrom && (hasTo || hasDuration)
         ? from
-      : hasTo && hasDuration ? to - duration : hasTo || hasDuration ? cursor : _
-    
+        : hasTo && hasDuration ? to - duration : hasTo || hasDuration ? cursor : _
+
     return opt2
   })
 
-  insert(model, opts2);
+  insert(model, opts2, ctx)
 }

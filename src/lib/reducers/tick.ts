@@ -3,9 +3,9 @@ import { _ } from '../utils/constants'
 import { inRange } from '../utils/math'
 import { finish } from './finish'
 import { update } from './update'
-import { IReducer } from '../core/types'
+import { IReducer, IReducerContext } from '../core/types'
 
-export const tick: IReducer = (model: ITimelineModel, delta: number) => {
+export const tick: IReducer = (model: ITimelineModel, delta: number, _ctx: IReducerContext) => {
   // calculate running range
   const duration = model.duration
   const repeat = model.repeat
@@ -41,10 +41,10 @@ export const tick: IReducer = (model: ITimelineModel, delta: number) => {
 
   if (iterationEnded && repeat === round) {
     // end the cycle by calling finish
-    finish(model)  
+    finish(model, _, _ctx)  
     return
   }
 
   // if not the last iteration, call update to update the players
-  update(model)
+  update(model, _, _ctx)
 }

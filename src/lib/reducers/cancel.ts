@@ -4,9 +4,9 @@ import { publish } from './publish'
 import { S_INACTIVE, _ } from '../utils/constants'
 import { all } from '../utils/lists'
 import { CANCEL } from '../actions'
-import { IReducer } from '../core/types'
+import { IReducer, IReducerContext } from '../core/types'
 
-export const cancel: IReducer = (model: ITimelineModel) => {
+export const cancel: IReducer = (model: ITimelineModel, _data: any, _ctx: IReducerContext) => {
   // call cancel on all players
   all(model.players, effect => effect.cancel())
 
@@ -18,7 +18,7 @@ export const cancel: IReducer = (model: ITimelineModel) => {
 
   // stop auto-updating players
   loopOff(model.id)
-  
+
   // send cancel event
   publish(model, CANCEL, _)
 }

@@ -6,12 +6,12 @@ import { inRange, minMax, flr } from '../utils/math'
 import { all } from '../utils/lists'
 import { setup } from './setup'
 import { UPDATE } from '../actions'
-import { IReducer } from '../core/types'
+import { IReducer, IReducerContext } from '../core/types'
 
-export const update: IReducer = (model: ITimelineModel) => {
+export const update: IReducer = (model: ITimelineModel, _data: any, _ctx: IReducerContext) => {
   if (model.players === _) {
     // setup players if timeline is inactive 
-    setup(model)
+    setup(model, _, _ctx)
   }
 
   // check if current state is playing

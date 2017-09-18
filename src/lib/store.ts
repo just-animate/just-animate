@@ -38,10 +38,28 @@ import {
   updateRate,
   updateTime
 } from './reducers/index'
-import { IReducer, TimelineEvent, ITimelineEventListener } from './core/types'
+import { IReducer, TimelineEvent, ITimelineEventListener, IReducerContext } from './core/types'
 
 const stores: Record<string, ITimelineModel> = {}
-const handlers: Record<string, IReducer> = {}
+
+const reducers: Record<string, IReducer> = {
+  [APPEND]: append,
+  [CANCEL]: cancel,
+  [DESTROY]: destroy,
+  [FINISH]: finish,
+  [INSERT]: insert,
+  [ON]: on,
+  [OFF]: off,
+  [PAUSE]: pause,
+  [PLAY]: play,
+  [REVERSE]: reverse,
+  [SET]: set,
+  [SETUP]: setup,
+  [TICK]: tick,
+  [UPDATE]: update,
+  [UPDATE_RATE]: updateRate,
+  [UPDATE_TIME]: updateTime
+}
 
 function createInitial(opts: TimelineOptions) {
   const refs = {}
@@ -87,31 +105,14 @@ export function removeState(id: string) {
 }
 
 export function dispatch(action: string, id: string, data?: any) {
-  const fn = handlers[action]
+  const fn = reducers[action]
   const model = getState(id)
+  const ctx: IReducerContext = {
+    events: [],
+    dirty: false
+  }
 
   if (fn && model) {
-    fn(model, data)
+    fn(model, data, ctx)
   }
 }
-
-export function addReducer(action: string, handler: IReducer) {
-  handlers[action] = handler
-}
-
-addReducer(APPEND, append)
-addReducer(CANCEL, cancel)
-addReducer(DESTROY, destroy)
-addReducer(FINISH, finish)
-addReducer(INSERT, insert)
-addReducer(ON, on)
-addReducer(OFF, off)
-addReducer(PAUSE, pause)
-addReducer(PLAY, play)
-addReducer(REVERSE, reverse)
-addReducer(SET, set)
-addReducer(SETUP, setup)
-addReducer(TICK, tick)
-addReducer(UPDATE, update)
-addReducer(UPDATE_RATE, updateRate)
-addReducer(UPDATE_TIME, updateTime)
