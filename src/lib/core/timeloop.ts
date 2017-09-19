@@ -1,8 +1,8 @@
 import { _ } from '../utils/constants'
-import { push, getIndex, includes } from '../utils/lists'
+import { push, includes, remove } from '../utils/lists'
 import { dispatch } from '../store'
 import { TICK } from '../actions'
- 
+
 const raf = requestAnimationFrame
 const caf = cancelAnimationFrame
 const now = () => performance.now()
@@ -39,18 +39,16 @@ function update() {
   for (let i = len - 1; i > -1; i--) {
     // update delta and save result
     const activeId = active[i]
-    const existingElapsed = deltas[activeId]
-    const updatedElapsed = existingElapsed + delta
-    deltas[activeId] = updatedElapsed
+    deltas[activeId] += delta
 
     // call sub with updated delta
     dispatch(TICK, activeId, delta)
   }
 }
 
-export function loopOn(id: string) { 
+export function loopOn(id: string) {
   if (!includes(active, id)) {
-    deltas[id] = 0 
+    deltas[id] = 0
     push(active, id)
   }
 
@@ -59,11 +57,9 @@ export function loopOn(id: string) {
   }
 }
 
-export function loopOff(id: string) { 
-  const indexOfSub = getIndex(active, id)
-  if (indexOfSub !== -1) {
+export function loopOff(id: string) {
+  if (remove(active, id)) {
     delete deltas[id]
-    active.splice(indexOfSub, 1)
   }
   if (!active.length) {
     cancel()

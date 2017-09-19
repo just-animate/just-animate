@@ -1,12 +1,11 @@
 import { ITimelineModel } from '../core/types'
-import { loopOff } from '../core/timeloop'
-import { publish } from './publish'
+import { loopOff } from '../core/timeloop' 
 import { S_INACTIVE, _ } from '../utils/constants'
 import { all } from '../utils/lists'
 import { CANCEL } from '../actions'
 import { IReducer, IReducerContext } from '../core/types'
 
-export const cancel: IReducer = (model: ITimelineModel, _data: any, _ctx: IReducerContext) => {
+export const cancel: IReducer = (model: ITimelineModel, _data: any, ctx: IReducerContext) => {
   // call cancel on all players
   all(model.players, effect => effect.cancel())
 
@@ -20,5 +19,5 @@ export const cancel: IReducer = (model: ITimelineModel, _data: any, _ctx: IReduc
   loopOff(model.id)
 
   // send cancel event
-  publish(model, CANCEL, _)
+  ctx.trigger(CANCEL) 
 }

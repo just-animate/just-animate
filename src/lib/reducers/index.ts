@@ -1,8 +1,6 @@
 export { cancel } from './cancel'
 export { destroy } from './destroy'
 export { finish } from './finish'
-export { off } from './off'
-export { on } from './on'
 export { pause } from './pause'
 export { play } from './play'
 export { reverse } from './reverse'

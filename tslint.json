@@ -1,9 +1,7 @@
 {
   "rules": {
     "align": [
-      true,
-      "parameters",
-      "arguments",
+      true,  
       "statements"
     ],
     "ban": false,

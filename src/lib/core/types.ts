@@ -161,7 +161,9 @@ export type TimelineEvent = 'cancel' | 'config' | 'finish' | 'pause' | 'reverse'
 
 export interface IReducerContext {
   events: string[]  
-  dirty: boolean
+  destroyed?: boolean
+  dirty?: boolean
+  trigger(eventName: string): void
 }
 
 export interface IReducer {
@@ -170,6 +172,11 @@ export interface IReducer {
 
 export interface ITimelineEventListener {
   (data: any): void
+}
+
+export interface IStore {
+  state: ITimelineModel,
+  subs: Record<TimelineEvent, ITimelineEventListener[]>
 }
 
 export interface ITimelineModel {
@@ -211,8 +218,7 @@ export interface ITimelineModel {
    * Current state of the Timeline (inactive, starting, running, paused, etc.)
    */
   state: number
-  
-  subs: Record<TimelineEvent, ITimelineEventListener[]>
+   
   /**
    * Current time of the Timeline
    */

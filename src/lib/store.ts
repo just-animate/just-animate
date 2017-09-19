@@ -4,9 +4,7 @@ import { S_INACTIVE, _ } from './utils/constants'
 import {
   CANCEL,
   DESTROY,
-  FINISH,
-  OFF,
-  ON,
+  FINISH, 
   PAUSE,
   PLAY,
   REVERSE,
@@ -26,8 +24,6 @@ import {
   destroy,
   finish,
   insert,
-  off,
-  on,
   pause,
   play,
   reverse,
@@ -38,18 +34,19 @@ import {
   updateRate,
   updateTime
 } from './reducers/index'
-import { IReducer, TimelineEvent, ITimelineEventListener, IReducerContext } from './core/types'
+import { IReducer, TimelineEvent, ITimelineEventListener, IReducerContext, IStore } from './core/types'
+import { pushDistinct, all, remove } from './utils/lists'
 
-const stores: Record<string, ITimelineModel> = {}
+const stateSubs: ((store: IStore) => void)[] = []
+
+const stores: Record<string, IStore> = {}
 
 const reducers: Record<string, IReducer> = {
   [APPEND]: append,
   [CANCEL]: cancel,
   [DESTROY]: destroy,
   [FINISH]: finish,
-  [INSERT]: insert,
-  [ON]: on,
-  [OFF]: off,
+  [INSERT]: insert, 
   [PAUSE]: pause,
   [PLAY]: play,
   [REVERSE]: reverse,
@@ -80,7 +77,6 @@ function createInitial(opts: TimelineOptions) {
     repeat: _,
     round: _,
     state: S_INACTIVE,
-    subs: {} as Record<TimelineEvent, ITimelineEventListener[]>,
     time: _,
     yoyo: false
   }
@@ -90,29 +86,72 @@ function createInitial(opts: TimelineOptions) {
 
 export function getState(id: string) {
   const model = stores[id]
-  if (!model) {
-    throw new Error('timeline not found')
+  if (!model) { 
+    throw new Error('not found')
   }
-  return model
+  return model.state
 }
 
 export function addState(opts: { id?: string }) {
-  stores[opts.id] = createInitial(opts)
+  stores[opts.id] = {
+    state: createInitial(opts),
+    subs: {} as Record<TimelineEvent, ITimelineEventListener[]>
+  }
 }
 
-export function removeState(id: string) {
-  delete stores[id]
+export function subscribe(fn: (store: IStore) => void) {
+  pushDistinct(stateSubs, fn)
+}
+
+export function unsubscribe(fn: (store: IStore) => void) {
+  remove(stateSubs, fn)
+}
+
+export function on(id: string, eventName: string, listener: ITimelineEventListener) {
+  const store = stores[id]
+  if (store) {
+    const subs = (store.subs[eventName] = store.subs[eventName] || [])
+    pushDistinct(subs, listener)
+  }
+}
+
+export function off(id: string, eventName: string, listener: ITimelineEventListener) {
+  const store = stores[id]
+  if (store) { 
+    remove(store.subs[eventName], listener)
+  }
 }
 
 export function dispatch(action: string, id: string, data?: any) {
   const fn = reducers[action]
-  const model = getState(id)
+  const store = stores[id] 
+  
+  if (!fn || !store) {
+    throw new Error('not found')
+  }
+  
   const ctx: IReducerContext = {
     events: [],
-    dirty: false
+    trigger
   }
+  
+  // dispatch action
+  fn(store.state, data, ctx)
+  
+  // handle all events produced from action chain
+  all(ctx.events, evt => {
+    const subs = store.subs[evt as TimelineEvent]
+    if (subs) {
+      all(subs, sub => { sub(store.state.time) })
+    }
+  })
+  
+  // remove from stores if destroyed
+  if (ctx.destroyed) {
+    delete stores[id]
+  }
+}
 
-  if (fn && model) {
-    fn(model, data, ctx)
-  }
+function trigger(this: IReducerContext, eventName: string) {
+  pushDistinct(this.events, eventName) 
 }

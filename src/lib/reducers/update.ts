@@ -1,5 +1,4 @@
 import { ITimelineModel } from '../core/types'
-import { publish } from './publish'
 import { loopOff } from '../core/timeloop'
 import { S_PLAYING, _ } from '../utils/constants'
 import { inRange, minMax, flr } from '../utils/math'
@@ -8,10 +7,10 @@ import { setup } from './setup'
 import { UPDATE } from '../actions'
 import { IReducer, IReducerContext } from '../core/types'
 
-export const update: IReducer = (model: ITimelineModel, _data: any, _ctx: IReducerContext) => {
+export const update: IReducer = (model: ITimelineModel, _data: any, ctx: IReducerContext) => {
   if (model.players === _) {
     // setup players if timeline is inactive 
-    setup(model, _, _ctx)
+    setup(model, _, ctx)
   }
 
   // check if current state is playing
@@ -40,6 +39,6 @@ export const update: IReducer = (model: ITimelineModel, _data: any, _ctx: IReduc
     player.update(offset, model.rate, isActive)
   })
 
-  // send update event
-  publish(model, UPDATE, time)
+  // send update event 
+  ctx.trigger(UPDATE) 
 }

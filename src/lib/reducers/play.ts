@@ -1,12 +1,11 @@
 import { PlayOptions, ITimelineModel } from '../core/types'
-import { loopOn } from '../core/timeloop'
-import { publish } from './publish'
+import { loopOn } from '../core/timeloop' 
 import { S_PLAYING, _ } from '../utils/constants'
 import { update } from './update'
 import { PLAY } from '../actions'
 import { IReducer, IReducerContext } from '../core/types'
 
-export const play: IReducer = (model: ITimelineModel, options: PlayOptions, _ctx: IReducerContext) => {
+export const play: IReducer = (model: ITimelineModel, options: PlayOptions, ctx: IReducerContext) => {
   if (options) {
     // transfer options to model
     model.repeat = options.repeat
@@ -33,8 +32,8 @@ export const play: IReducer = (model: ITimelineModel, options: PlayOptions, _ctx
   loopOn(model.id)
   
   // update the first frame of players, also make active if not already
-  update(model, _, _ctx)
+  update(model, _, ctx)
   
-  // send play event
-  publish(model, PLAY, model.time)
+  // send play event 
+  ctx.trigger(PLAY) 
 }

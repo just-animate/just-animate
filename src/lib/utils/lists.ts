@@ -56,6 +56,11 @@ export function indexOf<T>(items: T[], predicate: { (t: T): boolean }) {
   return -1
 }
 
+export function remove<T>(items: T[], item: T) {
+  const index = items.indexOf(item)
+  return index !== -1 ? items.splice(index, 1) : _
+}
+
 export function sortBy<T>(fieldName: keyof T) {
   return (a: T, b: T) => {
     const a1 = a[fieldName]

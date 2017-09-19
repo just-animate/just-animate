@@ -23,11 +23,9 @@ import {
   PLAY,
   APPEND,
   SET,
-  INSERT,
-  ON,
-  OFF
+  INSERT
 } from './actions'
-import { dispatch, addState, getState } from './store'
+import { dispatch, addState, getState, on, off } from './store'
 
 const timelineProto: ITimeline = {
   get state(): number {
@@ -76,7 +74,7 @@ const timelineProto: ITimeline = {
     return this
   },
   on(name: TimelineEvent, fn: (time: number) => void) { 
-    dispatch(ON, this.id, { name, fn })
+    on(this.id, name, fn) 
     return this
   },
   once(eventName: TimelineEvent, listener: (time: number) => void) {
@@ -88,7 +86,7 @@ const timelineProto: ITimeline = {
     return self
   },
   off(name: TimelineEvent, fn: (time: number) => void) { 
-    dispatch(OFF, this.id, { name, fn })
+    off(this.id, name, fn) 
     return this
   },
   pause() {

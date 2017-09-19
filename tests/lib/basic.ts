@@ -447,10 +447,10 @@ describe('basic', () => {
       assert.approximately(target.x, 500, 50)
       t1.destroy()
       done()
-    },         500)
+    }, 500)
   })
 
-  it('accessing a destroyed animation throws an error', () => {
+  it('accessing a destroyed animation throws an error', (done) => {
     const t1 = animate({
       targets: { x: 200 },
       duration: 1000,
@@ -458,22 +458,26 @@ describe('basic', () => {
     })
 
     t1.play().destroy()
-
-    assert.throws(function() {
-      t1.duration
-    })
-
-    assert.throws(function() {
-      t1.currentTime
-    })
-
-    assert.throws(function() {
-      t1.playbackRate
-    })
-
-    assert.throws(function() {
-      t1.play()
-    })
+    
+    setTimeout(() => {
+      assert.throws(function() {
+        t1.duration
+      })
+  
+      assert.throws(function() {
+        t1.currentTime
+      })
+  
+      assert.throws(function() {
+        t1.playbackRate
+      })
+  
+      assert.throws(function() {
+        t1.play()
+      })
+      
+      done()
+    }) 
   })
 
   it('auto-destroy removes an animation after it finished playing', done => {
@@ -482,29 +486,29 @@ describe('basic', () => {
       duration: 200,
       props: { x: 0 }
     })
- 
+
     t1.on('finish', function() {
       setTimeout(() => {
         assert.throws(function() {
           t1.duration
         })
-  
+
         assert.throws(function() {
           t1.currentTime
         })
-  
+
         assert.throws(function() {
           t1.playbackRate
         })
-  
+
         assert.throws(function() {
           t1.play()
         })
-  
+
         done()
       })
-    })  
-    
+    })
+
     t1.play({ destroy: true })
   })
 
