@@ -49,19 +49,20 @@ export const propsPlugin: JustAnimatePlugin = {
 function getTargetType(target: any, prop: string) {
   // ignore attribute and variable setters if is not DOM or if the
   // target has a property with that exact name
-  if (isDOM(target)) {
-    if (cssVarExp.test(prop)) {
-      return CSSVAR
-    } else if (typeof target[prop] !== 'undefined' && !includes(svgReadonly, prop)) {
-      return PROPERTY
-    } else if (includes(noHyphenate, prop)) {
-      return ATTRIBUTE
-    } else {
-      return ATTRIBUTE_HYPHENATE
-    }
-  } else {
+  
+  if (!isDOM(target)) {
     return PROPERTY
   }
+  if (cssVarExp.test(prop)) {
+    return CSSVAR
+  }
+  if (typeof target[prop] !== 'undefined' && !includes(svgReadonly, prop)) {
+    return PROPERTY
+  }
+  if (includes(noHyphenate, prop)) {
+    return ATTRIBUTE
+  }
+  return ATTRIBUTE_HYPHENATE
 }
 
 function getTargetGetter(target: any, prop: string) {

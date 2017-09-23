@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import { animate } from '../../src/main'
+import { animate, timeline } from '../../src/main'
 import { addPlugin, removePlugin } from '../../src/lib/core/plugins'
 import { waapiPlugin } from '../../src/web/index'
 import { getEffects } from '../../src/lib/model/effects'
@@ -103,7 +103,7 @@ describe('transforms', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate({
+    const t1 = animate({
       targets: target,
       easing: 'linear',
       duration: 1000,
@@ -113,12 +113,12 @@ describe('transforms', () => {
         rotate: [0, 180, 360]
       }
     })
-    timeline.pause()
+    t1.pause()
 
-    timeline.currentTime = 0
+    t1.currentTime = 0
     assert.equal(getComputedStyle(target).transform, 'matrix(1, 0, 0, 1, 0, 0)')
 
-    timeline.currentTime = 500
+    t1.currentTime = 500
     assert.equal(getComputedStyle(target).transform, 'matrix(-0.876307, 0.481754, -0.481754, -0.876307, 0, 168)')
 
     document.body.removeChild(target)
@@ -128,7 +128,7 @@ describe('transforms', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate({
+    const t1 = animate({
       targets: target,
       easing: 'linear',
       duration: 1000,
@@ -139,12 +139,12 @@ describe('transforms', () => {
       }
     })
 
-    timeline.pause()
+    t1.pause()
 
-    timeline.currentTime = 0
+    t1.currentTime = 0
     assert.equal(getComputedStyle(target).transform, 'matrix(1, 0, 0, 1, 0, 0)')
 
-    timeline.currentTime = 500
+    t1.currentTime = 500
     assert.equal(getComputedStyle(target).transform, 'matrix(-0.876307, 0.481754, -0.481754, -0.876307, 0, 168)')
 
     document.body.removeChild(target)
@@ -154,7 +154,7 @@ describe('transforms', () => {
     const target = document.createElement('div')
     document.body.appendChild(target)
 
-    const timeline = animate({
+    const t1 = animate({
       targets: target,
       easing: 'linear',
       duration: 1000,
@@ -164,13 +164,13 @@ describe('transforms', () => {
         rotate: [0, 360]
       }
     })
-    
-    timeline.pause()
 
-    timeline.currentTime = 0
+    t1.pause()
+
+    t1.currentTime = 0
     assert.equal(getComputedStyle(target).transform, 'matrix(1, 0, 0, 1, 0, 0)')
 
-    timeline.currentTime = 500
+    t1.currentTime = 500
     assert.equal(getComputedStyle(target).transform, 'matrix(-0.876307, 0.481754, -0.481754, -0.876307, 0, 168)')
 
     document.body.removeChild(target)
@@ -208,5 +208,39 @@ describe('transforms', () => {
     ])
 
     document.body.removeChild(target)
+  })
+
+  it('transform animations for the same target combine correctly', done => {
+    const target1 = document.createElement('div') 
+    document.body.appendChild(target1)
+    
+    var t1 = timeline() 
+
+    t1.fromTo(0, 500, {
+      targets: target1, 
+      easing: 'linear',
+      web: {
+        x: [0, 300]
+      }
+    })
+
+    t1.on('finish', () => {
+      assert.equal(t1.duration, 500) 
+      assert.equal(getComputedStyle(target1).transform, 'matrix(1, 0, 0, 1, 300, 500)')
+      t1.destroy()
+      done()
+    })
+
+    t1.play()
+
+    setTimeout(function () { 
+      t1.fromTo(0, 500, {
+        targets: target1, 
+        easing: 'linear',
+        web: {
+          y: [0, 500]
+        }
+      }) 
+    }, 250)
   })
 })

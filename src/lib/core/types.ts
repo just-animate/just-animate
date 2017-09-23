@@ -160,10 +160,11 @@ export interface TimelineOptions {
 export type TimelineEvent = 'cancel' | 'config' | 'finish' | 'pause' | 'reverse' | 'update' | 'play'
 
 export interface IReducerContext {
-  events: string[]  
-  destroyed?: boolean
-  dirty?: boolean
+  events: string[]
+  needUpdate: TargetConfiguration[]
+  destroyed?: boolean 
   trigger(eventName: string): void
+  dirty(config: TargetConfiguration): void
 }
 
 export interface IReducer {

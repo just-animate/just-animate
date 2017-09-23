@@ -15,9 +15,9 @@ import { all, find, push, list, pushDistinct, sortBy } from '../utils/lists'
 import { flr, max } from '../utils/math'
 import { resolveProperty } from '../utils/resolve-property'
 import { isObject, isNumber, isArrayLike, isOwner, isDefined } from '../utils/inspect'
-import { plugins } from '../core/plugins'
-import { recalculateTimes } from './recalculate-times'
+import { plugins } from '../core/plugins' 
 import { IReducer, IReducerContext } from '../core/types'
+import { calculateConfigs } from './calc-configs'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
 
@@ -31,23 +31,25 @@ export const insert: IReducer = (model: ITimelineModel, options: AnimationOption
 
     // add all targets as property keyframes
     all(opts.targets, (target, i, ilen) => {
-      addPropertyKeyframes(model, target, i, ilen, opts)
+      const config = addPropertyKeyframes(model, target, i, ilen, opts)
+      ctx.dirty(config)
     })
   })
 
   // recalculate property keyframe times and total duration
-  recalculateTimes(model, _, ctx) 
+  calculateConfigs(model)
   ctx.trigger(CONFIG) 
 }
 
 function addPropertyKeyframes(model: ITimelineModel, target: any, index: number, ilen: number, opts: AnimationOptions) {
+  const defaultEasing = 'ease'
   const delay = resolveProperty(opts.delay, target, index, ilen) || 0
   const config =
     find(model.configs, c => c.target === target) ||
     push(model.configs, {
       from: max(opts.from + delay, 0),
       to: max(opts.to + delay, 0),
-      easing: opts.easing || 'ease',
+      easing: opts.easing || defaultEasing,
       duration: opts.to - opts.from,
       endDelay: resolveProperty(opts.endDelay, target, index, ilen) || 0,
       stagger: opts.stagger || 0,
@@ -61,7 +63,7 @@ function addPropertyKeyframes(model: ITimelineModel, target: any, index: number,
   const delayMs = resolveProperty(opts.delay, config, index, config.targetLength) || 0
   const from = max(staggerMs + delayMs + opts.from, 0)
   const duration = opts.to - opts.from
-  const easing = opts.easing || 'ease'
+  const easing = opts.easing || defaultEasing
 
   // iterate over each property split it into keyframes
   for (var pluginName in plugins) {
@@ -78,6 +80,7 @@ function addPropertyKeyframes(model: ITimelineModel, target: any, index: number,
 
   // sort property keyframes
   config.keyframes.sort(propKeyframeSort)
+  return config
 }
 
 function addProperty(

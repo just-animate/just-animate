@@ -1,7 +1,7 @@
 {
   "author": "christopher.j.wallis@gmail.com",
   "dependencies": {
-    "just-curves": "^0.1.1"
+    "just-curves": "^0.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",

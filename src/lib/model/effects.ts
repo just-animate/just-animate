@@ -27,7 +27,7 @@ export function getEffects(model: ITimelineModel): Effect[] {
   )
 }
 
-function toEffects(config: TargetConfiguration): Effect[] {
+export function toEffects(config: TargetConfiguration): Effect[] {
   const keyframes = config.keyframes
   const from = config.from
   const to = config.to

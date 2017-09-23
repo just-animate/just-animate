@@ -1,6 +1,6 @@
 import { loopOff } from '../core/timeloop'
 import { ITimelineModel } from '../core/types'
-import { S_FINISHED, _ } from '../utils/constants'
+import { S_PAUSED, _ } from '../utils/constants'
 import { destroy } from './destroy'
 import { update } from './update'
 import { FINISH } from '../actions'
@@ -9,7 +9,7 @@ import { IReducer, IReducerContext } from '../core/types'
 export const finish: IReducer = (model: ITimelineModel, _data: any, ctx: IReducerContext) => {
   // reset iteration counter and set state to finished
   model.round = 0
-  model.state = S_FINISHED
+  model.state = S_PAUSED
 
   if (!model.yoyo) {
     // reset the time to the start

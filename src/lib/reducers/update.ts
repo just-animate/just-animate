@@ -10,7 +10,7 @@ import { IReducer, IReducerContext } from '../core/types'
 export const update: IReducer = (model: ITimelineModel, _data: any, ctx: IReducerContext) => {
   if (model.players === _) {
     // setup players if timeline is inactive 
-    setup(model, _, ctx)
+    setup(model)
   }
 
   // check if current state is playing

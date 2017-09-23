@@ -15,14 +15,13 @@ export function memoize<T extends Function>(func: T): T {
     for (var h = 0, hlen = cache.length; h < hlen; h++) {
       // note: it might be faster to do an .every(), should do a perf check on this
       var keys = cache[h].args
-
-      if (keys.length !== hlen) {
+      var ilen = args.length
+      if (keys.length !== ilen) {
         // the cheapest test for equality
         continue
       }
 
-      var matches = 0
-      var ilen = args.length
+      var matches = 0 
       for (var i = 0; i < ilen; i++) {
         if (keys[i] !== args[i]) {
           break

@@ -311,7 +311,12 @@ export function player(timeline2: ITimeline) {
   }
 
   scrubberControl.setAttribute('max', String(timeline2.duration))
+  
   scrubberControl.value = String(timeline2.currentTime)
   timeline2.on('update', onValueChanged)
+  timeline2.on('config', () => {
+    scrubberControl.setAttribute('max', String(timeline2.duration))
+  });
+  
   timeline = timeline2
 }
