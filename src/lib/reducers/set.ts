@@ -3,9 +3,9 @@ import { plugins } from '../core/plugins'
 import { includes, list } from '../utils/lists'
 import { _ } from '../utils/constants' 
 import { insert } from './insert'
-import { IReducer, IReducerContext } from '../core/types'
+import { IReducerContext } from '../core/types'
 
-export const set: IReducer = (model: ITimelineModel, options: BaseSetOptions | BaseSetOptions[], ctx: IReducerContext) => {
+export function set(model: ITimelineModel, options: BaseSetOptions | BaseSetOptions[], ctx: IReducerContext) {
     const pluginNames = Object.keys(plugins)
   
     const opts2 = list(options).map(opts => {

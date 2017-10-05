@@ -28,5 +28,5 @@ export const calculateConfigs = (model: ITimelineModel) => {
 
   // update the next position and
   model.cursor = cursor
-  model.duration = maxTo
+  model.timing.duration = maxTo
 }

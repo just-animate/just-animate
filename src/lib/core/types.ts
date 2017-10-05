@@ -128,7 +128,7 @@ export interface AddAnimationOptions extends BaseAnimationOptions {
 
 export interface AnimationOptions {
   from: number
-  to: number 
+  to: number
   easing?: string
   targets: AnimationTarget[]
   stagger?: number
@@ -162,7 +162,7 @@ export type TimelineEvent = 'cancel' | 'config' | 'finish' | 'pause' | 'reverse'
 export interface IReducerContext {
   events: string[]
   needUpdate: TargetConfiguration[]
-  destroyed?: boolean 
+  destroyed?: boolean
   trigger(eventName: string): void
   dirty(config: TargetConfiguration): void
 }
@@ -176,7 +176,7 @@ export interface ITimelineEventListener {
 }
 
 export interface IStore {
-  state: ITimelineModel,
+  state: ITimelineModel
   subs: Record<TimelineEvent, ITimelineEventListener[]>
 }
 
@@ -188,54 +188,71 @@ export interface ITimelineModel {
   /** 
    * Target configurations.  This includes all properties, plugins, and keyframes to use during animation.
    */
-  configs: TargetConfiguration[]  
-  /**
-   * Total active time of an animation.  In certain circumstances, the duration may increase during the active state.
-   */
-  duration: number  
+  configs: TargetConfiguration[]
   /**
    * Next position to insert new animations.  This is the same as duration unless an animation specifies a negative endDelay.
    * A negative endDelay can cause this to move prior to duration.
    * A positive endDelay will cause the duration to match
    */
-  cursor: number  
+  cursor: number
   /**
-   * The playrate of the Timeline. Positive numbers are forward and negative numbers are in reverse
+   * Player configurations
    */
-  rate: number  
-  /**
-   * References (@strings) to used as placeholders for values in the Timeline
-   */
-  refs: References
-  /**
-   * Number of times to repeat the timeline when played.
-   */
-  repeat: number
-  /**
-   * Number of repetitions currently played.
-   */
-  round: number  
-  /**
-   * Current state of the Timeline (inactive, starting, running, paused, etc.)
-   */
-  state: number
-   
-  /**
-   * Current time of the Timeline
-   */
-  time: number
-  /**
-   * True if the timeline should alternate directions for each iteration
-   */
-  yoyo: boolean  
+  playerConfig: ITimelinePlayOptions
   /**
    * Animation players used to actually animate things
    */
   players: AnimationPlayer[]
   /**
+   * References (@strings) to used as placeholders for values in the Timeline
+   */
+  refs: References
+  /*
+   *
+   */
+  timing: ITimelineTiming
+}
+
+export interface ITimelinePlayOptions {
+  /**
    * True if the timeline should be destroyed on finish
    */
   destroy?: boolean
+  /**
+   * Number of times to repeat the timeline when played.
+   */
+  repeat: number
+  /**
+   * True if the timeline should alternate directions for each iteration
+   */
+  yoyo: boolean
+}
+
+export interface ITimelineTiming {
+  /**
+   * Total active time of an animation.  In certain circumstances, the duration may increase during the active state.
+   */
+  duration: number
+  /**
+   * The playrate of the Timeline. Positive numbers are forward and negative numbers are in reverse
+   */
+  rate: number
+  /**
+   * Number of repetitions currently played.
+   */
+  round: number
+  /**
+   * True if the timeline is currenting playing
+   */
+  playing: boolean
+  /**
+   * True if the timeline is currently active
+   */
+  active: boolean
+  /**
+   * Current time of the Timeline
+   */
+  time: number
 }
 
 export interface PlayOptions {
@@ -261,9 +278,10 @@ export interface ITimeline {
   currentTime: number
   duration: number
   playbackRate: number 
-  state: number
+  isPlaying: boolean;
+  isActive: boolean;
   id?: string
-  
+
   /**
    * Adds an animation at the end of the timeline, unless from/to are specified
    * @param opts the animation definition
@@ -274,11 +292,11 @@ export interface ITimeline {
    * @param opts the animation definition
    */
   animate(opts: AddAnimationOptions | AddAnimationOptions[]): this
-  
+
   /**
    * Destroys the internal model of the timeline
    */
-  destroy(): void;
+  destroy(): void
   /**
    * Defines an animation that occurs starting at "from" and ending at "to".
    *
@@ -325,7 +343,7 @@ export interface ITimeline {
    * @param listener callback for when the event occurs
    */
   once(eventName: TimelineEvent, listener: (time: number) => void): this
-  
+
   /**
    * Unregister for timeline events
    * @param eventName timeline event name

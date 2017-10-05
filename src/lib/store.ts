@@ -1,5 +1,5 @@
 import { TimelineOptions, ITimelineModel } from './core/types'
-import { S_INACTIVE, _ } from './utils/constants'
+import { _ } from './utils/constants'
 
 import {
   CANCEL,
@@ -10,7 +10,7 @@ import {
   REVERSE,
   TICK,
   UPDATE,
-  UPDATE_TIME,
+  SEEK,
   UPDATE_RATE,
   APPEND,
   INSERT,
@@ -30,7 +30,7 @@ import {
   tick,
   update,
   updateRate,
-  updateTime
+  seek
 } from './reducers/index'
 import {
   IReducer,
@@ -57,11 +57,11 @@ const reducers: Record<string, IReducer> = {
   [PAUSE]: pause,
   [PLAY]: play,
   [REVERSE]: reverse,
+  [SEEK]: seek,
   [SET]: set,
   [TICK]: tick,
   [UPDATE]: update,
-  [UPDATE_RATE]: updateRate,
-  [UPDATE_TIME]: updateTime
+  [UPDATE_RATE]: updateRate
 }
 
 function createInitial(opts: TimelineOptions) {
@@ -73,18 +73,23 @@ function createInitial(opts: TimelineOptions) {
   }
 
   const newModel: ITimelineModel = {
-    configs: [],
-    cursor: 0,
-    duration: 0,
     id: opts.id,
-    players: _,
-    rate: 1,
+    cursor: 0, 
+    configs: [],
     refs: refs,
-    repeat: _,
-    round: _,
-    state: S_INACTIVE,
-    time: _,
-    yoyo: false
+    players: _,
+    playerConfig: {
+      repeat: _,
+      yoyo: false
+    },
+    timing: {
+      rate: 1,
+      playing: false,
+      active: false,
+      round: _,
+      time: _,
+      duration: 0
+    }
   }
 
   return newModel
@@ -145,7 +150,7 @@ export function dispatch(action: string, id: string, data?: any) {
     const subs = store.subs[evt as TimelineEvent]
     if (subs) {
       all(subs, sub => {
-        sub(model.time)
+        sub(model.timing.time)
       })
     }
   })
@@ -154,7 +159,7 @@ export function dispatch(action: string, id: string, data?: any) {
     // remove from stores if destroyed
     delete stores[id]
   } else if (ctx.needUpdate.length) {
-    if (model.state !== S_INACTIVE) {
+    if (model.timing.active) {
       rebuild(model, ctx)
     } else {
       calculateConfigs(model)

@@ -1,19 +1,22 @@
 import { loopOff } from '../core/timeloop'
 import { ITimelineModel } from '../core/types'
-import { S_PAUSED, _ } from '../utils/constants'
+import { _ } from '../utils/constants'
 import { destroy } from './destroy'
 import { update } from './update'
 import { FINISH } from '../actions'
-import { IReducer, IReducerContext } from '../core/types'
+import { IReducerContext } from '../core/types'
 
-export const finish: IReducer = (model: ITimelineModel, _data: any, ctx: IReducerContext) => {
+export function finish (model: ITimelineModel, _data: any, ctx: IReducerContext) {
+  const { playerConfig, timing } = model
+  
   // reset iteration counter and set state to finished
-  model.round = 0
-  model.state = S_PAUSED
+  timing.round = 0
+  timing.playing = false
+  timing.active = true
 
-  if (!model.yoyo) {
+  if (!playerConfig.yoyo) {
     // reset the time to the start
-    model.time = model.rate < 0 ? 0 : model.duration
+    timing.time = timing.rate < 0 ? 0 : timing.duration
   }
 
   // stop auto-updating the players
@@ -26,7 +29,7 @@ export const finish: IReducer = (model: ITimelineModel, _data: any, ctx: IReduce
   // update must be sent so the last frame can be processed by things listening for 'update'
   ctx.trigger(FINISH) 
 
-  if (model.destroy) {
+  if (playerConfig.destroy) {
     // auto-destroy model if set
     destroy(model, _, ctx)
   }

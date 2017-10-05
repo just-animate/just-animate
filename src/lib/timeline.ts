@@ -18,30 +18,34 @@ import {
   FINISH,
   PAUSE,
   UPDATE_RATE,
-  UPDATE_TIME,
+  SEEK,
   REVERSE,
   PLAY,
   APPEND,
   SET,
   INSERT
 } from './actions'
-import { dispatch, addState, getState, on, off } from './store'
+import { dispatch, addState, getState, on, off } from './store' 
 
 const timelineProto: ITimeline = {
-  get state(): number {
-    return getState(this.id).state;
+  get isActive(): boolean {
+    return !!getState(this.id).timing.active;
+  },
+  get isPlaying(): boolean {
+    return !!getState(this.id).timing.playing;
   },
   get duration(): number {
-    return getState(this.id).duration
+    const { cursor, timing} = getState(this.id)
+    return timing.active ? timing.duration : cursor;
   },
   get currentTime() {
-    return getState(this.id).time
+    return getState(this.id).timing.time
   },
   set currentTime(time: number) {
-    dispatch(UPDATE_TIME, this.id, time)
+    dispatch(SEEK, this.id, time)
   },
   get playbackRate() {
-    return getState(this.id).rate
+    return getState(this.id).timing.rate
   },
   set playbackRate(rate: number) {
     dispatch(UPDATE_RATE, this.id, rate)
@@ -102,7 +106,7 @@ const timelineProto: ITimeline = {
     return this
   },
   seek(time: number) {
-    dispatch(UPDATE_TIME, this.id, time)
+    dispatch(SEEK, this.id, time)
     return this
   },
   sequence(seqOptions: AddAnimationOptions[]) {

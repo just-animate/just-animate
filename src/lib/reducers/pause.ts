@@ -1,13 +1,14 @@
 import { ITimelineModel } from '../core/types'
 import { loopOff } from '../core/timeloop'
-import { S_PAUSED, _ } from '../utils/constants'
+import { _ } from '../utils/constants'
 import { update } from './update'
 import { PAUSE } from '../actions'
-import { IReducer, IReducerContext } from '../core/types'
+import { IReducerContext } from '../core/types'
 
-export const pause: IReducer = (model: ITimelineModel, _data: any, ctx: IReducerContext) => {
+export function pause(model: ITimelineModel, _data: any, ctx: IReducerContext) {
   // set state to paused
-  model.state = S_PAUSED
+  model.timing.playing = false
+  model.timing.active = true;
 
   // stop auto-updating players
   loopOff(model.id)

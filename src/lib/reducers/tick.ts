@@ -3,17 +3,19 @@ import { _ } from '../utils/constants'
 import { inRange } from '../utils/math'
 import { finish } from './finish'
 import { update } from './update'
-import { IReducer, IReducerContext } from '../core/types'
+import { IReducerContext } from '../core/types'
 
-export const tick: IReducer = (model: ITimelineModel, delta: number, _ctx: IReducerContext) => {
+export function tick(model: ITimelineModel, delta: number, _ctx: IReducerContext) {
+  const { playerConfig, timing } = model
+  
   // calculate running range
-  const duration = model.duration
-  const repeat = model.repeat
-  const rate = model.rate
+  const duration = timing.duration
+  const rate = timing.rate
+  const repeat = playerConfig.repeat
 
   // determine the current time, round, and direction
-  let time = model.time === _ ? (rate < 0 ? duration : 0) : model.time
-  let round = model.round || 0
+  let time = timing.time === _ ? (rate < 0 ? duration : 0) : timing.time
+  let round = timing.round || 0
   const isReversed = rate < 0
 
   // update the time by adding the delta by the rate of time
@@ -22,22 +24,22 @@ export const tick: IReducer = (model: ITimelineModel, delta: number, _ctx: IRedu
   // check if timeline has finished
   let iterationEnded = false
   if (!inRange(time, 0, duration)) {
-    model.round = ++round
+    timing.round = ++round
     time = isReversed ? 0 : duration
     iterationEnded = true
 
-    if (model.yoyo) {
+    if (playerConfig.yoyo) {
       // reverse direction when alternating and the iteration has completed    
-      model.rate = (model.rate || 0) * -1
+      timing.rate = (timing.rate || 0) * -1
     }
 
     // reset the clock based on the current direction
-    time = model.rate < 0 ? duration : 0
+    time = timing.rate < 0 ? duration : 0
   }
 
   // save time and round
-  model.time = time
-  model.round = round
+  timing.time = time
+  timing.round = round
 
   if (iterationEnded && repeat === round) {
     // end the cycle by calling finish

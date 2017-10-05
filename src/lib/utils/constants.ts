@@ -1,7 +1,3 @@
-export const S_INACTIVE = 1
-export const S_PAUSED = 2
-export const S_PLAYING = 3
-
 export const _ = undefined as undefined
 
 export const measureExpression = /^([+|-]*[0-9]*[.]*?[0-9]+)([a-z%]+)*$/i

@@ -1,31 +1,33 @@
 import { PlayOptions, ITimelineModel } from '../core/types'
 import { loopOn } from '../core/timeloop' 
-import { S_PLAYING, _ } from '../utils/constants'
+import { _ } from '../utils/constants'
 import { update } from './update'
 import { PLAY } from '../actions'
-import { IReducer, IReducerContext } from '../core/types'
+import { IReducerContext } from '../core/types'
 
-export const play: IReducer = (model: ITimelineModel, options: PlayOptions, ctx: IReducerContext) => {
+export function play(model: ITimelineModel, options: PlayOptions, ctx: IReducerContext) {
+  const { playerConfig, timing } = model
   if (options) {
     // transfer options to model
-    model.repeat = options.repeat
-    model.yoyo = !!options.alternate
-    model.destroy = !!options.destroy
+    playerConfig.repeat = options.repeat
+    playerConfig.yoyo = !!options.alternate
+    playerConfig.destroy = !!options.destroy
   }
 
   // ensure default play options
-  model.repeat = model.repeat || 1
-  model.yoyo = model.yoyo || false
+  playerConfig.repeat = playerConfig.repeat || 1
+  playerConfig.yoyo = playerConfig.yoyo || false
   
   // set state to playing
-  model.state = S_PLAYING
+  model.timing.playing = true
+  model.timing.active = true;
 
   // reset current time if out of bounds or first time playing
-  const isForwards = model.rate >= 0
-  if (isForwards && model.time === model.duration) {
-    model.time = 0
-  } else if (!isForwards && model.time === 0) {
-    model.time = model.duration
+  const isForwards = timing.rate >= 0
+  if (isForwards && timing.time === timing.duration) {
+    timing.time = 0
+  } else if (!isForwards && timing.time === 0) {
+    timing.time = timing.duration
   } 
 
   // start auto-updating players
