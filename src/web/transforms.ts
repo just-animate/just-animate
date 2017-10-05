@@ -1,4 +1,4 @@
-import { PropertyEffects, TargetConfiguration, PropertyEffect, Dictionary } from '../lib/core/types'
+import { PropertyEffects, TargetConfiguration, PropertyEffect, Dictionary, Easing } from '../lib/core/types'
 import { includes, pushDistinct, all, find } from '../lib/utils/lists'
 import { _ } from '../lib/utils/constants'
 import { isDefined } from '../lib/utils/inspect'
@@ -23,7 +23,7 @@ export function combineTransforms(
 
   // get a list of offsets
   const offsets: number[] = []
-  const easings: { [offset: string]: string } = {}
+  const easings: { [offset: string]: string | Easing } = {}
 
   all(transformNames, name => {
     const effects2 = effects[name]

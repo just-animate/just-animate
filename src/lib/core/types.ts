@@ -8,7 +8,7 @@ export interface PropertyOptions {
 
 export interface PropertyValueOptions {
   value: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[]
-  easing?: string
+  easing?: Easing | string
   interpolate?: Interpolator | string
 }
 
@@ -24,10 +24,14 @@ export interface Interpolator {
   (left: any, right: any): (offset: number) => any
 }
 
+export interface Easing {
+  (offset: number): number
+}
+
 export interface Keyframe {
   offset: number
   value: string | number
-  easing: string
+  easing: Easing | string
   interpolate: Function
   simpleFn?: boolean
 }
@@ -42,7 +46,7 @@ export interface PropertyFunction<T> {
 export interface PropertyObject {
   value: string | number
   offset?: number
-  easing?: string
+  easing?: Easing | string
   interpolate?: Interpolator | string
 }
 
@@ -69,7 +73,7 @@ export interface JustAnimatePlugin {
 }
 
 export interface PropertyKeyframe {
-  easing: string
+  easing: Easing | string
   time: number
   prop: string
   plugin: string
@@ -83,7 +87,7 @@ export interface PropertyEffects {
 
 export interface PropertyEffect {
   offset: number
-  easing: string
+  easing: Easing | string
   value: string | number
   interpolate: Interpolator
 }
@@ -105,7 +109,7 @@ export interface BaseAnimationOptions {
   targets: AnimationTarget | AnimationTarget[]
 
   delay?: PropertyResolver<number>
-  easing?: string
+  easing?: Easing | string
   endDelay?: PropertyResolver<number>
   props?: PropertyOptions
   stagger?: number
@@ -115,7 +119,7 @@ export interface BaseAnimationOptions {
 export interface BaseSetOptions {
   targets: AnimationTarget | AnimationTarget[]
   at?: number
-  easing?: string
+  easing?: Easing | string
   props?: SetOptions
   web?: SetOptions
 }

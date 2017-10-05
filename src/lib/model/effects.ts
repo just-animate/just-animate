@@ -1,7 +1,7 @@
-import { 
+import {
   Effect,
-  PropertyEffects, 
-  TargetConfiguration, 
+  PropertyEffects,
+  TargetConfiguration,
   Interpolator,
   Dictionary,
   PropertyEffect,
@@ -13,18 +13,14 @@ import { plugins } from '../core/plugins'
 import { resolveRefs } from '../core/references'
 import { _ } from '../utils/constants'
 import { getTargets } from '../utils/get-targets'
-import { all, find, push, sortBy, mapFlatten } from '../utils/lists' 
+import { all, find, push, sortBy, mapFlatten } from '../utils/lists'
 import { assign } from '../utils/assign'
 import { resolveProperty } from '../utils/resolve-property'
 
 const offsetSorter = sortBy<{ offset: number }>('offset')
 
-export function getEffects(model: ITimelineModel): Effect[] { 
-  return mapFlatten(model.configs, c => 
-    toEffects(
-      resolveRefs(model.refs, c, true)
-    )
-  )
+export function getEffects(model: ITimelineModel): Effect[] {
+  return mapFlatten(model.configs, c => toEffects(resolveRefs(model.refs, c, true)))
 }
 
 export function toEffects(config: TargetConfiguration): Effect[] {
@@ -84,7 +80,6 @@ export function toEffects(config: TargetConfiguration): Effect[] {
         ensureLastFrame(config, effects2)
 
         push(result, {
-          // config,
           plugin: propToPlugin[prop],
           target,
           prop,

@@ -16,7 +16,7 @@ import { flr, max } from '../utils/math'
 import { resolveProperty } from '../utils/resolve-property'
 import { isObject, isNumber, isArrayLike, isOwner, isDefined } from '../utils/inspect'
 import { plugins } from '../core/plugins' 
-import { IReducer, IReducerContext } from '../core/types'
+import { IReducer, IReducerContext, Easing } from '../core/types'
 import { calculateConfigs } from './calc-configs'
 
 const propKeyframeSort = sortBy<PropertyKeyframe>('time')
@@ -91,7 +91,7 @@ function addProperty(
   val: PropertyResolver<PropertyValue> | PropertyResolver<PropertyValue>[],
   duration: number,
   from: number,
-  defaultEasing: string
+  defaultEasing: string | Easing
 ) {
   let defaultInterpolator: Interpolator | string
   let values: PropertyResolver<PropertyValue>[]

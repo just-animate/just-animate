@@ -1,5 +1,5 @@
 import { cssFunction } from 'just-curves'
-import { Keyframe, Interpolator } from './types'
+import { Keyframe, Interpolator, Easing } from './types'
 import { isNumber, isFunction } from '../utils/inspect' 
 import { memoize } from '../utils/functional'
 import { all } from '../utils/lists'
@@ -49,7 +49,13 @@ export function interpolator(duration: number, keyframes: Keyframe[]) {
     const lk = keyframes[l]
 
     const time = (absTime - lt) / (rt - lt)
-    const progression = lk.easing ? getEasing(lk.easing)(time) : time
+    
+    const progression = !lk.easing
+      ? time : (
+        isFunction(lk.easing)
+          ? lk.easing as Easing
+          : getEasing(lk.easing as string)
+      )(time)
 
     if (lk.simpleFn) {
       return lk.interpolate(lk.value, keyframes[r].value, progression)
