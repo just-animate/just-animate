@@ -13,7 +13,11 @@ var cancel: HTMLElement
 var timeline: ITimeline
 var pausedForScrubbing = false
 
-function onValueChanged(value: number) {
+function onValueChanged(t: ITimeline) {
+  updateValue(t.currentTime)
+}
+
+function updateValue(value: number) {
   value = Math.floor(+value)
   scrubberValue.value = value + ''
   scrubberControl.value = value + ''
@@ -22,6 +26,10 @@ function onValueChanged(value: number) {
 function onCanceled() {
   scrubberValue.value = '0';
   scrubberControl.value = '0';
+}
+
+function onConfig(t: ITimeline) { 
+  scrubberControl.setAttribute('max', String(t.duration))
 }
 
 function init() {
@@ -43,7 +51,7 @@ function init() {
   const scrubberChanged = (evt: Event) => {
     var value = +(evt.currentTarget as HTMLInputElement).value
     timeline.currentTime = value
-    onValueChanged(value)
+    updateValue(value)
   }
   
   on(scrubberControl, 'input', scrubberChanged)
@@ -74,7 +82,7 @@ function init() {
   on(scrubberValue, 'input', (evt: Event) => {
     var value = +(evt.currentTarget as HTMLInputElement).value
     timeline.currentTime = value
-    onValueChanged(value)
+    updateValue(value)
   })
 
   on(play, 'click', () => {
@@ -86,7 +94,7 @@ function init() {
   on(cancel, 'click', () => {
     if (timeline) {
       timeline.cancel()
-      onValueChanged(0);
+      updateValue(0);
     }
   })
 
@@ -118,7 +126,6 @@ function init() {
   })
 }
 
-let onConfig: (time?: number) => void
 export function player(timeline2: ITimeline) {
   if (!isInitialized) {
     // initialize on first bind
@@ -132,14 +139,9 @@ export function player(timeline2: ITimeline) {
     timeline.off('cancel', onCanceled)
     timeline.off('config', onConfig)
   }
-  
-  // create handler for when timeline duration gets larger/smaller
-  onConfig = () => { 
-    scrubberControl.setAttribute('max', String(timeline2.duration))
-  }
 
   // call on config to set initial values
-  onConfig();
+  onConfig(timeline2);
   scrubberControl.value = String(timeline2.currentTime)
 
   // wire up subscriptions

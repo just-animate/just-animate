@@ -7,7 +7,8 @@ import {
   TimelineEvent,
   ITimeline,
   PlayOptions,
-  AnimationOptions
+  AnimationOptions,
+  TimelineHandler
 } from './core/types'
  
 import { uuid } from './utils/uuid'
@@ -32,109 +33,124 @@ import { _ } from './utils/constants'
 
 declare const Promise: PromiseConstructorLike
 
-const timelineProto: ITimeline = {
-  get isActive(): boolean {
+class Timeline implements ITimeline {
+  public id: string
+  public get isActive(): boolean {
     return !!getState(this.id).timing.active;
-  },
-  get isPlaying(): boolean {
+  }
+  public get isPlaying(): boolean {
     return !!getState(this.id).timing.playing;
-  },
-  get duration(): number {
+  }
+  public get duration(): number {
     const { cursor, timing} = getState(this.id)
     return timing.active ? timing.duration : cursor;
-  },
-  get currentTime() {
+  }
+  public get currentTime() {
     return getState(this.id).timing.time
-  },
-  set currentTime(time: number) {
+  }
+  public set currentTime(time: number) {
     dispatch(SEEK, this.id, time)
-  },
-  get playbackRate() {
+  }
+  public get playbackRate() {
     return getState(this.id).timing.rate
-  },
-  set playbackRate(rate: number) {
+  }
+  public set playbackRate(rate: number) {
     dispatch(UPDATE_RATE, this.id, rate)
-  },
-  add(opts: AddAnimationOptions | AddAnimationOptions[]) {
+  }
+  
+  constructor(opts?: TimelineOptions) {
+    opts = opts || {} 
+    this.id = (opts.id = opts.id || uuid())
+    addState(opts)
+  }
+  
+  public add(opts: AddAnimationOptions | AddAnimationOptions[]) {
     dispatch(APPEND, this.id, opts)
     return this
-  },
-  animate(opts: AddAnimationOptions | AddAnimationOptions[]) {
+  }
+  public animate(opts: AddAnimationOptions | AddAnimationOptions[]) {
     dispatch(APPEND, this.id, opts)
     return this
-  },
-  fromTo(from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]) {
+  }
+  public fromTo(from: number, to: number, options: BaseAnimationOptions | BaseAnimationOptions[]) {
     all(options as AnimationOptions[], options2 => {
       options2.to = to
       options2.from = from
     })
     dispatch(INSERT, this.id, options) 
     return this
-  },
-  cancel() {
+  }
+  public cancel() {
     dispatch(CANCEL, this.id)
     return this
-  },
-  destroy() {
+  }
+  public destroy() {
     dispatch(DESTROY, this.id)
-  },
-  finish() {
+  }
+  public finish() {
     dispatch(FINISH, this.id)
     return this
-  },
-  on(name: TimelineEvent, fn: (time: number) => void) { 
-    on(this.id, name, fn) 
+  }
+  public on(name: TimelineEvent, fn: TimelineHandler) { 
+    on(this.id, name, fn, this) 
     return this
-  },
-  once(eventName: TimelineEvent) {
+  }
+  public once(eventName: TimelineEvent): PromiseLike<ITimeline>
+  public once(labelName: string): PromiseLike<ITimeline>
+  public once(eventName: TimelineEvent, listener: TimelineHandler): this
+  public once(labelName: string, listener: TimelineHandler): this
+  public once(eventName: TimelineEvent, handler?: TimelineHandler) {
     const self = this
-    if (typeof Promise === 'undefined') {
-      throw new Error('Promise is required')
-    }
-
-    return new Promise<ITimeline>((resolve, _reject) => {
+    const callback = (resolve: TimelineHandler) => {
       self.on(eventName, function s() {
         self.off(eventName, s)
         resolve(self)
-      }) 
-    })
-  },
-  off(name: TimelineEvent, fn: (time: number) => void) { 
+      })
+    };
+    
+    if (arguments.length === 2) {
+      callback(handler)
+      return self
+    }
+    
+    return new Promise<ITimeline>(callback)
+  }
+  public off(name: TimelineEvent, fn: TimelineHandler) { 
     off(this.id, name, fn) 
     return this
-  },
-  pause() {
+  }
+  public pause() {
     dispatch(PAUSE, this.id) 
     return this
-  },
-  play(options?: PlayOptions) { 
+  }
+  public play(options?: PlayOptions) { 
     dispatch(PLAY, this.id, options)
     return this
-  },
-  reverse() {
+  }
+  public reverse() {
     dispatch(REVERSE, this.id)
     return this
-  },
-  seek(time: number) {
+  }
+  public seek(time: number | string) {
     dispatch(SEEK, this.id, time)
     return this
-  },
-  sequence(seqOptions: AddAnimationOptions[]) {
+  }
+  public sequence(seqOptions: AddAnimationOptions[]) {
     all(seqOptions, opt => dispatch(APPEND, this.id, opt))
     return this
-  },
-  set(opts: BaseSetOptions | BaseSetOptions[]) {
+  }
+  public set(opts: BaseSetOptions | BaseSetOptions[]) {
     dispatch(SET, this.id, opts)
     return this
-  },
-  getLabel(name: string) {
+  }
+  public getLabel(name: string) {
     return getState(this.id).labels[name] || _
-  },
-  setLabel(name: string, time?: number) {
+  }
+  public setLabel(name: string, time?: number) {
     dispatch(SET_LABEL, this.id, { name, time })
     return this;
-  },
-  clearLabel(name: string) {
+  }
+  public clearLabel(name: string) {
     dispatch(CLEAR_LABEL, this.id, name)
     return this;
   }
@@ -144,11 +160,5 @@ const timelineProto: ITimeline = {
  * Animation timeline control.  Defines animation definition methods like .fromTo() and player controls like .play()
  */
 export function timeline(opts?: TimelineOptions): ITimeline {
-  const t1 = Object.create(timelineProto)
-  opts = opts || {}
-  
-  opts.id = opts.id || uuid()
-  t1.id = opts.id
-  addState(opts)
-  return t1
+  return new Timeline(opts)
 }

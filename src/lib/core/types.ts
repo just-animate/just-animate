@@ -28,6 +28,10 @@ export interface Easing {
   (offset: number): number
 }
 
+export interface TimelineHandler {
+  (instance: ITimeline): void
+}
+
 export interface Keyframe {
   offset: number
   value: string | number
@@ -181,12 +185,22 @@ export interface IReducer {
 }
 
 export interface ITimelineEventListener {
+  _ja_id_?: number
   (data: any): void
+}
+
+export interface Subscribers {
+  [eventName: string]: {
+    [id: number]: {
+      arg?: any
+      fn: ITimelineEventListener
+    }
+  }
 }
 
 export interface IStore {
   state: ITimelineModel
-  subs: Record<TimelineEvent, ITimelineEventListener[]>
+  subs: Subscribers
 }
 
 export interface ITimelineModel {
@@ -362,8 +376,8 @@ export interface ITimeline {
    * @param eventName timeline event name
    * @param listener callback for when the event occurs
    */
-  on(eventName: TimelineEvent, listener: (time: number) => void): this
-  on(eventName: string, listener: (time: number) => void): this
+  on(eventName: TimelineEvent, listener: TimelineHandler): this
+  on(eventName: string, listener: TimelineHandler): this
 
   /**
    * Create a promise that wil resolve the next time this event occurs
@@ -371,14 +385,17 @@ export interface ITimeline {
    */
   once(eventName: TimelineEvent): PromiseLike<ITimeline>
   once(eventName: string): PromiseLike<ITimeline>
+  once(eventName: TimelineEvent, listener: TimelineHandler): this
+  once(eventName: string, listener: TimelineHandler): this
+  once(eventName: string, listener?: TimelineHandler): this | PromiseLike<ITimeline>
 
   /**
    * Unregister for timeline events
    * @param eventName timeline event name
    * @param listener callback to unregister
    */
-  off(eventName: TimelineEvent, listener: (time: number) => void): this
-  off(eventName: string, listener: (time: number) => void): this
+  off(eventName: TimelineEvent, listener: TimelineHandler): this
+  off(eventName: string, listener: TimelineHandler): this
 
   /**
    * Pauses execution of the animation. If the animation has never been active, this will

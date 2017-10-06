@@ -511,26 +511,4 @@ describe('basic', () => {
 
     t1.play({ destroy: true })
   })
-
-  it('once() only handles the event one time', done => {
-    var iterations = 0
-
-    const t1 = timeline()
-      .animate({
-        targets: { x: 200 },
-        duration: 200,
-        props: { x: 0 }
-      })
-      .on('finish', () => {
-        assert.equal(iterations, 1)
-        t1.destroy()
-        done()
-      })
-
-    t1.once('update').then(_ => {
-      iterations++
-    })
-
-    t1.play()
-  })
 })

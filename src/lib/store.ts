@@ -70,6 +70,8 @@ const reducers: Record<string, IReducer> = {
   [UPDATE_RATE]: updateRate
 }
 
+let nextHandlerId = 0
+
 function createInitial(opts: TimelineOptions) {
   const refs = {}
   if (opts.references) {
@@ -113,22 +115,29 @@ export function getState(id: string) {
 export function addState(opts: { id?: string }) {
   stores[opts.id] = {
     state: createInitial(opts),
-    subs: {} as Record<TimelineEvent, ITimelineEventListener[]>
+    subs: {} as Record<TimelineEvent, { handler: ITimelineEventListener, id: number }>
   }
 }
 
-export function on(id: string, eventName: string, listener: ITimelineEventListener) {
+export function on(id: string, eventName: string, handler: ITimelineEventListener, arg: any): number {
   const store = stores[id]
-  if (store) {
+  if (store) { 
     const subs = (store.subs[eventName] = store.subs[eventName] || [])
-    pushDistinct(subs, listener)
+    const hid: number = handler._ja_id_ || (handler._ja_id_ = ++nextHandlerId)
+    subs[hid] = { fn: handler, arg: arg }
+    return hid
   }
+  return _
 }
 
 export function off(id: string, eventName: string, listener: ITimelineEventListener) {
   const store = stores[id]
   if (store) {
-    remove(store.subs[eventName], listener)
+    const subs = store.subs[eventName]
+    const hid: number = (listener as any)._ja_id_ 
+    if (subs && hid) {
+      subs[hid] = _ 
+    }
   }
 }
 
@@ -156,9 +165,12 @@ export function dispatch(action: string, id: string, data?: any) {
   all(ctx.events, evt => {
     const subs = store.subs[evt as TimelineEvent]
     if (subs) {
-      all(subs, sub => {
-        sub(model.timing.time)
-      })
+      for (var hid in subs) {
+        var sub = subs[hid]
+        if (sub) {
+          sub.fn(sub.arg)
+        }
+      } 
     }
   })
 

@@ -44,14 +44,14 @@ export function tick(model: ITimelineModel, delta: number, ctx: IReducerContext)
   for (var labelName in labels) {
     // if label occurs between ticks, fire label event
     const labelTime = labels[labelName]
-    if (inBetween(labelTime, timing.time, time)) { 
+    if (inBetween(labelTime, timing.time, time, rate)) {
       ctx.trigger(labelName)
     }
   }
  
   if (playerConfig && isDefined(playerConfig.to)) {
     const to = playerConfig.to 
-    if (inBetween(to, timing.time, time)) {
+    if (inBetween(to, timing.time, time, rate)) {
       time = to
       playerConfig.to = _
       pause(model, _, ctx)

@@ -71,5 +71,29 @@ describe('labels', () => {
     
     t1.play()
   })  
+  
+  it('labels fire only once when tick walks over them', (done) => {
+    const t1 = animate({
+      targets: {},
+      duration: 500,
+      props: {
+          x: [0, 200]
+      }
+    })
+ 
+    t1.setLabel('first', 250)  
+    
+    let iterations = 0
+    t1.on('first', () => { 
+      iterations++
+    })
+    
+    t1.play()
+    
+    t1.once('finish').then(() => { 
+      assert.equal(iterations, 1)
+      done()
+    })
+  })  
    
 })
