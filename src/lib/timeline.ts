@@ -23,9 +23,14 @@ import {
   PLAY,
   APPEND,
   SET,
-  INSERT
+  INSERT,
+  SET_LABEL,
+  CLEAR_LABEL
 } from './actions'
 import { dispatch, addState, getState, on, off } from './store' 
+import { _ } from './utils/constants'
+
+declare const Promise: PromiseConstructorLike
 
 const timelineProto: ITimeline = {
   get isActive(): boolean {
@@ -81,13 +86,18 @@ const timelineProto: ITimeline = {
     on(this.id, name, fn) 
     return this
   },
-  once(eventName: TimelineEvent, listener: (time: number) => void) {
+  once(eventName: TimelineEvent) {
     const self = this
-    self.on(eventName, function s(time) {
-      self.off(eventName, s)
-      listener(time)
-    }) 
-    return self
+    if (typeof Promise === 'undefined') {
+      throw new Error('Promise is required')
+    }
+
+    return new Promise<ITimeline>((resolve, _reject) => {
+      self.on(eventName, function s() {
+        self.off(eventName, s)
+        resolve(self)
+      }) 
+    })
   },
   off(name: TimelineEvent, fn: (time: number) => void) { 
     off(this.id, name, fn) 
@@ -116,6 +126,17 @@ const timelineProto: ITimeline = {
   set(opts: BaseSetOptions | BaseSetOptions[]) {
     dispatch(SET, this.id, opts)
     return this
+  },
+  getLabel(name: string) {
+    return getState(this.id).labels[name] || _
+  },
+  setLabel(name: string, time?: number) {
+    dispatch(SET_LABEL, this.id, { name, time })
+    return this;
+  },
+  clearLabel(name: string) {
+    dispatch(CLEAR_LABEL, this.id, name)
+    return this;
   }
 }
 

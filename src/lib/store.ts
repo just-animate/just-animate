@@ -3,6 +3,7 @@ import { _ } from './utils/constants'
 
 import {
   CANCEL,
+  CLEAR_LABEL,
   DESTROY,
   FINISH,
   PAUSE,
@@ -14,12 +15,14 @@ import {
   UPDATE_RATE,
   APPEND,
   INSERT,
-  SET
+  SET,
+  SET_LABEL
 } from './actions'
 
 import {
   append,
   cancel,
+  clearLabel,
   destroy,
   finish,
   insert,
@@ -27,6 +30,7 @@ import {
   play,
   reverse,
   set,
+  setLabel,
   tick,
   update,
   updateRate,
@@ -51,6 +55,7 @@ const stores: Record<string, IStore> = {}
 const reducers: Record<string, IReducer> = {
   [APPEND]: append,
   [CANCEL]: cancel,
+  [CLEAR_LABEL]: clearLabel,
   [DESTROY]: destroy,
   [FINISH]: finish,
   [INSERT]: insert,
@@ -59,6 +64,7 @@ const reducers: Record<string, IReducer> = {
   [REVERSE]: reverse,
   [SEEK]: seek,
   [SET]: set,
+  [SET_LABEL]: setLabel,
   [TICK]: tick,
   [UPDATE]: update,
   [UPDATE_RATE]: updateRate
@@ -73,15 +79,16 @@ function createInitial(opts: TimelineOptions) {
   }
 
   const newModel: ITimelineModel = {
-    id: opts.id,
+    id: opts.id || _,
     cursor: 0, 
     configs: [],
-    refs: refs,
+    labels: opts.labels || {},
     players: _,
     playerConfig: {
       repeat: _,
       yoyo: false
     },
+    refs: refs,
     timing: {
       rate: 1,
       playing: false,

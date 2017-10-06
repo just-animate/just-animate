@@ -450,7 +450,7 @@ describe('basic', () => {
     }, 500)
   })
 
-  it('accessing a destroyed animation throws an error', (done) => {
+  it('accessing a destroyed animation throws an error', done => {
     const t1 = animate({
       targets: { x: 200 },
       duration: 1000,
@@ -458,26 +458,26 @@ describe('basic', () => {
     })
 
     t1.play().destroy()
-    
+
     setTimeout(() => {
       assert.throws(function() {
         t1.duration
       })
-  
+
       assert.throws(function() {
         t1.currentTime
       })
-  
+
       assert.throws(function() {
         t1.playbackRate
       })
-  
+
       assert.throws(function() {
         t1.play()
       })
-      
+
       done()
-    }) 
+    })
   })
 
   it('auto-destroy removes an animation after it finished playing', done => {
@@ -521,14 +521,15 @@ describe('basic', () => {
         duration: 200,
         props: { x: 0 }
       })
-      .once('update', () => {
-        iterations++
-      })
       .on('finish', () => {
         assert.equal(iterations, 1)
         t1.destroy()
         done()
       })
+
+    t1.once('update').then(_ => {
+      iterations++
+    })
 
     t1.play()
   })

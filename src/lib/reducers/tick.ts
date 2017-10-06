@@ -4,10 +4,13 @@ import { inRange } from '../utils/math'
 import { finish } from './finish'
 import { update } from './update'
 import { IReducerContext } from '../core/types'
+import { pause } from './pause'
+import { isDefined } from '../utils/inspect'
 
-export function tick(model: ITimelineModel, delta: number, _ctx: IReducerContext) {
-  const { playerConfig, timing } = model
-  
+export function tick(model: ITimelineModel, delta: number, ctx: IReducerContext) {
+  const timing = model.timing
+  const playerConfig = model.playerConfig
+
   // calculate running range
   const duration = timing.duration
   const rate = timing.rate
@@ -29,12 +32,22 @@ export function tick(model: ITimelineModel, delta: number, _ctx: IReducerContext
     iterationEnded = true
 
     if (playerConfig.yoyo) {
-      // reverse direction when alternating and the iteration has completed    
+      // reverse direction when alternating and the iteration has completed
       timing.rate = (timing.rate || 0) * -1
     }
 
     // reset the clock based on the current direction
     time = timing.rate < 0 ? duration : 0
+  }
+ 
+  if (playerConfig && isDefined(playerConfig.to)) {
+    const to = playerConfig.to
+    const isInRange = timing.rate > 0 ? inRange(to, timing.time, time) : inRange(to, time, timing.time)
+    if (isInRange) {
+      time = to
+      playerConfig.to = _
+      pause(model, _, ctx)
+    }
   }
 
   // save time and round
@@ -43,10 +56,10 @@ export function tick(model: ITimelineModel, delta: number, _ctx: IReducerContext
 
   if (iterationEnded && repeat === round) {
     // end the cycle by calling finish
-    finish(model, _, _ctx)  
+    finish(model, _, ctx)
     return
   }
 
   // if not the last iteration, call update to update the players
-  update(model, _, _ctx)
+  update(model, _, ctx)
 }

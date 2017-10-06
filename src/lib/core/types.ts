@@ -156,8 +156,13 @@ export interface References {
   [name: string]: any
 }
 
+export interface Labels {
+  [name: string]: number
+}
+
 export interface TimelineOptions {
   id?: string
+  labels?: Labels
   references?: References
 }
 
@@ -200,6 +205,10 @@ export interface ITimelineModel {
    */
   cursor: number
   /**
+   * Named positions in the timeline
+   */
+  labels: Labels
+  /**
    * Player configurations
    */
   playerConfig: ITimelinePlayOptions
@@ -230,6 +239,10 @@ export interface ITimelinePlayOptions {
    * True if the timeline should alternate directions for each iteration
    */
   yoyo: boolean
+  /**
+   * Time or label at which to pause automatically
+   */
+  to?: number
 }
 
 export interface ITimelineTiming {
@@ -272,6 +285,16 @@ export interface PlayOptions {
    * True if the timeline should be destroyed on finish
    */
   destroy?: boolean
+  
+  /**
+   * Starting time or label from which to play.  If the timeline is not already at this position, the timeline will first seek to it.
+   */
+  from?: string | number
+  
+  /**
+   * Ending time or label to pause the timeline.
+   */
+  to?: string | number
 }
 
 /**
@@ -340,13 +363,14 @@ export interface ITimeline {
    * @param listener callback for when the event occurs
    */
   on(eventName: TimelineEvent, listener: (time: number) => void): this
+  on(eventName: string, listener: (time: number) => void): this
 
   /**
-   * Register for timeline event only one time
-   * @param eventName timeline event name
-   * @param listener callback for when the event occurs
+   * Create a promise that wil resolve the next time this event occurs
+   * @param eventName timeline event name or label name
    */
-  once(eventName: TimelineEvent, listener: (time: number) => void): this
+  once(eventName: TimelineEvent): PromiseLike<ITimeline>
+  once(eventName: string): PromiseLike<ITimeline>
 
   /**
    * Unregister for timeline events
@@ -354,6 +378,7 @@ export interface ITimeline {
    * @param listener callback to unregister
    */
   off(eventName: TimelineEvent, listener: (time: number) => void): this
+  off(eventName: string, listener: (time: number) => void): this
 
   /**
    * Pauses execution of the animation. If the animation has never been active, this will
@@ -376,5 +401,24 @@ export interface ITimeline {
    * Seeks to a specific time.  If the animation is not active, this will activate effects.
    * @param time the time in milliseconds to seek to.
    */
-  seek(time: number): this
+  seek(time: number | string): this
+  
+  /**
+   * Get the time that the provided label is specified
+   * @param labelName label from which to get the time
+   */
+  getLabel(labelName: string): number
+  /**
+   * Sets a label at the specified time.  If no time is specified, the current position will be used.
+   * If the label provided already exists, the new time will overwrite the old time
+   * @param labelName label to set
+   * @param time the time in milliseconds to use for the label
+   */
+  setLabel(labelName: string, time?: number): this
+  
+  /**
+   * Clears the label from the timeline
+   * @param labelName label to clear
+   */
+  clearLabel(labelName: string): this
 }
