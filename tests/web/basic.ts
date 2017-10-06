@@ -4,7 +4,7 @@ const assert = chai.assert
 import { animate, timeline } from '../../src/main'
 import { addPlugin, removePlugin } from '../../src/lib/core/plugins'
 import { waapiPlugin } from '../../src/web/index'
-import { getEffects } from '../../src/lib/model/effects'
+import { getEffects } from '../../src/lib/core/effects'
 import { getState } from '../../src/lib/store'
 
 describe('basic', () => {

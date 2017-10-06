@@ -1,6 +1,6 @@
 import { ITimelineModel, AnimationPlayer } from '../core/types'
 import { plugins } from '../core/plugins'
-import { toEffects } from '../model/effects'
+import { toEffects } from '../core/effects'
 import { all, push } from '../utils/lists'
 import { TargetConfiguration } from '../core/types'
 import { resolveRefs } from '../core/references' 

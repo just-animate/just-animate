@@ -1,6 +1,6 @@
 import { sequence } from '../../src/main'
 import * as chai from 'chai'
-import { getEffects } from '../../src/lib/model/effects'
+import { getEffects } from '../../src/lib/core/effects'
 import { getState } from '../../src/lib/store'
 const { assert } = chai
 

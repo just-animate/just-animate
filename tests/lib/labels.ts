@@ -51,5 +51,25 @@ describe('labels', () => {
     t1.clearLabel('first')
     assert.equal(t1.getLabel('first'), undefined)  
   })  
+  
+  it('labels fire as an events when tick walks over them', (done) => {
+    const t1 = animate({
+      targets: {},
+      duration: 500,
+      props: {
+          x: [0, 200]
+      }
+    })
+ 
+    t1.setLabel('first', 250)  
+    
+    t1.once('first').then(() => {
+      assert.approximately(t1.currentTime, 250, 34)
+      t1.destroy()
+      done()
+    })
+    
+    t1.play()
+  })  
    
 })

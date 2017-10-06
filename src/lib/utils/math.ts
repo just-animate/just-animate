@@ -10,6 +10,9 @@ export const rnd = Math.round
 export function inRange(val: number, a: number, z: number) {
   return val !== _ && a <= val && val <= z
 }
+export function inBetween(val: number, a: number, z: number) {
+  return inRange(val, a, z) || inRange(val, z, a)
+}
 export function minMax(val: number, a: number, z: number) {
   return min(max(val, a), z)
 }

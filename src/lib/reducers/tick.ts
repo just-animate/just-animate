@@ -1,6 +1,6 @@
 import { ITimelineModel } from '../core/types'
 import { _ } from '../utils/constants'
-import { inRange } from '../utils/math'
+import { inRange, inBetween } from '../utils/math'
 import { finish } from './finish'
 import { update } from './update'
 import { IReducerContext } from '../core/types'
@@ -10,6 +10,7 @@ import { isDefined } from '../utils/inspect'
 export function tick(model: ITimelineModel, delta: number, ctx: IReducerContext) {
   const timing = model.timing
   const playerConfig = model.playerConfig
+  const labels = model.labels
 
   // calculate running range
   const duration = timing.duration
@@ -39,11 +40,18 @@ export function tick(model: ITimelineModel, delta: number, ctx: IReducerContext)
     // reset the clock based on the current direction
     time = timing.rate < 0 ? duration : 0
   }
+  
+  for (var labelName in labels) {
+    // if label occurs between ticks, fire label event
+    const labelTime = labels[labelName]
+    if (inBetween(labelTime, timing.time, time)) { 
+      ctx.trigger(labelName)
+    }
+  }
  
   if (playerConfig && isDefined(playerConfig.to)) {
-    const to = playerConfig.to
-    const isInRange = timing.rate > 0 ? inRange(to, timing.time, time) : inRange(to, time, timing.time)
-    if (isInRange) {
+    const to = playerConfig.to 
+    if (inBetween(to, timing.time, time)) {
       time = to
       playerConfig.to = _
       pause(model, _, ctx)
