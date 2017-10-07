@@ -52,8 +52,6 @@ import { setReferences } from './reducers/set-refs'
 
 const stateSubs: ((type: string, store: IStore) => void)[] = []
 
-const stores: Record<string, IStore> = {}
-
 const reducers: Record<string, IReducer> = {
   [APPEND]: append,
   [CANCEL]: cancel,
@@ -72,6 +70,8 @@ const reducers: Record<string, IReducer> = {
   [UPDATE]: update,
   [UPDATE_RATE]: updateRate
 }
+
+export const stores: Record<string, IStore> = {}
 
 let nextHandlerId = 0
 
@@ -188,6 +188,10 @@ export function dispatch(action: string, id: string, data?: any) {
       sub2(evt, store)
     })
   })
+}
+
+export function getIds() {
+  return Object.keys(stores).filter(s => stores[s] !== _)
 }
 
 export function subscribe(fn: (type: string, store: IStore) => void) {

@@ -62,7 +62,7 @@ class Timeline implements ITimeline {
 
   constructor(opts?: TimelineOptions) {
     opts = opts || {}
-    this.id = opts.id = opts.id || 'Timeline' + ++timelineId
+    this.id = opts.id = opts.id || 'Timeline ' + ++timelineId
     addStore(opts)
   }
 
