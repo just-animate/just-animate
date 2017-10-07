@@ -55,16 +55,16 @@ describe('labels', () => {
   it('labels fire as an events when tick walks over them', (done) => {
     const t1 = animate({
       targets: {},
-      duration: 500,
+      duration: 1000,
       props: {
           x: [0, 200]
       }
     })
  
-    t1.setLabel('first', 250)  
+    t1.setLabel('first', 500)  
     
     t1.once('first').then(() => {
-      assert.approximately(t1.currentTime, 250, 34)
+      assert.approximately(t1.currentTime, 500, 34)
       t1.destroy()
       done()
     })
@@ -75,13 +75,13 @@ describe('labels', () => {
   it('labels fire only once when tick walks over them', (done) => {
     const t1 = animate({
       targets: {},
-      duration: 500,
+      duration: 1000,
       props: {
           x: [0, 200]
       }
     })
  
-    t1.setLabel('first', 250)  
+    t1.setLabel('first', 500)  
     
     let iterations = 0
     t1.on('first', () => { 
