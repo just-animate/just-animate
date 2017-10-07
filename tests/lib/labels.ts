@@ -63,13 +63,13 @@ describe('labels', () => {
  
     t1.setLabel('first', 500)  
     
-    t1.once('first', () => {
-      assert.approximately(t1.currentTime, 500, 34)
+    t1.once('first', () => { 
+      assert.equal(t1.currentTime, 500)
       t1.destroy()
       done()
     })
     
-    t1.play()
+    t1.play({ to: 'first' })
   })  
   
   it('labels fire only once when tick walks over them', (done) => {
