@@ -90,7 +90,7 @@ describe('labels', () => {
     
     t1.play()
     
-    t1.once('finish').then(() => { 
+    t1.once('finish', () => { 
       assert.equal(iterations, 1)
       done()
     })
