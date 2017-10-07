@@ -63,7 +63,7 @@ describe('labels', () => {
  
     t1.setLabel('first', 500)  
     
-    t1.once('first').then(() => {
+    t1.once('first', () => {
       assert.approximately(t1.currentTime, 500, 34)
       t1.destroy()
       done()

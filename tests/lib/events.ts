@@ -71,7 +71,7 @@ describe('events', () => {
         done()
       })
 
-    t1.once('update').then(_ => {
+    t1.once('update', _ => {
       iterations++
     })
 
@@ -85,7 +85,7 @@ describe('events', () => {
       props: { x: 0 }
     })
 
-    t1.once('finish').then(t2 => {
+    t1.once('finish', t2 => {
       assert.equal(t1, t2)
       t1.destroy()
       done()

@@ -50,7 +50,7 @@ describe('play option', () => {
 
     t1.play({ to: 125 })
 
-    t1.once('pause').then(() => {
+    t1.once('pause', () => {
         assert.equal(t1.currentTime, 125);
         done()
     })
@@ -71,7 +71,7 @@ describe('play option', () => {
 
     t1.play({ to: 'middle' })
 
-    t1.once('pause').then(() => {
+    t1.once('pause', () => {
         assert.equal(t1.currentTime, 125);
         done()
     })
@@ -92,7 +92,7 @@ describe('play option', () => {
       
     t1.play({ from: 240, to: 'middle' })
 
-    t1.once('pause').then(() => {
+    t1.once('pause', () => {
         assert.equal(t1.currentTime, 125);
         done()
     })
@@ -115,7 +115,7 @@ describe('play option', () => {
       
     t1.play({ from: 240, to: 'middle' })
 
-    t1.once('pause').then(() => {
+    t1.once('pause', () => {
         assert.equal(t1.currentTime, 125);
         done()
     })
