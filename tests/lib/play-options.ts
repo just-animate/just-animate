@@ -42,16 +42,16 @@ describe('play option', () => {
 
     t1.animate({
       targets: {},
-      duration: 250,
+      duration: 1000,
       props: {
         x: [0, 1000]
       }
     })
 
-    t1.play({ to: 125 })
+    t1.play({ to: 500 })
 
     t1.once('pause', () => {
-        assert.equal(t1.currentTime, 125);
+        assert.equal(t1.currentTime, 500);
         done()
     })
   })  
@@ -82,18 +82,18 @@ describe('play option', () => {
 
     t1.animate({
       targets: {},
-      duration: 250,
+      duration: 1000,
       props: {
         x: [0, 1000]
       }
     })
 
-    t1.setLabel('middle', 125) 
+    t1.setLabel('middle', 500) 
       
-    t1.play({ from: 240, to: 'middle' })
+    t1.play({ from: 990, to: 'middle' })
 
     t1.once('pause', () => {
-        assert.equal(t1.currentTime, 125);
+        assert.equal(t1.currentTime, 500);
         done()
     })
   })  
@@ -103,20 +103,20 @@ describe('play option', () => {
 
     t1.animate({
       targets: {},
-      duration: 250,
+      duration: 1000,
       props: {
         x: [0, 1000]
       }
     }) 
 
-    t1.setLabel('middle', 125) 
+    t1.setLabel('middle', 500) 
     
     t1.finish()    
       
-    t1.play({ from: 240, to: 'middle' })
+    t1.play({ from: 990, to: 'middle' })
 
     t1.once('pause', () => {
-        assert.equal(t1.currentTime, 125);
+        assert.equal(t1.currentTime, 500);
         done()
     })
   })    
