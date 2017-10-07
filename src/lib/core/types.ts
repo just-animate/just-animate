@@ -321,7 +321,7 @@ export interface ITimeline {
   playbackRate: number 
   isPlaying: boolean;
   isActive: boolean;
-  id?: string
+  id: string
 
   /**
    * Adds an animation at the end of the timeline, unless from/to are specified
@@ -419,6 +419,11 @@ export interface ITimeline {
    * @param time the time in milliseconds to seek to.
    */
   seek(time: number | string): this
+  
+  /**
+   * Replaces references in the timeline.  If the timeline is active, affected animations will be rebuilt inline
+   */
+  setReferences(refs: References): this;
   
   /**
    * Get the time that the provided label is specified

@@ -1,6 +1,7 @@
 import * as types from './lib/core/types'
 import { timeline } from './lib/timeline'
 import { addPlugin } from './lib/core/plugins'
+import { dispatch, subscribe, unsubscribe } from './lib/store'
 import { propsPlugin } from './props' 
 
 /** 
@@ -26,3 +27,23 @@ export { interpolate } from './lib/core/interpolate'
 
 // register props plugin
 addPlugin(propsPlugin)
+
+// add declarationg to window
+declare global {
+  interface Window {
+    just_devtools: {
+      dispatch: typeof dispatch,
+      subscribe: typeof subscribe,
+      unsubscribe: typeof unsubscribe
+    }
+  }
+}
+
+// put devtools on window so tooling can attach
+if (typeof window !== 'undefined') {
+  window.just_devtools = {
+    dispatch,
+    subscribe,
+    unsubscribe
+  }
+}

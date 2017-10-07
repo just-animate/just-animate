@@ -7,7 +7,8 @@ import {
   ITimeline,
   PlayOptions,
   AnimationOptions,
-  TimelineHandler
+  TimelineHandler,
+  References
 } from './core/types'
 
 import { all } from './utils/lists'
@@ -24,9 +25,10 @@ import {
   SET,
   INSERT,
   SET_LABEL,
-  CLEAR_LABEL
+  CLEAR_LABEL,
+  SET_REFS
 } from './actions'
-import { dispatch, addState, getState, on, off } from './store'
+import { dispatch, addStore, getState, on, off } from './store'
 import { _ } from './utils/constants'
 
 declare const Promise: PromiseConstructorLike
@@ -61,7 +63,7 @@ class Timeline implements ITimeline {
   constructor(opts?: TimelineOptions) {
     opts = opts || {}
     this.id = opts.id = opts.id || 'Timeline' + ++timelineId
-    addState(opts)
+    addStore(opts)
   }
 
   public add(opts: AddAnimationOptions | AddAnimationOptions[]) {
@@ -145,6 +147,10 @@ class Timeline implements ITimeline {
   }
   public set(opts: BaseSetOptions | BaseSetOptions[]) {
     dispatch(SET, this.id, opts)
+    return this
+  }
+  public setReferences(opts: References) {
+    dispatch(SET_REFS, this.id, opts)
     return this
   }
   public getLabel(name: string) {

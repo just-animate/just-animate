@@ -1,4 +1,4 @@
-import { timeline, addPlugin, removePlugin } from '../../src/main'
+import { timeline, addPlugin, removePlugin, animate } from '../../src/main'
 import * as chai from 'chai'
 import { waapiPlugin } from '../../src/web/index'
 const { assert } = chai
@@ -266,4 +266,42 @@ describe('references', () => {
 
     assert.equal(target.x, 21)
   })  
+  
+  it('can be set after the timeline is initialized', () => {
+    const target = { x: 0 }
+
+    const t1 = animate({
+        targets: '@myTarget',
+        easing: 'linear',
+        duration: 1000, 
+        props: { x: [0, 42] }
+    })
+    
+    t1.setReferences({ myTarget: target })  
+
+    t1.pause().seek(500)
+
+    assert.equal(target.x, 21)
+  })    
+  
+  it('set duration active state cause the timeline to be re-evaluated', () => {
+    const target1 = { x: 0 }
+    const target2 = { x: 1000 }
+
+    const t1 = animate({
+        targets: '@myTarget',
+        easing: 'linear',
+        duration: 1000, 
+        props: { x: 500 }
+    })
+    
+    t1.setReferences({ myTarget: target1 })
+    t1.pause().seek(500)
+    assert.equal(target1.x, 250)
+    assert.equal(target2.x, 1000)  
+      
+    t1.setReferences({ myTarget: target2 })    
+    assert.equal(target1.x, 0)
+    assert.equal(target2.x, 750)
+  })   
 })

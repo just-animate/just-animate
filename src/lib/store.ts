@@ -16,7 +16,8 @@ import {
   APPEND,
   INSERT,
   SET,
-  SET_LABEL
+  SET_LABEL,
+  SET_REFS
 } from './actions'
 
 import {
@@ -47,6 +48,7 @@ import {
 import { pushDistinct, all, remove } from './utils/lists'
 import { calculateConfigs } from './reducers/calc-configs'
 import { rebuild } from './reducers/rebuild'
+import { setReferences } from './reducers/set-refs'
 
 const stateSubs: ((type: string, store: IStore) => void)[] = []
 
@@ -65,6 +67,7 @@ const reducers: Record<string, IReducer> = {
   [SEEK]: seek,
   [SET]: set,
   [SET_LABEL]: setLabel,
+  [SET_REFS]: setReferences,
   [TICK]: tick,
   [UPDATE]: update,
   [UPDATE_RATE]: updateRate
@@ -105,14 +108,18 @@ function createInitial(opts: TimelineOptions) {
 }
 
 export function getState(id: string) {
+  return getStore(id).state
+}
+
+export function getStore(id: string) {
   const model = stores[id]
   if (!model) {
     throw new Error('not found')
   }
-  return model.state
+  return model
 }
 
-export function addState(opts: { id?: string }) {
+export function addStore(opts: { id?: string }) {
   stores[opts.id] = {
     state: createInitial(opts),
     subs: {} as Record<TimelineEvent, { handler: ITimelineEventListener; id: number }>
@@ -120,35 +127,26 @@ export function addState(opts: { id?: string }) {
 }
 
 export function on(id: string, eventName: string, handler: ITimelineEventListener, arg: any): number {
-  const store = stores[id]
-  if (store) {
-    const subs = (store.subs[eventName] = store.subs[eventName] || [])
-    const hid: number = handler._ja_id_ || (handler._ja_id_ = ++nextHandlerId)
-    subs[hid] = { fn: handler, arg: arg }
-    return hid
-  }
-  return _
+  const store = getStore(id)
+  const subs = (store.subs[eventName] = store.subs[eventName] || [])
+  const hid: number = handler._ja_id_ || (handler._ja_id_ = ++nextHandlerId)
+  subs[hid] = { fn: handler, arg: arg }
+  return hid
 }
 
 export function off(id: string, eventName: string, listener: ITimelineEventListener) {
-  const store = stores[id]
-  if (store) {
-    const subs = store.subs[eventName]
-    const hid: number = (listener as any)._ja_id_
-    if (subs && hid) {
-      subs[hid] = _
-    }
+  const store = getStore(id)
+  const subs = store.subs[eventName]
+  const hid: number = (listener as any)._ja_id_
+  if (subs && hid) {
+    subs[hid] = _
   }
 }
 
 export function dispatch(action: string, id: string, data?: any) {
   const fn = reducers[action]
-  const store = stores[id]
-
-  if (!fn || !store) {
-    throw new Error('not found')
-  }
-
+  const store = getStore(id) 
+  
   const ctx: IReducerContext = {
     events: [],
     needUpdate: [],
@@ -173,7 +171,7 @@ export function dispatch(action: string, id: string, data?: any) {
       }
     }
   })
-
+  
   if (ctx.destroyed) {
     // remove from stores if destroyed
     delete stores[id]
@@ -192,22 +190,18 @@ export function dispatch(action: string, id: string, data?: any) {
   })
 }
 
+export function subscribe(fn: (type: string, store: IStore) => void) {
+  pushDistinct(stateSubs, fn)
+}
+
+export function unsubscribe(fn: (type: string, store: IStore) => void) {
+  remove(stateSubs, fn)
+}
+
 function trigger(this: IReducerContext, eventName: string) {
   pushDistinct(this.events, eventName)
 }
 
 function dirty(this: IReducerContext, config: TargetConfiguration) {
   pushDistinct(this.needUpdate, config)
-}
-
-if (typeof window !== 'undefined') {
-  (window as any).just_devtools = {
-    dispatch,
-    subscribe(fn: (type: string, store: IStore) => void) {
-      pushDistinct(stateSubs, fn)
-    },
-    unsubscribe(fn: (type: string, store: IStore) => void) {
-      remove(stateSubs, fn)
-    }
-  }
 }
