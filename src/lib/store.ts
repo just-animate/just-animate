@@ -48,7 +48,7 @@ import { pushDistinct, all, remove } from './utils/lists'
 import { calculateConfigs } from './reducers/calc-configs'
 import { rebuild } from './reducers/rebuild'
 
-const stateSubs: ((store: IStore) => void)[] = []
+const stateSubs: ((type: string, store: IStore) => void)[] = []
 
 const stores: Record<string, IStore> = {}
 
@@ -82,7 +82,7 @@ function createInitial(opts: TimelineOptions) {
 
   const newModel: ITimelineModel = {
     id: opts.id || _,
-    cursor: 0, 
+    cursor: 0,
     configs: [],
     labels: opts.labels || {},
     players: _,
@@ -115,13 +115,13 @@ export function getState(id: string) {
 export function addState(opts: { id?: string }) {
   stores[opts.id] = {
     state: createInitial(opts),
-    subs: {} as Record<TimelineEvent, { handler: ITimelineEventListener, id: number }>
+    subs: {} as Record<TimelineEvent, { handler: ITimelineEventListener; id: number }>
   }
 }
 
 export function on(id: string, eventName: string, handler: ITimelineEventListener, arg: any): number {
   const store = stores[id]
-  if (store) { 
+  if (store) {
     const subs = (store.subs[eventName] = store.subs[eventName] || [])
     const hid: number = handler._ja_id_ || (handler._ja_id_ = ++nextHandlerId)
     subs[hid] = { fn: handler, arg: arg }
@@ -134,9 +134,9 @@ export function off(id: string, eventName: string, listener: ITimelineEventListe
   const store = stores[id]
   if (store) {
     const subs = store.subs[eventName]
-    const hid: number = (listener as any)._ja_id_ 
+    const hid: number = (listener as any)._ja_id_
     if (subs && hid) {
-      subs[hid] = _ 
+      subs[hid] = _
     }
   }
 }
@@ -170,7 +170,7 @@ export function dispatch(action: string, id: string, data?: any) {
         if (sub) {
           sub.fn(sub.arg)
         }
-      } 
+      }
     }
   })
 
@@ -183,12 +183,13 @@ export function dispatch(action: string, id: string, data?: any) {
     } else {
       calculateConfigs(model)
     }
-
-    // dispatch change event to global listeners
-    all(stateSubs, sub => {
-      sub(store)
-    })
   }
+
+  all(ctx.events, evt => {
+    all(stateSubs, sub2 => {
+      sub2(evt, store)
+    })
+  })
 }
 
 function trigger(this: IReducerContext, eventName: string) {
@@ -200,12 +201,12 @@ function dirty(this: IReducerContext, config: TargetConfiguration) {
 }
 
 if (typeof window !== 'undefined') {
-  ; (window as any).just_devtools = {
+  (window as any).just_devtools = {
     dispatch,
-    subscribe(fn: (store: IStore) => void) {
+    subscribe(fn: (type: string, store: IStore) => void) {
       pushDistinct(stateSubs, fn)
     },
-    unsubscribe(fn: (store: IStore) => void) {
+    unsubscribe(fn: (type: string, store: IStore) => void) {
       remove(stateSubs, fn)
     }
   }

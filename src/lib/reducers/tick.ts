@@ -1,16 +1,13 @@
-import { ITimelineModel } from '../core/types'
-import { _ } from '../utils/constants'
-import { inRange, inBetween } from '../utils/math'
+import { ITimelineModel, IReducerContext } from '../core/types' 
 import { finish } from './finish'
 import { update } from './update'
-import { IReducerContext } from '../core/types'
 import { pause } from './pause'
+import { _ } from '../utils/constants'
+import { inRange, inBetween } from '../utils/math'
 import { isDefined } from '../utils/inspect'
 
 export function tick(model: ITimelineModel, delta: number, ctx: IReducerContext) {
-  const timing = model.timing
-  const playerConfig = model.playerConfig
-  const labels = model.labels
+  const { labels, playerConfig, timing } = model 
 
   // calculate running range
   const duration = timing.duration
@@ -52,6 +49,7 @@ export function tick(model: ITimelineModel, delta: number, ctx: IReducerContext)
   if (playerConfig && isDefined(playerConfig.to)) {
     const to = playerConfig.to 
     if (inBetween(to, timing.time, time, rate)) {
+      // pause if at the "to" time
       time = to
       playerConfig.to = _
       pause(model, _, ctx)

@@ -1,4 +1,3 @@
-
 import {
   AddAnimationOptions,
   BaseAnimationOptions,
@@ -10,8 +9,7 @@ import {
   AnimationOptions,
   TimelineHandler
 } from './core/types'
- 
-import { uuid } from './utils/uuid'
+
 import { all } from './utils/lists'
 import {
   CANCEL,
@@ -28,22 +26,24 @@ import {
   SET_LABEL,
   CLEAR_LABEL
 } from './actions'
-import { dispatch, addState, getState, on, off } from './store' 
+import { dispatch, addState, getState, on, off } from './store'
 import { _ } from './utils/constants'
 
 declare const Promise: PromiseConstructorLike
 
+let timelineId = 0
+
 class Timeline implements ITimeline {
   public id: string
   public get isActive(): boolean {
-    return !!getState(this.id).timing.active;
+    return !!getState(this.id).timing.active
   }
   public get isPlaying(): boolean {
-    return !!getState(this.id).timing.playing;
+    return !!getState(this.id).timing.playing
   }
   public get duration(): number {
-    const { cursor, timing} = getState(this.id)
-    return timing.active ? timing.duration : cursor;
+    const { cursor, timing } = getState(this.id)
+    return timing.active ? timing.duration : cursor
   }
   public get currentTime() {
     return getState(this.id).timing.time
@@ -57,13 +57,13 @@ class Timeline implements ITimeline {
   public set playbackRate(rate: number) {
     dispatch(UPDATE_RATE, this.id, rate)
   }
-  
+
   constructor(opts?: TimelineOptions) {
-    opts = opts || {} 
-    this.id = (opts.id = opts.id || uuid())
+    opts = opts || {}
+    this.id = opts.id = opts.id || 'Timeline' + ++timelineId
     addState(opts)
   }
-  
+
   public add(opts: AddAnimationOptions | AddAnimationOptions[]) {
     dispatch(APPEND, this.id, opts)
     return this
@@ -77,7 +77,7 @@ class Timeline implements ITimeline {
       options2.to = to
       options2.from = from
     })
-    dispatch(INSERT, this.id, options) 
+    dispatch(INSERT, this.id, options)
     return this
   }
   public cancel() {
@@ -91,8 +91,10 @@ class Timeline implements ITimeline {
     dispatch(FINISH, this.id)
     return this
   }
-  public on(name: TimelineEvent, fn: TimelineHandler) { 
-    on(this.id, name, fn, this) 
+  public on(eventName: TimelineEvent, fn: TimelineHandler): this
+  public on(labelName: string, fn: TimelineHandler): this
+  public on(name: TimelineEvent, fn: TimelineHandler) {
+    on(this.id, name, fn, this)
     return this
   }
   public once(eventName: TimelineEvent): PromiseLike<ITimeline>
@@ -106,24 +108,26 @@ class Timeline implements ITimeline {
         self.off(eventName, s)
         resolve(self)
       })
-    };
-    
+    }
+
     if (arguments.length === 2) {
       callback(handler)
       return self
     }
-    
+
     return new Promise<ITimeline>(callback)
   }
-  public off(name: TimelineEvent, fn: TimelineHandler) { 
-    off(this.id, name, fn) 
+  public off(eventName: TimelineEvent, fn: TimelineHandler): this
+  public off(labelName: string, fn: TimelineHandler): this
+  public off(name: TimelineEvent, fn: TimelineHandler) {
+    off(this.id, name, fn)
     return this
   }
   public pause() {
-    dispatch(PAUSE, this.id) 
+    dispatch(PAUSE, this.id)
     return this
   }
-  public play(options?: PlayOptions) { 
+  public play(options?: PlayOptions) {
     dispatch(PLAY, this.id, options)
     return this
   }
@@ -148,11 +152,11 @@ class Timeline implements ITimeline {
   }
   public setLabel(name: string, time?: number) {
     dispatch(SET_LABEL, this.id, { name, time })
-    return this;
+    return this
   }
   public clearLabel(name: string) {
     dispatch(CLEAR_LABEL, this.id, name)
-    return this;
+    return this
   }
 }
 

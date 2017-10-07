@@ -377,7 +377,7 @@ export interface ITimeline {
    * @param listener callback for when the event occurs
    */
   on(eventName: TimelineEvent, listener: TimelineHandler): this
-  on(eventName: string, listener: TimelineHandler): this
+  on(labelName: string, listener: TimelineHandler): this
 
   /**
    * Create a promise that wil resolve the next time this event occurs
@@ -395,7 +395,7 @@ export interface ITimeline {
    * @param listener callback to unregister
    */
   off(eventName: TimelineEvent, listener: TimelineHandler): this
-  off(eventName: string, listener: TimelineHandler): this
+  off(labelName: string, listener: TimelineHandler): this
 
   /**
    * Pauses execution of the animation. If the animation has never been active, this will
