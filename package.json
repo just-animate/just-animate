@@ -1,77 +1,60 @@
 {
-  "author": "christopher.j.wallis@gmail.com",
-  "dependencies": {
-    "just-curves": "^0.2.0"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.0.0",
-    "@types/jsdom": "^11.0.0",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.29",
-    "chai": "^4.0.2",
-    "concurrently": "^3.4.0",
-    "del-cli": "^1.1.0",
-    "jsdom": "^11.1.0",
-    "karma": "^1.7.0",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-firefox-launcher": "^1.0.1",
-    "karma-mocha": "^1.3.0",
-    "karma-rollup-plugin": "^0.2.4",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-spec-reporter": "0.0.31",
-    "karma-typescript": "^3.0.4",
-    "mocha": "^3.4.2",
-    "prettier": "^1.5.2",
-    "rollup": "^0.42.0",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-typescript": "^0.8.1",
-    "rollup-watch": "^4.0.0",
-    "ts-loader": "2.2.0",
-    "ts-node": "^3.0.6",
-    "tslint": "^5.4.3",
-    "typescript": "^2.4.2",
-    "typescript-formatter": "^5.2.0",
-    "uglify-js": "^3.0.26"
-  },
-  "homepage": "http://just-animate.com",
-  "license": "MIT",
-  "main": "./lib/main.js",
-  "module": "./lib.es2015/main.js",
-  "name": "just-animate",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/just-animate/just-animate"
-  },
-  "scripts": {
-    "build": "concurrently \"npm run build:node\" \"npm run build:es2015\" \"npm run build:all\" \"npm run build:core\" \"npm run build:extras\" \"npm run build:tools\" \"npm run build:web\"",
-    "build:all": "rollup -c ./config/rollup-all.config.js",
-    "build:core": "rollup -c ./config/rollup-core.config.js",
-    "build:extras": "rollup -c ./config/rollup-extras.config.js",
-    "build:tools": "rollup -c ./config/rollup-tools.config.js",
-    "build:web": "rollup -c ./config/rollup-web.config.js",
-    "build:node": "tsc -p tsconfig.node.json",
-    "build:es2015": "tsc -p tsconfig.es2015.json",
-    "compress": "npm run compress:all && npm run compress:core && npm run compress:extras && npm run compress:tools && npm run compress:web",
-    "compress:all": "uglifyjs --config-file ./config/compress.json -o dist/just-animate-all.min.js dist/just-animate-all.js",
-    "compress:core": "uglifyjs --config-file ./config/compress.json -o dist/just-animate.min.js dist/just-animate.js",
-    "compress:extras": "uglifyjs --config-file ./config/compress.json -o dist/just-animate-extras.min.js dist/just-animate-extras.js",
-    "compress:tools": "uglifyjs --config-file ./config/compress.json -o dist/just-animate-tools.min.js dist/just-animate-tools.js",
-    "compress:web": "uglifyjs --config-file ./config/compress.json -o dist/just-animate-web.min.js dist/just-animate-web.js",
-    "clean": "node_modules/.bin/del-cli -f dist lib lib.es2015 types",
-    "format": "prettier --print-width 120 --single-quote --no-semi --list-different --write \"src/**/*.ts\"",
-    "preversion": "npm run rebuild",
-    "postversion": "git push --follow-tags && npm publish",
-    "rebuild": "npm run clean && npm run build && npm run compress",
-    "start": "npm run rebuild && npm run debug",
-    "test": "karma start karma.conf.js",
-    "debug": "node_modules/.bin/mocha --require ts-node/register --reporter spec --watch ./tests/**/**.ts",
-    "publish-alpha": "npm run rebuild && git push --follow-tags && npm publish --tag next"
-  },
-  "types": "./types/main",
-  "typings": "./types/main",
-  "typeRoots": [
-    "node_modules/@types"
-  ],
-  "version": "2.5.1-alpha1"
+    "author": "christopher.j.wallis@gmail.com",
+    "devDependencies": {
+        "@types/chai": "^4.0.10",
+        "@types/jest": "^21.1.10",
+        "@types/node": "^8.5.2",
+        "chai": "^4.1.2",
+        "concurrently": "^3.5.1",
+        "del-cli": "^1.1.0",
+        "jest": "^21.2.1",
+        "rollup": "^0.51.8",
+        "rollup-plugin-commonjs": "^8.2.6",
+        "rollup-plugin-filesize": "^1.5.0",
+        "rollup-plugin-node-resolve": "^3.0.0",
+        "rollup-plugin-typescript": "^0.8.1",
+        "rollup-plugin-uglify": "^2.0.1",
+        "ts-jest": "^21.2.4",
+        "tslint": "^5.7.0",
+        "typescript": "^2.6.2",
+        "uglify-es": "^3.3.7"
+    },
+    "homepage": "http://just-animate.com",
+    "jest": {
+        "moduleFileExtensions": [
+            "ts",
+            "js"
+        ],
+        "transform": {
+            "^.+\\.(ts)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+        },
+        "testRegex": "tests/features/*/.*\\.ts$"
+    },
+    "license": "MIT",
+    "main": "main.js",
+    "name": "just-animate",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/just-animate/just-animate"
+    },
+    "scripts": {
+        "build": "npm run build:node && npm run build:es2015 && npm run rollup",
+        "build:node": "tsc -p tsconfig.node.json",
+        "build:es2015": "tsc -p tsconfig.es2015.json",
+        "build:watch": "tsc -p tsconfig.node.json -w",
+        "clean": "node_modules/.bin/del-cli -f dist lib lib.es2015 types",
+        "postversion": "git push --follow-tags && npm publish --access=\"public\"",
+        "preversion": "npm run rebuild",
+        "rebuild": "npm run clean && npm run build",
+        "start": "concurrently \"npm run build:watch\" \"npm run test:watch\" ",
+        "test": "jest",
+        "test:watch": "jest && jest --watchAll",
+        "rollup": "node ./scripts/rollup.js"
+    },
+    "types": "./types/main",
+    "typings": "./types/main",
+    "typeRoots": [
+        "node_modules/@types"
+    ],
+    "version": "2.5.1-alpha1"
 }

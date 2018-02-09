@@ -7,27 +7,18 @@
         "inlineSourceMap": false,
         "module": "es2015",
         "moduleResolution": "node",
-        "newLine": "lf",
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitAny": false,
-        "noImplicitReturns": true,
-        "noImplicitUseStrict": true,
+        "newLine": "LF",
+        "noFallthroughCasesInSwitch": true, 
         "noUnusedLocals": true,
         "preserveConstEnums": false,
         "removeComments": true,
         "rootDir": "src",
+        "skipLibCheck": true,
         "sourceMap": false,
         "strictNullChecks": false,
         "suppressImplicitAnyIndexErrors": true,
         "target": "es2015",
         "outDir": "lib.es2015"
     },
-    "exclude": [
-        "dist",
-        "lib",
-        "lib.es2015",
-        "tests",
-        "node_modules",
-        "types"
-    ]
+    "exclude": ["dist", "lib", "lib.es2015", "tests", "node_modules", "types"]
 }

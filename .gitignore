@@ -2,8 +2,7 @@
 .idea
 .vs
 /node_modules
-/coverage
-/dist
+/coverage 
 /lib
 /lib.es2015
 /types
