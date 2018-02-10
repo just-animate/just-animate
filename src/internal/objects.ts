@@ -13,3 +13,20 @@ export function clone() {
     }
     return target
 }
+
+/**
+ * One of the cheapest ways to do a deep object clone
+ * @param input 
+ */
+export function deepClone<T>(input: T): T {
+    return JSON.parse(JSON.stringify(input)) as T;
+}
+
+/**
+ * Return the object at that property.  If the property is not found, a new object will be added on that property.
+ * @param obj to traverse
+ * @param prop to find or add
+ */
+export function addOrGet<T extends { [P in keyof T]: T[P] }>(obj: T, prop: keyof T): T[keyof T] {
+    return obj[prop] || (obj[prop] = {})
+}

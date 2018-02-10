@@ -19,6 +19,12 @@ function clone() {
     }
     return target;
 }
+function deepClone(input) {
+    return JSON.parse(JSON.stringify(input));
+}
+function addOrGet(obj, prop) {
+    return obj[prop] || (obj[prop] = {});
+}
 
 function isDefined(a) {
     return !!a || a === 0 || a === false;
@@ -43,28 +49,10 @@ function isOwner(obj, name) {
 
 var _ = undefined;
 
-function toArray(t) {
-    return Array.isArray(t) ? t : [t];
+function remove(items, item) {
+    var index = items.indexOf(item);
+    return index !== -1 ? items.splice(index, 1) : _;
 }
-
-
-function find(indexed, predicate) {
-    var ilen = indexed && indexed.length;
-    if (!ilen) {
-        return _;
-    }
-    if (predicate === _) {
-        return indexed[0];
-    }
-    for (var i = 0; i < ilen; i++) {
-        if (predicate(indexed[i])) {
-            return indexed[i];
-        }
-    }
-    return _;
-}
-
-
 
 function list(indexed) {
     return !isDefined(indexed) ? [] : isArrayLike(indexed) ? indexed : [indexed];
@@ -140,16 +128,14 @@ function replaceWithRefs(refs, target, recurseObjects) {
     return assignRef(refs, target);
 }
 
-function startsWith(source, pattern) {
-    return source && source.indexOf(pattern) === 0;
-}
-
 function timeline(options) {
     var self = Object.create(timeline.prototype);
     self.playState = 'idle';
+    self.playbackRate = 1;
     self.duration = 0;
+    self._pos = 0;
     self.E = {};
-    self.$ = [];
+    self.$ = {};
     self._waapi = isDefined(options.useWAAPI) ? options.useWAAPI : globals.useWAAPI;
     self.mixers = clone(globals.mixers, options.mixers);
     self.refs = clone(globals.refs, options.refs);
@@ -157,47 +143,51 @@ function timeline(options) {
     return self;
 }
 var proto = {
+    get duration() {
+        return calculateDuration(this);
+    },
+    get currentTime() {
+        return this._time;
+    },
+    set currentTime(value) {
+        var self = this;
+        self._time = value;
+    },
     addSequence: function (_animations, _at) {
         return this;
     },
-    addMultiple: function (_animations, _at) {
+    addMultiple: function (_animations, at) {
+        var self = this;
+        for (var i = 0; i < _animations.length; i++) {
+            var a = _animations[i];
+            a.$at = at;
+            addSingleKeyframe(self, a.$target, a.$duration, a, 'T', true);
+        }
+        updateEffects(self);
         return this;
     },
     addTimeline: function (_t1, _at) {
         return this;
     },
-    delay: function (time) {
-        this._pos += time;
+    addLabel: function (labelName) {
+        this.labels[labelName] = this._pos;
         return this;
     },
-    set: function (target, to, props) {
-        var self = this;
-        addToKeyframes(self, target, to, props, 'I');
-        updatePosition(self);
-        return self;
-    },
-    staggerTo: function (target, to, props) {
-        var self = this;
-        addToKeyframes(self, target, to, props, 'T');
-        updatePosition(self);
-        return self;
-    },
-    to: function (target, to, props) {
-        var self = this;
-        addToKeyframes(self, target, to, props, 'T');
-        updatePosition(self);
-        return self;
-    },
-    reverse: function () {
+    addDelay: function (time) {
+        time > 0 && (this._pos += time);
         return this;
     },
-    seek: function (_time) {
-        return this;
+    set: function (target, props, at) {
+        props.$at = at;
+        return addSingleKeyframe(this, target, 0, props, 'I');
+    },
+    staggerTo: function (target, duration, props) {
+        return addSingleKeyframe(this, target, duration, props, 'S');
+    },
+    to: function (target, duration, props) {
+        return addSingleKeyframe(this, target, duration, props, 'T');
     },
     play: function (_options) {
-        return this;
-    },
-    restart: function () {
         return this;
     },
     cancel: function () {
@@ -206,15 +196,30 @@ var proto = {
     finish: function () {
         return this;
     },
+    restart: function () {
+        return this.cancel().play();
+    },
+    reverse: function () {
+        this.playbackRate *= -1;
+        return this;
+    },
+    seek: function (time) {
+        var self = this;
+        var t = resolveLabel(self, time);
+        isFinite(t) && (self.currentTime = t);
+        return self;
+    },
     export: function () {
-        return {
+        return deepClone({
             $: this.$,
-            L: clone(this.labels)
-        };
+            L: this.labels
+        });
     },
     import: function (json) {
         var self = this;
         json.L && (self.labels = json.L);
+        if (self.playState === 'idle') {
+        }
         json.$ && (self.$ = json.$);
         return self;
     },
@@ -227,49 +232,74 @@ var proto = {
     off: function (eventName, callback) {
         var hs = this.E[eventName];
         if (hs) {
-            var index = hs.indexOf(callback);
-            if (index !== -1) {
-                hs.splice(index, 1);
-            }
+            remove(hs, callback);
         }
         return this;
     }
 };
 timeline.prototype = proto;
-function addToKeyframes(self, target, time, props, type) {
-    var selector = getTargetSelector(self, target);
+function resolveTime(self, at, to) {
+    return (resolveLabel(self, at) || self._pos) + to;
+}
+function addSingleKeyframe(self, target, duration, props, type, isBatch) {
+    var selectors = replaceWithRefs(self.refs, list(target), true);
+    var selector = selectors.join(',');
+    var end = resolveTime(self, props.$at, duration);
     var delay = props.$delay || 0;
     var limit = props.$limit || _;
-    var end = (resolveTime(self, props.$at) || self._pos) + resolveTime(self, time);
     var easing = (props.$easing || 'linear');
     for (var key in props) {
-        if (!startsWith(key, '$')) {
-            var targetJSON = getPropertyJSON(self.$, selector, key);
-            var valueJSON = (find(targetJSON.f, function (val) { return val.t === end; }) || push(targetJSON.f, { t: end }));
-            valueJSON.e = easing;
-            valueJSON.v = props[key];
-            valueJSON.c = type;
-            valueJSON.d = delay;
-            valueJSON.l = limit;
+        if (key.indexOf('$') !== 0) {
+            insertKeyframe(self, selector, key, end, props[key], type, easing, delay, limit);
         }
     }
+    if (!isBatch) {
+        updatePosition(self, end);
+        updateEffects(self);
+    }
+    return self;
 }
-function updatePosition(self) {
-    self._pos = Math.max.apply(_, mapFlatten(self.$, function (s) { return s.f.map(function (s2) { return s2.t; }); }));
+function insertKeyframe(self, selector, key, time, nextVal, type, easing, delay, limit) {
+    var target = addOrGet(self.$, selector);
+    var prop = addOrGet(target, key);
+    var event = addOrGet(prop, time + '');
+    var isDirty = self.playState !== 'idle' && (event.v !== nextVal
+        || event.c !== type
+        || event.d !== delay
+        || event.l !== limit);
+    if (isDirty) {
+        addOrGet(addOrGet(self._kdiff, selector), key)[time] = 1;
+    }
+    event.v = nextVal;
+    event.c = type;
+    easing && (event.e = easing);
+    delay && (event.d = delay);
+    limit && (event.l = limit);
 }
-function resolveTime(self, time) {
+function updatePosition(self, end) {
+    self._pos = Math.max(self._pos, end);
+}
+function updateEffects(self) {
+    if (self.playState === 'idle') {
+        return;
+    }
+    self._kdiff = {};
+}
+function resolveLabel(self, time) {
     return (isString(time) && self.labels[time]) || +time;
 }
-function getTargetSelector(self, targets) {
-    return replaceWithRefs(self.refs, toArray(targets), true).join(',');
-}
-function getPropertyJSON(targets, selector, key) {
-    return (find(targets, function (t) { return t.$ === selector && t.k === key; }) ||
-        push(targets, {
-            $: selector,
-            k: key,
-            f: []
-        }));
+function calculateDuration(self) {
+    var duration = 0;
+    var targets = self.$;
+    for (var selector in targets) {
+        var props = targets[selector];
+        for (var time in props) {
+            if (duration < +time) {
+                duration = +time;
+            }
+        }
+    }
+    return duration;
 }
 
 exports.timeline = timeline;

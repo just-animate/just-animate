@@ -6,7 +6,7 @@ export interface ITimelineJSON {
     /**
      * Targets
      */
-    $: ITargetJSON[]
+    $: ITargetJSON
     /**
      * Labels
      */
@@ -14,39 +14,37 @@ export interface ITimelineJSON {
 }
 
 export interface ITargetJSON {
-    /**
-     * Targeted elements (refs or selectors)
-     */
-    $: string
-    /**
-     * property key
-     */
-    k: string
-    /**
-     * Target keyframes
-     */
-    f: IValueJSON[]
+    [selector: string]: {
+        [property: string]: {
+            [time: string]: IValueJSON
+        }
+    }
 }
+
+export interface ITargetDirty {
+    [selector: string]: {
+        [property: string]: {
+            [time: string]: 1
+        }
+    }
+}
+
 export interface IValueJSON {
     /**
-     * Time
+     * Value
      */
-    t: number
-    /**
-     * Easing
-     */
-    e: string
+    v: string | number
     /**
      * Category of value:
      *  - S: stagger to
      *  - I: immediate (set)
      *  - T: tween to
      */
-    c: 'S' | 'I' | 'T'
+    c?: 'S' | 'I' | 'T'
     /**
-     * Value
+     * Easing
      */
-    v: string | number
+    e?: string
     /**
      * Stagger Limit
      */
@@ -55,19 +53,4 @@ export interface IValueJSON {
      * Delay
      */
     d?: number
-}
-  
-export interface IFrameKeyframeJSON {
-    /**
-     * value at this offset
-     */
-    v: string | number
-    /**
-     * offset
-     */
-    o: number
-    /**
-     * easing function for this keyframe
-     */
-    e: string
 }

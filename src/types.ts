@@ -67,9 +67,34 @@ export interface IToOptions extends ICommonOptions {
     $limit?: number  
 } 
 
-export interface IMixer<T extends {} = {}> {
-    (a: T, b: T): (offset: number) => any
+export type IMixer = IMixerTweenDef | IMixerKeyframeDef | IMixerTweenFunction
+
+export interface IMixerTweenDef {
+    type: 'tween'
+    fn: IMixerTweenFunction
 }
+
+export interface IMixerKeyframeDef {
+    type: 'keyframes'
+    fn: IMixerTweenFunction
+}
+
+/**
+ * Mixer function to tween between two values.  
+ *  - Return the value and it will be set automatically
+ *  - return nothing if the mixer has taken care of the set
+ */
+export interface IMixerTweenFunction {
+    (a: string | number, b: string | number, target?: any, prop?: string): (offset: number) => void | string | number
+}   
+
+/**
+ * Mixer function to animate keyframes.  This is intended for plugging in other animation libs or WAAPI
+ *  - Must return a Player object
+ */
+export interface IMixerTweenFunction {
+    (target?: any, prop?: string): IAnimation
+}  
 
 export interface ITimelineOptions {
     useWAAPI?: boolean
@@ -99,6 +124,12 @@ export interface ITimeline {
      * Current duration of the timeline
      */
     duration: number
+    /**
+     * The current rate of playback.
+     * - playing forward 100% = 1
+     * - playing backward 100% = -1 
+     */
+    playbackRate: number
     /**
      * Current playstate
      */
@@ -142,37 +173,42 @@ export interface ITimeline {
      */
     addTimeline(timeline: IAnimation, at?: Time): ITimeline
     /**
+     * Adds a label at the current time. 
+     * - To set a label at a particular time, use ```timeline.labels.myLabel = 200;``` instead
+     */
+    addLabel(labelName: string): ITimeline
+    /**
      * Adds a delay at the current position
      */
-    delay(time: Time): ITimeline
+    addDelay(time: Time): ITimeline
     /**
      * Set the value of the Element or string.  This results in a sub-millisecond tween
      */
-    set(target: OneOrMany<Node | string>, to: Time, props: ElementPropSingle | IToOptions): ITimeline
+    set(target: OneOrMany<Node | string>, duration: number, props: ElementPropSingle | IToOptions): ITimeline
     /**
      * Set the value of the object.  This results in a sub-millisecond tween
      */
-    set<T extends {}>(target: OneOrMany<T>, to: Time, props: Partial<T> | IToOptions): ITimeline
+    set<T extends {}>(target: OneOrMany<T>, props: Partial<T> | IToOptions, at?: number): ITimeline
     /**
      * Stagger the Node/Element targets evenly for the provided amount of time.
      * - If $limit is specified, all subsequent items will use the last stagger amount.
      * - If $delay is specified, each item shall use that amount of delay not exceeding the total stagger time
      */
-    staggerTo(target: OneOrMany<Node | string>, to: Time, props: ElementPropSingle | IToOptions): ITimeline
+    staggerTo(target: OneOrMany<Node | string>, duration: number, props: ElementPropSingle | IToOptions): ITimeline
     /**
      * Stagger the object targets evenly for the provided amount of time.
      * - If $limit is specified, all subsequent items will use the last stagger amount.
      * - If $delay is specified, each item shall use that amount of delay not exceeding the total stagger time
      */
-    staggerTo<T extends {}>(target: OneOrMany<T>, to: Time, props: Partial<T> | IToOptions): ITimeline
+    staggerTo<T extends {}>(target: OneOrMany<T>, duration: number, props: Partial<T> | IToOptions): ITimeline
     /**
      * Tween the Node/Element target(s) for the specified time from the last frame
      */
-    to(target: OneOrMany<Node | string>, to: Time, props: ElementPropSingle | IToOptions): ITimeline
+    to(target: OneOrMany<Node | string>, duration: number, props: ElementPropSingle | IToOptions): ITimeline
     /**
      * Tween the object target(s) for the specified time from the last frame
      */
-    to<T extends {}>(target: OneOrMany<T>, to: Time, props: Partial<T> | IToOptions): ITimeline
+    to<T extends {}>(target: OneOrMany<T>, duration: number, props: Partial<T> | IToOptions): ITimeline
 
     /*// TIMELINE CONTROLS */
     /**

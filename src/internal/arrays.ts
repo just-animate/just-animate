@@ -1,4 +1,3 @@
-import { OneOrMany } from '../types'
 import { isArrayLike, isDefined } from './inspect'
 import { _ } from './constants'
 
@@ -13,10 +12,6 @@ export function removeAll<T>(target: T[], subarray: T[]): void {
             target.splice(index, 1)
         }
     }
-}
-
-export function toArray<T>(t: OneOrMany<T>): T[] {
-    return Array.isArray(t) ? (t as T[]) : [t as T]
 }
 
 export interface IList<T> {
