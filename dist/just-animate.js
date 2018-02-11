@@ -131,8 +131,7 @@ function replaceWithRefs(refs, target, recurseObjects) {
 function timeline(options) {
     var self = Object.create(timeline.prototype);
     self.playState = 'idle';
-    self.playbackRate = 1;
-    self.duration = 0;
+    self._rate = 1;
     self._pos = 0;
     self.E = {};
     self.$ = {};
@@ -144,7 +143,7 @@ function timeline(options) {
 }
 var proto = {
     get duration() {
-        return calculateDuration(this);
+        return Math.max(calculateDuration(this), this._pos);
     },
     get currentTime() {
         return this._time;
@@ -153,18 +152,38 @@ var proto = {
         var self = this;
         self._time = value;
     },
-    addSequence: function (_animations, _at) {
-        return this;
+    get playbackRate() {
+        return this._rate;
     },
-    addMultiple: function (_animations, at) {
+    set playbackRate(value) {
         var self = this;
-        for (var i = 0; i < _animations.length; i++) {
-            var a = _animations[i];
-            a.$at = at;
-            addSingleKeyframe(self, a.$target, a.$duration, a, 'T', true);
+        self._rate = value;
+    },
+    addSequence: function (animations, at) {
+        var self = this;
+        if (!isDefined(at)) {
+            at = self._pos;
         }
-        updateEffects(self);
-        return this;
+        for (var i = 0; i < animations.length; i++) {
+            var a = animations[i];
+            a.$at = at;
+            at = addSingleKeyframe(self, a.$target, a.$duration, a, 'T');
+        }
+        keyframesUpdated(self);
+        return self;
+    },
+    addMultiple: function (animations, at) {
+        var self = this;
+        if (!isDefined(at)) {
+            at = self._pos;
+        }
+        for (var i = 0; i < animations.length; i++) {
+            var a = animations[i];
+            a.$at = at;
+            addSingleKeyframe(self, a.$target, a.$duration, a, 'T');
+        }
+        keyframesUpdated(self);
+        return self;
     },
     addTimeline: function (_t1, _at) {
         return this;
@@ -178,14 +197,23 @@ var proto = {
         return this;
     },
     set: function (target, props, at) {
+        var self = this;
         props.$at = at;
-        return addSingleKeyframe(this, target, 0, props, 'I');
+        addSingleKeyframe(self, target, 0, props, 'I');
+        keyframesUpdated(self);
+        return self;
     },
     staggerTo: function (target, duration, props) {
-        return addSingleKeyframe(this, target, duration, props, 'S');
+        var self = this;
+        addSingleKeyframe(this, target, duration, props, 'S');
+        keyframesUpdated(self);
+        return self;
     },
     to: function (target, duration, props) {
-        return addSingleKeyframe(this, target, duration, props, 'T');
+        var self = this;
+        addSingleKeyframe(this, target, duration, props, 'T');
+        keyframesUpdated(self);
+        return self;
     },
     play: function (_options) {
         return this;
@@ -218,9 +246,8 @@ var proto = {
     import: function (json) {
         var self = this;
         json.L && (self.labels = json.L);
-        if (self.playState === 'idle') {
-        }
         json.$ && (self.$ = json.$);
+        keyframesUpdated(self);
         return self;
     },
     on: function (eventName, callback) {
@@ -238,10 +265,19 @@ var proto = {
     }
 };
 timeline.prototype = proto;
+function emit(self, eventName) {
+    var hs = self.E[eventName];
+    if (hs) {
+        hs = hs.slice();
+        for (var i = 0; i < hs.length; i++) {
+            hs[i]();
+        }
+    }
+}
 function resolveTime(self, at, to) {
     return (resolveLabel(self, at) || self._pos) + to;
 }
-function addSingleKeyframe(self, target, duration, props, type, isBatch) {
+function addSingleKeyframe(self, target, duration, props, type) {
     var selectors = replaceWithRefs(self.refs, list(target), true);
     var selector = selectors.join(',');
     var end = resolveTime(self, props.$at, duration);
@@ -253,23 +289,13 @@ function addSingleKeyframe(self, target, duration, props, type, isBatch) {
             insertKeyframe(self, selector, key, end, props[key], type, easing, delay, limit);
         }
     }
-    if (!isBatch) {
-        updatePosition(self, end);
-        updateEffects(self);
-    }
-    return self;
+    updatePosition(self, end);
+    return end;
 }
 function insertKeyframe(self, selector, key, time, nextVal, type, easing, delay, limit) {
     var target = addOrGet(self.$, selector);
     var prop = addOrGet(target, key);
     var event = addOrGet(prop, time + '');
-    var isDirty = self.playState !== 'idle' && (event.v !== nextVal
-        || event.c !== type
-        || event.d !== delay
-        || event.l !== limit);
-    if (isDirty) {
-        addOrGet(addOrGet(self._kdiff, selector), key)[time] = 1;
-    }
     event.v = nextVal;
     event.c = type;
     easing && (event.e = easing);
@@ -279,11 +305,11 @@ function insertKeyframe(self, selector, key, time, nextVal, type, easing, delay,
 function updatePosition(self, end) {
     self._pos = Math.max(self._pos, end);
 }
-function updateEffects(self) {
-    if (self.playState === 'idle') {
+function keyframesUpdated(self) {
+    emit(self, 'config');
+    if (self.playState !== 'idle') {
         return;
     }
-    self._kdiff = {};
 }
 function resolveLabel(self, time) {
     return (isString(time) && self.labels[time]) || +time;

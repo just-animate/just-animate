@@ -1,7 +1,6 @@
 import { ITimelineOptions } from '../types'
 
-export const globals: ITimelineOptions = {
-    useWAAPI: true,
+export const globals: ITimelineOptions = { 
     labels: {},
     mixers: {},
     refs: {}

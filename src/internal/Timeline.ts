@@ -9,7 +9,7 @@ import {
     IAction
 } from '../types'
 import { IAnimation } from '../waapiTypes'
-import { ITimelineJSON, ITargetJSON, ITargetDirty } from '../types/json'
+import { ITimelineJSON, ITargetJSON } from '../types/json'
 import { globals } from './globals'
 import { clone, addOrGet, deepClone } from './objects'
 import { list, remove } from './arrays'
@@ -25,11 +25,7 @@ interface ITimelinePrivate extends ITimeline {
     /**
      * Target configuration
      */
-    $: ITargetJSON
-    /**
-     * Use waapi handlers
-     */
-    _waapi: boolean
+    $: ITargetJSON 
     /**
      * Current position to insert new .to keyframes
      */
@@ -38,23 +34,20 @@ interface ITimelinePrivate extends ITimeline {
      * current internal time
      */
     _time: number
-    /**
-     * List of differences between last keyframes and current keyframes
+    /** 
+     * current playback rate
      */
-    _kdiff: ITargetDirty
+    _rate: number 
 }
 
 export function timeline(options?: ITimelineOptions): ITimeline {
     const self = Object.create(timeline.prototype) as ITimelinePrivate
     // add handlers for this dispatcher
-    self.playState = 'idle'
-    self.playbackRate = 1
-    self.duration = 0
+    self.playState = 'idle' 
+    self._rate = 1
     self._pos = 0
     self.E = {}
-    self.$ = {}
-    // figure out if WAAPI should be used as the default mixer for Element Styles
-    self._waapi = isDefined(options.useWAAPI) ? options.useWAAPI : globals.useWAAPI
+    self.$ = {} 
     // import mixers with options preferred over globals
     self.mixers = clone(globals.mixers, options.mixers)
     self.refs = clone(globals.refs, options.refs)
@@ -65,8 +58,12 @@ export function timeline(options?: ITimelineOptions): ITimeline {
 
 const proto = {
     get duration(this: ITimelinePrivate) {
-        // note: it might be a good idea to cache this.  I don't want to optimize too early though
-        return calculateDuration(this)
+        // return whichever of these is the largest
+        // - max keyframe time
+        // - insert position (for instance, a trailing delay with no subsequent)
+        // - todo: max end time of a sub-timeline.
+        // note: it might be a good idea to cache the duration.  I don't want to optimize too early though
+        return Math.max(calculateDuration(this), this._pos)
     },
     get currentTime(this: ITimelinePrivate): number {
         return this._time
@@ -76,21 +73,39 @@ const proto = {
         self._time = value
         // todo: update
     },
-    addSequence(this: ITimelinePrivate, _animations: ITargetOptions[], _at?: string | number): ITimeline {
-        // todo: sequence
-        return this
+    get playbackRate(this: ITimelinePrivate): number {
+        return this._rate
     },
-    addMultiple(this: ITimelinePrivate, _animations: ITargetOptions[], at?: string | number): ITimeline {
+    set playbackRate(this: ITimelinePrivate, value: number) {
         const self = this
-        for (let i = 0; i < _animations.length; i++) {
-            const a = _animations[i]
-            a.$at = at
-            addSingleKeyframe(self, a.$target, a.$duration, a, 'T', true)
+        self._rate = value
+        // todo: update
+    },
+    addSequence(this: ITimelinePrivate, animations: ITargetOptions[], at?: string | number): ITimeline {
+        const self = this
+        if (!isDefined(at)) {
+            at = self._pos
         }
-        // updatePosition(self, end)
-        updateEffects(self)
-        // todo: multiple
-        return this
+        for (let i = 0; i < animations.length; i++) {
+            const a = animations[i]
+            a.$at = at
+            at = addSingleKeyframe(self, a.$target, a.$duration, a, 'T')
+        }
+        keyframesUpdated(self)
+        return self
+    },
+    addMultiple(this: ITimelinePrivate, animations: ITargetOptions[], at?: string | number): ITimeline {
+        const self = this
+        if (!isDefined(at)) {
+            at = self._pos
+        }
+        for (let i = 0; i < animations.length; i++) {
+            const a = animations[i]
+            a.$at = at
+            addSingleKeyframe(self, a.$target, a.$duration, a, 'T')
+        }
+        keyframesUpdated(self)
+        return self
     },
     addTimeline(this: ITimelinePrivate, _t1: ITimeline | IAnimation, _at?: string | number): ITimeline {
         // todo: subtimelines
@@ -105,14 +120,23 @@ const proto = {
         return this
     },
     set(this: ITimelinePrivate, target: OneOrMany<{} | string>, props: IToOptions, at?: number): ITimeline {
+        const self = this
         props.$at = at
-        return addSingleKeyframe(this, target, 0, props, 'I')
+        addSingleKeyframe(self, target, 0, props, 'I')
+        keyframesUpdated(self)
+        return self
     },
     staggerTo(this: ITimelinePrivate, target: OneOrMany<{} | string>, duration: number, props: IToOptions): ITimeline {
-        return addSingleKeyframe(this, target, duration, props, 'S')
+        const self = this
+        addSingleKeyframe(this, target, duration, props, 'S')
+        keyframesUpdated(self)
+        return self
     },
     to(this: ITimelinePrivate, target: OneOrMany<{} | string>, duration: number, props: IToOptions): ITimeline {
-        return addSingleKeyframe(this, target, duration, props, 'T')
+        const self = this
+        addSingleKeyframe(this, target, duration, props, 'T')
+        keyframesUpdated(self)
+        return self
     },
     play(this: ITimelinePrivate, _options?: IPlayOptions): ITimeline {
         // todo: play
@@ -151,12 +175,8 @@ const proto = {
     import(this: ITimelinePrivate, json: ITimelineJSON): ITimeline {
         const self = this
         json.L && (self.labels = json.L)
-
-        if (self.playState === 'idle') {
-            // todo: change detection before setting the new model
-        }
-
         json.$ && (self.$ = json.$)
+        keyframesUpdated(self)        
         return self
     },
     on(this: ITimelinePrivate, eventName: string, callback: IAction): ITimeline {
@@ -177,15 +197,15 @@ const proto = {
 timeline.prototype = proto
 
 // --- PRIVATE FUNCTIONS BELOW HERE ---
-// function emit(self: ITimelinePrivate, eventName: string): void {
-//     let hs = self.E[eventName]
-//     if (hs) {
-//         hs = hs.slice()
-//         for (let i = 0; i < hs.length; i++) {
-//             hs[i]()
-//         }
-//     }
-// }
+function emit(self: ITimelinePrivate, eventName: string): void {
+    let hs = self.E[eventName]
+    if (hs) {
+        hs = hs.slice()
+        for (let i = 0; i < hs.length; i++) {
+            hs[i]()
+        }
+    }
+}
 
 function resolveTime(self: ITimelinePrivate, at: string | number, to: number) {
     return (resolveLabel(self, at) || self._pos) + to
@@ -196,9 +216,8 @@ function addSingleKeyframe(
     target: any,
     duration: number,
     props: Record<string, any> & IToOptions,
-    type: 'S' | 'I' | 'T',
-    isBatch?: boolean
-) {
+    type: 'S' | 'I' | 'T'
+): number {
     // gets the target selector and replaces objects with string references
     const selectors = replaceWithRefs(self.refs, list(target), true) as string[]
     const selector = selectors.join(',')
@@ -220,12 +239,8 @@ function addSingleKeyframe(
             insertKeyframe(self, selector, key, end, props[key], type, easing, delay, limit)
         }
     }
-
-    if (!isBatch) {
-        updatePosition(self, end)
-        updateEffects(self)
-    } 
-    return self
+    updatePosition(self, end)
+    return end
 }
 
 function insertKeyframe(
@@ -243,17 +258,7 @@ function insertKeyframe(
     const prop = addOrGet(target, key)
     const event = addOrGet(prop, time + '')
 
-    // flag as changed if the animation is active and the property or option changed
-    // prettier-ignore
-    const isDirty = self.playState !== 'idle' && (
-        event.v !== nextVal
-        || event.c !== type
-        || event.d !== delay
-        || event.l !== limit
-    )
-    if (isDirty) {
-        addOrGet(addOrGet(self._kdiff, selector), key)[time] = 1
-    }
+    // todo: change detection
 
     event.v = nextVal
     event.c = type
@@ -266,16 +271,18 @@ function updatePosition(self: ITimelinePrivate, end: number) {
     self._pos = Math.max(self._pos, end)
 }
 
-function updateEffects(self: ITimelinePrivate) {
-    if (self.playState === 'idle') {
-        // ignore update effects if timeline is not active
+function keyframesUpdated(self: ITimelinePrivate) {
+    // let subscribers know the configuration has changed
+    emit(self, 'config')
+    
+    if (self.playState !== 'idle') {
+        updateEffects(self)
         return
     }
+}
 
+function updateEffects(self: ITimelinePrivate) {
     // todo: update effects based on dirty property
-
-    // remove list of dirty effects
-    self._kdiff = {}
 }
 
 function resolveLabel(self: ITimelinePrivate, time: Time): number {
@@ -283,7 +290,7 @@ function resolveLabel(self: ITimelinePrivate, time: Time): number {
 }
 
 function calculateDuration(self: ITimelinePrivate) {
-    // todo: investigate a cheaper and less verbose way to do this
+    // todo: investigate a cheaper and less verbose way to do this or cache
     let duration = 0
     const targets = self.$
     for (let selector in targets) {

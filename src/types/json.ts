@@ -14,21 +14,17 @@ export interface ITimelineJSON {
 }
 
 export interface ITargetJSON {
-    [selector: string]: {
-        [property: string]: {
-            [time: string]: IValueJSON
-        }
-    }
+    [selector: string]: IPropertyJSON
 }
 
-export interface ITargetDirty {
-    [selector: string]: {
-        [property: string]: {
-            [time: string]: 1
-        }
-    }
+export interface IPropertyJSON {
+    [property: string]: ITimeJSON
 }
 
+export interface ITimeJSON {
+    [time: string]: IValueJSON
+}
+ 
 export interface IValueJSON {
     /**
      * Value

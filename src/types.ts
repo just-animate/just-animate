@@ -42,8 +42,7 @@ export interface ArrayLike<T> {
     length: number
 }
 
-export interface JustAnimate {
-    useWAAPI: boolean
+export interface JustAnimate { 
     mixers?: Record<string, IMixer>
     refs?: Record<string, any>
     animateTo(target: OneOrMany<Node | string>, to: Time, props: ElementPropSingle | IToOptions): void
@@ -96,8 +95,7 @@ export interface IMixerTweenFunction {
     (target?: any, prop?: string): IAnimation
 }  
 
-export interface ITimelineOptions {
-    useWAAPI?: boolean
+export interface ITimelineOptions { 
     labels?: Record<string, number>
     mixers?: Record<string, IMixer>
     refs?: Record<string, any>
