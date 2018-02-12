@@ -38,6 +38,14 @@ interface ITimelinePrivate extends ITimeline {
      * current playback rate
      */
     _rate: number 
+    /** 
+     * Animations
+     */
+    _animations: IAnimation[]
+    /** 
+     * Sub-timelines
+     */
+    _timelines: ITimeline[]
 }
 
 export function timeline(options?: ITimelineOptions): ITimeline {
@@ -48,6 +56,8 @@ export function timeline(options?: ITimelineOptions): ITimeline {
     self._pos = 0
     self.E = {}
     self.$ = {} 
+    self._animations = []
+    self._timelines = []
     // import mixers with options preferred over globals
     self.mixers = clone(globals.mixers, options.mixers)
     self.refs = clone(globals.refs, options.refs)
@@ -231,7 +241,7 @@ function addSingleKeyframe(
 
     // calculate the real end time
     // get the easing value... should be a string css easing or a reference at this point
-    const easing = (props.$easing || 'linear') as string
+    const easing = (props.$easing || undefined) as string
 
     for (let key in props) {
         // ignore properties that start with $, those are internal
