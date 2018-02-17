@@ -75,7 +75,7 @@ export interface IMixerTweenDef {
 
 export interface IMixerKeyframeDef {
     type: 'keyframes'
-    fn: IMixerTweenFunction
+    fn: IMixerAnimationFunction
 }
 
 /**
@@ -84,14 +84,14 @@ export interface IMixerKeyframeDef {
  *  - return nothing if the mixer has taken care of the set
  */
 export interface IMixerTweenFunction {
-    (a: string | number, b: string | number, target?: any, prop?: string): (offset: number) => void | string | number
+    (a: any, b: any): (offset: number, target?: any, prop?: string) => void | string | number
 }   
 
 /**
  * Mixer function to animate keyframes.  This is intended for plugging in other animation libs or WAAPI
  *  - Must return a Player object
  */
-export interface IMixerTweenFunction {
+export interface IMixerAnimationFunction {
     (target?: any, prop?: string): IAnimation
 }  
 

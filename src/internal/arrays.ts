@@ -105,14 +105,14 @@ export function pushDistinct<T>(indexed: T[], item: T): T {
     return item
 }
 
-export function mapFlatten<TInput, TOutput>(items: TInput[], mapper: (input: TInput) => TOutput | TOutput[]) {
-    var results: TOutput[] = []
-    all(items, item => {
-        var result = mapper(item)
+export function mapFlatten<TI, TO>(items: TI[], mapper: (input: TI, index: number, items: ArrayLike<TI>) => TO | TO[]) {
+    var results: TO[] = []
+    all(items, (item, i) => {
+        var result = mapper(item, i, items)
         if (isArrayLike(result)) {
-            all(result as TOutput[], item2 => push(results, item2))
+            all(result as TO[], item2 => push(results, item2))
         } else {
-            push(results, result as TOutput)
+            push(results, result as TO)
         }
     })
     return results

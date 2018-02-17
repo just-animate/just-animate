@@ -12,10 +12,12 @@ import { IAnimation } from '../waapiTypes'
 import { ITimelineJSON, ITargetJSON } from '../types/json'
 import { globals } from './globals'
 import { clone, addOrGet, deepClone } from './objects'
-import { list, remove } from './arrays'
+import { list, remove, mapFlatten } from './arrays'
 import { replaceWithRefs } from './references'
 import { isString, isDefined } from './inspect'
 import { _ } from './constants'
+import { IEffectOptions } from './Effect'
+import { IEffectKeyframe } from '../types/effect'
 
 interface ITimelinePrivate extends ITimeline {
     /**
@@ -25,7 +27,7 @@ interface ITimelinePrivate extends ITimeline {
     /**
      * Target configuration
      */
-    $: ITargetJSON 
+    $: ITargetJSON
     /**
      * Current position to insert new .to keyframes
      */
@@ -34,15 +36,15 @@ interface ITimelinePrivate extends ITimeline {
      * current internal time
      */
     _time: number
-    /** 
+    /**
      * current playback rate
      */
-    _rate: number 
-    /** 
+    _rate: number
+    /**
      * Animations
      */
     _animations: IAnimation[]
-    /** 
+    /**
      * Sub-timelines
      */
     _timelines: ITimeline[]
@@ -51,11 +53,11 @@ interface ITimelinePrivate extends ITimeline {
 export function timeline(options?: ITimelineOptions): ITimeline {
     const self = Object.create(timeline.prototype) as ITimelinePrivate
     // add handlers for this dispatcher
-    self.playState = 'idle' 
+    self.playState = 'idle'
     self._rate = 1
     self._pos = 0
     self.E = {}
-    self.$ = {} 
+    self.$ = {}
     self._animations = []
     self._timelines = []
     // import mixers with options preferred over globals
@@ -186,7 +188,7 @@ const proto = {
         const self = this
         json.L && (self.labels = json.L)
         json.$ && (self.$ = json.$)
-        keyframesUpdated(self)        
+        keyframesUpdated(self)
         return self
     },
     on(this: ITimelinePrivate, eventName: string, callback: IAction): ITimeline {
@@ -277,6 +279,96 @@ function insertKeyframe(
     limit && (event.l = limit)
 }
 
+function getAllEffectOptions(self: ITimelinePrivate): IEffectOptions[] {
+    const effects: IEffectOptions[] = []
+    for (let selector in self.$) {
+        loadEffectOptions(self, selector, effects)
+    }
+    return effects
+}
+
+function loadEffectOptions(self: ITimelinePrivate, selector: string, effects: IEffectOptions[]): void {
+    const props = self.$[selector]
+    const targets = resolveTargets(self, selector)
+    for (let t = 0; t < targets.length; t++) {
+        const target = targets[t]
+
+        for (let key in props) {
+            const prop = props[key]
+            const times = Object.keys(prop).map(s => +s).sort()
+            const k: IEffectKeyframe[] = mapFlatten(times, (time, i) => {
+                const interval = prop[time]
+                const category = interval.c
+                const delay = interval.d || 0
+                
+                const isFirstFrame = i === 0
+                const isFirstTarget = t === 0                
+                
+                // immediate set needs the previous frame to be a millisecond off with the last 
+                // value.
+                if (category === 'I') {
+                    const set: IEffectKeyframe[] = []
+                    if (!isFirstFrame) {
+                        set.push({
+                            v: prop[times[i - 1]].v,
+                            t: time - 1,
+                            d: 0
+                        })
+                    }
+                    set.push({
+                        v: interval.v,
+                        t: +time
+                    })
+                    return set;
+                }
+                
+                if (category === 'S') {
+                    const set: IEffectKeyframe[] = []
+                    
+                    if (!isFirstFrame && !isFirstTarget) {
+                        const lastTime = times[i - 1]
+                        const intervalStart = prop[lastTime]
+                        
+                        set.push({
+                            v: intervalStart.v,
+                            t: Math.max(lastTime - delay, lastTime)
+                        })
+                    }
+                    
+                    set.push({
+                        v: interval.v,
+                        t: +time
+                    })
+                    return set;
+                }
+
+                return {
+                    v: interval.v,
+                    t: +time,
+                    e: self.refs[interval.c] || interval.c || _,
+                    d: interval.d
+                }
+            })
+
+            effects.push({
+                $: target,
+                k: k,
+                m: undefined
+            })
+        }
+    }
+}
+
+function resolveTargets(self: ITimelinePrivate, selectorString: string): {}[] {
+    return mapFlatten(selectorString.split(','), (s: string) => {
+        const selector = s.trim()
+        if (selector.indexOf('@') === 0) {
+            return self.refs[selector.substring(1)]
+        }
+        return document.querySelectorAll(selector)
+    })
+}
+
 function updatePosition(self: ITimelinePrivate, end: number) {
     self._pos = Math.max(self._pos, end)
 }
@@ -284,7 +376,7 @@ function updatePosition(self: ITimelinePrivate, end: number) {
 function keyframesUpdated(self: ITimelinePrivate) {
     // let subscribers know the configuration has changed
     emit(self, 'config')
-    
+
     if (self.playState !== 'idle') {
         updateEffects(self)
         return
@@ -293,6 +385,7 @@ function keyframesUpdated(self: ITimelinePrivate) {
 
 function updateEffects(self: ITimelinePrivate) {
     // todo: update effects based on dirty property
+    getAllEffectOptions(self)
 }
 
 function resolveLabel(self: ITimelinePrivate, time: Time): number {

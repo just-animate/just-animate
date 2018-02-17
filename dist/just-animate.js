@@ -2,7 +2,6 @@ var JA = (function (exports) {
 'use strict';
 
 var globals = {
-    useWAAPI: true,
     labels: {},
     mixers: {},
     refs: {}
@@ -135,7 +134,8 @@ function timeline(options) {
     self._pos = 0;
     self.E = {};
     self.$ = {};
-    self._waapi = isDefined(options.useWAAPI) ? options.useWAAPI : globals.useWAAPI;
+    self._animations = [];
+    self._timelines = [];
     self.mixers = clone(globals.mixers, options.mixers);
     self.refs = clone(globals.refs, options.refs);
     self.labels = clone(globals.labels, options.labels);
@@ -283,7 +283,7 @@ function addSingleKeyframe(self, target, duration, props, type) {
     var end = resolveTime(self, props.$at, duration);
     var delay = props.$delay || 0;
     var limit = props.$limit || _;
-    var easing = (props.$easing || 'linear');
+    var easing = (props.$easing || undefined);
     for (var key in props) {
         if (key.indexOf('$') !== 0) {
             insertKeyframe(self, selector, key, end, props[key], type, easing, delay, limit);
