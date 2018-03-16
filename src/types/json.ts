@@ -3,50 +3,41 @@
  */
 
 export interface ITimelineJSON {
+    duration: number;
     /**
      * Targets
      */
-    $: ITargetJSON
+    targets: ITargetJSON;
     /**
      * Labels
      */
-    L: Record<string, number>
+    labels: Record<string, number>;
+
+    player?: {
+        currentTime: number;
+        playbackState: 'idle' | 'paused' | 'running';
+        playbackRate: number;
+    };
 }
 
 export interface ITargetJSON {
-    [selector: string]: IPropertyJSON
+    [selector: string]: IPropertyJSON;
 }
 
 export interface IPropertyJSON {
-    [property: string]: ITimeJSON
+    $enabled?: boolean;
+    [property: string]: ITimeJSON | boolean;
 }
 
 export interface ITimeJSON {
-    [time: string]: IValueJSON
+    [time: string]: IValueJSON;
 }
- 
+
 export interface IValueJSON {
-    /**
-     * Value
-     */
-    v: string | number
-    /**
-     * Category of value:
-     *  - S: stagger to
-     *  - I: immediate (set)
-     *  - T: tween to
-     */
-    c?: 'S' | 'I' | 'T'
-    /**
-     * Easing
-     */
-    e?: string
-    /**
-     * Stagger Limit
-     */
-    l?: number
-    /**
-     * Delay
-     */
-    d?: number
+    value: any;
+    type?: 'tween' | 'set';
+    easing?: string;
+    limit?: number;
+    staggerStart?: number;
+    staggerEnd?: number;
 }

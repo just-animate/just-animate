@@ -50,8 +50,7 @@ export interface JustAnimate {
     timeline(options?: ITimelineOptions): void
 }
 
-export interface ICommonOptions {
-    $delay?: number
+export interface ICommonOptions { 
     $easing?: Easing
 }
 
@@ -62,29 +61,18 @@ export interface ITargetOptions extends ICommonOptions {
 }
 
 export interface IToOptions extends ICommonOptions {
-    $at?: number
     $limit?: number  
+    $staggerStart?: number
+    $staggerEnd?: number
 } 
-
-export type IMixer = IMixerTweenDef | IMixerKeyframeDef | IMixerTweenFunction
-
-export interface IMixerTweenDef {
-    type: 'tween'
-    fn: IMixerTweenFunction
-}
-
-export interface IMixerKeyframeDef {
-    type: 'keyframes'
-    fn: IMixerAnimationFunction
-}
 
 /**
  * Mixer function to tween between two values.  
  *  - Return the value and it will be set automatically
  *  - return nothing if the mixer has taken care of the set
  */
-export interface IMixerTweenFunction {
-    (a: any, b: any): (offset: number, target?: any, prop?: string) => void | string | number
+export interface IMixer {
+    (a: any, b: any): (offset: number, target?: any, propertyName?: string) => void | string | number
 }   
 
 /**
@@ -131,7 +119,7 @@ export interface ITimeline {
     /**
      * Current playstate
      */
-    playState: 'running' | 'paused' | 'idle'
+    playbackState: 'running' | 'paused' | 'idle'
     /**
      * Dictionary of named times in the timeline
      */

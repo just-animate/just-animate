@@ -1,408 +1,292 @@
 import {
-    ITimeline,
-    ITargetOptions,
     IPlayOptions,
     IToOptions,
     Time,
     OneOrMany,
-    ITimelineOptions,
-    IAction
-} from '../types'
-import { IAnimation } from '../waapiTypes'
-import { ITimelineJSON, ITargetJSON } from '../types/json'
-import { globals } from './globals'
-import { clone, addOrGet, deepClone } from './objects'
-import { list, remove, mapFlatten } from './arrays'
-import { replaceWithRefs } from './references'
-import { isString, isDefined } from './inspect'
-import { _ } from './constants'
-import { IEffectOptions } from './Effect'
-import { IEffectKeyframe } from '../types/effect'
+    IAction,
+    ITimelineOptions
+} from '../types';
+import { ITargetJSON, ITimeJSON, ITimelineJSON } from '../types/json';
+import { globals } from './globals';
+import { clone, addOrGet } from './objects';
+import { list, remove } from './arrays';
+import { isString, isDefined } from './inspect';
+import { _ } from './constants';
 
-interface ITimelinePrivate extends ITimeline {
-    /**
-     * Event listeners
-     */
-    E: Record<string, IAction[]>
-    /**
-     * Target configuration
-     */
-    $: ITargetJSON
-    /**
-     * Current position to insert new .to keyframes
-     */
-    _pos: number
-    /**
-     * current internal time
-     */
-    _time: number
-    /**
-     * current playback rate
-     */
-    _rate: number
-    /**
-     * Animations
-     */
-    _animations: IAnimation[]
-    /**
-     * Sub-timelines
-     */
-    _timelines: ITimeline[]
+export type KeyframeType = 'tween' | 'set';
+export type PlaybackState = 'idle' | 'paused' | 'running';
+
+export function timeline(options: ITimelineOptions) {
+    return new Timeline(options);
 }
 
-export function timeline(options?: ITimelineOptions): ITimeline {
-    const self = Object.create(timeline.prototype) as ITimelinePrivate
-    // add handlers for this dispatcher
-    self.playState = 'idle'
-    self._rate = 1
-    self._pos = 0
-    self.E = {}
-    self.$ = {}
-    self._animations = []
-    self._timelines = []
-    // import mixers with options preferred over globals
-    self.mixers = clone(globals.mixers, options.mixers)
-    self.refs = clone(globals.refs, options.refs)
-    self.labels = clone(globals.labels, options.labels)
+export class Timeline {
+    public labels: Record<string, number>;
+    public targets: ITargetJSON;
+    public events: Record<string, (() => void)[]>;
+    public start: number;
 
-    return self
-}
+    private _state: PlaybackState;
+    private _time: number;
+    private _rate: number;
+    private _duration: number;
 
-const proto = {
-    get duration(this: ITimelinePrivate) {
-        // return whichever of these is the largest
-        // - max keyframe time
-        // - insert position (for instance, a trailing delay with no subsequent)
-        // - todo: max end time of a sub-timeline.
-        // note: it might be a good idea to cache the duration.  I don't want to optimize too early though
-        return Math.max(calculateDuration(this), this._pos)
-    },
-    get currentTime(this: ITimelinePrivate): number {
-        return this._time
-    },
-    set currentTime(this: ITimelinePrivate, value: number) {
-        const self = this
-        self._time = value
+    public get duration(): number {
+        return Math.max(calculateDuration(this), this._duration);
+    }
+    public set duration(value: number) {
+        this._duration = value;
+    }
+    public get currentTime(): number {
+        return this._time;
+    }
+    public set currentTime(value: number) {
+        const self = this;
+        self._time = value;
         // todo: update
-    },
-    get playbackRate(this: ITimelinePrivate): number {
-        return this._rate
-    },
-    set playbackRate(this: ITimelinePrivate, value: number) {
-        const self = this
-        self._rate = value
+    }
+    public get playbackRate(): number {
+        return this._rate;
+    }
+    public set playbackRate(value: number) {
+        const self = this;
+        self._rate = value;
         // todo: update
-    },
-    addSequence(this: ITimelinePrivate, animations: ITargetOptions[], at?: string | number): ITimeline {
-        const self = this
-        if (!isDefined(at)) {
-            at = self._pos
-        }
-        for (let i = 0; i < animations.length; i++) {
-            const a = animations[i]
-            a.$at = at
-            at = addSingleKeyframe(self, a.$target, a.$duration, a, 'T')
-        }
-        keyframesUpdated(self)
-        return self
-    },
-    addMultiple(this: ITimelinePrivate, animations: ITargetOptions[], at?: string | number): ITimeline {
-        const self = this
-        if (!isDefined(at)) {
-            at = self._pos
-        }
-        for (let i = 0; i < animations.length; i++) {
-            const a = animations[i]
-            a.$at = at
-            addSingleKeyframe(self, a.$target, a.$duration, a, 'T')
-        }
-        keyframesUpdated(self)
-        return self
-    },
-    addTimeline(this: ITimelinePrivate, _t1: ITimeline | IAnimation, _at?: string | number): ITimeline {
-        // todo: subtimelines
-        return this
-    },
-    addLabel(this: ITimelinePrivate, labelName: string): ITimeline {
-        this.labels[labelName] = this._pos
-        return this
-    },
-    addDelay(this: ITimelinePrivate, time: number): ITimeline {
-        time > 0 && (this._pos += time)
-        return this
-    },
-    set(this: ITimelinePrivate, target: OneOrMany<{} | string>, props: IToOptions, at?: number): ITimeline {
-        const self = this
-        props.$at = at
-        addSingleKeyframe(self, target, 0, props, 'I')
-        keyframesUpdated(self)
-        return self
-    },
-    staggerTo(this: ITimelinePrivate, target: OneOrMany<{} | string>, duration: number, props: IToOptions): ITimeline {
-        const self = this
-        addSingleKeyframe(this, target, duration, props, 'S')
-        keyframesUpdated(self)
-        return self
-    },
-    to(this: ITimelinePrivate, target: OneOrMany<{} | string>, duration: number, props: IToOptions): ITimeline {
-        const self = this
-        addSingleKeyframe(this, target, duration, props, 'T')
-        keyframesUpdated(self)
-        return self
-    },
-    play(this: ITimelinePrivate, _options?: IPlayOptions): ITimeline {
+    }
+    public get playbackState(): PlaybackState {
+        return this._state;
+    }
+    public set playbackState(value: PlaybackState) {
+        const self = this;
+        self._state = value;
+        // todo: update
+    }
+    constructor(options: ITimelineOptions) {
+        const self = this;
+        // add handlers for this dispatcher
+        self._state = 'idle';
+        self._rate = 1;
+        self.start = 0;
+        self.events = {};
+        self.targets = {};
+        self.labels = clone(globals.labels, options.labels);
+    }
+
+    public set(
+        target: OneOrMany<{} | string>,
+        props: IToOptions,
+        position?: number | string
+    ): this {
+        const self = this;
+        addSingleKeyframe(self, target, 0, props, 'set', position);
+        keyframesUpdated(self);
+        return self;
+    }
+    public to(
+        target: OneOrMany<{} | string>,
+        duration: number,
+        props: IToOptions,
+        position?: number | string
+    ): this {
+        const self = this;
+        addSingleKeyframe(this, target, duration, props, 'tween', position);
+        keyframesUpdated(self);
+        return self;
+    }
+    public play(_options?: IPlayOptions): this {
         // todo: play
-        return this
-    },
-    cancel(this: ITimelinePrivate): ITimeline {
+        return this;
+    }
+    public cancel(): this {
         // todo: cancel
-        return this
-    },
-    finish(this: ITimelinePrivate): ITimeline {
+        return this;
+    }
+    public finish(): this {
         // todo: finish
-        return this
-    },
-    restart(this: ITimelinePrivate): ITimeline {
-        return this.cancel().play()
-    },
-    reverse(this: ITimelinePrivate): ITimeline {
-        this.playbackRate *= -1
-        return this
-    },
-    seek(this: ITimelinePrivate, time: string | number): ITimeline {
-        const self = this
-        const t = resolveLabel(self, time)
-        isFinite(t) && (self.currentTime = t)
-        return self
-    },
-    export(this: ITimelinePrivate): ITimelineJSON {
+        return this;
+    }
+    public restart(): this {
+        return this.cancel().play();
+    }
+    public reverse(): this {
+        this.playbackRate *= -1;
+        return this;
+    }
+    public seek(time: string | number): this {
+        const self = this;
+        const t = resolveLabel(self, time);
+        isFinite(t) && (self.currentTime = t);
+        return self;
+    }
+    public export(): ITimelineJSON {
         // do a deep clone here to prevent modifications to the export from tainting
         // change detection on re-imports.  Changing a deep property without doing this would
         // change the internal state of the timeline.
-        return deepClone({
-            $: this.$,
-            L: this.labels
-        })
-    },
-    import(this: ITimelinePrivate, json: ITimelineJSON): ITimeline {
-        const self = this
-        json.L && (self.labels = json.L)
-        json.$ && (self.$ = json.$)
-        keyframesUpdated(self)
-        return self
-    },
-    on(this: ITimelinePrivate, eventName: string, callback: IAction): ITimeline {
-        const h = this.E
-        const hs = h[eventName] || (h[eventName] = [])
-        hs.push(callback)
-        return this
-    },
-    off(this: ITimelinePrivate, eventName: string, callback: IAction): ITimeline {
-        const hs = this.E[eventName]
-        if (hs) {
-            remove(hs, callback)
+        return {
+            duration: this.duration,
+            targets: this.targets,
+            labels: this.labels,
+            player: {
+                currentTime: this.currentTime,
+                playbackState: this.playbackState,
+                playbackRate: this.playbackRate
+            }
+        };
+    }
+    public import(json: ITimelineJSON): this {
+        const self = this;
+        if (isDefined(json.labels)) {
+            self.labels = json.labels;
         }
-        return this
+        if (isDefined(json.targets)) {
+            self.targets = json.targets;
+        }
+        if (isDefined(json.player)) {
+            self.playbackRate = json.player.playbackRate;
+            self.playbackState = json.player.playbackState;
+            self.currentTime = json.player.currentTime;
+        }
+        if (isDefined(json.duration)) {
+            self.duration = json.duration;
+        }
+        keyframesUpdated(self);
+        return self;
+    }
+    public on(eventName: string, callback: IAction): this {
+        const h = this.events;
+        const hs = h[eventName] || (h[eventName] = []);
+        hs.push(callback);
+        return this;
+    }
+    public off(eventName: string, callback: IAction): this {
+        const hs = this.events[eventName];
+        hs && remove(hs, callback);
+        return this;
     }
 }
-
-timeline.prototype = proto
 
 // --- PRIVATE FUNCTIONS BELOW HERE ---
-function emit(self: ITimelinePrivate, eventName: string): void {
-    let hs = self.E[eventName]
+function emit(self: Timeline, eventName: string): void {
+    let hs = self.events[eventName];
     if (hs) {
-        hs = hs.slice()
+        hs = hs.slice();
         for (let i = 0; i < hs.length; i++) {
-            hs[i]()
+            hs[i]();
         }
     }
 }
 
-function resolveTime(self: ITimelinePrivate, at: string | number, to: number) {
-    return (resolveLabel(self, at) || self._pos) + to
+function resolveTime(self: Timeline, at: string | number, to: number) {
+    return (resolveLabel(self, at) || self.start) + to;
 }
 
 function addSingleKeyframe(
-    self: ITimelinePrivate,
+    self: Timeline,
     target: any,
     duration: number,
     props: Record<string, any> & IToOptions,
-    type: 'S' | 'I' | 'T'
+    type: KeyframeType,
+    position: string | number
 ): number {
     // gets the target selector and replaces objects with string references
-    const selectors = replaceWithRefs(self.refs, list(target), true) as string[]
-    const selector = selectors.join(',')
+    const selectors = list(target);
+    const selector = selectors.join(',');
 
     // resolve the actual end time on the timeline
     // labels are not preserved... something to look at on a later date
-    const end = resolveTime(self, props.$at, duration)
+    const end = resolveTime(self, position, duration);
 
-    const delay = props.$delay || 0
-    const limit = props.$limit || _
+    const limit = props.$limit || _;
+    const staggerStart = props.$staggerStart || 0;
+    const startEnd = props.$startEnd || 0;
 
     // calculate the real end time
     // get the easing value... should be a string css easing or a reference at this point
-    const easing = (props.$easing || undefined) as string
+    const easing = (props.$easing || undefined) as string;
 
     for (let key in props) {
         // ignore properties that start with $, those are internal
         if (key.indexOf('$') !== 0) {
-            insertKeyframe(self, selector, key, end, props[key], type, easing, delay, limit)
+            insertKeyframe(
+                self,
+                selector,
+                key,
+                end,
+                props[key],
+                type,
+                easing,
+                limit,
+                staggerStart,
+                startEnd
+            );
         }
     }
-    updatePosition(self, end)
-    return end
+    updatePosition(self, end);
+    return end;
 }
 
 function insertKeyframe(
-    self: ITimelinePrivate,
+    self: Timeline,
     selector: string,
     key: string,
     time: number,
     nextVal: string | number,
-    type: 'S' | 'I' | 'T',
+    type: KeyframeType,
     easing?: string,
-    delay?: number,
-    limit?: number
+    limit?: number,
+    staggerStart?: number,
+    staggerEnd?: number
 ) {
-    const target = addOrGet(self.$, selector)
-    const prop = addOrGet(target, key)
-    const event = addOrGet(prop, time + '')
+    const target = addOrGet(self.targets, selector);
+    const prop = addOrGet(target, key);
+    const event = addOrGet(prop as ITimeJSON, time + '');
 
     // todo: change detection
 
-    event.v = nextVal
-    event.c = type
-    easing && (event.e = easing)
-    delay && (event.d = delay)
-    limit && (event.l = limit)
+    event.value = nextVal;
+    event.type = type;
+    easing && (event.easing = easing);
+    limit && (event.limit = limit);
+    staggerStart && (event.staggerStart = staggerStart);
+    staggerEnd && (event.staggerEnd = staggerEnd);
 }
 
-function getAllEffectOptions(self: ITimelinePrivate): IEffectOptions[] {
-    const effects: IEffectOptions[] = []
-    for (let selector in self.$) {
-        loadEffectOptions(self, selector, effects)
-    }
-    return effects
+// function resolveTargets(self: Timeline, selectorString: string): {}[] {
+//     return mapFlatten(selectorString.split(','), (s: string) => {
+//         const selector = s.trim();
+//         return document.querySelectorAll(selector);
+//     });
+// }
+
+function updatePosition(self: Timeline, end: number) {
+    self.start = Math.max(self.start, end);
 }
 
-function loadEffectOptions(self: ITimelinePrivate, selector: string, effects: IEffectOptions[]): void {
-    const props = self.$[selector]
-    const targets = resolveTargets(self, selector)
-    for (let t = 0; t < targets.length; t++) {
-        const target = targets[t]
-
-        for (let key in props) {
-            const prop = props[key]
-            const times = Object.keys(prop).map(s => +s).sort()
-            const k: IEffectKeyframe[] = mapFlatten(times, (time, i) => {
-                const interval = prop[time]
-                const category = interval.c
-                const delay = interval.d || 0
-                
-                const isFirstFrame = i === 0
-                const isFirstTarget = t === 0                
-                
-                // immediate set needs the previous frame to be a millisecond off with the last 
-                // value.
-                if (category === 'I') {
-                    const set: IEffectKeyframe[] = []
-                    if (!isFirstFrame) {
-                        set.push({
-                            v: prop[times[i - 1]].v,
-                            t: time - 1,
-                            d: 0
-                        })
-                    }
-                    set.push({
-                        v: interval.v,
-                        t: +time
-                    })
-                    return set;
-                }
-                
-                if (category === 'S') {
-                    const set: IEffectKeyframe[] = []
-                    
-                    if (!isFirstFrame && !isFirstTarget) {
-                        const lastTime = times[i - 1]
-                        const intervalStart = prop[lastTime]
-                        
-                        set.push({
-                            v: intervalStart.v,
-                            t: Math.max(lastTime - delay, lastTime)
-                        })
-                    }
-                    
-                    set.push({
-                        v: interval.v,
-                        t: +time
-                    })
-                    return set;
-                }
-
-                return {
-                    v: interval.v,
-                    t: +time,
-                    e: self.refs[interval.c] || interval.c || _,
-                    d: interval.d
-                }
-            })
-
-            effects.push({
-                $: target,
-                k: k,
-                m: undefined
-            })
-        }
-    }
-}
-
-function resolveTargets(self: ITimelinePrivate, selectorString: string): {}[] {
-    return mapFlatten(selectorString.split(','), (s: string) => {
-        const selector = s.trim()
-        if (selector.indexOf('@') === 0) {
-            return self.refs[selector.substring(1)]
-        }
-        return document.querySelectorAll(selector)
-    })
-}
-
-function updatePosition(self: ITimelinePrivate, end: number) {
-    self._pos = Math.max(self._pos, end)
-}
-
-function keyframesUpdated(self: ITimelinePrivate) {
+function keyframesUpdated(self: Timeline) {
     // let subscribers know the configuration has changed
-    emit(self, 'config')
+    emit(self, 'config');
 
-    if (self.playState !== 'idle') {
-        updateEffects(self)
-        return
+    if (self.playbackState !== 'idle') {
+        // update effects
+        return;
     }
 }
 
-function updateEffects(self: ITimelinePrivate) {
-    // todo: update effects based on dirty property
-    getAllEffectOptions(self)
+function resolveLabel(self: Timeline, time: Time): number {
+    return (isString(time) && self.labels[time]) || +time;
 }
 
-function resolveLabel(self: ITimelinePrivate, time: Time): number {
-    return (isString(time) && self.labels[time]) || +time
-}
-
-function calculateDuration(self: ITimelinePrivate) {
+function calculateDuration(self: Timeline) {
     // todo: investigate a cheaper and less verbose way to do this or cache
-    let duration = 0
-    const targets = self.$
+    let duration = 0;
+    const targets = self.targets;
     for (let selector in targets) {
-        const props = targets[selector]
+        const props = targets[selector];
         for (let time in props) {
             if (duration < +time) {
-                duration = +time
+                duration = +time;
             }
         }
     }
-    return duration
+    return duration;
 }
