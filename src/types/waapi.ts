@@ -1,5 +1,5 @@
 
-export type PlayState = 'idle' | 'running' | 'paused' | 'finished'
+export type PlayState = 'idle' | 'running' | 'paused' | 'finished' | 'pending'
 
 declare global {
     // tslint:disable-next-line:interface-name
@@ -9,12 +9,12 @@ declare global {
 }
 
 export interface IElementAnimate {
-    (keyframes: IKeyframe[], duration: number): IAnimation
-    (keyframes: IKeyframe[], timing: IEffectTiming): IAnimation
-    (keyframes: IKeyframe[], timingOrDuration: IEffectTiming | number): IAnimation
+    (keyframes: IKeyframe[], duration: number): IWebAnimation
+    (keyframes: IKeyframe[], timing: IEffectTiming): IWebAnimation
+    (keyframes: IKeyframe[], timingOrDuration: IEffectTiming | number): IWebAnimation
 }
 
-export interface IAnimation {
+export interface IWebAnimation {
     id: string
     currentTime: number
     playState: PlayState

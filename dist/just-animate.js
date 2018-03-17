@@ -1,255 +1,335 @@
-var JA = (function (exports) {
+(function () {
 'use strict';
 
-var globals = {
-    labels: {},
-    mixers: {},
-    refs: {}
-};
+var REMOVE = 3;
+var ADD = 1;
+var REPLACE = 2;
+var IDLE = 'idle';
 
-function clone() {
-    var args = arguments;
-    var target = {};
-    for (var i = 0; i < args.length; i++) {
-        var source = args[i];
-        for (var prop in source) {
-            target[prop] = source[prop];
-        }
-    }
-    return target;
+var JA = window.JA;
+var MAX_LEVEL = 2;
+function $(parent, e) {
+    return !e || e.length === 0
+        ?
+            []
+        : e.nodeName
+            ?
+                [e]
+            :
+                [].slice.call(e[0].nodeName
+                    ? e
+                    : (parent || document).querySelectorAll(e));
 }
-
-function addOrGet(obj, prop) {
-    return obj[prop] || (obj[prop] = {});
-}
-
 function isDefined(a) {
-    return !!a || a === 0 || a === false;
+    return a !== undefined && a !== null;
 }
-function isFunction(a) {
-    return typeof a === 'function';
-}
-
-
 function isString(a) {
     return typeof a === 'string';
 }
-function isArrayLike(a) {
-    return a && isFinite(a.length) && !isString(a) && !isFunction(a);
+function isDOM(target) {
+    return target.nodeType || target instanceof SVGElement;
 }
-
-var _ = undefined;
-
-function remove(items, item) {
-    var index = items.indexOf(item);
-    return index !== -1 ? items.splice(index, 1) : _;
+function pushAll(c, n) {
+    Array.prototype.push.apply(c, n);
+    return c;
 }
-
-function list(indexed) {
-    return !isDefined(indexed) ? [] : isArrayLike(indexed) ? indexed : [indexed];
+function diff(a, b) {
+    return diffInner(a, b, [], 1);
 }
-
-function timeline(options) {
-    return new Timeline(options);
-}
-var Timeline = (function () {
-    function Timeline(options) {
-        var self = this;
-        self._state = 'idle';
-        self._rate = 1;
-        self.start = 0;
-        self.events = {};
-        self.targets = {};
-        self.labels = clone(globals.labels, options.labels);
-    }
-    Object.defineProperty(Timeline.prototype, "duration", {
-        get: function () {
-            return Math.max(calculateDuration(this), this._duration);
-        },
-        set: function (value) {
-            this._duration = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Timeline.prototype, "currentTime", {
-        get: function () {
-            return this._time;
-        },
-        set: function (value) {
-            var self = this;
-            self._time = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Timeline.prototype, "playbackRate", {
-        get: function () {
-            return this._rate;
-        },
-        set: function (value) {
-            var self = this;
-            self._rate = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Timeline.prototype, "playbackState", {
-        get: function () {
-            return this._state;
-        },
-        set: function (value) {
-            var self = this;
-            self._state = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Timeline.prototype.set = function (target, props, position) {
-        var self = this;
-        addSingleKeyframe(self, target, 0, props, 'set', position);
-        keyframesUpdated(self);
-        return self;
-    };
-    Timeline.prototype.to = function (target, duration, props, position) {
-        var self = this;
-        addSingleKeyframe(this, target, duration, props, 'tween', position);
-        keyframesUpdated(self);
-        return self;
-    };
-    Timeline.prototype.play = function (_options) {
-        return this;
-    };
-    Timeline.prototype.cancel = function () {
-        return this;
-    };
-    Timeline.prototype.finish = function () {
-        return this;
-    };
-    Timeline.prototype.restart = function () {
-        return this.cancel().play();
-    };
-    Timeline.prototype.reverse = function () {
-        this.playbackRate *= -1;
-        return this;
-    };
-    Timeline.prototype.seek = function (time) {
-        var self = this;
-        var t = resolveLabel(self, time);
-        isFinite(t) && (self.currentTime = t);
-        return self;
-    };
-    Timeline.prototype.export = function () {
-        return {
-            duration: this.duration,
-            targets: this.targets,
-            labels: this.labels,
-            player: {
-                currentTime: this.currentTime,
-                playbackState: this.playbackState,
-                playbackRate: this.playbackRate
+function diffInner(a, b, walked, level) {
+    var changes = {};
+    for (var name in a) {
+        var aValue = a[name];
+        var bValue = b[name];
+        var aType = typeof aValue;
+        var bType = typeof bValue;
+        if (isDefined(aValue) && aType === 'object') {
+            if (walked.indexOf(aValue) !== -1) {
+                continue;
             }
-        };
-    };
-    Timeline.prototype.import = function (json) {
-        var self = this;
-        if (isDefined(json.labels)) {
-            self.labels = json.labels;
+            walked.push(aValue);
         }
-        if (isDefined(json.targets)) {
-            self.targets = json.targets;
+        if (!isDefined(bValue)) {
+            changes[name] = REMOVE;
         }
-        if (isDefined(json.player)) {
-            self.playbackRate = json.player.playbackRate;
-            self.playbackState = json.player.playbackState;
-            self.currentTime = json.player.currentTime;
+        else if (aType !== bType) {
+            changes[name] = REPLACE;
         }
-        if (isDefined(json.duration)) {
-            self.duration = json.duration;
+        else if (bType === 'object') {
+            var c = diffInner(aValue, bValue, walked, level + 1);
+            if (c) {
+                changes[name] = c;
+            }
         }
-        keyframesUpdated(self);
-        return self;
+        else if (aValue !== bValue) {
+            changes[name] = REPLACE;
+        }
+    }
+    for (var name in b) {
+        if (!isDefined(a[name])) {
+            changes[name] = ADD;
+        }
+    }
+    return Object.keys(changes).length
+        ? level > MAX_LEVEL ? REPLACE : changes
+        : undefined;
+}
+function copyInclude(source, inclusions) {
+    var dest = {};
+    for (var i = 0, iLen = inclusions.length; i < iLen; i++) {
+        dest[inclusions[i]] = source[inclusions[i]];
+    }
+    return dest;
+}
+function copyExclude(source, exclusions) {
+    var dest = {};
+    for (var key in source) {
+        if (exclusions && exclusions.indexOf(key) === -1) {
+            dest[key] = source[key];
+        }
+    }
+    return dest;
+}
+var utils = {
+    $: $,
+    isDefined: isDefined,
+    isString: isString,
+    isDOM: isDOM,
+    diff: diff,
+    pushAll: pushAll,
+    copyInclude: copyInclude,
+    copyExclude: copyExclude
+};
+JA.utils = utils;
+
+var JA$1 = window.JA;
+var easings = JA$1.dict(function (partial, set) {
+    for (var key in partial) {
+        set(key, partial[key]);
+    }
+});
+JA$1.easings = easings;
+
+var JA$2 = window.JA;
+var refs = JA$2.dict(function (partial, set) {
+    for (var key in partial) {
+        set(key, partial[key]);
+    }
+});
+JA$2.refs = refs;
+
+var JA$3 = window.JA;
+var ops = [];
+var frame;
+function scheduler(fn) {
+    return function () {
+        ops.push(fn);
+        frame = frame || setTimeout(nextTick) || 1;
     };
-    Timeline.prototype.on = function (eventName, callback) {
-        var h = this.events;
-        var hs = h[eventName] || (h[eventName] = []);
-        hs.push(callback);
-        return this;
+}
+function nextTick() {
+    for (var i = 0; i < ops.length; i++) {
+        ops[i]();
+    }
+    frame = ops.length = 0;
+}
+JA$3.nextTick = nextTick;
+JA$3.scheduler = scheduler;
+
+var JA$4 = window.JA;
+var timelines = JA$4.dict(function (partial, set) {
+    for (var key in partial) {
+        var last = JA$4.timelines.get(key);
+        if (last) {
+            last.setState({ state: IDLE });
+        }
+        set(key, partial[key]);
+    }
+});
+window.JA.timelines = timelines;
+
+var JA$5 = window.JA;
+var _a = JA$5.utils;
+var diff$1 = _a.diff;
+var isDefined$1 = _a.isDefined;
+var isString$1 = _a.isString;
+var $$1 = _a.$;
+var pushAll$1 = _a.pushAll;
+var copyInclude$1 = _a.copyInclude;
+var copyExclude$1 = _a.copyExclude;
+function Timeline(options) {
+    var self = this;
+    if (!(self instanceof Timeline)) {
+        return new Timeline(options);
+    }
+    self.state = {
+        time: 0,
+        rate: 1,
+        state: IDLE,
+        alternate: false,
+        repeat: 1
     };
-    Timeline.prototype.off = function (eventName, callback) {
-        var hs = this.events[eventName];
-        hs && remove(hs, callback);
-        return this;
+    self.duration = 0;
+    self.animations = [];
+    self.events = {};
+    self.targets = {};
+    self.refs = JA$5.dict(function (values, set) {
+        for (var key in values) {
+            set(key, values[key]);
+        }
+    });
+    JA$5.timelines.set(options.name, this);
+}
+Timeline.prototype.imports = function (options) {
+    if (options.labels) {
+        this.labels = options.labels;
+    }
+    if (options.targets) {
+        updateTargets(this, options.targets);
+    }
+    return this;
+};
+Timeline.prototype.exports = function () {
+    return {
+        duration: this.duration,
+        targets: this.targets,
+        labels: this.labels
     };
-    return Timeline;
+};
+Timeline.prototype.getState = function () {
+    return this.state;
+};
+Timeline.prototype.setState = function (state) {
+    updateState(this, state);
+    return this;
+};
+Timeline.prototype.emit = function (event) {
+    var evt = this._events[event];
+    if (evt) {
+        var handlers = evt.slice();
+        for (var i = 0, iLen = handlers.length; i < iLen; i++) {
+            handlers[i]();
+        }
+    }
+    return this;
+};
+Timeline.prototype.on = function (event, listener) {
+    var evt = this._events[event] || (this._events[event] = []);
+    if (evt.indexOf(listener) === -1) {
+        evt.push(listener);
+    }
+    return this;
+};
+Timeline.prototype.off = function (event, listener) {
+    var evt = this._events[event];
+    if (evt) {
+        var index = evt.indexOf(listener);
+        if (index !== -1) {
+            evt.splice(index, 1);
+        }
+    }
+    return this;
+};
+function updateTargets(self, targets) {
+    var changes = diff$1(self.targets, targets);
+    if (changes) {
+        self.targets = targets;
+        self.emit('config');
+        updateEffects(self, changes);
+    }
+}
+function updateState(self, options) {
+    var state = self.state;
+    var changed;
+    for (var name in state) {
+        if (isDefined$1(options[name]) && state[name] !== options[name]) {
+            changed = 1;
+            state[name] = options[name];
+        }
+    }
+    if (changed) {
+        self.emit('update');
+        self.animations.forEach(function (a) {
+            a.updated(state);
+        });
+    }
+}
+function updateEffects(self, changes) {
+    var animations = self.animations;
+    for (var i = animations.length - 1; i > -1; i--) {
+        var animation = animations[i];
+        var type = changes[animation.target];
+        if (type === REMOVE || type === REPLACE) {
+            animations.splice(i, 1);
+            animation.destroyed();
+        }
+    }
+    for (var selector in changes) {
+        var type = changes[selector];
+        if (type === REMOVE) {
+            continue;
+        }
+        var properties = self.targets[selector];
+        var propertyJSON = void 0;
+        if (type === ADD || type === REPLACE) {
+            propertyJSON = properties;
+        }
+        else {
+            propertyJSON = copyInclude$1(properties, Object.keys(changes).filter(function (p) { return changes[p] === ADD || changes[p] === REPLACE; }));
+        }
+        var newAnimations = createAnimations(self, selector, propertyJSON);
+        if (newAnimations.length) {
+            newAnimations.forEach(function (n) {
+                n.created();
+            });
+            pushAll$1(animations, newAnimations);
+        }
+    }
+}
+function resolveSelectors(self, selectors) {
+    return selectors
+        .split(',')
+        .map(function (s) {
+        return isString$1(s) && s[0] === '@'
+            ? resolveRefs(self, s)
+            : $$1(self.el, s);
+    });
+}
+function resolveRefs(self, ref) {
+    var refName = ref.substring(1);
+    return self.refs.get(refName) || JA$5.refs.get(refName);
+}
+function createAnimations(self, selector, properties) {
+    var middlewares = JA$5.middlewares;
+    var duration = self.duration;
+    var targets = resolveSelectors(self, selector);
+    var newAnimations = [];
+    for (var i = 0, tLen = targets.length; i < tLen; i++) {
+        var target = targets[i];
+        var handled = [];
+        var props = properties;
+        for (var m = 0, mLen = middlewares.length; m < mLen; m++) {
+            if (!Object.keys(props).length) {
+                break;
+            }
+            var animations = middlewares[m]({
+                target: target,
+                duration: duration,
+                props: props
+            });
+            if (!animations || !animations.length) {
+                continue;
+            }
+            pushAll$1(newAnimations, animations);
+            handled = animations.map(selectProps).reduce(pushAll$1, handled);
+            props = copyExclude$1(props, handled);
+        }
+    }
+    return newAnimations;
+}
+function selectProps(a) {
+    return a.props;
+}
+JA$5.Timeline = Timeline;
+
 }());
-function emit(self, eventName) {
-    var hs = self.events[eventName];
-    if (hs) {
-        hs = hs.slice();
-        for (var i = 0; i < hs.length; i++) {
-            hs[i]();
-        }
-    }
-}
-function resolveTime(self, at, to) {
-    return (resolveLabel(self, at) || self.start) + to;
-}
-function addSingleKeyframe(self, target, duration, props, type, position) {
-    var selectors = list(target);
-    var selector = selectors.join(',');
-    var end = resolveTime(self, position, duration);
-    var limit = props.$limit || _;
-    var staggerStart = props.$staggerStart || 0;
-    var startEnd = props.$startEnd || 0;
-    var easing = (props.$easing || undefined);
-    for (var key in props) {
-        if (key.indexOf('$') !== 0) {
-            insertKeyframe(self, selector, key, end, props[key], type, easing, limit, staggerStart, startEnd);
-        }
-    }
-    updatePosition(self, end);
-    return end;
-}
-function insertKeyframe(self, selector, key, time, nextVal, type, easing, limit, staggerStart, staggerEnd) {
-    var target = addOrGet(self.targets, selector);
-    var prop = addOrGet(target, key);
-    var event = addOrGet(prop, time + '');
-    event.value = nextVal;
-    event.type = type;
-    easing && (event.easing = easing);
-    limit && (event.limit = limit);
-    staggerStart && (event.staggerStart = staggerStart);
-    staggerEnd && (event.staggerEnd = staggerEnd);
-}
-function updatePosition(self, end) {
-    self.start = Math.max(self.start, end);
-}
-function keyframesUpdated(self) {
-    emit(self, 'config');
-    if (self.playbackState !== 'idle') {
-        return;
-    }
-}
-function resolveLabel(self, time) {
-    return (isString(time) && self.labels[time]) || +time;
-}
-function calculateDuration(self) {
-    var duration = 0;
-    var targets = self.targets;
-    for (var selector in targets) {
-        var props = targets[selector];
-        for (var time in props) {
-            if (duration < +time) {
-                duration = +time;
-            }
-        }
-    }
-    return duration;
-}
-
-exports.timeline = timeline;
-
-return exports;
-
-}({}));
