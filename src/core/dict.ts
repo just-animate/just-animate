@@ -1,11 +1,11 @@
-import { Dict } from '../types'; 
-const JA = window.JA;
+import { isDefined, keys } from './utils'; 
+import { scheduler } from './scheduler';
 
 export type Setter<T> = (key: string, value: T) => void;
 
 export function dict<T>(
     onUpdate: (properties: Record<string, T>, set: Setter<T>) => void
-): Dict<T> {
+): ja.Dict<T> {
     let properties: Record<string, T> = {};
     const values: Record<string, T> = {};
 
@@ -13,7 +13,7 @@ export function dict<T>(
         values[key] = value;
     };
 
-    const propertyUpdated = window.JA.scheduler(() => {
+    const propertyUpdated = scheduler(() => {
         const newProperties = properties;
         properties = {};
         onUpdate(newProperties, setter);
@@ -21,10 +21,10 @@ export function dict<T>(
 
     return {
         keys() {
-            return Object.keys(values);
+            return keys(values);
         },
         set(key: string, value: T) {
-            if (JA.utils.isDefined(key)) {
+            if (isDefined(key)) {
                 properties[key] = value;
                 propertyUpdated();
             }
@@ -33,12 +33,4 @@ export function dict<T>(
             return values[key];
         }
     };
-}
-
-JA.dict = dict;
-
-declare module '../types' {
-    interface JustAnimateStatic {
-        dict: typeof dict;
-    }
 }

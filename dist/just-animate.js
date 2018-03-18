@@ -1,4 +1,4 @@
-(function () {
+var JA = (function (exports) {
 'use strict';
 
 var REMOVE = 3;
@@ -6,7 +6,6 @@ var ADD = 1;
 var REPLACE = 2;
 var IDLE = 'idle';
 
-var JA = window.JA;
 var MAX_LEVEL = 2;
 function $(parent, e) {
     return !e || e.length === 0
@@ -26,9 +25,7 @@ function isDefined(a) {
 function isString(a) {
     return typeof a === 'string';
 }
-function isDOM(target) {
-    return target.nodeType || target instanceof SVGElement;
-}
+
 function pushAll(c, n) {
     Array.prototype.push.apply(c, n);
     return c;
@@ -70,7 +67,7 @@ function diffInner(a, b, walked, level) {
             changes[name] = ADD;
         }
     }
-    return Object.keys(changes).length
+    return keys(changes).length
         ? level > MAX_LEVEL ? REPLACE : changes
         : undefined;
 }
@@ -90,35 +87,8 @@ function copyExclude(source, exclusions) {
     }
     return dest;
 }
-var utils = {
-    $: $,
-    isDefined: isDefined,
-    isString: isString,
-    isDOM: isDOM,
-    diff: diff,
-    pushAll: pushAll,
-    copyInclude: copyInclude,
-    copyExclude: copyExclude
-};
-JA.utils = utils;
+var keys = Object.keys;
 
-var JA$1 = window.JA;
-var easings = JA$1.dict(function (partial, set) {
-    for (var key in partial) {
-        set(key, partial[key]);
-    }
-});
-JA$1.easings = easings;
-
-var JA$2 = window.JA;
-var refs = JA$2.dict(function (partial, set) {
-    for (var key in partial) {
-        set(key, partial[key]);
-    }
-});
-JA$2.refs = refs;
-
-var JA$3 = window.JA;
 var ops = [];
 var frame;
 function scheduler(fn) {
@@ -133,30 +103,64 @@ function nextTick() {
     }
     frame = ops.length = 0;
 }
-JA$3.nextTick = nextTick;
-JA$3.scheduler = scheduler;
 
-var JA$4 = window.JA;
-var timelines = JA$4.dict(function (partial, set) {
+function dict(onUpdate) {
+    var properties = {};
+    var values = {};
+    var setter = function (key, value) {
+        values[key] = value;
+    };
+    var propertyUpdated = scheduler(function () {
+        var newProperties = properties;
+        properties = {};
+        onUpdate(newProperties, setter);
+    });
+    return {
+        keys: function () {
+            return keys(values);
+        },
+        set: function (key, value) {
+            if (isDefined(key)) {
+                properties[key] = value;
+                propertyUpdated();
+            }
+        },
+        get: function (key) {
+            return values[key];
+        }
+    };
+}
+
+var easings = dict(function (partial, set) {
     for (var key in partial) {
-        var last = JA$4.timelines.get(key);
+        set(key, partial[key]);
+    }
+});
+
+var refs = dict(function (partial, set) {
+    for (var key in partial) {
+        set(key, partial[key]);
+    }
+});
+
+var middlewares = [];
+var use = function (middleware) {
+    if (middlewares.indexOf(middleware) === -1) {
+        middlewares.push(middleware);
+    }
+};
+
+var timelines = dict(function (partial, set) {
+    for (var key in partial) {
+        var last = timelines.get(key);
         if (last) {
             last.setState({ state: IDLE });
         }
         set(key, partial[key]);
     }
 });
-window.JA.timelines = timelines;
 
-var JA$5 = window.JA;
-var _a = JA$5.utils;
-var diff$1 = _a.diff;
-var isDefined$1 = _a.isDefined;
-var isString$1 = _a.isString;
-var $$1 = _a.$;
-var pushAll$1 = _a.pushAll;
-var copyInclude$1 = _a.copyInclude;
-var copyExclude$1 = _a.copyExclude;
+var EXPORT_FIELDS = ['duration', 'targets', 'labels'];
 function Timeline(options) {
     var self = this;
     if (!(self instanceof Timeline)) {
@@ -173,12 +177,12 @@ function Timeline(options) {
     self.animations = [];
     self.events = {};
     self.targets = {};
-    self.refs = JA$5.dict(function (values, set) {
+    self.refs = dict(function (values, set) {
         for (var key in values) {
             set(key, values[key]);
         }
     });
-    JA$5.timelines.set(options.name, this);
+    timelines.set(options.name, this);
 }
 Timeline.prototype.imports = function (options) {
     if (options.labels) {
@@ -190,11 +194,8 @@ Timeline.prototype.imports = function (options) {
     return this;
 };
 Timeline.prototype.exports = function () {
-    return {
-        duration: this.duration,
-        targets: this.targets,
-        labels: this.labels
-    };
+    var self = this;
+    return copyInclude(self, EXPORT_FIELDS);
 };
 Timeline.prototype.getState = function () {
     return this.state;
@@ -231,7 +232,7 @@ Timeline.prototype.off = function (event, listener) {
     return this;
 };
 function updateTargets(self, targets) {
-    var changes = diff$1(self.targets, targets);
+    var changes = diff(self.targets, targets);
     if (changes) {
         self.targets = targets;
         self.emit('config');
@@ -242,7 +243,7 @@ function updateState(self, options) {
     var state = self.state;
     var changed;
     for (var name in state) {
-        if (isDefined$1(options[name]) && state[name] !== options[name]) {
+        if (isDefined(options[name]) && state[name] !== options[name]) {
             changed = 1;
             state[name] = options[name];
         }
@@ -275,14 +276,14 @@ function updateEffects(self, changes) {
             propertyJSON = properties;
         }
         else {
-            propertyJSON = copyInclude$1(properties, Object.keys(changes).filter(function (p) { return changes[p] === ADD || changes[p] === REPLACE; }));
+            propertyJSON = copyInclude(properties, keys(changes).filter(function (p) { return changes[p] === ADD || changes[p] === REPLACE; }));
         }
         var newAnimations = createAnimations(self, selector, propertyJSON);
         if (newAnimations.length) {
             newAnimations.forEach(function (n) {
                 n.created();
             });
-            pushAll$1(animations, newAnimations);
+            pushAll(animations, newAnimations);
         }
     }
 }
@@ -290,17 +291,16 @@ function resolveSelectors(self, selectors) {
     return selectors
         .split(',')
         .map(function (s) {
-        return isString$1(s) && s[0] === '@'
+        return isString(s) && s[0] === '@'
             ? resolveRefs(self, s)
-            : $$1(self.el, s);
+            : $(self.el, s);
     });
 }
 function resolveRefs(self, ref) {
     var refName = ref.substring(1);
-    return self.refs.get(refName) || JA$5.refs.get(refName);
+    return self.refs.get(refName) || refs.get(refName);
 }
 function createAnimations(self, selector, properties) {
-    var middlewares = JA$5.middlewares;
     var duration = self.duration;
     var targets = resolveSelectors(self, selector);
     var newAnimations = [];
@@ -309,7 +309,7 @@ function createAnimations(self, selector, properties) {
         var handled = [];
         var props = properties;
         for (var m = 0, mLen = middlewares.length; m < mLen; m++) {
-            if (!Object.keys(props).length) {
+            if (!keys(props).length) {
                 break;
             }
             var animations = middlewares[m]({
@@ -320,9 +320,9 @@ function createAnimations(self, selector, properties) {
             if (!animations || !animations.length) {
                 continue;
             }
-            pushAll$1(newAnimations, animations);
-            handled = animations.map(selectProps).reduce(pushAll$1, handled);
-            props = copyExclude$1(props, handled);
+            pushAll(newAnimations, animations);
+            handled = animations.map(selectProps).reduce(pushAll, handled);
+            props = copyExclude(props, handled);
         }
     }
     return newAnimations;
@@ -330,6 +330,15 @@ function createAnimations(self, selector, properties) {
 function selectProps(a) {
     return a.props;
 }
-JA$5.Timeline = Timeline;
 
-}());
+exports.easings = easings;
+exports.refs = refs;
+exports.use = use;
+exports.nextTick = nextTick;
+exports.scheduler = scheduler;
+exports.timelines = timelines;
+exports.Timeline = Timeline;
+
+return exports;
+
+}({}));

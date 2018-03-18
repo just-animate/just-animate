@@ -1,8 +1,5 @@
-import { ChangeSet, ChangeSetOrCode } from '../types';
-import { REMOVE, REPLACE, ADD } from '../_constants';
-import { IPropertyJSON } from '../types';
+import { REMOVE, REPLACE, ADD } from '../_constants'; 
 
-const JA = window.JA;
 const MAX_LEVEL = 2;
 
 /**
@@ -40,8 +37,8 @@ export function pushAll<T>(c: T[], n: T[]) {
     return c;
 }
 
-export function diff<T>(a: T, b: T): ChangeSet {
-    return diffInner(a, b, [], 1) as ChangeSet;
+export function diff<T>(a: T, b: T): ja.ChangeSet {
+    return diffInner(a, b, [], 1) as ja.ChangeSet;
 }
 
 function diffInner<T>(
@@ -49,7 +46,7 @@ function diffInner<T>(
     b: T,
     walked: any[],
     level: number
-): ChangeSetOrCode {
+): ja.ChangeSetOrCode {
     const changes = {} as { [P in keyof T]: number | {} };
     // walk through all the existing properties
     for (const name in a) {
@@ -92,20 +89,20 @@ function diffInner<T>(
         }
     }
     // return empty if nothing changed.
-    return Object.keys(changes).length
-        ? level > MAX_LEVEL ? REPLACE : (changes as ChangeSet)
+    return keys(changes).length
+        ? level > MAX_LEVEL ? REPLACE : (changes as ja.ChangeSet)
         : undefined;
 }
 
-function copyInclude(source: IPropertyJSON, inclusions: string[]) {
-    const dest: IPropertyJSON = {};
+export function copyInclude<T>(source: T, inclusions: string[]) {
+    const dest: Partial<T> = {};
     for (let i = 0, iLen = inclusions.length; i < iLen; i++) {
         dest[inclusions[i]] = source[inclusions[i]];
     }
     return dest;
 }
 
-function copyExclude<T>(source: T, exclusions?: string[]): Partial<T> {
+export function copyExclude<T>(source: T, exclusions?: string[]): Partial<T> {
     const dest: Partial<T> = {};
     for (const key in source) {
         if (exclusions && exclusions.indexOf(key) === -1) {
@@ -115,21 +112,4 @@ function copyExclude<T>(source: T, exclusions?: string[]): Partial<T> {
     return dest;
 }
 
-export const utils = {
-    $,
-    isDefined,
-    isString,
-    isDOM,
-    diff,
-    pushAll,
-    copyInclude,
-    copyExclude
-};
-
-JA.utils = utils;
-
-declare module '../types' {
-    interface JustAnimateStatic {
-        utils: typeof utils;
-    }
-}
+export const keys = Object.keys;

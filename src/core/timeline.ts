@@ -1,28 +1,22 @@
-import {
-    IAnimation,
-    ITimeline,
-    ITimelineJSON,
-    ITimelineOptions,
-    ITimelineState,
-    ITargetJSON,
-    ChangeSet,
-    IPropertyJSON
-} from '../types';
-
 import { REMOVE, ADD, REPLACE, IDLE } from '../_constants';
-
-const JA = window.JA;
-const {
+import {
     diff,
     isDefined,
+    copyInclude,
+    pushAll,
     isString,
     $,
-    pushAll,
-    copyInclude,
-    copyExclude
-} = JA.utils;
+    copyExclude,
+    keys
+} from './utils';
+import { dict } from './dict';
+import { refs } from './refs';
+import { middlewares } from './middleware';
+import { timelines } from './timelines';
 
-function Timeline(this: ITimeline, options: ITimelineOptions) {
+const EXPORT_FIELDS = ['duration', 'targets', 'labels'];
+
+export function Timeline(this: ja.ITimeline, options: ja.ITimelineOptions) {
     const self = this;
     if (!(self instanceof Timeline)) {
         return new (Timeline as any)(options);
@@ -40,17 +34,17 @@ function Timeline(this: ITimeline, options: ITimelineOptions) {
     self.events = {};
     self.targets = {};
 
-    self.refs = JA.dict<{}>((values, set) => {
+    self.refs = dict<{}>((values, set) => {
         for (let key in values) {
             set(key, values[key]);
         }
     });
 
     // register new timeline
-    JA.timelines.set(options.name, this);
+    timelines.set(options.name, this);
 }
 
-Timeline.prototype.imports = function(options: ITimelineJSON) {
+Timeline.prototype.imports = function(options: ja.ITimelineJSON) {
     if (options.labels) {
         this.labels = options.labels;
     }
@@ -59,17 +53,14 @@ Timeline.prototype.imports = function(options: ITimelineJSON) {
     }
     return this;
 };
-Timeline.prototype.exports = function(): ITimelineJSON {
-    return {
-        duration: this.duration,
-        targets: this.targets,
-        labels: this.labels
-    };
+Timeline.prototype.exports = function(): ja.ITimelineJSON {
+    const self = this;
+    return copyInclude(self, EXPORT_FIELDS) as ja.ITimelineJSON;
 };
 Timeline.prototype.getState = function() {
     return this.state;
 };
-Timeline.prototype.setState = function(state: ITimelineState) {
+Timeline.prototype.setState = function(state: ja.ITimelineState) {
     updateState(this, state);
     return this;
 };
@@ -101,7 +92,7 @@ Timeline.prototype.off = function(event: string, listener: () => void) {
     return this;
 };
 
-function updateTargets(self: ITimeline, targets: ITargetJSON) {
+function updateTargets(self: ja.ITimeline, targets: ja.ITargetJSON) {
     const changes = diff(self.targets, targets);
     if (changes) {
         self.targets = targets;
@@ -109,7 +100,7 @@ function updateTargets(self: ITimeline, targets: ITargetJSON) {
         updateEffects(self, changes);
     }
 }
-function updateState(self: ITimeline, options: Partial<ITimelineState>) {
+function updateState(self: ja.ITimeline, options: Partial<ja.ITimelineState>) {
     const state = self.state;
     // update player state
     let changed: number;
@@ -128,7 +119,7 @@ function updateState(self: ITimeline, options: Partial<ITimelineState>) {
         });
     }
 }
-function updateEffects(self: ITimeline, changes: ChangeSet) {
+function updateEffects(self: ja.ITimeline, changes: ja.ChangeSet) {
     const animations = self.animations;
     // remove if removed or replaced
     for (let i = animations.length - 1; i > -1; i--) {
@@ -150,13 +141,13 @@ function updateEffects(self: ITimeline, changes: ChangeSet) {
         const properties = self.targets[selector];
 
         // find the next set of properties to process
-        let propertyJSON: IPropertyJSON;
+        let propertyJSON: ja.IPropertyJSON;
         if (type === ADD || type === REPLACE) {
             propertyJSON = properties;
         } else {
             propertyJSON = copyInclude(
                 properties,
-                Object.keys(changes).filter(
+                keys(changes).filter(
                     p => changes[p] === ADD || changes[p] === REPLACE
                 )
             );
@@ -173,7 +164,7 @@ function updateEffects(self: ITimeline, changes: ChangeSet) {
     }
 }
 
-function resolveSelectors(self: ITimeline, selectors: string) {
+function resolveSelectors(self: ja.ITimeline, selectors: string) {
     return selectors
         .split(',')
         .map(
@@ -184,20 +175,19 @@ function resolveSelectors(self: ITimeline, selectors: string) {
         );
 }
 
-function resolveRefs(self: ITimeline, ref: string) {
+function resolveRefs(self: ja.ITimeline, ref: string) {
     const refName = ref.substring(1);
-    return self.refs.get(refName) || JA.refs.get(refName);
+    return self.refs.get(refName) || refs.get(refName);
 }
 
 function createAnimations(
-    self: ITimeline,
+    self: ja.ITimeline,
     selector: string,
-    properties: IPropertyJSON
+    properties: ja.IPropertyJSON
 ) {
-    const middlewares = JA.middlewares;
     const duration = self.duration;
     const targets = resolveSelectors(self, selector);
-    const newAnimations: IAnimation[] = [];
+    const newAnimations: ja.IAnimation[] = [];
 
     for (let i = 0, tLen = targets.length; i < tLen; i++) {
         const target = targets[i];
@@ -205,7 +195,7 @@ function createAnimations(
         let props = properties;
         for (let m = 0, mLen = middlewares.length; m < mLen; m++) {
             // stop processing if we run out of properties to process
-            if (!Object.keys(props).length) {
+            if (!keys(props).length) {
                 break;
             }
             // get animations
@@ -232,15 +222,6 @@ function createAnimations(
     return newAnimations;
 }
 
-function selectProps(a: IAnimation) {
+function selectProps(a: ja.IAnimation) {
     return a.props;
-}
-
-// export out to window
-JA.Timeline = (Timeline as any) as ITimeline;
-
-declare module '../types' {
-    interface JustAnimateStatic {
-        Timeline: ITimeline;
-    }
 }

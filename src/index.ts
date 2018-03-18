@@ -1,6 +1,6 @@
-import './globals/utils';
-import './globals/easings';
-import './globals/refs';
-import './globals/scheduler';
-import './globals/timelines';
-import './globals/timeline';
+export { easings } from './core/easings'; 
+export { refs } from './core/refs';
+export { use } from './core/middleware';
+export { nextTick, scheduler } from './core/scheduler';
+export { timelines } from './core/timelines';
+export { Timeline } from './core/timeline';

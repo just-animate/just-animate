@@ -1,35 +1,31 @@
-import { IWebAnimation } from '../types';
-import { IAnimationUpdateContext } from '../types';
-import { IKeyframe } from '../types';
-import { IValueJSON } from '../types';
-
-const JA = window.JA;
-const { copyExclude } = JA.utils;
+import { copyExclude, keys}  from '../core/utils';
+import { use } from '../core/middleware';
+ 
 const RUNNING = 'running';
 
 // minimum amount of time left on an animation required to call .play()
 const frameSize = 17;
 
-JA.use(effect => {
+use(effect => {
     const target = effect.target as Element;
     if (!(target instanceof Element)) {
         return undefined;
     }
 
     const duration = effect.duration || 1;
-    return Object.keys(effect.props).map(propertyName => {
+    return keys(effect.props).map(propertyName => {
         const config = effect.props[propertyName];
-        const times = Object.keys(config)
+        const times = keys(config)
             .map(c => +c)
             .filter(c => isFinite(c) && c >= 0 && c <= duration)
             .sort();
 
         // create keyframes
         let hasStart: boolean, hasEnd: boolean;
-        const keyframes: IKeyframe[] = [];
+        const keyframes: waapi.IKeyframe[] = [];
         for (let i = 0, tLen = times.length; i < tLen; i++) {
             const time = times[i];
-            const timeConfig = config[time] as IValueJSON;
+            const timeConfig = config[time] as ja.IValueJSON;
 
             const offset = time / duration;
             if (offset === 0) {
@@ -43,7 +39,7 @@ JA.use(effect => {
                 // if it is a set type, add a keyframe right before it with step-start easing
                 const lastIndex = i - 1;
                 const lastFrame =
-                    lastIndex > -1 && (config[times[lastIndex]] as IValueJSON);
+                    lastIndex > -1 && (config[times[lastIndex]] as ja.IValueJSON);
                 if (lastFrame) {
                     keyframes.push({
                         offset: offset - 0.0000001,
@@ -57,7 +53,7 @@ JA.use(effect => {
             // in JA3, it uses the "destination" frame for tween settings. WAAPI uses the source frame
             const nextIndex = i + 1;
             const nextFrame =
-                nextIndex < tLen && (config[times[nextIndex]] as IValueJSON);
+                nextIndex < tLen && (config[times[nextIndex]] as ja.IValueJSON);
             // grab the easing from next value
             const easing = (nextFrame && nextFrame.easing) || 'linear';
 
@@ -81,7 +77,7 @@ JA.use(effect => {
             keyframes.push(lastKeyframe);
         }
 
-        let animator: IWebAnimation;
+        let animator: waapi.IWebAnimation;
         return {
             props: [propertyName],
             created() {
@@ -91,7 +87,7 @@ JA.use(effect => {
                 });
                 animator.pause();
             },
-            updated(ctx: IAnimationUpdateContext) {
+            updated(ctx: ja.IAnimationUpdateContext) {
                 const time = ctx.time;
                 const rate = ctx.rate;
                 const isPlaying = ctx.state === RUNNING;

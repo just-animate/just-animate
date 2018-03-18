@@ -1,7 +1,3 @@
-import '../types'
-
-const JA = window.JA;
-
 const ops: Function[] = [];
 let frame: any;
 
@@ -17,14 +13,4 @@ export function nextTick() {
         ops[i]();
     }
     frame = ops.length = 0;
-}
-
-JA.nextTick = nextTick
-JA.scheduler = scheduler
-
-declare module '../types' {
-    interface JustAnimateStatic {
-        nextTick: typeof nextTick
-        scheduler: typeof scheduler
-    }
 }
