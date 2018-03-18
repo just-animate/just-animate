@@ -102,8 +102,8 @@ export function copyInclude<T>(source: T, inclusions: string[]) {
     return dest;
 }
 
-export function copyExclude<T>(source: T, exclusions?: string[]): Partial<T> {
-    const dest: Partial<T> = {};
+export function copyExclude<T>(source: T, exclusions?: string[], dest?: Partial<T>): Partial<T> {
+    dest = dest || {};
     for (const key in source) {
         if (exclusions && exclusions.indexOf(key) === -1) {
             dest[key] = source[key];

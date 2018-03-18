@@ -1,7 +1,6 @@
 import { REMOVE, ADD, REPLACE, IDLE } from '../_constants';
 import {
     diff,
-    isDefined,
     copyInclude,
     pushAll,
     isString,
@@ -13,14 +12,10 @@ import { dict } from './dict';
 import { refs } from './refs';
 import { middlewares } from './middleware';
 import { timelines } from './timelines';
-
-const EXPORT_FIELDS = ['duration', 'targets', 'labels'];
+import { timer } from './timer';
 
 export function Timeline(this: ja.ITimeline, options: ja.ITimelineOptions) {
     const self = this;
-    if (!(self instanceof Timeline)) {
-        return new (Timeline as any)(options);
-    }
     self.state = {
         time: 0,
         rate: 1,
@@ -34,38 +29,108 @@ export function Timeline(this: ja.ITimeline, options: ja.ITimelineOptions) {
     self.events = {};
     self.targets = {};
 
-    self.refs = dict<{}>((values, set) => {
-        for (let key in values) {
-            set(key, values[key]);
-        }
-    });
+    options = options || {}
+    self.labels = dict(options.labels);
+    self.refs = dict(options.refs);
+
+    self.tick = self.tick.bind(self);
 
     // register new timeline
     timelines.set(options.name, this);
 }
 
-Timeline.prototype.imports = function(options: ja.ITimelineJSON) {
+Timeline.prototype.imports = function(
+    this: ja.ITimeline,
+    options: ja.ITimelineJSON
+) {
     if (options.labels) {
-        this.labels = options.labels;
+        this.labels.import(options.labels);
     }
     if (options.targets) {
         updateTargets(this, options.targets);
     }
     return this;
 };
-Timeline.prototype.exports = function(): ja.ITimelineJSON {
+Timeline.prototype.exports = function(this: ja.ITimeline): ja.ITimelineJSON {
     const self = this;
-    return copyInclude(self, EXPORT_FIELDS) as ja.ITimelineJSON;
+    return {
+        duration: self.duration,
+        labels: self.labels.export(),
+        targets: self.targets
+    };
 };
-Timeline.prototype.getState = function() {
+Timeline.prototype.getState = function(this: ja.ITimeline) {
     return this.state;
 };
-Timeline.prototype.setState = function(state: ja.ITimelineState) {
-    updateState(this, state);
-    return this;
+Timeline.prototype.setState = function(
+    this: ja.ITimeline,
+    options: ja.ITimelineState
+) {
+    const self = this;
+    // create new state
+    const nextState = copyExclude(
+        options,
+        undefined,
+        self.state
+    ) as ja.ITimelineState;
+
+    // process new time (should animation end if active)
+    let shouldFireFinish;
+    if (nextState.state === 'running') {
+        const isForwards = nextState.rate >= 0;
+        const duration = self.duration;
+        if (isForwards && nextState.time >= duration) {
+            nextState.time = duration;
+            nextState.state = 'paused';
+            shouldFireFinish = true;
+        } else if (!isForwards && nextState.time <= 0) {
+            nextState.time = 0;
+            nextState.state = 'paused';
+            shouldFireFinish = true;
+        }
+    }
+
+    // if running and no tick subscription, get one
+    if (!self._sub && nextState.state === 'running') {
+        self._sub = timer.subscribe(self.tick);
+    }
+    // unsubscribe if we no longer need to receive new ticks
+    if (self._sub && nextState.state !== 'running') {
+        self._sub.unsubscribe();
+        self._sub = undefined;
+    }
+
+    // if the state has changed at all, refresh animations
+    self.animations.forEach(a => {
+        a.updated(nextState);
+    });
+
+    self.emit('update');
+    if (shouldFireFinish) {
+        self.emit('finish');
+    }
+    return self;
 };
-Timeline.prototype.emit = function(event: string) {
-    const evt = this._events[event];
+Timeline.prototype.tick = function(this: ja.ITimeline, delta: number) {
+    const state = this.state;
+    this.seek(state.time + state.rate * delta);
+};
+Timeline.prototype.seek = function(
+    this: ja.ITimeline,
+    timeOrLabel: number | string
+) {
+    const self = this;
+
+    self.setState({
+        time: isString(timeOrLabel)
+            ? self.labels.get(timeOrLabel as string)
+            : (timeOrLabel as number)
+    });
+
+    return self;
+};
+Timeline.prototype.emit = function(this: ja.ITimeline, event: string) {
+    const evt = this.events[event];
     if (evt) {
         const handlers = evt.slice();
         for (let i = 0, iLen = handlers.length; i < iLen; i++) {
@@ -74,15 +139,23 @@ Timeline.prototype.emit = function(event: string) {
     }
     return this;
 };
-Timeline.prototype.on = function(event: string, listener: () => void) {
-    const evt = this._events[event] || (this._events[event] = []);
+Timeline.prototype.on = function(
+    this: ja.ITimeline,
+    event: string,
+    listener: () => void
+) {
+    const evt = this.events[event] || (this.events[event] = []);
     if (evt.indexOf(listener) === -1) {
         evt.push(listener);
     }
     return this;
 };
-Timeline.prototype.off = function(event: string, listener: () => void) {
-    const evt = this._events[event];
+Timeline.prototype.off = function(
+    this: ja.ITimeline,
+    event: string,
+    listener: () => void
+) {
+    const evt = this.events[event];
     if (evt) {
         const index = evt.indexOf(listener);
         if (index !== -1) {
@@ -98,25 +171,6 @@ function updateTargets(self: ja.ITimeline, targets: ja.ITargetJSON) {
         self.targets = targets;
         self.emit('config');
         updateEffects(self, changes);
-    }
-}
-function updateState(self: ja.ITimeline, options: Partial<ja.ITimelineState>) {
-    const state = self.state;
-    // update player state
-    let changed: number;
-    for (let name in state) {
-        if (isDefined(options[name]) && state[name] !== options[name]) {
-            changed = 1;
-            state[name] = options[name];
-        }
-    }
-
-    // if the state has changed at all, refresh animations
-    if (changed) {
-        self.emit('update');
-        self.animations.forEach(a => {
-            a.updated(state);
-        });
     }
 }
 function updateEffects(self: ja.ITimeline, changes: ja.ChangeSet) {

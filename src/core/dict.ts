@@ -1,13 +1,16 @@
-import { isDefined, keys } from './utils'; 
+import { isDefined, keys } from './utils';
 import { scheduler } from './scheduler';
 
 export type Setter<T> = (key: string, value: T) => void;
 
 export function dict<T>(
-    onUpdate: (properties: Record<string, T>, set: Setter<T>) => void
+    initialValue?: Record<string, T>,
+    onUpdate?: (properties: Record<string, T>, set: Setter<T>) => void
 ): ja.Dict<T> {
+    onUpdate = onUpdate || defaultUpdater;
+
     let properties: Record<string, T> = {};
-    const values: Record<string, T> = {};
+    const values: Record<string, T> = initialValue || {};
 
     const setter = (key: string, value: T) => {
         values[key] = value;
@@ -31,6 +34,18 @@ export function dict<T>(
         },
         get(key: string) {
             return values[key];
+        },
+        export() {
+            return JSON.parse(JSON.stringify(values));
+        },
+        import(data: Record<string, T>) {
+            onUpdate(data, setter);
         }
     };
+}
+
+function defaultUpdater<T>(values: Record<string, T>, setter: Setter<T>) {
+    for (let key in values) {
+        setter(key, values[key]);
+    }
 }

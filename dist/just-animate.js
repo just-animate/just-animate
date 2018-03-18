@@ -1,6 +1,12 @@
 var JA = (function (exports) {
 'use strict';
 
+function __extends(d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
 var REMOVE = 3;
 var ADD = 1;
 var REPLACE = 2;
@@ -78,8 +84,8 @@ function copyInclude(source, inclusions) {
     }
     return dest;
 }
-function copyExclude(source, exclusions) {
-    var dest = {};
+function copyExclude(source, exclusions, dest) {
+    dest = dest || {};
     for (var key in source) {
         if (exclusions && exclusions.indexOf(key) === -1) {
             dest[key] = source[key];
@@ -104,9 +110,10 @@ function nextTick() {
     frame = ops.length = 0;
 }
 
-function dict(onUpdate) {
+function dict(initialValue, onUpdate) {
+    onUpdate = onUpdate || defaultUpdater;
     var properties = {};
-    var values = {};
+    var values = initialValue || {};
     var setter = function (key, value) {
         values[key] = value;
     };
@@ -127,21 +134,24 @@ function dict(onUpdate) {
         },
         get: function (key) {
             return values[key];
+        },
+        export: function () {
+            return JSON.parse(JSON.stringify(values));
+        },
+        import: function (data) {
+            onUpdate(data, setter);
         }
     };
 }
-
-var easings = dict(function (partial, set) {
-    for (var key in partial) {
-        set(key, partial[key]);
+function defaultUpdater(values, setter) {
+    for (var key in values) {
+        setter(key, values[key]);
     }
-});
+}
 
-var refs = dict(function (partial, set) {
-    for (var key in partial) {
-        set(key, partial[key]);
-    }
-});
+var easings = dict({});
+
+var refs = dict({});
 
 var middlewares = [];
 var use = function (middleware) {
@@ -150,7 +160,7 @@ var use = function (middleware) {
     }
 };
 
-var timelines = dict(function (partial, set) {
+var timelines = dict({}, function (partial, set) {
     for (var key in partial) {
         var last = timelines.get(key);
         if (last) {
@@ -160,12 +170,73 @@ var timelines = dict(function (partial, set) {
     }
 });
 
-var EXPORT_FIELDS = ['duration', 'targets', 'labels'];
+var Observable = (function () {
+    function Observable() {
+        this.subs = [];
+        this.buffer = [];
+    }
+    Observable.prototype.next = function (n) {
+        var self = this;
+        var buffer = self.buffer;
+        buffer.push(n);
+        if (buffer.length > 1) {
+            return;
+        }
+        for (var h = 0; h < buffer.length; h++) {
+            var subs2 = self.subs.slice();
+            n = buffer[h];
+            for (var i = 0; i < subs2.length; i++) {
+                subs2[i](n);
+            }
+        }
+        buffer.length = 0;
+    };
+    Observable.prototype.subscribe = function (fn) {
+        var subs = this.subs;
+        subs.push(fn);
+        return {
+            unsubscribe: function () {
+                var index = subs.indexOf(fn);
+                if (index !== -1) {
+                    subs.splice(index, 1);
+                }
+            }
+        };
+    };
+    return Observable;
+}());
+
+var Timer = (function (_super) {
+    __extends(Timer, _super);
+    function Timer() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.tick = function (timeStamp) {
+            var self = _this;
+            var delta = -(self.time || timeStamp) + (self.time = timeStamp);
+            self.next(delta);
+        };
+        return _this;
+    }
+    Timer.prototype.next = function (n) {
+        var self = this;
+        _super.prototype.next.call(this, n);
+        if (self.subs.length) {
+            requestAnimationFrame(self.tick);
+        }
+    };
+    Timer.prototype.subscribe = function (fn) {
+        var self = this;
+        if (!self.subs.length) {
+            requestAnimationFrame(self.tick);
+        }
+        return _super.prototype.subscribe.call(this, fn);
+    };
+    return Timer;
+}(Observable));
+var timer = new Timer();
+
 function Timeline(options) {
     var self = this;
-    if (!(self instanceof Timeline)) {
-        return new Timeline(options);
-    }
     self.state = {
         time: 0,
         rate: 1,
@@ -177,16 +248,15 @@ function Timeline(options) {
     self.animations = [];
     self.events = {};
     self.targets = {};
-    self.refs = dict(function (values, set) {
-        for (var key in values) {
-            set(key, values[key]);
-        }
-    });
+    options = options || {};
+    self.labels = dict(options.labels);
+    self.refs = dict(options.refs);
+    self.tick = self.tick.bind(self);
     timelines.set(options.name, this);
 }
 Timeline.prototype.imports = function (options) {
     if (options.labels) {
-        this.labels = options.labels;
+        this.labels.import(options.labels);
     }
     if (options.targets) {
         updateTargets(this, options.targets);
@@ -195,17 +265,64 @@ Timeline.prototype.imports = function (options) {
 };
 Timeline.prototype.exports = function () {
     var self = this;
-    return copyInclude(self, EXPORT_FIELDS);
+    return {
+        duration: self.duration,
+        labels: self.labels.export(),
+        targets: self.targets
+    };
 };
 Timeline.prototype.getState = function () {
     return this.state;
 };
-Timeline.prototype.setState = function (state) {
-    updateState(this, state);
-    return this;
+Timeline.prototype.setState = function (options) {
+    var self = this;
+    var nextState = copyExclude(options, undefined, self.state);
+    var shouldFireFinish;
+    if (nextState.state === 'running') {
+        var isForwards = nextState.rate >= 0;
+        var duration = self.duration;
+        if (isForwards && nextState.time >= duration) {
+            nextState.time = duration;
+            nextState.state = 'paused';
+            shouldFireFinish = true;
+        }
+        else if (!isForwards && nextState.time <= 0) {
+            nextState.time = 0;
+            nextState.state = 'paused';
+            shouldFireFinish = true;
+        }
+    }
+    if (!self._sub && nextState.state === 'running') {
+        self._sub = timer.subscribe(self.tick);
+    }
+    if (self._sub && nextState.state !== 'running') {
+        self._sub.unsubscribe();
+        self._sub = undefined;
+    }
+    self.animations.forEach(function (a) {
+        a.updated(nextState);
+    });
+    self.emit('update');
+    if (shouldFireFinish) {
+        self.emit('finish');
+    }
+    return self;
+};
+Timeline.prototype.tick = function (delta) {
+    var state = this.state;
+    this.seek(state.time + state.rate * delta);
+};
+Timeline.prototype.seek = function (timeOrLabel) {
+    var self = this;
+    self.setState({
+        time: isString(timeOrLabel)
+            ? self.labels.get(timeOrLabel)
+            : timeOrLabel
+    });
+    return self;
 };
 Timeline.prototype.emit = function (event) {
-    var evt = this._events[event];
+    var evt = this.events[event];
     if (evt) {
         var handlers = evt.slice();
         for (var i = 0, iLen = handlers.length; i < iLen; i++) {
@@ -215,14 +332,14 @@ Timeline.prototype.emit = function (event) {
     return this;
 };
 Timeline.prototype.on = function (event, listener) {
-    var evt = this._events[event] || (this._events[event] = []);
+    var evt = this.events[event] || (this.events[event] = []);
     if (evt.indexOf(listener) === -1) {
         evt.push(listener);
     }
     return this;
 };
 Timeline.prototype.off = function (event, listener) {
-    var evt = this._events[event];
+    var evt = this.events[event];
     if (evt) {
         var index = evt.indexOf(listener);
         if (index !== -1) {
@@ -237,22 +354,6 @@ function updateTargets(self, targets) {
         self.targets = targets;
         self.emit('config');
         updateEffects(self, changes);
-    }
-}
-function updateState(self, options) {
-    var state = self.state;
-    var changed;
-    for (var name in state) {
-        if (isDefined(options[name]) && state[name] !== options[name]) {
-            changed = 1;
-            state[name] = options[name];
-        }
-    }
-    if (changed) {
-        self.emit('update');
-        self.animations.forEach(function (a) {
-            a.updated(state);
-        });
     }
 }
 function updateEffects(self, changes) {
@@ -338,6 +439,8 @@ exports.nextTick = nextTick;
 exports.scheduler = scheduler;
 exports.timelines = timelines;
 exports.Timeline = Timeline;
+exports.Observable = Observable;
+exports.timer = timer;
 
 return exports;
 

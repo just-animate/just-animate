@@ -12,6 +12,26 @@ declare namespace ja {
      */
     interface JustAnimateStatic {}
 
+    interface IObserver<T> {
+        (value: T): void;
+    }
+
+    interface ISubscription {
+        unsubscribe(): void;
+    }
+
+    interface Observable<TValue> {
+        subs: ja.IObserver<TValue>[];
+        buffer: TValue[]; 
+        next(n: TValue): void;
+        subscribe(fn: ja.IObserver<TValue>): { unsubscribe(): void };
+    }
+
+    interface Timer extends ja.Observable<number> {
+        time: number;
+        tick(timeStamp: number): void;
+    }
+
     interface IMiddleware {
         (config: IEffect): IAnimation[];
     }
@@ -40,9 +60,12 @@ declare namespace ja {
         keys(): string[];
         set(key: string, value: T): void;
         get(key: string): T;
+        export(): Record<string, T>;
+        import(data: Record<string, T>): void;
     };
 
     interface ITimeline {
+        _sub: ISubscription;
         /**
          * Containing element.  Used to narrow CSS selectors to a particular part of the document
          */
@@ -71,6 +94,10 @@ declare namespace ja {
          * Referenced elements/targets
          */
         refs: Dict<{}>;
+        /**
+         * Named times
+         */
+        labels: Dict<number>;
 
         new (options?: ITimelineOptions): this;
 
@@ -109,6 +136,13 @@ declare namespace ja {
          * @param listener {Function}
          */
         off(eventName: string, listener: () => void): ITimeline;
+        /**
+         * Internal tick function
+         * @param delta time since last frame
+         */
+        tick(delta: number): void
+
+        seek(time: number | string): ITimeline
     }
 
     type PlaybackState = 'idle' | 'paused' | 'running';
@@ -127,6 +161,8 @@ declare namespace ja {
          * Each timeline should be named something unique.
          */
         name?: string;
+        labels?: Record<string, number>
+        refs?: Record<string, {}>
     }
 
     interface ITimelineJSON {
