@@ -1,7 +1,8 @@
 import { IDLE } from '../_constants';
-import { dict } from './dict';
+import { Dictionary } from './dict';
+import { Timeline } from './timeline';
 
-export const timelines = dict<ja.ITimeline>({}, (partial, set) => {
+export const timelines = new Dictionary<Timeline>({}, (partial, set) => {
     for (let key in partial) {
         const last = timelines.get(key);
         if (last) {

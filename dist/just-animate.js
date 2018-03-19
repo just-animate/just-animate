@@ -12,6 +12,7 @@ var ADD = 1;
 var REPLACE = 2;
 var IDLE = 'idle';
 
+var push = Array.prototype.push;
 var MAX_LEVEL = 2;
 function $(parent, e) {
     return !e || e.length === 0
@@ -25,6 +26,9 @@ function $(parent, e) {
                     ? e
                     : (parent || document).querySelectorAll(e));
 }
+function isArray(a) {
+    return a && typeof a !== 'string' && typeof a.length === 'number';
+}
 function isDefined(a) {
     return a !== undefined && a !== null;
 }
@@ -33,7 +37,12 @@ function isString(a) {
 }
 
 function pushAll(c, n) {
-    Array.prototype.push.apply(c, n);
+    if (isArray(n)) {
+        push.apply(c, n);
+    }
+    else {
+        push.call(c, n);
+    }
     return c;
 }
 function diff(a, b) {
@@ -87,7 +96,7 @@ function copyInclude(source, inclusions) {
 function copyExclude(source, exclusions, dest) {
     dest = dest || {};
     for (var key in source) {
-        if (exclusions && exclusions.indexOf(key) === -1) {
+        if (!exclusions || exclusions.indexOf(key) === -1) {
             dest[key] = source[key];
         }
     }
@@ -110,48 +119,50 @@ function nextTick() {
     frame = ops.length = 0;
 }
 
-function dict(initialValue, onUpdate) {
-    onUpdate = onUpdate || defaultUpdater;
-    var properties = {};
-    var values = initialValue || {};
-    var setter = function (key, value) {
-        values[key] = value;
+var Dictionary = (function () {
+    function Dictionary(values, updateHandler) {
+        var _this = this;
+        this._setter = function (key, value) {
+            _this.values[key] = value;
+        };
+        var self = this;
+        self.values = values || {};
+        self.updateHandler = updateHandler || defaultUpdater;
+        self.onPropertyUpdated = scheduler(function () {
+            var newProperties = _this.nextValues;
+            _this.nextValues = {};
+            updateHandler(newProperties, self._setter);
+        });
+    }
+    Dictionary.prototype.keys = function () {
+        return keys(this.values);
     };
-    var propertyUpdated = scheduler(function () {
-        var newProperties = properties;
-        properties = {};
-        onUpdate(newProperties, setter);
-    });
-    return {
-        keys: function () {
-            return keys(values);
-        },
-        set: function (key, value) {
-            if (isDefined(key)) {
-                properties[key] = value;
-                propertyUpdated();
-            }
-        },
-        get: function (key) {
-            return values[key];
-        },
-        export: function () {
-            return JSON.parse(JSON.stringify(values));
-        },
-        import: function (data) {
-            onUpdate(data, setter);
+    Dictionary.prototype.set = function (key, value) {
+        if (isDefined(key)) {
+            this.nextValues[key] = value;
+            this.onPropertyUpdated();
         }
     };
-}
+    Dictionary.prototype.get = function (key) {
+        return this.values[key];
+    };
+    Dictionary.prototype.export = function () {
+        return JSON.parse(JSON.stringify(this.values));
+    };
+    Dictionary.prototype.import = function (data) {
+        this.updateHandler(data, this._setter);
+    };
+    return Dictionary;
+}());
 function defaultUpdater(values, setter) {
     for (var key in values) {
         setter(key, values[key]);
     }
 }
 
-var easings = dict({});
+var easings = new Dictionary({});
 
-var refs = dict({});
+var refs = new Dictionary({});
 
 var middlewares = [];
 var use = function (middleware) {
@@ -160,7 +171,7 @@ var use = function (middleware) {
     }
 };
 
-var timelines = dict({}, function (partial, set) {
+var timelines = new Dictionary({}, function (partial, set) {
     for (var key in partial) {
         var last = timelines.get(key);
         if (last) {
@@ -235,119 +246,125 @@ var Timer = (function (_super) {
 }(Observable));
 var timer = new Timer();
 
-function Timeline(options) {
-    var self = this;
-    self.state = {
-        time: 0,
-        rate: 1,
-        state: IDLE,
-        alternate: false,
-        repeat: 1
+var Timeline = (function () {
+    function Timeline(options) {
+        var _this = this;
+        this.tick = function (delta) {
+            var state = _this.state;
+            _this.seek(state.time + state.rate * delta);
+        };
+        var self = this;
+        self.state = {
+            time: 0,
+            rate: 1,
+            state: IDLE,
+            alternate: false,
+            repeat: 1
+        };
+        self.duration = 0;
+        self.animations = [];
+        self.events = {};
+        self.targets = {};
+        options = options || {};
+        self.labels = new Dictionary(options.labels);
+        self.refs = new Dictionary(options.refs);
+        timelines.set(options.name, self);
+    }
+    Timeline.prototype.import = function (options) {
+        if (options.duration) {
+            this.duration = options.duration;
+        }
+        if (options.labels) {
+            this.labels.import(options.labels);
+        }
+        if (options.targets) {
+            updateTargets(this, options.targets);
+        }
+        return this;
     };
-    self.duration = 0;
-    self.animations = [];
-    self.events = {};
-    self.targets = {};
-    options = options || {};
-    self.labels = dict(options.labels);
-    self.refs = dict(options.refs);
-    self.tick = self.tick.bind(self);
-    timelines.set(options.name, this);
-}
-Timeline.prototype.imports = function (options) {
-    if (options.labels) {
-        this.labels.import(options.labels);
-    }
-    if (options.targets) {
-        updateTargets(this, options.targets);
-    }
-    return this;
-};
-Timeline.prototype.exports = function () {
-    var self = this;
-    return {
-        duration: self.duration,
-        labels: self.labels.export(),
-        targets: self.targets
+    Timeline.prototype.export = function () {
+        var self = this;
+        return {
+            duration: self.duration,
+            labels: self.labels.export(),
+            targets: self.targets
+        };
     };
-};
-Timeline.prototype.getState = function () {
-    return this.state;
-};
-Timeline.prototype.setState = function (options) {
-    var self = this;
-    var nextState = copyExclude(options, undefined, self.state);
-    var shouldFireFinish;
-    if (nextState.state === 'running') {
-        var isForwards = nextState.rate >= 0;
-        var duration = self.duration;
-        if (isForwards && nextState.time >= duration) {
-            nextState.time = duration;
-            nextState.state = 'paused';
-            shouldFireFinish = true;
+    Timeline.prototype.getState = function () {
+        return this.state;
+    };
+    Timeline.prototype.setState = function (options) {
+        var self = this;
+        var nextState = copyExclude(options, undefined, self.state);
+        var shouldFireFinish;
+        if (nextState.state === 'running') {
+            var isForwards = nextState.rate >= 0;
+            var duration = self.duration;
+            if (isForwards && nextState.time >= duration) {
+                nextState.time = duration;
+                nextState.state = 'paused';
+                shouldFireFinish = true;
+            }
+            else if (!isForwards && nextState.time <= 0) {
+                nextState.time = 0;
+                nextState.state = 'paused';
+                shouldFireFinish = true;
+            }
         }
-        else if (!isForwards && nextState.time <= 0) {
-            nextState.time = 0;
-            nextState.state = 'paused';
-            shouldFireFinish = true;
+        if (!self._sub && nextState.state === 'running') {
+            self._sub = timer.subscribe(self.tick);
         }
-    }
-    if (!self._sub && nextState.state === 'running') {
-        self._sub = timer.subscribe(self.tick);
-    }
-    if (self._sub && nextState.state !== 'running') {
-        self._sub.unsubscribe();
-        self._sub = undefined;
-    }
-    self.animations.forEach(function (a) {
-        a.updated(nextState);
-    });
-    self.emit('update');
-    if (shouldFireFinish) {
-        self.emit('finish');
-    }
-    return self;
-};
-Timeline.prototype.tick = function (delta) {
-    var state = this.state;
-    this.seek(state.time + state.rate * delta);
-};
-Timeline.prototype.seek = function (timeOrLabel) {
-    var self = this;
-    self.setState({
-        time: isString(timeOrLabel)
-            ? self.labels.get(timeOrLabel)
-            : timeOrLabel
-    });
-    return self;
-};
-Timeline.prototype.emit = function (event) {
-    var evt = this.events[event];
-    if (evt) {
-        var handlers = evt.slice();
-        for (var i = 0, iLen = handlers.length; i < iLen; i++) {
-            handlers[i]();
+        if (self._sub && nextState.state !== 'running') {
+            self._sub.unsubscribe();
+            self._sub = undefined;
         }
-    }
-    return this;
-};
-Timeline.prototype.on = function (event, listener) {
-    var evt = this.events[event] || (this.events[event] = []);
-    if (evt.indexOf(listener) === -1) {
-        evt.push(listener);
-    }
-    return this;
-};
-Timeline.prototype.off = function (event, listener) {
-    var evt = this.events[event];
-    if (evt) {
-        var index = evt.indexOf(listener);
-        if (index !== -1) {
-            evt.splice(index, 1);
+        self.animations.forEach(function (a) {
+            a.updated(nextState);
+        });
+        self.emit('update');
+        if (shouldFireFinish) {
+            self.emit('finish');
         }
-    }
-    return this;
-};
+        return self;
+    };
+    Timeline.prototype.seek = function (timeOrLabel) {
+        var self = this;
+        self.setState({
+            time: isString(timeOrLabel)
+                ? self.labels.get(timeOrLabel)
+                : timeOrLabel
+        });
+        return self;
+    };
+    Timeline.prototype.emit = function (event) {
+        var evt = this.events[event];
+        if (evt) {
+            var handlers = evt.slice();
+            for (var i = 0, iLen = handlers.length; i < iLen; i++) {
+                handlers[i]();
+            }
+        }
+        return this;
+    };
+    Timeline.prototype.on = function (event, listener) {
+        var evt = this.events[event] || (this.events[event] = []);
+        if (evt.indexOf(listener) === -1) {
+            evt.push(listener);
+        }
+        return this;
+    };
+    Timeline.prototype.off = function (event, listener) {
+        var evt = this.events[event];
+        if (evt) {
+            var index = evt.indexOf(listener);
+            if (index !== -1) {
+                evt.splice(index, 1);
+            }
+        }
+        return this;
+    };
+    return Timeline;
+}());
 function updateTargets(self, targets) {
     var changes = diff(self.targets, targets);
     if (changes) {
@@ -395,7 +412,8 @@ function resolveSelectors(self, selectors) {
         return isString(s) && s[0] === '@'
             ? resolveRefs(self, s)
             : $(self.el, s);
-    });
+    })
+        .reduce(pushAll, []);
 }
 function resolveRefs(self, ref) {
     var refName = ref.substring(1);
@@ -432,6 +450,112 @@ function selectProps(a) {
     return a.props;
 }
 
+var RUNNING = 'running';
+var frameSize = 17;
+use(function (effect) {
+    var target = effect.target;
+    if (!(target instanceof Element)) {
+        return undefined;
+    }
+    var duration = effect.duration || 1;
+    return keys(effect.props).map(function (propertyName) {
+        var config = effect.props[propertyName];
+        var times = keys(config)
+            .map(function (c) { return +c; })
+            .filter(function (c) { return isFinite(c) && c >= 0 && c <= duration; })
+            .sort();
+        var hasStart, hasEnd;
+        var keyframes = [];
+        for (var i = 0, tLen = times.length; i < tLen; i++) {
+            var time = times[i];
+            var timeConfig = config[time];
+            var offset = time / duration;
+            if (offset === 0) {
+                hasStart = true;
+            }
+            if (offset === 1) {
+                hasEnd = true;
+            }
+            if (timeConfig.type === 'set') {
+                var lastIndex = i - 1;
+                var lastFrame = lastIndex > -1 &&
+                    config[times[lastIndex]];
+                if (lastFrame) {
+                    keyframes.push((_a = {
+                            offset: offset - 0.0000001,
+                            easing: 'step-start'
+                        }, _a[propertyName] = lastFrame.value, _a));
+                }
+            }
+            var nextIndex = i + 1;
+            var nextFrame = nextIndex < tLen &&
+                config[times[nextIndex]];
+            var easing = (nextFrame && nextFrame.easing) || 'linear';
+            keyframes.push((_b = {
+                    offset: offset,
+                    easing: easing
+                }, _b[propertyName] = timeConfig.value, _b));
+        }
+        if (!hasStart) {
+            var lastKeyframe = copyExclude(keyframes[0]);
+            lastKeyframe.offset = 0;
+            keyframes.push(lastKeyframe);
+        }
+        if (!hasEnd) {
+            var lastKeyframe = copyExclude(keyframes[keyframes.length - 1]);
+            lastKeyframe.offset = 1;
+            keyframes.push(lastKeyframe);
+        }
+        var animator;
+        return {
+            props: [propertyName],
+            created: function () {
+                animator = target.animate(keyframes, {
+                    duration: effect.duration,
+                    fill: 'both'
+                });
+                animator.pause();
+            },
+            updated: function (ctx) {
+                var time = ctx.time;
+                var rate = ctx.rate;
+                var isPlaying = ctx.state === RUNNING;
+                if (Math.abs(animator.currentTime - time) > 1) {
+                    animator.currentTime = time;
+                }
+                if (isPlaying && animator.playbackRate !== rate) {
+                    var currentTime = animator.currentTime;
+                    if (currentTime < 1) {
+                        animator.currentTime = 1;
+                    }
+                    else if (currentTime >= effect.duration - 1) {
+                        animator.currentTime = effect.duration - 1;
+                    }
+                    animator.playbackRate = rate;
+                }
+                var needsToPlay = isPlaying &&
+                    !(animator.playState === RUNNING ||
+                        animator.playState === 'finished') &&
+                    !(rate < 0 && time < frameSize) &&
+                    !(rate >= 0 && time > effect.duration - frameSize);
+                if (needsToPlay) {
+                    animator.play();
+                }
+                var needsToPause = !isPlaying &&
+                    (animator.playState === RUNNING ||
+                        animator.playState === 'pending');
+                if (needsToPause) {
+                    animator.pause();
+                }
+            },
+            destroyed: function () {
+                animator.cancel();
+            }
+        };
+        var _a, _b;
+    });
+});
+
 exports.easings = easings;
 exports.refs = refs;
 exports.use = use;
@@ -441,6 +565,7 @@ exports.timelines = timelines;
 exports.Timeline = Timeline;
 exports.Observable = Observable;
 exports.timer = timer;
+exports.Timer = Timer;
 
 return exports;
 

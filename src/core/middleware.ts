@@ -1,6 +1,8 @@
-export const middlewares: ja.IMiddleware[] = [];
+import { types } from './types';
 
-export const use = (middleware: ja.IMiddleware) => {
+export const middlewares: types.IMiddleware[] = [];
+
+export const use = (middleware: types.IMiddleware) => {
     if (middlewares.indexOf(middleware) === -1) {
         middlewares.push(middleware);
     }

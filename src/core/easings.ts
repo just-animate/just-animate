@@ -1,3 +1,3 @@
-import { dict } from './dict';
+import { Dictionary } from './dict';
 
-export const easings = dict({}); 
+export const easings = new Dictionary({}); 

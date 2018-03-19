@@ -5,4 +5,5 @@ export { nextTick, scheduler } from './core/scheduler';
 export { timelines } from './core/timelines';
 export { Timeline } from './core/timeline';
 export { Observable } from './core/observable';
-export { timer } from './core/timer';
+export { timer, Timer } from './core/timer'; 
+import './waapi';

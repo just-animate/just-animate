@@ -1,4 +1,5 @@
 import { Observable } from './observable';
+import { types } from './types';
 
 export class Timer extends Observable<number> {
     private time: number;
@@ -10,7 +11,7 @@ export class Timer extends Observable<number> {
             requestAnimationFrame(self.tick);
         }
     }
-    public subscribe(fn: ja.IObserver<number>) {
+    public subscribe(fn: types.IObserver<number>) {
         const self = this;
         if (!self.subs.length) {
             requestAnimationFrame(self.tick);

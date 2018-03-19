@@ -1,171 +1,193 @@
-import { REMOVE, ADD, REPLACE, IDLE } from '../_constants';
 import {
-    diff,
-    copyInclude,
-    pushAll,
-    isString,
     $,
     copyExclude,
-    keys
+    copyInclude,
+    diff,
+    isString,
+    keys,
+    pushAll
 } from './utils';
-import { dict } from './dict';
-import { refs } from './refs';
+import { ADD, IDLE, REMOVE, REPLACE } from '../_constants';
+import { Dictionary } from './dict';
 import { middlewares } from './middleware';
+import { refs } from './refs';
 import { timelines } from './timelines';
 import { timer } from './timer';
+import { types } from './types';
 
-export function Timeline(this: ja.ITimeline, options: ja.ITimelineOptions) {
-    const self = this;
-    self.state = {
-        time: 0,
-        rate: 1,
-        state: IDLE,
-        alternate: false,
-        repeat: 1
+export class Timeline {
+    /**
+     * Containing element.  Used to narrow CSS selectors to a particular part of the document
+     */
+    public el: Element;
+    /**
+     * The duration of the timeline
+     */
+    public duration: number;
+    /**
+     * The current state of the timeline, DO NOT MODIFY!
+     */
+    public state: types.ITimelineState;
+    /**
+     * The current JSON configuration of targets
+     */
+    public targets: types.ITargetJSON;
+    /**
+     * THe list of active animations
+     */
+    public animations: types.IAnimation[];
+    /**
+     * Event listeners  Please use on/off/emit
+     */
+    public events: Record<string, (() => void)[]>;
+    /**
+     * Referenced elements/targets
+     */
+    public refs: Dictionary<{}>;
+    /**
+     * Named times
+     */
+    public labels: Dictionary<number>;
+
+    public _sub: types.ISubscription;
+
+    constructor(options: types.ITimelineOptions) {
+        const self = this;
+        self.state = {
+            time: 0,
+            rate: 1,
+            state: IDLE,
+            alternate: false,
+            repeat: 1
+        };
+
+        self.duration = 0;
+        self.animations = [];
+        self.events = {};
+        self.targets = {};
+
+        options = options || {};
+        self.labels = new Dictionary(options.labels);
+        self.refs = new Dictionary(options.refs);
+
+        // register new timeline
+        timelines.set(options.name, self);
+    }
+
+    public import(options: Partial<types.ITimelineJSON>) {
+        if (options.duration) {
+            this.duration = options.duration
+        }
+        if (options.labels) {
+            this.labels.import(options.labels);
+        }
+        if (options.targets) {
+            updateTargets(this, options.targets);
+        }
+        return this;
+    }
+    public export(): types.ITimelineJSON {
+        const self = this;
+        return {
+            duration: self.duration,
+            labels: self.labels.export(),
+            targets: self.targets
+        };
+    }
+    public getState() {
+        return this.state;
+    }
+    public setState(options: Partial<types.ITimelineState>) {
+        const self = this;
+        // create new state
+        const nextState = copyExclude(
+            options,
+            undefined,
+            self.state
+        ) as types.ITimelineState;
+
+        // process new time (should animation end if active)
+        let shouldFireFinish;
+        if (nextState.state === 'running') {
+            const isForwards = nextState.rate >= 0;
+            const duration = self.duration;
+            if (isForwards && nextState.time >= duration) {
+                nextState.time = duration;
+                nextState.state = 'paused';
+                shouldFireFinish = true;
+            } else if (!isForwards && nextState.time <= 0) {
+                nextState.time = 0;
+                nextState.state = 'paused';
+                shouldFireFinish = true;
+            }
+        }
+
+        // if running and no tick subscription, get one
+        if (!self._sub && nextState.state === 'running') {
+            self._sub = timer.subscribe(self.tick);
+        }
+        // unsubscribe if we no longer need to receive new ticks
+        if (self._sub && nextState.state !== 'running') {
+            self._sub.unsubscribe();
+            self._sub = undefined;
+        }
+
+        // if the state has changed at all, refresh animations
+        self.animations.forEach(a => {
+            a.updated(nextState);
+        });
+
+        self.emit('update');
+        if (shouldFireFinish) {
+            self.emit('finish');
+        }
+        return self;
+    }
+    public tick = (delta: number) => {
+        const state = this.state;
+        this.seek(state.time + state.rate * delta);
     };
+    public seek(timeOrLabel: number | string) {
+        const self = this;
 
-    self.duration = 0;
-    self.animations = [];
-    self.events = {};
-    self.targets = {};
+        self.setState({
+            time: isString(timeOrLabel)
+                ? self.labels.get(timeOrLabel as string)
+                : (timeOrLabel as number)
+        });
 
-    options = options || {}
-    self.labels = dict(options.labels);
-    self.refs = dict(options.refs);
-
-    self.tick = self.tick.bind(self);
-
-    // register new timeline
-    timelines.set(options.name, this);
+        return self;
+    }
+    public emit(event: string) {
+        const evt = this.events[event];
+        if (evt) {
+            const handlers = evt.slice();
+            for (let i = 0, iLen = handlers.length; i < iLen; i++) {
+                handlers[i]();
+            }
+        }
+        return this;
+    }
+    public on(event: string, listener: () => void) {
+        const evt = this.events[event] || (this.events[event] = []);
+        if (evt.indexOf(listener) === -1) {
+            evt.push(listener);
+        }
+        return this;
+    }
+    public off(event: string, listener: () => void) {
+        const evt = this.events[event];
+        if (evt) {
+            const index = evt.indexOf(listener);
+            if (index !== -1) {
+                evt.splice(index, 1);
+            }
+        }
+        return this;
+    }
 }
 
-Timeline.prototype.imports = function(
-    this: ja.ITimeline,
-    options: ja.ITimelineJSON
-) {
-    if (options.labels) {
-        this.labels.import(options.labels);
-    }
-    if (options.targets) {
-        updateTargets(this, options.targets);
-    }
-    return this;
-};
-Timeline.prototype.exports = function(this: ja.ITimeline): ja.ITimelineJSON {
-    const self = this;
-    return {
-        duration: self.duration,
-        labels: self.labels.export(),
-        targets: self.targets
-    };
-};
-Timeline.prototype.getState = function(this: ja.ITimeline) {
-    return this.state;
-};
-Timeline.prototype.setState = function(
-    this: ja.ITimeline,
-    options: ja.ITimelineState
-) {
-    const self = this;
-    // create new state
-    const nextState = copyExclude(
-        options,
-        undefined,
-        self.state
-    ) as ja.ITimelineState;
-
-    // process new time (should animation end if active)
-    let shouldFireFinish;
-    if (nextState.state === 'running') {
-        const isForwards = nextState.rate >= 0;
-        const duration = self.duration;
-        if (isForwards && nextState.time >= duration) {
-            nextState.time = duration;
-            nextState.state = 'paused';
-            shouldFireFinish = true;
-        } else if (!isForwards && nextState.time <= 0) {
-            nextState.time = 0;
-            nextState.state = 'paused';
-            shouldFireFinish = true;
-        }
-    }
-
-    // if running and no tick subscription, get one
-    if (!self._sub && nextState.state === 'running') {
-        self._sub = timer.subscribe(self.tick);
-    }
-    // unsubscribe if we no longer need to receive new ticks
-    if (self._sub && nextState.state !== 'running') {
-        self._sub.unsubscribe();
-        self._sub = undefined;
-    }
-
-    // if the state has changed at all, refresh animations
-    self.animations.forEach(a => {
-        a.updated(nextState);
-    });
-
-    self.emit('update');
-    if (shouldFireFinish) {
-        self.emit('finish');
-    }
-    return self;
-};
-Timeline.prototype.tick = function(this: ja.ITimeline, delta: number) {
-    const state = this.state;
-    this.seek(state.time + state.rate * delta);
-};
-Timeline.prototype.seek = function(
-    this: ja.ITimeline,
-    timeOrLabel: number | string
-) {
-    const self = this;
-
-    self.setState({
-        time: isString(timeOrLabel)
-            ? self.labels.get(timeOrLabel as string)
-            : (timeOrLabel as number)
-    });
-
-    return self;
-};
-Timeline.prototype.emit = function(this: ja.ITimeline, event: string) {
-    const evt = this.events[event];
-    if (evt) {
-        const handlers = evt.slice();
-        for (let i = 0, iLen = handlers.length; i < iLen; i++) {
-            handlers[i]();
-        }
-    }
-    return this;
-};
-Timeline.prototype.on = function(
-    this: ja.ITimeline,
-    event: string,
-    listener: () => void
-) {
-    const evt = this.events[event] || (this.events[event] = []);
-    if (evt.indexOf(listener) === -1) {
-        evt.push(listener);
-    }
-    return this;
-};
-Timeline.prototype.off = function(
-    this: ja.ITimeline,
-    event: string,
-    listener: () => void
-) {
-    const evt = this.events[event];
-    if (evt) {
-        const index = evt.indexOf(listener);
-        if (index !== -1) {
-            evt.splice(index, 1);
-        }
-    }
-    return this;
-};
-
-function updateTargets(self: ja.ITimeline, targets: ja.ITargetJSON) {
+function updateTargets(self: Timeline, targets: types.ITargetJSON) {
     const changes = diff(self.targets, targets);
     if (changes) {
         self.targets = targets;
@@ -173,7 +195,7 @@ function updateTargets(self: ja.ITimeline, targets: ja.ITargetJSON) {
         updateEffects(self, changes);
     }
 }
-function updateEffects(self: ja.ITimeline, changes: ja.ChangeSet) {
+function updateEffects(self: Timeline, changes: types.ChangeSet) {
     const animations = self.animations;
     // remove if removed or replaced
     for (let i = animations.length - 1; i > -1; i--) {
@@ -195,7 +217,7 @@ function updateEffects(self: ja.ITimeline, changes: ja.ChangeSet) {
         const properties = self.targets[selector];
 
         // find the next set of properties to process
-        let propertyJSON: ja.IPropertyJSON;
+        let propertyJSON: types.IPropertyJSON;
         if (type === ADD || type === REPLACE) {
             propertyJSON = properties;
         } else {
@@ -218,7 +240,7 @@ function updateEffects(self: ja.ITimeline, changes: ja.ChangeSet) {
     }
 }
 
-function resolveSelectors(self: ja.ITimeline, selectors: string) {
+function resolveSelectors(self: Timeline, selectors: string) {
     return selectors
         .split(',')
         .map(
@@ -226,22 +248,23 @@ function resolveSelectors(self: ja.ITimeline, selectors: string) {
                 isString(s) && s[0] === '@'
                     ? resolveRefs(self, s)
                     : $(self.el, s)
-        );
+        )
+        .reduce(pushAll, []);
 }
 
-function resolveRefs(self: ja.ITimeline, ref: string) {
+function resolveRefs(self: Timeline, ref: string) {
     const refName = ref.substring(1);
     return self.refs.get(refName) || refs.get(refName);
 }
 
 function createAnimations(
-    self: ja.ITimeline,
+    self: Timeline,
     selector: string,
-    properties: ja.IPropertyJSON
+    properties: types.IPropertyJSON
 ) {
     const duration = self.duration;
     const targets = resolveSelectors(self, selector);
-    const newAnimations: ja.IAnimation[] = [];
+    const newAnimations: types.IAnimation[] = [];
 
     for (let i = 0, tLen = targets.length; i < tLen; i++) {
         const target = targets[i];
@@ -276,6 +299,6 @@ function createAnimations(
     return newAnimations;
 }
 
-function selectProps(a: ja.IAnimation) {
+function selectProps(a: types.IAnimation) {
     return a.props;
 }

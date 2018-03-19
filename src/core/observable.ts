@@ -1,5 +1,7 @@
-export class Observable<TValue> implements ja.Observable<TValue> {
-    public subs: ja.IObserver<TValue>[] = [];
+import { types } from './types';
+
+export class Observable<TValue> {
+    public subs: types.IObserver<TValue>[] = [];
     public buffer: TValue[] = [];
 
     public next( n: TValue) {
@@ -26,7 +28,7 @@ export class Observable<TValue> implements ja.Observable<TValue> {
         // clear the buffer
         buffer.length = 0;
     }
-    public subscribe(fn: ja.IObserver<TValue>) {
+    public subscribe(fn: types.IObserver<TValue>) {
         const subs = this.subs;
         subs.push(fn);
         return {

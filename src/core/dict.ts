@@ -2,45 +2,50 @@ import { isDefined, keys } from './utils';
 import { scheduler } from './scheduler';
 
 export type Setter<T> = (key: string, value: T) => void;
+export type UpdateHandler<T> = (
+    properties: Record<string, T>,
+    set: Setter<T>
+) => void;
 
-export function dict<T>(
-    initialValue?: Record<string, T>,
-    onUpdate?: (properties: Record<string, T>, set: Setter<T>) => void
-): ja.Dict<T> {
-    onUpdate = onUpdate || defaultUpdater;
+export class Dictionary<T> {
+    private updateHandler: (properties: Record<string, T>, set: Setter<T>) => void;
+    private onPropertyUpdated: any;
+    private values: Record<string, T>;
+    private nextValues: Record<string, T>;
 
-    let properties: Record<string, T> = {};
-    const values: Record<string, T> = initialValue || {};
+    constructor(values?: Record<string, T>, updateHandler?: UpdateHandler<T>) {
+        const self = this;
+        self.values = values || {};
+        self.updateHandler = updateHandler || defaultUpdater;
 
-    const setter = (key: string, value: T) => {
-        values[key] = value;
-    };
+        self.onPropertyUpdated = scheduler(() => {
+            const newProperties = this.nextValues;
+            this.nextValues = {};
+            updateHandler(newProperties, self._setter);
+        });
+    }
 
-    const propertyUpdated = scheduler(() => {
-        const newProperties = properties;
-        properties = {};
-        onUpdate(newProperties, setter);
-    });
-
-    return {
-        keys() {
-            return keys(values);
-        },
-        set(key: string, value: T) {
-            if (isDefined(key)) {
-                properties[key] = value;
-                propertyUpdated();
-            }
-        },
-        get(key: string) {
-            return values[key];
-        },
-        export() {
-            return JSON.parse(JSON.stringify(values));
-        },
-        import(data: Record<string, T>) {
-            onUpdate(data, setter);
+    public keys() {
+        return keys(this.values);
+    }
+    public set(key: string, value: T) {
+        if (isDefined(key)) {
+            this.nextValues[key] = value;
+            this.onPropertyUpdated();
         }
+    }
+    public get(key: string) {
+        return this.values[key];
+    }
+    public export() {
+        return JSON.parse(JSON.stringify(this.values));
+    }
+    public import(data: Record<string, T>) {
+        this.updateHandler(data, this._setter);
+    }
+
+    private _setter = (key: string, value: T) => {
+        this.values[key] = value;
     };
 }
 

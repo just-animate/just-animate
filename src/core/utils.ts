@@ -1,5 +1,7 @@
-import { REMOVE, REPLACE, ADD } from '../_constants'; 
+import { REMOVE, REPLACE, ADD } from '../_constants';
+import { types } from './types';
 
+const push = Array.prototype.push;
 const MAX_LEVEL = 2;
 
 /**
@@ -22,6 +24,10 @@ export function $(parent: Element, e: string | Element | NodeList) {
               );
 }
 
+export function isArray(a: any) {
+    return a && typeof a !== 'string' && typeof a.length === 'number';
+}
+
 export function isDefined(a: any) {
     return a !== undefined && a !== null;
 }
@@ -33,12 +39,16 @@ export function isDOM(target: Node | any) {
 }
 
 export function pushAll<T>(c: T[], n: T[]) {
-    Array.prototype.push.apply(c, n);
+    if (isArray(n)) {
+        push.apply(c, n);
+    } else {
+        push.call(c, n);
+    }
     return c;
 }
 
-export function diff<T>(a: T, b: T): ja.ChangeSet {
-    return diffInner(a, b, [], 1) as ja.ChangeSet;
+export function diff<T>(a: T, b: T): types.ChangeSet {
+    return diffInner(a, b, [], 1) as types.ChangeSet;
 }
 
 function diffInner<T>(
@@ -46,7 +56,7 @@ function diffInner<T>(
     b: T,
     walked: any[],
     level: number
-): ja.ChangeSetOrCode {
+): types.ChangeSetOrCode {
     const changes = {} as { [P in keyof T]: number | {} };
     // walk through all the existing properties
     for (const name in a) {
@@ -90,7 +100,7 @@ function diffInner<T>(
     }
     // return empty if nothing changed.
     return keys(changes).length
-        ? level > MAX_LEVEL ? REPLACE : (changes as ja.ChangeSet)
+        ? level > MAX_LEVEL ? REPLACE : (changes as types.ChangeSet)
         : undefined;
 }
 
@@ -102,10 +112,14 @@ export function copyInclude<T>(source: T, inclusions: string[]) {
     return dest;
 }
 
-export function copyExclude<T>(source: T, exclusions?: string[], dest?: Partial<T>): Partial<T> {
+export function copyExclude<T>(
+    source: T,
+    exclusions?: string[],
+    dest?: Partial<T>
+): Partial<T> {
     dest = dest || {};
     for (const key in source) {
-        if (exclusions && exclusions.indexOf(key) === -1) {
+        if (!exclusions || exclusions.indexOf(key) === -1) {
             dest[key] = source[key];
         }
     }
