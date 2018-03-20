@@ -1,3 +1,4 @@
 import { Dictionary } from './dict';
+import { types } from './types';
 
-export const refs = new Dictionary({});
+export const refs: types.IDictionary<{}> = new Dictionary();

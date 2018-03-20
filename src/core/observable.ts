@@ -1,6 +1,6 @@
 import { types } from './types';
 
-export class Observable<TValue> {
+export class Observable<TValue> implements types.IObservable<TValue> {
     public subs: types.IObserver<TValue>[] = [];
     public buffer: TValue[] = [];
 

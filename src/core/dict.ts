@@ -1,31 +1,30 @@
 import { isDefined, keys } from './utils';
+import { Observable } from './observable';
 import { scheduler } from './scheduler';
+import { types } from './types';
 
-export type Setter<T> = (key: string, value: T) => void;
-export type UpdateHandler<T> = (
-    properties: Record<string, T>,
-    set: Setter<T>
-) => void;
+export class Dictionary<T> implements types.IDictionary<T> {
+    public change: types.IObservable<Record<string, T>>;
 
-export class Dictionary<T> {
-    private updateHandler: (properties: Record<string, T>, set: Setter<T>) => void;
     private onPropertyUpdated: any;
     private values: Record<string, T>;
     private nextValues: Record<string, T>;
 
-    constructor(values?: Record<string, T>, updateHandler?: UpdateHandler<T>) {
+    constructor(values?: Record<string, T>) {
         const self = this;
-        self.values = values || {};
-        self.updateHandler = updateHandler || defaultUpdater;
+        self.change = new Observable();
 
         self.onPropertyUpdated = scheduler(() => {
-            const newProperties = this.nextValues;
-            this.nextValues = {};
-            updateHandler(newProperties, self._setter);
+            const newProperties = self.nextValues;
+            self.nextValues = {};
+            self.import(newProperties);
         });
+
+        self.nextValues = values || {};
+        self.onPropertyUpdated();
     }
 
-    public keys() {
+    public keys(): string[] {
         return keys(this.values);
     }
     public set(key: string, value: T) {
@@ -34,23 +33,16 @@ export class Dictionary<T> {
             this.onPropertyUpdated();
         }
     }
-    public get(key: string) {
+    public get(key: string): T {
         return this.values[key];
     }
-    public export() {
+    public export(): Record<string, T> {
         return JSON.parse(JSON.stringify(this.values));
     }
-    public import(data: Record<string, T>) {
-        this.updateHandler(data, this._setter);
-    }
-
-    private _setter = (key: string, value: T) => {
-        this.values[key] = value;
-    };
-}
-
-function defaultUpdater<T>(values: Record<string, T>, setter: Setter<T>) {
-    for (let key in values) {
-        setter(key, values[key]);
+    public import(data: Record<string, T>): void {
+        this.change.next(data);
+        for (let key in data) {
+            this.values[key] = data[key];
+        }
     }
 }

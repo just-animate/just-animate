@@ -10,8 +10,21 @@ declare global {
 }
 
 export namespace types {
-
     export interface JustAnimateStatic {}
+
+    export interface IDictionary<T> {
+        change: IObservable<Record<string, T>>;
+        keys(): string[];
+        set(key: string, value: T): void;
+        get(key: string): T;
+        export(): Record<string, T>;
+        import(data: Record<string, T>): void;
+    }
+
+    export interface IObservable<T> {
+        next(n: T): void;
+        subscribe(fn: IObserver<T>): ISubscription;
+    }
 
     export interface IObserver<T> {
         (value: T): void;
@@ -44,7 +57,7 @@ export namespace types {
         time: number;
         state: PlaybackState;
     }
- 
+
     export type PlaybackState = 'idle' | 'paused' | 'running';
 
     export interface ITimelineState {
@@ -61,8 +74,8 @@ export namespace types {
          * Each timeline should be named something unique.
          */
         name?: string;
-        labels?: Record<string, number>
-        refs?: Record<string, {}>
+        labels?: Record<string, number>;
+        refs?: Record<string, {}>;
     }
 
     export interface ITimelineJSON {
@@ -105,7 +118,12 @@ export namespace types {
 }
 
 export namespace waapi {
-    export type PlayState = 'idle' | 'running' | 'paused' | 'finished' | 'pending';
+    export type PlayState =
+        | 'idle'
+        | 'running'
+        | 'paused'
+        | 'finished'
+        | 'pending';
 
     export interface IElementAnimate {
         (keyframes: IKeyframe[], duration: number): IWebAnimation;

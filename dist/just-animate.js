@@ -7,6 +7,42 @@ function __extends(d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
 
+var Observable = (function () {
+    function Observable() {
+        this.subs = [];
+        this.buffer = [];
+    }
+    Observable.prototype.next = function (n) {
+        var self = this;
+        var buffer = self.buffer;
+        buffer.push(n);
+        if (buffer.length > 1) {
+            return;
+        }
+        for (var h = 0; h < buffer.length; h++) {
+            var subs2 = self.subs.slice();
+            n = buffer[h];
+            for (var i = 0; i < subs2.length; i++) {
+                subs2[i](n);
+            }
+        }
+        buffer.length = 0;
+    };
+    Observable.prototype.subscribe = function (fn) {
+        var subs = this.subs;
+        subs.push(fn);
+        return {
+            unsubscribe: function () {
+                var index = subs.indexOf(fn);
+                if (index !== -1) {
+                    subs.splice(index, 1);
+                }
+            }
+        };
+    };
+    return Observable;
+}());
+
 var REMOVE = 3;
 var ADD = 1;
 var REPLACE = 2;
@@ -120,19 +156,16 @@ function nextTick() {
 }
 
 var Dictionary = (function () {
-    function Dictionary(values, updateHandler) {
-        var _this = this;
-        this._setter = function (key, value) {
-            _this.values[key] = value;
-        };
+    function Dictionary(values) {
         var self = this;
-        self.values = values || {};
-        self.updateHandler = updateHandler || defaultUpdater;
+        self.change = new Observable();
         self.onPropertyUpdated = scheduler(function () {
-            var newProperties = _this.nextValues;
-            _this.nextValues = {};
-            updateHandler(newProperties, self._setter);
+            var newProperties = self.nextValues;
+            self.nextValues = {};
+            self.import(newProperties);
         });
+        self.nextValues = values || {};
+        self.onPropertyUpdated();
     }
     Dictionary.prototype.keys = function () {
         return keys(this.values);
@@ -150,71 +183,12 @@ var Dictionary = (function () {
         return JSON.parse(JSON.stringify(this.values));
     };
     Dictionary.prototype.import = function (data) {
-        this.updateHandler(data, this._setter);
+        this.change.next(data);
+        for (var key in data) {
+            this.values[key] = data[key];
+        }
     };
     return Dictionary;
-}());
-function defaultUpdater(values, setter) {
-    for (var key in values) {
-        setter(key, values[key]);
-    }
-}
-
-var easings = new Dictionary({});
-
-var refs = new Dictionary({});
-
-var middlewares = [];
-var use = function (middleware) {
-    if (middlewares.indexOf(middleware) === -1) {
-        middlewares.push(middleware);
-    }
-};
-
-var timelines = new Dictionary({}, function (partial, set) {
-    for (var key in partial) {
-        var last = timelines.get(key);
-        if (last) {
-            last.setState({ state: IDLE });
-        }
-        set(key, partial[key]);
-    }
-});
-
-var Observable = (function () {
-    function Observable() {
-        this.subs = [];
-        this.buffer = [];
-    }
-    Observable.prototype.next = function (n) {
-        var self = this;
-        var buffer = self.buffer;
-        buffer.push(n);
-        if (buffer.length > 1) {
-            return;
-        }
-        for (var h = 0; h < buffer.length; h++) {
-            var subs2 = self.subs.slice();
-            n = buffer[h];
-            for (var i = 0; i < subs2.length; i++) {
-                subs2[i](n);
-            }
-        }
-        buffer.length = 0;
-    };
-    Observable.prototype.subscribe = function (fn) {
-        var subs = this.subs;
-        subs.push(fn);
-        return {
-            unsubscribe: function () {
-                var index = subs.indexOf(fn);
-                if (index !== -1) {
-                    subs.splice(index, 1);
-                }
-            }
-        };
-    };
-    return Observable;
 }());
 
 var Timer = (function (_super) {
@@ -245,6 +219,25 @@ var Timer = (function (_super) {
     return Timer;
 }(Observable));
 var timer = new Timer();
+
+var refs = new Dictionary();
+
+var middlewares = [];
+var use = function (middleware) {
+    if (middlewares.indexOf(middleware) === -1) {
+        middlewares.push(middleware);
+    }
+};
+
+var timelines = new Dictionary();
+timelines.change.subscribe(function (partial) {
+    for (var key in partial) {
+        var last = timelines.get(key);
+        if (last) {
+            last.setState({ state: IDLE });
+        }
+    }
+});
 
 var Timeline = (function () {
     function Timeline(options) {
@@ -556,16 +549,16 @@ use(function (effect) {
     });
 });
 
-exports.easings = easings;
-exports.refs = refs;
-exports.use = use;
+exports.Observable = Observable;
+exports.Dictionary = Dictionary;
 exports.nextTick = nextTick;
 exports.scheduler = scheduler;
-exports.timelines = timelines;
-exports.Timeline = Timeline;
-exports.Observable = Observable;
 exports.timer = timer;
 exports.Timer = Timer;
+exports.refs = refs;
+exports.use = use;
+exports.Timeline = Timeline;
+exports.timelines = timelines;
 
 return exports;
 

@@ -1,3 +1,4 @@
+import { Dictionary } from './dict';
 import {
     $,
     copyExclude,
@@ -8,7 +9,6 @@ import {
     pushAll
 } from './utils';
 import { ADD, IDLE, REMOVE, REPLACE } from '../_constants';
-import { Dictionary } from './dict';
 import { middlewares } from './middleware';
 import { refs } from './refs';
 import { timelines } from './timelines';
@@ -43,11 +43,11 @@ export class Timeline {
     /**
      * Referenced elements/targets
      */
-    public refs: Dictionary<{}>;
+    public refs: types.IDictionary<{}>;
     /**
      * Named times
      */
-    public labels: Dictionary<number>;
+    public labels: types.IDictionary<number>;
 
     public _sub: types.ISubscription;
 
