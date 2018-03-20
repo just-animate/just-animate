@@ -164,11 +164,12 @@ var Dictionary = (function () {
             self.nextValues = {};
             self.import(newProperties);
         });
+        self.values = {};
         self.nextValues = values || {};
         self.onPropertyUpdated();
     }
     Dictionary.prototype.keys = function () {
-        return keys(this.values);
+        return Object.keys(this.values);
     };
     Dictionary.prototype.set = function (key, value) {
         if (isDefined(key)) {

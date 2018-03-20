@@ -1,4 +1,4 @@
-import { isDefined, keys } from './utils';
+import { isDefined } from './utils';
 import { Observable } from './observable';
 import { scheduler } from './scheduler';
 import { types } from './types';
@@ -19,13 +19,13 @@ export class Dictionary<T> implements types.IDictionary<T> {
             self.nextValues = {};
             self.import(newProperties);
         });
-
+        self.values = {}
         self.nextValues = values || {};
         self.onPropertyUpdated();
     }
 
     public keys(): string[] {
-        return keys(this.values);
+        return Object.keys(this.values);
     }
     public set(key: string, value: T) {
         if (isDefined(key)) {
