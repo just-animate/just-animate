@@ -1,4 +1,4 @@
-import { Dictionary } from './dict';
 import { types } from './types';
+import { ObservableProxy } from './observable-proxy'; 
 
-export const refs: types.IDictionary<{}> = new Dictionary();
+export const refs: types.ObservableProxy<{}> = ObservableProxy();

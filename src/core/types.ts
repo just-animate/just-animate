@@ -1,5 +1,5 @@
 declare global {
-    export const JA: types.JustAnimateStatic;
+    export const JA: types.JustAnimateStatic; 
 
     export interface Window {
         JA: types.JustAnimateStatic;
@@ -12,22 +12,30 @@ declare global {
 export namespace types {
     export interface JustAnimateStatic {}
 
-    export interface IDictionary<T> {
-        change: IObservable<Record<string, T>>;
-        keys(): string[];
-        set(key: string, value: T): void;
-        get(key: string): T;
-        export(): Record<string, T>;
-        import(data: Record<string, T>): void;
-    }
-
     export interface IObservable<T> {
         next(n: T): void;
         subscribe(fn: IObserver<T>): ISubscription;
     }
 
+    export interface ISubcribable<T> {
+        subscribe(fn: IObserver<T>): ISubscription;
+    };
+
     export interface IObserver<T> {
         (value: T): void;
+    }
+
+    export type ObservableProxy<T> = Record<string, T> & types.ISubcribable<string[]>;
+
+    export interface IProxyHandler<T> {
+        get?: <P extends keyof T>(target: T, prop: P) => T[P];
+        set?: <P extends keyof T>(
+            target: T,
+            prop: P,
+            value: T[P],
+            receiver: any
+        ) => boolean;
+        deleteProperty?: <P extends keyof T>(target: T, prop: P) => boolean;
     }
 
     export interface ISubscription {

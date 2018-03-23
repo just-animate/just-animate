@@ -1,4 +1,4 @@
-import { Dictionary } from './dict';
+import { ObservableProxy } from './observable-proxy';
 import {
     $,
     copyExclude,
@@ -6,7 +6,8 @@ import {
     diff,
     isString,
     keys,
-    pushAll
+    pushAll,
+    isDefined
 } from './utils';
 import { ADD, IDLE, REMOVE, REPLACE } from '../_constants';
 import { middlewares } from './middleware';
@@ -43,11 +44,11 @@ export class Timeline {
     /**
      * Referenced elements/targets
      */
-    public refs: types.IDictionary<{}>;
+    public refs: types.ObservableProxy<{}>;
     /**
      * Named times
      */
-    public labels: types.IDictionary<number>;
+    public labels: types.ObservableProxy<number>;
 
     public _sub: types.ISubscription;
 
@@ -67,19 +68,26 @@ export class Timeline {
         self.targets = {};
 
         options = options || {};
-        self.labels = new Dictionary(options.labels);
-        self.refs = new Dictionary(options.refs);
+        self.labels = ObservableProxy(options.labels);
+        self.refs = ObservableProxy(options.refs);
 
         // register new timeline
-        timelines.set(options.name, self);
+        timelines[options.name] = self;
     }
 
     public import(options: Partial<types.ITimelineJSON>) {
         if (options.duration) {
-            this.duration = options.duration
+            this.duration = options.duration;
         }
         if (options.labels) {
-            this.labels.import(options.labels);
+            for (const name in this.labels) {
+                if (!isDefined(options.labels[name])) {
+                    delete this.labels[name];
+                }
+            }
+            for (const name in options.labels) {
+                this.labels[name] = options.labels[name];
+            }
         }
         if (options.targets) {
             updateTargets(this, options.targets);
@@ -90,7 +98,7 @@ export class Timeline {
         const self = this;
         return {
             duration: self.duration,
-            labels: self.labels.export(),
+            labels: self.labels,
             targets: self.targets
         };
     }
@@ -152,7 +160,7 @@ export class Timeline {
 
         self.setState({
             time: isString(timeOrLabel)
-                ? self.labels.get(timeOrLabel as string)
+                ? self.labels[timeOrLabel as string]
                 : (timeOrLabel as number)
         });
 
@@ -254,7 +262,7 @@ function resolveSelectors(self: Timeline, selectors: string) {
 
 function resolveRefs(self: Timeline, ref: string) {
     const refName = ref.substring(1);
-    return self.refs.get(refName) || refs.get(refName);
+    return self.refs[refName] || refs[refName];
 }
 
 function createAnimations(

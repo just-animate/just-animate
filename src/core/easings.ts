@@ -1,4 +1,4 @@
-import { Dictionary } from './dict';
 import { types } from './types';
+import { ObservableProxy } from './observable-proxy'; 
 
-export const easings: types.IDictionary<{}> = new Dictionary(); 
+export const easings: types.ObservableProxy<Function> = ObservableProxy(); 

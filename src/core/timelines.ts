@@ -1,15 +1,15 @@
-import { IDLE } from '../_constants';
-import { Dictionary } from './dict';
-import { Timeline } from './timeline';
 import { types } from './types';
+import { IDLE } from '../_constants';
+import { ObservableProxy } from './observable-proxy';
+import { Timeline } from './timeline'; 
 
-export const timelines: types.IDictionary<Timeline> = new Dictionary();
+export const timelines: types.ObservableProxy<Timeline> = ObservableProxy();
 
-timelines.change.subscribe(partial => {
-    for (let key in partial) {
-        const last = timelines.get(key);
+timelines.subscribe(props => {
+    props.forEach(prop => {
+        const last = timelines[prop];
         if (last) {
             last.setState({ state: IDLE });
         }
-    }
+    })
 });

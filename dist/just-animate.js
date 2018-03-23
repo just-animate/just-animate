@@ -43,10 +43,165 @@ var Observable = (function () {
     return Observable;
 }());
 
+var ops = [];
+var frame;
+function scheduler(fn) {
+    return function () {
+        ops.push(fn);
+        frame = frame || setTimeout(nextTick) || 1;
+    };
+}
+function nextTick() {
+    for (var i = 0; i < ops.length; i++) {
+        ops[i]();
+    }
+    frame = ops.length = 0;
+}
+
+var Timer = (function (_super) {
+    __extends(Timer, _super);
+    function Timer() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.tick = function (timeStamp) {
+            var self = _this;
+            var delta = -(self.time || timeStamp) + (self.time = timeStamp);
+            self.next(delta);
+        };
+        return _this;
+    }
+    Timer.prototype.next = function (n) {
+        var self = this;
+        _super.prototype.next.call(this, n);
+        if (self.subs.length) {
+            requestAnimationFrame(self.tick);
+        }
+    };
+    Timer.prototype.subscribe = function (fn) {
+        var self = this;
+        if (!self.subs.length) {
+            requestAnimationFrame(self.tick);
+        }
+        return _super.prototype.subscribe.call(this, fn);
+    };
+    return Timer;
+}(Observable));
+var timer = new Timer();
+
+function Proxy$1(target, handler) {
+    var configuration = {};
+    var _loop_1 = function (key) {
+        configuration[key] = {
+            enumerable: true,
+            get: function () {
+                return handler.get ? handler.get(target, key) : target[key];
+            },
+            set: function (val) {
+                if (handler.set) {
+                    handler.set(target, key, val, undefined);
+                }
+                else {
+                    target[key] = val;
+                }
+            }
+        };
+    };
+    for (var key in target) {
+        _loop_1(key);
+    }
+    var proxy = {};
+    Object.defineProperties(proxy, configuration);
+    if (handler.deleteProperty || handler.set) {
+        var lastProps_1 = Object.keys(proxy);
+        var lastValue_1 = lastProps_1 + '';
+        (function detectChanges() {
+            setTimeout(detectChanges, 1000 / 60);
+            var nextProps = Object.keys(proxy);
+            var nextValue = nextProps + '';
+            if (nextValue === lastValue_1) {
+                return;
+            }
+            lastProps_1 = nextProps;
+            lastValue_1 = nextValue;
+            if (handler.deleteProperty) {
+                lastProps_1
+                    .filter(function (p) { return nextProps.indexOf(p) !== -1; })
+                    .forEach(function (key) {
+                    handler.deleteProperty(target, key);
+                });
+            }
+            if (handler.set) {
+                nextProps
+                    .filter(function (p) { return lastProps_1.indexOf(p) !== -1; })
+                    .forEach(function (key) {
+                    handler.set(target, key, target[key], undefined);
+                });
+            }
+        })();
+    }
+    return proxy;
+}
+
+function ObservableProxy(target) {
+    target = target || {};
+    var observable = new Observable();
+    var newProps = [];
+    var propertyChanged = scheduler(function () {
+        var nextVal = newProps;
+        if (newProps.length) {
+            newProps = [];
+            observable.next(nextVal);
+        }
+    });
+    var handler = {
+        set: function (t, prop, value, _receiver) {
+            t[prop] = value;
+            if (newProps.indexOf(prop) === -1) {
+                newProps.push(prop);
+            }
+            propertyChanged();
+            return true;
+        },
+        deleteProperty: function (t, prop) {
+            delete t[prop];
+            if (newProps.indexOf(prop) === -1) {
+                newProps.push(prop);
+            }
+            propertyChanged();
+            return true;
+        }
+    };
+    var proxy = new (typeof Proxy !== 'undefined' ? Proxy : Proxy$1)(target, handler);
+    Object.defineProperty(proxy, 'subscribe', {
+        enumerable: false,
+        configurable: false,
+        value: observable.subscribe.bind(observable)
+    });
+    return proxy;
+}
+
+var refs = ObservableProxy();
+
+var middlewares = [];
+var use = function (middleware) {
+    if (middlewares.indexOf(middleware) === -1) {
+        middlewares.push(middleware);
+    }
+};
+
 var REMOVE = 3;
 var ADD = 1;
 var REPLACE = 2;
 var IDLE = 'idle';
+
+var timelines = ObservableProxy();
+timelines.subscribe(function (props) {
+    props.forEach(function (prop) {
+        var last = timelines[prop];
+        if (last) {
+            last.setState({ state: IDLE });
+        }
+    });
+});
 
 var push = Array.prototype.push;
 var MAX_LEVEL = 2;
@@ -140,106 +295,6 @@ function copyExclude(source, exclusions, dest) {
 }
 var keys = Object.keys;
 
-var ops = [];
-var frame;
-function scheduler(fn) {
-    return function () {
-        ops.push(fn);
-        frame = frame || setTimeout(nextTick) || 1;
-    };
-}
-function nextTick() {
-    for (var i = 0; i < ops.length; i++) {
-        ops[i]();
-    }
-    frame = ops.length = 0;
-}
-
-var Dictionary = (function () {
-    function Dictionary(values) {
-        var self = this;
-        self.change = new Observable();
-        self.onPropertyUpdated = scheduler(function () {
-            var newProperties = self.nextValues;
-            self.nextValues = {};
-            self.import(newProperties);
-        });
-        self.values = {};
-        self.nextValues = values || {};
-        self.onPropertyUpdated();
-    }
-    Dictionary.prototype.keys = function () {
-        return Object.keys(this.values);
-    };
-    Dictionary.prototype.set = function (key, value) {
-        if (isDefined(key)) {
-            this.nextValues[key] = value;
-            this.onPropertyUpdated();
-        }
-    };
-    Dictionary.prototype.get = function (key) {
-        return this.values[key];
-    };
-    Dictionary.prototype.export = function () {
-        return JSON.parse(JSON.stringify(this.values));
-    };
-    Dictionary.prototype.import = function (data) {
-        this.change.next(data);
-        for (var key in data) {
-            this.values[key] = data[key];
-        }
-    };
-    return Dictionary;
-}());
-
-var Timer = (function (_super) {
-    __extends(Timer, _super);
-    function Timer() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.tick = function (timeStamp) {
-            var self = _this;
-            var delta = -(self.time || timeStamp) + (self.time = timeStamp);
-            self.next(delta);
-        };
-        return _this;
-    }
-    Timer.prototype.next = function (n) {
-        var self = this;
-        _super.prototype.next.call(this, n);
-        if (self.subs.length) {
-            requestAnimationFrame(self.tick);
-        }
-    };
-    Timer.prototype.subscribe = function (fn) {
-        var self = this;
-        if (!self.subs.length) {
-            requestAnimationFrame(self.tick);
-        }
-        return _super.prototype.subscribe.call(this, fn);
-    };
-    return Timer;
-}(Observable));
-var timer = new Timer();
-
-var refs = new Dictionary();
-
-var middlewares = [];
-var use = function (middleware) {
-    if (middlewares.indexOf(middleware) === -1) {
-        middlewares.push(middleware);
-    }
-};
-
-var timelines = new Dictionary();
-timelines.change.subscribe(function (partial) {
-    for (var key in partial) {
-        var last = timelines.get(key);
-        if (last) {
-            last.setState({ state: IDLE });
-        }
-    }
-});
-
 var Timeline = (function () {
     function Timeline(options) {
         var _this = this;
@@ -260,16 +315,23 @@ var Timeline = (function () {
         self.events = {};
         self.targets = {};
         options = options || {};
-        self.labels = new Dictionary(options.labels);
-        self.refs = new Dictionary(options.refs);
-        timelines.set(options.name, self);
+        self.labels = ObservableProxy(options.labels);
+        self.refs = ObservableProxy(options.refs);
+        timelines[options.name] = self;
     }
     Timeline.prototype.import = function (options) {
         if (options.duration) {
             this.duration = options.duration;
         }
         if (options.labels) {
-            this.labels.import(options.labels);
+            for (var name in this.labels) {
+                if (!isDefined(options.labels[name])) {
+                    delete this.labels[name];
+                }
+            }
+            for (var name in options.labels) {
+                this.labels[name] = options.labels[name];
+            }
         }
         if (options.targets) {
             updateTargets(this, options.targets);
@@ -280,7 +342,7 @@ var Timeline = (function () {
         var self = this;
         return {
             duration: self.duration,
-            labels: self.labels.export(),
+            labels: self.labels,
             targets: self.targets
         };
     };
@@ -325,7 +387,7 @@ var Timeline = (function () {
         var self = this;
         self.setState({
             time: isString(timeOrLabel)
-                ? self.labels.get(timeOrLabel)
+                ? self.labels[timeOrLabel]
                 : timeOrLabel
         });
         return self;
@@ -411,7 +473,7 @@ function resolveSelectors(self, selectors) {
 }
 function resolveRefs(self, ref) {
     var refName = ref.substring(1);
-    return self.refs.get(refName) || refs.get(refName);
+    return self.refs[refName] || refs[refName];
 }
 function createAnimations(self, selector, properties) {
     var duration = self.duration;
@@ -551,15 +613,13 @@ use(function (effect) {
 });
 
 exports.Observable = Observable;
-exports.Dictionary = Dictionary;
 exports.nextTick = nextTick;
 exports.scheduler = scheduler;
 exports.timer = timer;
-exports.Timer = Timer;
 exports.refs = refs;
 exports.use = use;
-exports.Timeline = Timeline;
 exports.timelines = timelines;
+exports.Timeline = Timeline;
 
 return exports;
 
