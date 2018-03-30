@@ -320,8 +320,10 @@ var Timeline = (function () {
         timelines[options.name] = self;
     }
     Timeline.prototype.import = function (options) {
-        if (options.duration) {
-            this.duration = options.duration;
+        var self = this;
+        var changes = 0;
+        if (options.timing) {
+            changes += updateTiming(self, options.timing);
         }
         if (options.labels) {
             for (var name in this.labels) {
@@ -332,16 +334,22 @@ var Timeline = (function () {
             for (var name in options.labels) {
                 this.labels[name] = options.labels[name];
             }
+            changes++;
         }
         if (options.targets) {
-            updateTargets(this, options.targets);
+            changes += updateTargets(this, options.targets);
         }
-        return this;
+        if (changes) {
+            self.emit('config');
+        }
+        return self;
     };
     Timeline.prototype.export = function () {
         var self = this;
         return {
-            duration: self.duration,
+            timing: {
+                duration: self.duration
+            },
             labels: self.labels,
             targets: self.targets
         };
@@ -421,13 +429,21 @@ var Timeline = (function () {
     };
     return Timeline;
 }());
+function updateTiming(self, timing) {
+    if (isDefined(timing.duration)) {
+        self.duration = timing.duration;
+        return 1;
+    }
+    return 0;
+}
 function updateTargets(self, targets) {
     var changes = diff(self.targets, targets);
     if (changes) {
         self.targets = targets;
-        self.emit('config');
         updateEffects(self, changes);
+        return 1;
     }
+    return 0;
 }
 function updateEffects(self, changes) {
     var animations = self.animations;

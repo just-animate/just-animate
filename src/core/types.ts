@@ -87,7 +87,7 @@ export namespace types {
     }
 
     export interface ITimelineJSON {
-        duration: number;
+        timing: ITimingJSON;
         /**
          * Targets
          */
@@ -96,6 +96,10 @@ export namespace types {
          * Labels
          */
         labels: Record<string, number>;
+    }
+
+    export interface ITimingJSON {
+        duration: number;
     }
 
     export interface ITargetJSON {

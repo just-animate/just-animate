@@ -76,8 +76,10 @@ export class Timeline {
     }
 
     public import(options: Partial<types.ITimelineJSON>) {
-        if (options.duration) {
-            this.duration = options.duration;
+        const self = this;
+        let changes = 0;
+        if (options.timing) {
+            changes += updateTiming(self, options.timing)
         }
         if (options.labels) {
             for (const name in this.labels) {
@@ -88,16 +90,24 @@ export class Timeline {
             for (const name in options.labels) {
                 this.labels[name] = options.labels[name];
             }
+            changes++;
         }
         if (options.targets) {
-            updateTargets(this, options.targets);
+            changes += updateTargets(this, options.targets);
         }
-        return this;
+
+        // if the configuration changed at all, emit the config event
+        if (changes) {
+            self.emit('config');
+        }
+        return self;
     }
     public export(): types.ITimelineJSON {
         const self = this;
         return {
-            duration: self.duration,
+            timing: {
+                duration: self.duration
+            },
             labels: self.labels,
             targets: self.targets
         };
@@ -195,13 +205,22 @@ export class Timeline {
     }
 }
 
+function updateTiming(self: Timeline, timing: types.ITimingJSON) {
+    if (isDefined(timing.duration)) {
+        self.duration = timing.duration;
+        return 1
+    }
+    return 0;
+}
+
 function updateTargets(self: Timeline, targets: types.ITargetJSON) {
     const changes = diff(self.targets, targets);
     if (changes) {
         self.targets = targets;
-        self.emit('config');
         updateEffects(self, changes);
+        return 1;
     }
+    return 0;
 }
 function updateEffects(self: Timeline, changes: types.ChangeSet) {
     const animations = self.animations;
