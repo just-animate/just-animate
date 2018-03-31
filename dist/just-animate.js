@@ -188,20 +188,12 @@ var use = function (middleware) {
     }
 };
 
+var timelines = ObservableProxy();
+
 var REMOVE = 3;
 var ADD = 1;
 var REPLACE = 2;
 var IDLE = 'idle';
-
-var timelines = ObservableProxy();
-timelines.subscribe(function (props) {
-    props.forEach(function (prop) {
-        var last = timelines[prop];
-        if (last) {
-            last.setState({ state: IDLE });
-        }
-    });
-});
 
 var push = Array.prototype.push;
 var MAX_LEVEL = 2;
@@ -310,7 +302,9 @@ var Timeline = (function () {
             alternate: false,
             repeat: 1
         };
-        self.duration = 0;
+        self.timing = {
+            duration: 0
+        };
         self.animations = [];
         self.events = {};
         self.targets = {};
@@ -347,9 +341,7 @@ var Timeline = (function () {
     Timeline.prototype.export = function () {
         var self = this;
         return {
-            timing: {
-                duration: self.duration
-            },
+            timing: self.timing,
             labels: self.labels,
             targets: self.targets
         };
@@ -363,7 +355,7 @@ var Timeline = (function () {
         var shouldFireFinish;
         if (nextState.state === 'running') {
             var isForwards = nextState.rate >= 0;
-            var duration = self.duration;
+            var duration = self.timing.duration;
             if (isForwards && nextState.time >= duration) {
                 nextState.time = duration;
                 nextState.state = 'paused';
@@ -431,7 +423,7 @@ var Timeline = (function () {
 }());
 function updateTiming(self, timing) {
     if (isDefined(timing.duration)) {
-        self.duration = timing.duration;
+        self.timing.duration = timing.duration;
         return 1;
     }
     return 0;
@@ -492,7 +484,7 @@ function resolveRefs(self, ref) {
     return self.refs[refName] || refs[refName];
 }
 function createAnimations(self, selector, properties) {
-    var duration = self.duration;
+    var duration = self.timing.duration;
     var targets = resolveSelectors(self, selector);
     var newAnimations = [];
     for (var i = 0, tLen = targets.length; i < tLen; i++) {

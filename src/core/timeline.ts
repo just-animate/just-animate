@@ -21,10 +21,9 @@ export class Timeline {
      * Containing element.  Used to narrow CSS selectors to a particular part of the document
      */
     public el: Element;
-    /**
-     * The duration of the timeline
-     */
-    public duration: number;
+
+    public timing: types.ITimingJSON;
+
     /**
      * The current state of the timeline, DO NOT MODIFY!
      */
@@ -62,7 +61,9 @@ export class Timeline {
             repeat: 1
         };
 
-        self.duration = 0;
+        self.timing = {
+            duration: 0
+        };
         self.animations = [];
         self.events = {};
         self.targets = {};
@@ -79,7 +80,7 @@ export class Timeline {
         const self = this;
         let changes = 0;
         if (options.timing) {
-            changes += updateTiming(self, options.timing)
+            changes += updateTiming(self, options.timing);
         }
         if (options.labels) {
             for (const name in this.labels) {
@@ -105,9 +106,7 @@ export class Timeline {
     public export(): types.ITimelineJSON {
         const self = this;
         return {
-            timing: {
-                duration: self.duration
-            },
+            timing: self.timing,
             labels: self.labels,
             targets: self.targets
         };
@@ -128,7 +127,7 @@ export class Timeline {
         let shouldFireFinish;
         if (nextState.state === 'running') {
             const isForwards = nextState.rate >= 0;
-            const duration = self.duration;
+            const duration = self.timing.duration;
             if (isForwards && nextState.time >= duration) {
                 nextState.time = duration;
                 nextState.state = 'paused';
@@ -207,8 +206,8 @@ export class Timeline {
 
 function updateTiming(self: Timeline, timing: types.ITimingJSON) {
     if (isDefined(timing.duration)) {
-        self.duration = timing.duration;
-        return 1
+        self.timing.duration = timing.duration;
+        return 1;
     }
     return 0;
 }
@@ -289,7 +288,7 @@ function createAnimations(
     selector: string,
     properties: types.IPropertyJSON
 ) {
-    const duration = self.duration;
+    const duration = self.timing.duration;
     const targets = resolveSelectors(self, selector);
     const newAnimations: types.IAnimation[] = [];
 
