@@ -34,6 +34,9 @@ export function isDefined(a: any) {
 export function isString(a: any) {
     return typeof a === 'string';
 }
+export function isFunction(a: any) {
+    return typeof a === 'function';
+}
 export function isDOM(target: Node | any) {
     return target.nodeType || target instanceof SVGElement;
 }

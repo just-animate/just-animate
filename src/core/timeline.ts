@@ -7,7 +7,8 @@ import {
     isString,
     keys,
     pushAll,
-    isDefined
+    isDefined,
+    isFunction
 } from './utils';
 import { ADD, IDLE, REMOVE, REPLACE } from '../_constants';
 import { middlewares } from './middleware';
@@ -27,7 +28,7 @@ export class Timeline {
     /**
      * The current state of the timeline, DO NOT MODIFY!
      */
-    public state: types.ITimelineState;
+    public player: types.ITimelineState;
     /**
      * The current JSON configuration of targets
      */
@@ -53,7 +54,7 @@ export class Timeline {
 
     constructor(options: types.ITimelineOptions) {
         const self = this;
-        self.state = {
+        self.player = {
             time: 0,
             rate: 1,
             state: IDLE,
@@ -112,7 +113,7 @@ export class Timeline {
         };
     }
     public getState() {
-        return this.state;
+        return this.player;
     }
     public setState(options: Partial<types.ITimelineState>) {
         const self = this;
@@ -120,7 +121,7 @@ export class Timeline {
         const nextState = copyExclude(
             options,
             undefined,
-            self.state
+            self.player
         ) as types.ITimelineState;
 
         // process new time (should animation end if active)
@@ -148,6 +149,7 @@ export class Timeline {
             self._sub.unsubscribe();
             self._sub = undefined;
         }
+        self.player = nextState;
 
         // if the state has changed at all, refresh animations
         self.animations.forEach(a => {
@@ -161,7 +163,7 @@ export class Timeline {
         return self;
     }
     public tick = (delta: number) => {
-        const state = this.state;
+        const state = this.player;
         this.seek(state.time + state.rate * delta);
     };
     public seek(timeOrLabel: number | string) {
@@ -186,11 +188,14 @@ export class Timeline {
         return this;
     }
     public on(event: string, listener: () => void) {
-        const evt = this.events[event] || (this.events[event] = []);
-        if (evt.indexOf(listener) === -1) {
-            evt.push(listener);
+        const self = this;
+        if (isFunction(listener)) {
+            const evt = self.events[event] || (self.events[event] = []);
+            if (evt.indexOf(listener) === -1) {
+                evt.push(listener);
+            }
         }
-        return this;
+        return self;
     }
     public off(event: string, listener: () => void) {
         const evt = this.events[event];
@@ -249,9 +254,7 @@ function updateEffects(self: Timeline, changes: types.ChangeSet) {
         } else {
             propertyJSON = copyInclude(
                 properties,
-                keys(changes).filter(
-                    p => changes[p] === ADD || changes[p] === REPLACE
-                )
+                keys(type).filter(p => type[p] === ADD || type[p] === REPLACE)
             );
         }
         // create all animations using middleware

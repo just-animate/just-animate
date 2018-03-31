@@ -218,6 +218,9 @@ function isDefined(a) {
 function isString(a) {
     return typeof a === 'string';
 }
+function isFunction(a) {
+    return typeof a === 'function';
+}
 
 function pushAll(c, n) {
     if (isArray(n)) {
@@ -291,11 +294,11 @@ var Timeline = (function () {
     function Timeline(options) {
         var _this = this;
         this.tick = function (delta) {
-            var state = _this.state;
+            var state = _this.player;
             _this.seek(state.time + state.rate * delta);
         };
         var self = this;
-        self.state = {
+        self.player = {
             time: 0,
             rate: 1,
             state: IDLE,
@@ -347,11 +350,11 @@ var Timeline = (function () {
         };
     };
     Timeline.prototype.getState = function () {
-        return this.state;
+        return this.player;
     };
     Timeline.prototype.setState = function (options) {
         var self = this;
-        var nextState = copyExclude(options, undefined, self.state);
+        var nextState = copyExclude(options, undefined, self.player);
         var shouldFireFinish;
         if (nextState.state === 'running') {
             var isForwards = nextState.rate >= 0;
@@ -374,6 +377,7 @@ var Timeline = (function () {
             self._sub.unsubscribe();
             self._sub = undefined;
         }
+        self.player = nextState;
         self.animations.forEach(function (a) {
             a.updated(nextState);
         });
@@ -403,11 +407,14 @@ var Timeline = (function () {
         return this;
     };
     Timeline.prototype.on = function (event, listener) {
-        var evt = this.events[event] || (this.events[event] = []);
-        if (evt.indexOf(listener) === -1) {
-            evt.push(listener);
+        var self = this;
+        if (isFunction(listener)) {
+            var evt = self.events[event] || (self.events[event] = []);
+            if (evt.indexOf(listener) === -1) {
+                evt.push(listener);
+            }
         }
-        return this;
+        return self;
     };
     Timeline.prototype.off = function (event, listener) {
         var evt = this.events[event];
@@ -447,10 +454,10 @@ function updateEffects(self, changes) {
             animation.destroyed();
         }
     }
-    for (var selector in changes) {
+    var _loop_1 = function (selector) {
         var type = changes[selector];
         if (type === REMOVE) {
-            continue;
+            return "continue";
         }
         var properties = self.targets[selector];
         var propertyJSON = void 0;
@@ -458,7 +465,7 @@ function updateEffects(self, changes) {
             propertyJSON = properties;
         }
         else {
-            propertyJSON = copyInclude(properties, keys(changes).filter(function (p) { return changes[p] === ADD || changes[p] === REPLACE; }));
+            propertyJSON = copyInclude(properties, keys(type).filter(function (p) { return type[p] === ADD || type[p] === REPLACE; }));
         }
         var newAnimations = createAnimations(self, selector, propertyJSON);
         if (newAnimations.length) {
@@ -467,6 +474,9 @@ function updateEffects(self, changes) {
             });
             pushAll(animations, newAnimations);
         }
+    };
+    for (var selector in changes) {
+        _loop_1(selector);
     }
 }
 function resolveSelectors(self, selectors) {
