@@ -1,9 +1,9 @@
-import { isDefined } from '../lib/utils/inspect'
-import { _, measureExpression } from '../lib/utils/constants'
+import { isDefined } from '../lib/utils/inspect';
+import { _, measureExpression } from '../lib/utils/constants';
 
 export interface Unit {
-  value: number | undefined
-  unit: string
+  value: number | undefined;
+  unit: string;
 }
 
 /**
@@ -13,21 +13,21 @@ export function parseUnit(val: string | number): Unit {
   const output: Unit = {
     unit: _,
     value: _
-  }
+  };
 
   if (!isDefined(val)) {
-    return output
+    return output;
   }
   if (Number(val)) {
-    output.value = +val
-    return output
+    output.value = +val;
+    return output;
   }
 
-  const match = measureExpression.exec(val as string) as RegExpExecArray
+  const match = measureExpression.exec(val as string) as RegExpExecArray;
   if (match) {
-    output.unit = match[2] || _
-    output.value = match[1] ? parseFloat(match[1]) : _
+    output.unit = match[2] || _;
+    output.value = match[1] ? parseFloat(match[1]) : _;
   }
 
-  return output
+  return output;
 }

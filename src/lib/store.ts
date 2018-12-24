@@ -1,5 +1,5 @@
-import { TimelineOptions, ITimelineModel } from './core/types'
-import { S_INACTIVE, _ } from './utils/constants'
+import { TimelineOptions, ITimelineModel } from './core/types';
+import { S_INACTIVE, _ } from './utils/constants';
 
 import {
   CANCEL,
@@ -15,7 +15,7 @@ import {
   APPEND,
   INSERT,
   SET
-} from './actions'
+} from './actions';
 
 import {
   append,
@@ -31,7 +31,7 @@ import {
   update,
   updateRate,
   updateTime
-} from './reducers/index'
+} from './reducers/index';
 import {
   IReducer,
   TimelineEvent,
@@ -39,14 +39,14 @@ import {
   IReducerContext,
   IStore,
   TargetConfiguration
-} from './core/types'
-import { pushDistinct, all, remove } from './utils/lists'
-import { calculateConfigs } from './reducers/calc-configs'
-import { rebuild } from './reducers/rebuild'
+} from './core/types';
+import { pushDistinct, all, remove } from './utils/lists';
+import { calculateConfigs } from './reducers/calc-configs';
+import { rebuild } from './reducers/rebuild';
 
-const stateSubs: ((store: IStore) => void)[] = []
+const stateSubs: ((store: IStore) => void)[] = [];
 
-const stores: Record<string, IStore> = {}
+const stores: Record<string, IStore> = {};
 
 const reducers: Record<string, IReducer> = {
   [APPEND]: append,
@@ -62,13 +62,13 @@ const reducers: Record<string, IReducer> = {
   [UPDATE]: update,
   [UPDATE_RATE]: updateRate,
   [UPDATE_TIME]: updateTime
-}
+};
 
 function createInitial(opts: TimelineOptions) {
-  const refs = {}
+  const refs = {};
   if (opts.references) {
     for (var name in opts.references) {
-      refs['@' + name] = opts.references[name]
+      refs['@' + name] = opts.references[name];
     }
   }
 
@@ -85,47 +85,55 @@ function createInitial(opts: TimelineOptions) {
     state: S_INACTIVE,
     time: _,
     yoyo: false
-  }
+  };
 
-  return newModel
+  return newModel;
 }
 
 export function getState(id: string) {
-  const model = stores[id]
+  const model = stores[id];
   if (!model) {
-    throw new Error('not found')
+    throw new Error('not found');
   }
-  return model.state
+  return model.state;
 }
 
 export function addState(opts: { id?: string }) {
   stores[opts.id] = {
     state: createInitial(opts),
     subs: {} as Record<TimelineEvent, ITimelineEventListener[]>
+  };
+}
+
+export function on(
+  id: string,
+  eventName: string,
+  listener: ITimelineEventListener
+) {
+  const store = stores[id];
+  if (store) {
+    const subs = (store.subs[eventName] = store.subs[eventName] || []);
+    pushDistinct(subs, listener);
   }
 }
 
-export function on(id: string, eventName: string, listener: ITimelineEventListener) {
-  const store = stores[id]
+export function off(
+  id: string,
+  eventName: string,
+  listener: ITimelineEventListener
+) {
+  const store = stores[id];
   if (store) {
-    const subs = (store.subs[eventName] = store.subs[eventName] || [])
-    pushDistinct(subs, listener)
-  }
-}
-
-export function off(id: string, eventName: string, listener: ITimelineEventListener) {
-  const store = stores[id]
-  if (store) {
-    remove(store.subs[eventName], listener)
+    remove(store.subs[eventName], listener);
   }
 }
 
 export function dispatch(action: string, id: string, data?: any) {
-  const fn = reducers[action]
-  const store = stores[id]
+  const fn = reducers[action];
+  const store = stores[id];
 
   if (!fn || !store) {
-    throw new Error('not found')
+    throw new Error('not found');
   }
 
   const ctx: IReducerContext = {
@@ -133,56 +141,56 @@ export function dispatch(action: string, id: string, data?: any) {
     needUpdate: [],
     trigger,
     dirty
-  }
+  };
 
-  const model = store.state
+  const model = store.state;
 
   // dispatch action
-  fn(model, data, ctx)
+  fn(model, data, ctx);
 
   // handle all events produced from action chain
   all(ctx.events, evt => {
-    const subs = store.subs[evt as TimelineEvent]
+    const subs = store.subs[evt as TimelineEvent];
     if (subs) {
       all(subs, sub => {
-        sub(model.time)
-      })
+        sub(model.time);
+      });
     }
-  })
+  });
 
   if (ctx.destroyed) {
     // remove from stores if destroyed
-    delete stores[id]
+    delete stores[id];
   } else if (ctx.needUpdate.length) {
     if (model.state !== S_INACTIVE) {
-      rebuild(model, ctx)
+      rebuild(model, ctx);
     } else {
-      calculateConfigs(model)
+      calculateConfigs(model);
     }
 
     // dispatch change event to global listeners
     all(stateSubs, sub => {
-      sub(store)
-    })
+      sub(store);
+    });
   }
 }
 
 function trigger(this: IReducerContext, eventName: string) {
-  pushDistinct(this.events, eventName)
+  pushDistinct(this.events, eventName);
 }
 
 function dirty(this: IReducerContext, config: TargetConfiguration) {
-  pushDistinct(this.needUpdate, config)
+  pushDistinct(this.needUpdate, config);
 }
 
 if (typeof window !== 'undefined') {
-  ; (window as any).just_devtools = {
+  (window as any).just_devtools = {
     dispatch,
     subscribe(fn: (store: IStore) => void) {
-      pushDistinct(stateSubs, fn)
+      pushDistinct(stateSubs, fn);
     },
     unsubscribe(fn: (store: IStore) => void) {
-      remove(stateSubs, fn)
+      remove(stateSubs, fn);
     }
-  }
+  };
 }

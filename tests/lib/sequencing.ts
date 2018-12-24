@@ -1,14 +1,14 @@
-import { sequence } from '../../src/main'
-import * as chai from 'chai'
-import { getEffects } from '../../src/lib/model/effects'
-import { getState } from '../../src/lib/store'
-const { assert } = chai
+import { sequence } from '../../src/main';
+import * as chai from 'chai';
+import { getEffects } from '../../src/lib/model/effects';
+import { getState } from '../../src/lib/store';
+const { assert } = chai;
 
 describe('sequencing', () => {
   it('handles simple sequencing', () => {
     /* Test code */
-    const target1 = {}
-    const target2 = {}
+    const target1 = {};
+    const target2 = {};
     const t1 = sequence([
       {
         easing: 'linear',
@@ -26,9 +26,9 @@ describe('sequencing', () => {
           opacity: [0, 1]
         }
       }
-    ])
+    ]);
 
-    const actual = getEffects(getState(t1.id))
+    const actual = getEffects(getState(t1.id));
     assert.deepEqual(actual, [
       {
         target: target1,
@@ -52,13 +52,13 @@ describe('sequencing', () => {
           { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
-    ])
-  })
+    ]);
+  });
 
   it('handles staggering in sequencing', () => {
     /* Test code */
-    const target1 = [{ id: 'target1' }, { id: 'target2' }, { id: 'target3' }]
-    const target2 = { id: 'target4' }
+    const target1 = [{ id: 'target1' }, { id: 'target2' }, { id: 'target3' }];
+    const target2 = { id: 'target4' };
     const t1 = sequence([
       {
         duration: 1000,
@@ -77,9 +77,9 @@ describe('sequencing', () => {
           opacity: [0, 1]
         }
       }
-    ])
+    ]);
 
-    const actual = getEffects(getState(t1.id))
+    const actual = getEffects(getState(t1.id));
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
@@ -125,13 +125,13 @@ describe('sequencing', () => {
           { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
-    ])
-  })
+    ]);
+  });
 
   it('handles negative delays in sequencing', () => {
     /* Test code */
-    const target1 = [{ id: 'target1' }]
-    const target2 = { id: 'target2' }
+    const target1 = [{ id: 'target1' }];
+    const target2 = { id: 'target2' };
     const t1 = sequence([
       {
         duration: 1000,
@@ -150,9 +150,9 @@ describe('sequencing', () => {
           opacity: [0, 1]
         }
       }
-    ])
+    ]);
 
-    const actual = getEffects(getState(t1.id))
+    const actual = getEffects(getState(t1.id));
 
     assert.deepEqual<{}>(actual, [
       {
@@ -177,13 +177,13 @@ describe('sequencing', () => {
           { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
-    ])
-  })
+    ]);
+  });
 
   it('handles positive endDelays in sequencing', () => {
     /* Test code */
-    const target1 = [{ id: 'target1' }]
-    const target2 = { id: 'target2' }
+    const target1 = [{ id: 'target1' }];
+    const target2 = { id: 'target2' };
     const t1 = sequence([
       {
         duration: 1000,
@@ -202,9 +202,9 @@ describe('sequencing', () => {
           opacity: [0, 1]
         }
       }
-    ])
+    ]);
 
-    const actual = getEffects(getState(t1.id))
+    const actual = getEffects(getState(t1.id));
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
@@ -228,13 +228,13 @@ describe('sequencing', () => {
           { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
-    ])
-  })
+    ]);
+  });
 
   it('handles negative endDelays in sequencing', () => {
     /* Test code */
-    const target1 = [{ id: 'target1' }]
-    const target2 = { id: 'target2' }
+    const target1 = [{ id: 'target1' }];
+    const target2 = { id: 'target2' };
     const t1 = sequence([
       {
         duration: 1000,
@@ -253,9 +253,9 @@ describe('sequencing', () => {
           opacity: [0, 1]
         }
       }
-    ])
+    ]);
 
-    const actual = getEffects(getState(t1.id))
+    const actual = getEffects(getState(t1.id));
     assert.deepEqual<{}>(actual, [
       {
         target: { id: 'target1' },
@@ -279,6 +279,6 @@ describe('sequencing', () => {
           { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
-    ])
-  })
-})
+    ]);
+  });
+});

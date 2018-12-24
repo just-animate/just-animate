@@ -1,32 +1,26 @@
 {
-    "compilerOptions": {
-        "preserveConstEnums": false,
-        "allowUnreachableCode": false,
-        "allowUnusedLabels": false,
-        "declaration": false,
-        "forceConsistentCasingInFileNames": true,        
-        "inlineSourceMap": false,    
-        "module": "commonjs",     
-        "moduleResolution": "node",    
-        "noFallthroughCasesInSwitch": true,             
-        "noImplicitAny": true,
-        "noUnusedParameters": true,
-        "noImplicitThis": true,
-        "noImplicitReturns": false,
-        "noImplicitUseStrict": true,
-        "noEmit": true,
-        "noUnusedLocals": true,        
-        "removeComments": false,      
-        "sourceMap": true,          
-        "strictNullChecks": false,
-        "suppressImplicitAnyIndexErrors": true,
-        "target": "es5"
-    },
-    "exclude": [
-        "node_modules", 
-        "lib",
-        "lib.es2015",
-        "dist",
-        "types"
-    ]
+  "compilerOptions": {
+    "preserveConstEnums": false,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "declaration": false,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSourceMap": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noUnusedParameters": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": false,
+    "noImplicitUseStrict": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "strictNullChecks": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es5"
+  },
+  "exclude": ["node_modules", "lib", "lib.es2015", "dist", "types"]
 }

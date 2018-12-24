@@ -1,8 +1,11 @@
 function element(innerHTML?: string) {
-  const el = document.createElement('div')
-  el.setAttribute('style', 'display:inline-block;position:relative;text-align:start')
-  el.innerHTML = innerHTML || ''
-  return el
+  const el = document.createElement('div');
+  el.setAttribute(
+    'style',
+    'display:inline-block;position:relative;text-align:start'
+  );
+  el.innerHTML = innerHTML || '';
+  return el;
 }
 
 /**
@@ -12,59 +15,63 @@ function element(innerHTML?: string) {
  */
 export function splitText(target: HTMLElement | string) {
   // output parameters
-  const characters: HTMLElement[] = []
-  const words: HTMLElement[] = []
+  const characters: HTMLElement[] = [];
+  const words: HTMLElement[] = [];
 
   // acquiring targets ;)
   const elements =
     typeof target === 'string'
-      ? document.querySelectorAll(target as string) as any
-      : target instanceof Element ? [target as HTMLElement] : typeof (target as any[]).length === 'number' ? target : []
+      ? (document.querySelectorAll(target as string) as any)
+      : target instanceof Element
+      ? [target as HTMLElement]
+      : typeof (target as any[]).length === 'number'
+      ? target
+      : [];
 
   // get paragraphs, words, and characters for each element
   for (let i = 0, ilen = elements.length; i < ilen; i++) {
-    var e = elements[i]
+    var e = elements[i];
     if (!e) {
-      continue
+      continue;
     }
 
     // remove tabs, spaces, and newlines
-    var contents = e.textContent!.replace(/[\r\n\s\t]+/gi, ' ').trim()
+    var contents = e.textContent!.replace(/[\r\n\s\t]+/gi, ' ').trim();
 
     // clear element
-    e.innerHTML = ''
+    e.innerHTML = '';
 
     // split on spaces
-    var ws = contents.split(/[\s]+/gi)
+    var ws = contents.split(/[\s]+/gi);
 
     // handle each word
     for (let x = 0, xlen = ws.length; x < xlen; x++) {
-      var w = ws[x]
+      var w = ws[x];
       if (!w) {
-        continue
+        continue;
       }
       // if not the first word, add a space
       if (x > 0) {
-        var empty = element('&nbsp;')
-        e.appendChild(empty)
+        var empty = element('&nbsp;');
+        e.appendChild(empty);
       }
 
       // create new div for word/run"
       // add to the result
-      var word = element()
-      words.push(word)
-      e.appendChild(word)
+      var word = element();
+      words.push(word);
+      e.appendChild(word);
 
       // create new div for character"
       // add to the result
       for (let y = 0, ylen = w.length; y < ylen; y++) {
-        var c = w[y]
-        var character = element(c)
-        word.appendChild(character)
-        characters.push(character)
+        var c = w[y];
+        var character = element(c);
+        word.appendChild(character);
+        characters.push(character);
       }
     }
   }
 
-  return { characters, words }
+  return { characters, words };
 }

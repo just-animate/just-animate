@@ -1,8 +1,9 @@
 {
-  "prettier.semi": false,
-  "prettier.tabWidth": 2,
+  "mocha.enabled": true,
+  "prettier.printWidth": 80,
   "prettier.singleQuote": true,
-  "prettier.printWidth": 120,
+  "prettier.tabWidth": 2,
+  "prettier.trailingComma": "es5",
+  "prettier.tslintIntegration": true,
   "tslint.autoFixOnSave": true,
-  "mocha.enabled": true
 }

@@ -1,11 +1,11 @@
-import { timeline } from '../../src/main'
-import * as chai from 'chai'
-const { assert } = chai
+import { timeline } from '../../src/main';
+import * as chai from 'chai';
+const { assert } = chai;
 
 describe('timeline.add()', () => {
   it('adds no offset at 0', () => {
-    const target = document.createElement('div')
-    document.body.appendChild(target)
+    const target = document.createElement('div');
+    document.body.appendChild(target);
 
     const t1 = timeline().add({
       targets: target,
@@ -13,16 +13,16 @@ describe('timeline.add()', () => {
       props: {
         opacity: [0, 1]
       }
-    })
+    });
 
-    t1.pause()
+    t1.pause();
 
-    assert.equal(t1.duration, 1000)
-  })
+    assert.equal(t1.duration, 1000);
+  });
 
   it('adds no offset at 0', () => {
-    const target = document.createElement('div')
-    document.body.appendChild(target)
+    const target = document.createElement('div');
+    document.body.appendChild(target);
 
     const t1 = timeline().add({
       targets: target,
@@ -31,10 +31,10 @@ describe('timeline.add()', () => {
       props: {
         opacity: [0, 1]
       }
-    })
+    });
 
-    t1.pause()
+    t1.pause();
 
-    assert.equal(t1.duration, 1500)
-  })
-})
+    assert.equal(t1.duration, 1500);
+  });
+});

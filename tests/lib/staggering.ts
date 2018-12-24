@@ -1,12 +1,12 @@
-import { animate } from '../../src/main'
-import * as chai from 'chai'
-import { getEffects } from '../../src/lib/model/effects'
-import { getState } from '../../src/lib/store'
-const { assert } = chai
+import { animate } from '../../src/main';
+import * as chai from 'chai';
+import { getEffects } from '../../src/lib/model/effects';
+import { getState } from '../../src/lib/store';
+const { assert } = chai;
 
 describe('staggering', () => {
   it('staggers targets', () => {
-    const targets = [{}, {}, {}, {}]
+    const targets = [{}, {}, {}, {}];
 
     const t1 = animate({
       targets: targets,
@@ -16,9 +16,9 @@ describe('staggering', () => {
       props: {
         opacity: [0, 1]
       }
-    })
+    });
 
-    const actual = getEffects(getState(t1.id))
+    const actual = getEffects(getState(t1.id));
 
     assert.deepEqual(actual, [
       {
@@ -65,13 +65,13 @@ describe('staggering', () => {
           { offset: 1, value: 1, easing: 'linear', interpolate: undefined }
         ]
       }
-    ])
-    
-    t1.destroy()
-  })
-  
+    ]);
+
+    t1.destroy();
+  });
+
   it('increases the duration to fit staggered targets when active', () => {
-    const targets = [{}, {}, {}, {}]
+    const targets = [{}, {}, {}, {}];
 
     const t1 = animate({
       targets: targets,
@@ -81,11 +81,11 @@ describe('staggering', () => {
       props: {
         opacity: [0, 1]
       }
-    })
-    
-    t1.pause()
-    assert.deepEqual(t1.duration, 1400)
-    
-    t1.destroy()
-  })
-})
+    });
+
+    t1.pause();
+    assert.deepEqual(t1.duration, 1400);
+
+    t1.destroy();
+  });
+});

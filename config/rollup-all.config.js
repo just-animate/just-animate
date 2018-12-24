@@ -16,15 +16,15 @@ module.exports = {
       removeComments: true,
       declaration: false,
       typescript: require('typescript'),
-      noImplicitAny: true
+      noImplicitAny: true,
     }),
     nodeResolve({
       module: true,
       jsnext: true,
       main: true,
       browser: true,
-      extensions: [ '.js', '.json' ],
-      preferBuiltins: false
-    })
-  ]
-}
+      extensions: ['.js', '.json'],
+      preferBuiltins: false,
+    }),
+  ],
+};

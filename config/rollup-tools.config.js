@@ -16,7 +16,7 @@ module.exports = {
       removeComments: true,
       declaration: false,
       typescript: require('typescript'),
-      noImplicitAny: true
+      noImplicitAny: true,
     }),
     nodeResolve({
       module: true,
@@ -24,7 +24,7 @@ module.exports = {
       main: true,
       browser: true,
       extensions: ['.js', '.json'],
-      preferBuiltins: false
-    })
-  ]
-}
+      preferBuiltins: false,
+    }),
+  ],
+};

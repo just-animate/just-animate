@@ -1,5 +1,9 @@
-import { AnimationTarget, PropertyResolver, PropertyFunction } from '../core/types'
-import { isFunction } from './inspect'
+import {
+  AnimationTarget,
+  PropertyResolver,
+  PropertyFunction
+} from '../core/types';
+import { isFunction } from './inspect';
 
 /**
  *  Resolves the property/value of an animation
@@ -11,6 +15,11 @@ export function resolveProperty<T1>(
   len: number
 ): T1 {
   return isFunction(input)
-    ? resolveProperty((input as PropertyFunction<T1>)(target, index, len), target, index, len)
-    : input as T1
+    ? resolveProperty(
+        (input as PropertyFunction<T1>)(target, index, len),
+        target,
+        index,
+        len
+      )
+    : (input as T1);
 }

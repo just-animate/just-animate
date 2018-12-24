@@ -19,9 +19,7 @@
     "semicolons": false
   },
   "mangle": {
-    "reserved": [
-      "_"
-    ]
+    "reserved": ["_"]
   },
   "toplevel": false,
   "ie8": false
