@@ -1,7 +1,7 @@
 import typescript from 'rollup-plugin-typescript';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
-module.exports = {
+export default {
   entry: 'src/tools/index.ts',
   dest: 'dist/just-animate-tools.js',
   format: 'iife',

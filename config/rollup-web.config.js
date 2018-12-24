@@ -1,7 +1,7 @@
 import typescript from 'rollup-plugin-typescript';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
-module.exports = {
+export default {
   entry: 'src/web/_browser.ts',
   dest: 'dist/just-animate-web.js',
   format: 'iife',

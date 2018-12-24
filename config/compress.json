@@ -9,18 +9,18 @@
     "evaluate": false,
     "if_return": true,
     "inline": true,
-    "reduce_vars": true,
     "loops": true,
     "passes": 1,
-    "unsafe_comps": true,
-    "typeofs": false
+    "reduce_vars": true,
+    "typeofs": false,
+    "unsafe_comps": true
+  },
+  "ie8": false,
+  "mangle": {
+    "reserved": ["_"]
   },
   "output": {
     "semicolons": false
   },
-  "mangle": {
-    "reserved": ["_"]
-  },
-  "toplevel": false,
-  "ie8": false
+  "toplevel": false
 }
