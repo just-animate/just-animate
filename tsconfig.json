@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "preserveConstEnums": false,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "declaration": false,
@@ -8,19 +7,18 @@
     "inlineSourceMap": false,
     "module": "commonjs",
     "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noUnusedParameters": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": false,
-    "noImplicitUseStrict": true,
     "noEmit": true,
-    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": true,
+    "noImplicitUseStrict": true,
+    "preserveConstEnums": false,
     "removeComments": false,
     "sourceMap": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "target": "es5"
+    "target": "es2015"
   },
-  "exclude": ["node_modules", "lib", "lib.es2015", "dist", "types"]
+  "exclude": ["node_modules", "dist"]
 }

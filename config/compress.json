@@ -16,9 +16,6 @@
     "unsafe_comps": true
   },
   "ie8": false,
-  "mangle": {
-    "reserved": ["_"]
-  },
   "output": {
     "semicolons": false
   },

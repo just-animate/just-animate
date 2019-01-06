@@ -1,4 +1,4 @@
-# Just Animate 2
+# Just Animate 3
 
 _Making Animation Simple_
 
@@ -12,16 +12,16 @@ _Making Animation Simple_
 - Full timeline control \(reverse, pause, cancel, playbackRate, and seek\)
 - Extendable timeline designed to make it simple to use multiple animation engines
 - Built-in tween engine that works with CSS Variables and regular objects alike
-- Plugin for Web Animation API
+- Add Web Animation API animations as sub-timelines.
 - Alternate and repeat a complex series of animations (yo-yo)
 
 > This project is powered by your stars [so ^ star it please](https://github.com/just-animate/just-animate/stargazers).
 
 ## Getting Started
 
-- Read the documentation on [just-animate.com](https://just-animate.github.io/basic-usage/)
-- Try a live demo of it on CodePen: [Rubber band ball demo](https://codepen.io/notoriousb1t/pen/vJJEdo/?editors=0110)
-- See what other people have build here: [Just Animate 2 Demos](https://codepen.io/collection/XdNGNb/)
+- Read the documentation on [just-animate.com]() // TODO
+- Try a live demo of it on CodePen: [Simple Demo]() // TODO
+- See what other people have build here: [Just Animate 3 Demos]() // TODO
 
 ## Need help or have ideas?
 

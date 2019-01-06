@@ -1,15 +1,11 @@
+cypress
 node_modules
-tests
 src
-.alm
 .vscode
 .editorconfig
 .gitignore
 .travis.yml
-alm.json 
 rollup-umd.config.js
-coverage
 tsconfig.json
-tsconfig.node.json
-tsconfig.es2015.json
 tslint.json
+*.test.js

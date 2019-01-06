@@ -1,15 +1,8 @@
-.alm 
 .idea
 .vs
+/cypress/videos
 /node_modules
-/coverage
 /dist
-/lib
-/lib.es2015
-/types
 src/**/*.js
 src/**/*.map
-test/**/*.js
-test/**/*.map
-**/*.map
 npm-debug.log*
