@@ -2,6 +2,17 @@ declare global {
   interface Window {
     just: {
       /**
+       * Returns a promise that resolves after all work is complete on the next
+       * animation frame. This is intended mostly for integration testing.
+       */
+      nextAnimationFrame(): Promise<void>;
+      /**
+       * Executes the function on tick. Return true to continue running the
+       * function each cycle or return false to dequeue the function.
+       * @param fn the function to be executed.
+       */
+      tick(fn: () => boolean): void;
+      /**
        * Creates a new TimelineAnimation.
        * @param options The initial state of the timeline
        * @returns {!TimelineAnimation}

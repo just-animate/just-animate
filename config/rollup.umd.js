@@ -25,7 +25,7 @@ export default args => {
 
   // If production build, check size and compress.
   if (!args.configDebug) {
-    config.output.file = 'dist/just-animate-umd.min.js';
+    config.output[0].file = 'dist/just-animate-umd.min.js';
     config.plugins.push(uglify(uglifyOptions, minify), size());
   }
 
