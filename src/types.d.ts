@@ -82,20 +82,15 @@ export namespace ja {
     [propertyName: string]: AnimationValue;
   };
 
-  export interface Mixer {
-    (ctx: MixerContext): number | string | false;
+  export interface Interpolator<T> {
+    (offset: number): T;
   }
 
-  export interface MixerContext {
-    index: number;
-    length: number;
-    offset: number;
-    prop: string;
-    target: AnimationTarget;
-  }
-
-  export interface MixerFactory {
-    (left: AnimationValue, right: AnimationValue): Mixer;
+  export interface Renderer {
+    handle(target: {}, key: string): boolean;
+    read<T>(target: {}, key: string): T;
+    render<T>(target: {}, key: string, value: T): void;
+    mix<T>(left: T, right: T): Interpolator<T>;
   }
 
   export type PlayState = "cancel" | "idle" | "paused" | "running";
