@@ -18,7 +18,7 @@ declare global {
        * @returns {!TimelineAnimation}
        * @public
        */
-      timeline(options?: Partial<ja.AnimationState>): ja.TimelineAnimation;
+      timeline(options?: Partial<ja.TimelineConfig>): ja.TimelineAnimation;
     };
   }
 }
@@ -46,13 +46,19 @@ export namespace ja {
     labels: Record<string, number>;
   }
 
-  export interface AnimationState {
+  export interface TimelineConfig {
     alternate: boolean;
     currentTime: number;
+    /**
+     * The duration of one animation cycle.
+     * @readonly
+     */
+    duration: number;
     events: string[];
     iterations: number;
     keyframes: Record<string, TargetKeyframes>;
     labels: Record<string, number>;
+    listeners: Record<string, AnimationEventListener>;
     playState: PlayState;
     playbackRate: number;
     targets: Record<string, AnimationTarget>;
@@ -60,7 +66,7 @@ export namespace ja {
 
   export type AnimationTarget = {};
 
-  export type AnimationValue = boolean | number | string | Date;
+  export type AnimationValue = number | string;
 
   export interface Ease {
     (offset: number): number;
@@ -82,23 +88,49 @@ export namespace ja {
     [propertyName: string]: AnimationValue;
   };
 
-  export interface Interpolator<T> {
-    (offset: number): T;
+  export interface Animator {
+    mix: AnimatorMixer;
+    read: AnimatorReader;
+    write: AnimatorRender;
   }
 
-  export interface Renderer {
-    handle(target: {}, key: string): boolean;
-    read<T>(target: {}, key: string): T;
-    render<T>(target: {}, key: string, value: T): void;
-    mix<T>(left: T, right: T): Interpolator<T>;
+  export interface AnimatorMixer {
+    (
+      left: ja.AnimationValue,
+      right: ja.AnimationValue,
+      offset: number
+    ): ja.AnimationValue;
   }
 
-  export type PlayState = "cancel" | "idle" | "paused" | "running";
+  export interface AnimatorReader {
+    (target: {}, key: string): ja.AnimationValue;
+  }
+
+  export interface AnimatorRender {
+    (target: {}, key: string, value: ja.AnimationValue): void;
+  }
+  export type PlayState = "cancel" | "finish" | "idle" | "paused" | "running";
 
   export interface TargetKeyframes {
     [prop: string]: {
       [time: string]: Keyframe;
     };
+  }
+
+  export interface TimelineConfigurator {
+    /**
+     * This method can also be used to declaratively configure the animation
+     * instead of using animate, set, etc.
+     * @param json The state to restore.
+     * @public
+     */
+    configure(json: Partial<TimelineConfig>): {};
+
+    /**
+     * This can be used to save and restore the value of the timeline.
+     * @public
+     */
+    getConfig(): TimelineConfig;
   }
 
   export interface TimelineAnimation extends Animation {
@@ -191,21 +223,6 @@ export namespace ja {
     finish(): this;
 
     /**
-     * The total active duration of the animation. When iterations is set to
-     * Infinity, this will return Infinity.
-     * @public
-     * @returns {number}
-     */
-    getActiveDuration(): number;
-
-    /**
-     * Gets the internal state of the Animation. This can be used to save and
-     * restore the value of the timeline.
-     * @public
-     */
-    getState(): AnimationState;
-
-    /**
      * Creates a label for a specific time. Labels can be used to seek to specific
      * times in an animation and can be used to configure keyframes using the pos
      * parameter in animate() and set().
@@ -261,14 +278,6 @@ export namespace ja {
       props: Partial<KeyframeProps>,
       pos: number | string
     ): this;
-
-    /**
-     * Restores the state. This method can also be used to declaratively configure
-     * the animation instead of using animate, set, etc.
-     * @param json The state to restore.
-     * @public
-     */
-    setState(json: Partial<AnimationState>): {};
 
     /**
      * Creates a target alias that can be referred to in the targets parameter in

@@ -134,10 +134,10 @@ context('timeline', () => {
     });
   });
 
-  context('getState', () => {
+  context('getConfig', () => {
     it('has a basic usage', () => {
       cy.window().then(({ just }) => {
-        const state = just.timeline().getState();
+        const state = just.timeline().getConfig();
 
         // Ensure initial timeline state is correct.
         expect(state.alternate, 'alternate').equal(false);
@@ -161,7 +161,7 @@ context('timeline', () => {
           .delay(100)
           .label('mid')
           .label(100)
-          .getState();
+          .getConfig();
 
         expect(state.labels.mid).to.equal(100);
       });
@@ -175,7 +175,7 @@ context('timeline', () => {
           .delay(100)
           .label('start', 0)
           .label(100)
-          .getState();
+          .getConfig();
 
         expect(state.labels.start).to.equal(0);
       });
@@ -293,7 +293,7 @@ context('timeline', () => {
         const state = just
           .timeline()
           .set('target', { opacity: 0 })
-          .getState();
+          .getConfig();
 
         expect(state.keyframes.target, 'target').to.exist;
         expect(state.keyframes.target.opacity, 'opacity').to.exist;
@@ -306,13 +306,13 @@ context('timeline', () => {
     });
   });
 
-  context('setState', () => {
+  context('config', () => {
     it('sets alternate correctly', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({ alternate: true })
-          .getState();
+          .config({ alternate: true })
+          .getConfig();
 
         expect(state.alternate).to.equal(true);
       });
@@ -322,8 +322,8 @@ context('timeline', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({ currentTime: 1 })
-          .getState();
+          .config({ currentTime: 1 })
+          .getConfig();
 
         expect(state.currentTime).to.equal(1);
       });
@@ -333,8 +333,8 @@ context('timeline', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({ events: ['cancel'] })
-          .getState();
+          .configure({ events: ['cancel'] })
+          .getConfig();
 
         expect(state.events).to.deep.equal(['cancel']);
       });
@@ -344,8 +344,8 @@ context('timeline', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({ iterations: 2 })
-          .getState();
+          .config({ iterations: 2 })
+          .getConfig();
 
         expect(state.iterations).to.equal(2);
       });
@@ -355,7 +355,7 @@ context('timeline', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({
+          .config({
             keyframes: {
               i: {
                 x: {
@@ -364,7 +364,7 @@ context('timeline', () => {
               },
             },
           })
-          .getState();
+          .getConfig();
 
         expect(state.keyframes.i.x[0].value).to.equal(0);
       });
@@ -374,8 +374,8 @@ context('timeline', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({ labels: { start: 0 } })
-          .getState();
+          .config({ labels: { start: 0 } })
+          .getConfig();
 
         expect(state.labels.start).to.equal(0);
       });
@@ -385,8 +385,8 @@ context('timeline', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({ playState: 'cancel' })
-          .getState();
+          .config({ playState: 'cancel' })
+          .getConfig();
 
         expect(state.playState).to.equal('cancel');
       });
@@ -396,8 +396,8 @@ context('timeline', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({ playbackRate: 2 })
-          .getState();
+          .config({ playbackRate: 2 })
+          .getConfig();
 
         expect(state.playbackRate).to.equal(2);
       });
@@ -407,12 +407,12 @@ context('timeline', () => {
       cy.window().then(({ just }) => {
         const state = just
           .timeline()
-          .setState({
+          .config({
             targets: {
               '@target': 1,
             },
           })
-          .getState();
+          .getConfig();
 
         expect(state.targets['@target']).to.equal(1);
       });
@@ -426,7 +426,7 @@ context('timeline', () => {
         const state = just
           .timeline()
           .target('@target', target)
-          .getState();
+          .getConfig();
 
         expect(state.targets['@target']).to.equal(target);
       });
@@ -439,7 +439,7 @@ context('timeline', () => {
         const state = just
           .timeline()
           .tween('target', 2000, { x: 1 })
-          .getState();
+          .getConfig();
 
         expect(state.keyframes.target, 'target').to.exist;
         expect(state.keyframes.target.x, 'x').to.exist;
@@ -457,7 +457,7 @@ context('timeline', () => {
           .tween('target', 5, { x: 1, y: 0, ease: 'easeIn' })
           .tween('target', 5, { x: 0, y: 1, ease: 'easeOut' })
           .tween('target', 5, { x: 1, y: 1, ease: 'easeInOut' })
-          .getState();
+          .getConfig();
 
         expect(state.keyframes.target.x[5].value, 'x 5 value').equal(0);
         expect(state.keyframes.target.x[5].ease, 'x 5 ease').equal('linear');

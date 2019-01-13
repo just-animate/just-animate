@@ -1,6 +1,8 @@
 import { ja } from "./types";
+import { clamp } from "./numbers";
+import { animate } from "./animator";
 
-export class TimelineAnimation {
+export class TimelineAnimation implements ja.TimelineAnimation {
   /**
    * True if the timeline should alternate.
    * @public
@@ -79,21 +81,10 @@ export class TimelineAnimation {
   >;
 
   /**
-   * The current playState.  This can be cancel, idle, running, or paused
-   * @public
+   * The current playState.  This can be cancel, idle, running, or paused.
+   * @publi
    */
-  get playState(): ja.PlayState {
-    return this.playState_;
-  }
-  set playState(v: ja.PlayState) {
-    this.playState_ = v;
-  }
-
-  /**
-   * The internal value of playState.
-   * @private
-   */
-  private playState_ = "idle" as ja.PlayState;
+  playState = "idle" as ja.PlayState;
 
   /**
    * The current playbackRate.  1 is forwards, -1 is in reverse.  Use decimals
@@ -120,9 +111,9 @@ export class TimelineAnimation {
    */
   private timelines_: Array<{ pos: number; animation: ja.Animation }> = [];
 
-  constructor(options?: Partial<ja.AnimationState>) {
+  constructor(options?: Partial<ja.TimelineConfig>) {
     if (options) {
-      this.setState(options);
+      this.configure(options);
     }
   }
 
@@ -144,9 +135,25 @@ export class TimelineAnimation {
    * @public
    */
   cancel(): this {
-    this.playState = "idle";
-    this.currentTime = 0;
-    return this.trigger_("cancel");
+    this.playState = "cancel";
+    this.events.push("cancel");
+    animate(this);
+    return this;
+  }
+
+  /**
+   * Restores the state. This method can also be used to declaratively configure
+   * the animation instead of using animate, set, etc.
+   * @param json The state to restore.
+   * @public
+   */
+  configure(json: Partial<ja.TimelineConfig>) {
+    for (const k in json) {
+      if (typeof this[k] !== "function" && k !== "duration") {
+        this[k] = json[k];
+      }
+    }
+    return this;
   }
 
   /**
@@ -165,18 +172,28 @@ export class TimelineAnimation {
    * @public
    */
   finish(): this {
-    this.playState = "paused";
-    this.currentTime = this.playbackRate < 0 ? 0 : this.getActiveDuration();
-    return this.trigger_("finish");
+    this.playState = "finish";
+    this.events.push("finish");
+    animate(this);
+    return this;
   }
 
   /**
-   * The total active duration of the animation. When iterations is set to
-   * Infinity, this will return Infinity.
+   * Gets the internal state of the Animation. This can be used to save and
+   * restore the value of the timeline.
    * @public
    */
-  getActiveDuration(): number {
-    return this.duration * this.iterations;
+  getConfig(): ja.TimelineConfig {
+    const memento = {} as ja.TimelineConfig;
+    for (const key in this) {
+      if (key[key.length - 1] !== "_") {
+        const val = this[key];
+        if (typeof val !== "function") {
+          memento[key as string] = val;
+        }
+      }
+    }
+    return memento;
   }
 
   /**
@@ -204,24 +221,6 @@ export class TimelineAnimation {
       pos = this.labels[pos];
     }
     return pos as number;
-  }
-
-  /**
-   * Gets the internal state of the Animation. This can be used to save and
-   * restore the value of the timeline.
-   * @public
-   */
-  getState(): ja.AnimationState {
-    const memento = {} as ja.AnimationState;
-    for (const key in this) {
-      if (key[key.length - 1] !== "_") {
-        const val = this[key];
-        if (key !== "duration" && typeof val !== "function") {
-          memento[key as string] = val;
-        }
-      }
-    }
-    return memento;
   }
 
   /**
@@ -273,7 +272,9 @@ export class TimelineAnimation {
    */
   pause(): this {
     this.playState = "paused";
-    return this.trigger_("pause");
+    this.events.push("pause");
+    animate(this);
+    return this;
   }
 
   /**
@@ -282,7 +283,9 @@ export class TimelineAnimation {
    */
   play(): this {
     this.playState = "running";
-    return this.trigger_("play");
+    this.events.push("play");
+    animate(this);
+    return this;
   }
 
   /**
@@ -296,8 +299,8 @@ export class TimelineAnimation {
     if (time || time === 0) {
       this.currentTime = time;
     }
-    if (this.playState_ !== "running") {
-      this.playState = "paused";
+    if (this.playState !== "running") {
+      this.pause();
     }
     return this;
   }
@@ -313,21 +316,6 @@ export class TimelineAnimation {
   }
 
   /**
-   * Restores the state. This method can also be used to declaratively configure
-   * the animation instead of using animate, set, etc.
-   * @param json The state to restore.
-   * @public
-   */
-  setState(json: Partial<ja.AnimationState>) {
-    for (const k in json) {
-      if (json.hasOwnProperty(k)) {
-        this[k] = json[k];
-      }
-    }
-    return this;
-  }
-
-  /**
    * Creates a target alias that can be referred to in the targets parameter in
    * animate() and set().  It is recommended to prefix the alias with @ to
    * prevent conflicts with CSS selectors. This is useful for creating generic
@@ -338,18 +326,6 @@ export class TimelineAnimation {
    */
   target(alias: string, target: ja.AnimationTarget): this {
     this.targets[alias] = target;
-    return this;
-  }
-
-  /**
-   * Triggers an evenja.
-   * @param eventName The event to trigger.
-   * @private
-   */
-  private trigger_(eventName: string): this {
-    if (!this.events.length || this.events[this.events.length] !== eventName) {
-      this.events.push(eventName);
-    }
     return this;
   }
 

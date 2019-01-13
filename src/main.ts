@@ -1,9 +1,9 @@
 import { TimelineAnimation } from "./timeline";
 import { ja } from "./types";
+import { nextAnimationFrame, tick } from "./loop";
 
-export function timeline(opts?: Partial<ja.AnimationState>): TimelineAnimation {
+function timeline(opts?: Partial<ja.TimelineConfig>): TimelineAnimation {
   return new TimelineAnimation(opts);
 }
 
-export { render } from "./render";
-export { nextAnimationFrame, tick } from "./loop";
+export { timeline, nextAnimationFrame, tick };

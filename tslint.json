@@ -5,7 +5,6 @@
     "ban": [
       true,
       { "name": "parseInt", "message": "tsstyle#type-coercion" },
-      { "name": "parseFloat", "message": "tsstyle#type-coercion" },
       { "name": "Array", "message": "tsstyle#array-constructor" }
     ],
     "ban-types": [
@@ -18,7 +17,7 @@
     "class-name": true,
     "curly": [true, "ignore-same-line"],
     "deprecation": true,
-    "forin": true,
+    "forin": false,
     "interface-name": [true, "never-prefix"],
     "jsdoc-format": true,
     "label-position": true,
