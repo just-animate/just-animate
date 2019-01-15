@@ -6,19 +6,22 @@ context('timeline.off()', () => {
     cy.visit('cypress/index.html');
   });
 
-  it('unregisters events', async () => {
-    const { just } = await cy.window();
-
+  it('unregisters events', () => {
     let eventCount = 0;
-    const cancelHandler = () => eventCount++;
+    cy.window()
+      .then(({ just }) => {
+        const cancelHandler = () => eventCount++;
 
-    just
-      .timeline()
-      .on('cancel', cancelHandler)
-      .off('cancel', cancelHandler)
-      .cancel();
+        just
+          .timeline()
+          .on('cancel', cancelHandler)
+          .off('cancel', cancelHandler)
+          .cancel();
 
-    await just.nextAnimationFrame();
-    expect(eventCount).to.equal(0);
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(eventCount).to.equal(0);
+      });
   });
 });

@@ -6,27 +6,37 @@ context('timeline.cancel()', () => {
     cy.visit('cypress/index.html');
   });
 
-  it('sets currentTime and playState', async () => {
-    const { just } = await cy.window();
-    const t1 = just
-      .timeline()
-      .delay(100)
-      .finish()
-      .cancel();
+  it('sets currentTime and playState', () => {
+    /** @type {typeof window.just} */
+    let just;
+    cy.window()
+      .then(win => (just = win.just))
+      .then(() => {
+        const t1 = just
+          .timeline()
+          .delay(100)
+          .finish()
+          .cancel();
 
-    expect(t1.playState).to.equal('cancel');
+        expect(t1.playState).to.equal('cancel');
+      });
   });
 
-  it('triggers the cancel event', async () => {
-    const { just } = await cy.window();
+  it('triggers the cancel event', () => {
+    /** @type {typeof window.just} */
+    let just;
     let eventCount = 0;
-
-    just
-      .timeline()
-      .on('cancel', () => eventCount++)
-      .cancel();
-    await just.nextAnimationFrame();
-
-    expect(eventCount).to.equal(1);
+    cy.window()
+      .then(win => (just = win.just))
+      .then(() => {
+        just
+          .timeline()
+          .on('cancel', () => eventCount++)
+          .cancel();
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(eventCount).to.equal(1);
+      });
   });
 });

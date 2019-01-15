@@ -6,57 +6,70 @@ context('tick', () => {
     cy.visit('cypress/index.html');
   });
 
-  it('calls the function on the next frame', async () => {
-    const { just } = await cy.window();
+  it('calls the function on the next frame', () => {
+    /** @type {typeof window.just} */
+    let just;
     let ticks = 0;
-    just.tick(() => {
-      ticks++;
-    });
-
-    // Wait for at least 2 frames.
-    await just.nextAnimationFrame();
-    expect(ticks).to.equal(1);
+    cy.window()
+      .then(win => (just = win.just))
+      .then(() => {
+        just.tick(() => {
+          ticks++;
+        });
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(ticks).to.equal(1);
+      });
   });
 
-  it('calls the function until a falsy value is returned', async () => {
-    const { just } = await cy.window();
+  it('calls the function until a falsy value is returned', () => {
+    /** @type {typeof window.just} */
+    let just;
     let ticks = 3;
-    just.tick(() => {
-      return --ticks;
-    });
-
-    await just.nextAnimationFrame();
-    expect(ticks).to.equal(2);
-
-    await just.nextAnimationFrame();
-    expect(ticks).to.equal(1);
-
-    await just.nextAnimationFrame();
-    expect(ticks).to.equal(0);
+    cy.window()
+      .then(win => (just = win.just))
+      .then(() => {
+        just.tick(() => {
+          return --ticks;
+        });
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(ticks).to.equal(2);
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(ticks).to.equal(1);
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(ticks).to.equal(0);
+        return just.nextAnimationFrame();
+      });
   });
 
   it('request animation frame correctly fires after each frame', async () => {
-    const { just } = await cy.window();
+    /** @type {typeof window.just} */
+    let just;
     let value = 0;
-
-    // Schedule a tick callback and make sure it hasn't fired yet.
-    just.tick(() => {
-      value = 1;
-    });
-
-    expect(value).to.equal(0);
-
-    await just.nextAnimationFrame();
-    expect(value).to.equal(1);
-
-    // Schedule another tick callback and make sure it hasn't fired yet.
-    just.tick(() => {
-      value = 2;
-    });
-
-    expect(value).to.equal(1);
-
-    await just.nextAnimationFrame();
-    expect(value).to.equal(2);
+    cy.window()
+      .then(win => (just = win.just))
+      .then(() => {
+        just.tick(() => {
+          value = 1;
+        });
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(value).to.equal(1);
+        just.tick(() => {
+          value = 2;
+        });
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(value).to.equal(2);
+      });
   });
 });

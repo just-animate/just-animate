@@ -6,16 +6,19 @@ context('timeline.on()', () => {
     cy.visit('cypress/index.html');
   });
 
-  it('registers events', async () => {
-    const { just } = await cy.window();
+  it('registers events', () => {
     let eventCount = 0;
+    cy.window()
+      .then(({ just }) => {
+        just
+          .timeline()
+          .on('pause', () => eventCount++)
+          .pause();
 
-    just
-      .timeline()
-      .on('pause', () => eventCount++)
-      .pause();
-
-    await just.nextAnimationFrame();
-    expect(eventCount).to.equal(1);
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(eventCount).to.equal(1);
+      });
   });
 });
