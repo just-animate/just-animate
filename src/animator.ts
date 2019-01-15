@@ -17,7 +17,7 @@ export function animate(configurator: ja.TimelineConfigurator) {
     lastTime = performance.now();
     tick(processTimelines);
   }
-  if (queue.indexOf(configurator) !== -1) {
+  if (queue.indexOf(configurator) === -1) {
     queue.push(configurator);
   }
 }
@@ -54,9 +54,11 @@ function processTimelines(time: number) {
   const listenersToCall: ja.AnimationEventListener[] = [];
   for (const config of configs) {
     for (const event of config.events) {
-      const listeners = config.listeners[event];
-      if (listeners && listeners.length) {
-        Array.prototype.push.apply(listenersToCall, listeners);
+      if (config.listeners) {
+        const listeners = config.listeners[event];
+        if (listeners && listeners.length) {
+          Array.prototype.push.apply(listenersToCall, listeners);
+        }
       }
     }
   }
@@ -142,6 +144,9 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
  * @param target The target to resolve.
  */
 function resolveTargets(config: ja.TimelineConfig, target: string): Array<{}> {
+  if (!target) {
+    return [];
+  }
   if (target.indexOf("@") !== 0) {
     // TODO:(add component scoping here)
     // If it isn't a reference, use it as a selector and make that into an [].
@@ -188,10 +193,20 @@ function updatePlayState(config: ja.TimelineConfig) {
  * @param config The configuration to update.
  */
 function updateTiming(delta: number, config: ja.TimelineConfig) {
+  // Make sure iterations is at least 1 and below Infinity.
+  const SECONDS_IN_A_DAY = 86400;
+  config.iterations = clamp(config.iterations, 1, SECONDS_IN_A_DAY * 7);
+
+  // Figure out the active duration.
+  const activeDuration = config.duration * config.iterations;
+
   if (config.playState === "cancel") {
     // Reset the timeline.
     config.currentTime = 0;
     config.playbackRate = 1;
+  } else if (config.playState === "finish") {
+    // Finish at 0 or the duration based on the playbackRate.
+    config.currentTime = config.playbackRate < 0 ? 0 : activeDuration;
   } else {
     if (config.playState === "running") {
       // Find the current time and clamp it between 0 and the active duration.
@@ -199,11 +214,6 @@ function updateTiming(delta: number, config: ja.TimelineConfig) {
     }
   }
 
-  // Make sure iterations is at least 1 and below Infinity.
-  const SECONDS_IN_A_DAY = 86400;
-  config.iterations = clamp(config.iterations, 1, SECONDS_IN_A_DAY * 7);
-
   // Ensure current time is not out of bounds.
-  const activeDuration = config.duration * config.iterations;
   config.currentTime = clamp(config.currentTime, 0, activeDuration);
 }

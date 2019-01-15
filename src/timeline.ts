@@ -73,12 +73,9 @@ export class TimelineAnimation implements ja.TimelineAnimation {
 
   /**
    * The event listeners in the animation.
-   * @private
+   * @public
    */
-  private listeners_ = {} as Record<
-    ja.AnimationEvent,
-    ja.AnimationEventListener[]
-  >;
+  listeners = {} as Record<ja.AnimationEvent, ja.AnimationEventListener[]>;
 
   /**
    * The current playState.  This can be cancel, idle, running, or paused.
@@ -202,9 +199,9 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    * @private
    */
   private getEventGroup_(ev: ja.AnimationEvent) {
-    let eventGroup = this.listeners_[ev];
+    let eventGroup = this.listeners[ev];
     if (!eventGroup) {
-      eventGroup = this.listeners_[ev] = [];
+      eventGroup = this.listeners[ev] = [];
     }
     return eventGroup;
   }

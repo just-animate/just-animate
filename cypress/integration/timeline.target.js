@@ -1,0 +1,19 @@
+/// <reference types="Cypress" />
+/// <reference types="../../dist/types" />
+
+context('timeline.target()', () => {
+  beforeEach(() => {
+    cy.visit('cypress/index.html');
+  });
+
+  it('has a basic usage', async () => {
+    const { just } = await cy.window();
+    const target = {};
+    const state = just
+      .timeline()
+      .target('@target', target)
+      .getConfig();
+
+    expect(state.targets['@target']).to.equal(target);
+  });
+});

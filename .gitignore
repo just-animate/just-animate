@@ -1,5 +1,6 @@
 .idea
 .vs
+/cypress/screenshots
 /cypress/videos
 /node_modules
 /dist
