@@ -1,6 +1,5 @@
 import { ja } from "./types";
 import { isNumeric, clamp } from "./numbers";
-import { isNotEmpty } from "./strings";
 
 interface ReaderWriter {
   read: ja.AnimatorReader;
@@ -33,7 +32,7 @@ const propertyReaderWriter: ReaderWriter = {
     return target[key];
   },
   write(target: HTMLElement, key: string, value: ja.AnimationTarget) {
-    target[key] = value.toString();
+    target[key] = value;
   }
 };
 
@@ -93,7 +92,7 @@ function autoMixer(
 
   // Walk through the terms and decide whether it is a numeric mixer or a
   // discrete mixer.  Append these results together.
-  let result = "";
+  const result: ja.AnimationValue[] = [];
   let remainingColorChannels = 0;
   const listLength = expressionA.length;
   for (let i = 0; i < listLength; i++) {
@@ -124,22 +123,24 @@ function autoMixer(
       if (remainingColorChannels) {
         // Mixing RGB channels properly requires squaring the terms, performing
         // interpolation, and then unsquaring it.
-        result += Math.round(
-          Math.sqrt(
-            clamp((termA * termA + termB * termB) * offset, 0, 255 * 255)
+        result.push(
+          Math.round(
+            Math.sqrt(
+              clamp((termA * termA + termB * termB) * offset, 0, 255 * 255)
+            )
           )
         );
         remainingColorChannels--;
       } else {
         // Otherwise perform normal numeric interplation.
         const numericValue = (termA + termB) * offset;
-        result += shouldRound ? Math.round(numericValue) : numericValue;
+        result.push(shouldRound ? Math.round(numericValue) : numericValue);
       }
     } else {
-      result += offset < 0.5 ? termB : termA;
+      result.push(offset < 0.5 ? termB : termA);
     }
   }
-  return result;
+  return termsToString(result);
 }
 
 function getReaderWriter(
@@ -168,11 +169,17 @@ function getReaderWriter(
 function parseCssExpression(value: ja.AnimationValue): ja.AnimationValue[] {
   return value
     .toString()
-    .replace(/\s*([a-z]+\-?[a-z]*|%|\-?\d*\.?\d+\s*|,+?|\(|\))\s*/gi, " $1")
+    .replace(/#[a-f0-9]{3}([a-f0-9]{3})?/gi, hexToRgb)
+    .replace(/\s*([a-z]+\-?[a-z]*|%|\-?\d*\.?\d+\s*|,+?|\/|\(|\))\s*/gi, " $1")
     .trim()
     .split(" ")
-    .map(maybeParseNumber)
-    .filter(isNotEmpty);
+    .reduce<ja.AnimationValue[]>((c, n) => {
+      const value = maybeParseNumber(n);
+      if (value !== "") {
+        c.push(value);
+      }
+      return c;
+    }, []);
 }
 
 /**
@@ -181,5 +188,45 @@ function parseCssExpression(value: ja.AnimationValue): ja.AnimationValue[] {
  * @param value The value to attempt to parse.
  */
 function maybeParseNumber(value: string): ja.AnimationValue {
-  return isNumeric(value) ? parseFloat(value) : value.trim();
+  value = value.trim();
+  return !value ? "" : isFinite(+value) ? +value : value;
+}
+
+export function hexToRgb(stringValue: string) {
+  const hex = stringValue.substring(1);
+  const hexColor = parseInt(
+    hex.length === 3
+      ? hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
+      : hex,
+    16
+  );
+  const r = (hexColor >> 16) & 0xff;
+  const g = (hexColor >> 8) & 0xff;
+  const b = hexColor & 0xff;
+
+  return `rgb(${r},${g},${b})`;
+}
+
+function termsToString(aTerms: ja.AnimationValue[]): string {
+  const NUM = 1;
+  const PUNCT = 2;
+  const WORD = 3;
+
+  let result = "";
+  let lastType = 0;
+
+  for (let i = 0, len = aTerms.length; i < len; i++) {
+    const term = aTerms[i];
+    const type =
+      typeof term === "number" ? NUM : /^[\(\)\/,]$/i.test(term) ? PUNCT : WORD;
+    if (i !== 0 && type === NUM && lastType !== PUNCT) {
+      result += " ";
+    }
+    result += term;
+    if (term === ")" && aTerms[i + 1] !== ")" && i !== len - 1) {
+      result += " ";
+    }
+    lastType = type;
+  }
+  return result;
 }

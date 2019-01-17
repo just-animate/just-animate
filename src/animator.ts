@@ -61,6 +61,8 @@ function processTimelines(time: number) {
         }
       }
     }
+    // Remove configuration events.
+    config.events.length = 0;
   }
   // Render changes to the targets.
   const operations: Array<() => void> = [];
@@ -73,7 +75,7 @@ function processTimelines(time: number) {
   }
   // Remove items from the queue if they no longer need to be updated.
   for (let i = queue.length - 1; i > -1; i--) {
-    if (configs[i].playState === "idle") {
+    if (configs[i].playState !== "running") {
       queue.splice(i, 1);
     }
   }
@@ -101,32 +103,23 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
     for (const propName in keyframes) {
       const property = keyframes[propName];
       const times = getTimes(property);
-      const lowerIndex = findLowerIndex(times, currentTime);
-      const lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
-
-      // Get the final value. This can be done for all targets.
-      const higherTime = times[Math.max(lowerIndex + 1, times.length)];
-      const upperFrame = property[higherTime];
 
       for (const target of targets) {
         const animator = getAnimator(target, propName);
-        let lowerFrame: ja.Keyframe;
-        if (lowerIndex === -1) {
-          // Get the lower value. This has to be done after getting the animator
-          // because we need to know how to read the original value.
-          lowerFrame = {
-            value: animator.read(target, propName),
-            stagger: 0
-          };
-          property[0] = lowerFrame;
-        } else {
-          lowerFrame = property[times[lowerIndex]];
-        }
+
+        const lowerIndex = findLowerIndex(times, currentTime);
+        const lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
+        const lowerFrame = property[times[lowerIndex]];
+
+        // Get the final value. This can be done for all targets.
+        const upperIndex = Math.min(lowerIndex + 1, times.length - 1);
+        const upperTime = times[upperIndex];
+        const upperFrame = property[upperTime];
 
         // Get the current value and calculate the next value, only attempt to
         // render if they are different. It is assumed that the cost of reading
         // constantly is less than the cost of writing constantly.
-        const offset = (lowerTime + higherTime) / 2;
+        const offset = (upperTime - currentTime) / (upperTime - lowerTime);
         const currentValue = animator.read(target, propName);
         const value = animator.mix(lowerFrame.value, upperFrame.value, offset);
         if (currentValue !== value) {

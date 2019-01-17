@@ -2,11 +2,7 @@
   "rules": {
     "array-type": [true, "array-simple"],
     "arrow-return-shorthand": true,
-    "ban": [
-      true,
-      { "name": "parseInt", "message": "tsstyle#type-coercion" },
-      { "name": "Array", "message": "tsstyle#array-constructor" }
-    ],
+    "ban": [true, { "name": "Array", "message": "tsstyle#array-constructor" }],
     "ban-types": [
       true,
       ["Object", "Use {} instead."],

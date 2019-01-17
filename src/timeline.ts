@@ -145,6 +145,8 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    * @public
    */
   configure(json: Partial<ja.TimelineConfig>) {
+    const currentTime = this.currentTime;
+    const duration = this.duration;
     for (const k in json) {
       if (typeof this[k] !== "function" && k !== "duration") {
         this[k] = json[k];
@@ -349,8 +351,11 @@ export class TimelineAnimation implements ja.TimelineAnimation {
     /* If the target is not a string, create an alias so the keyframe can be
      * stored separatedly from the objects themselves. */
     if (typeof targets !== "string") {
-      const targetId = "@auto_" + ++this.targetIds_;
-      this.target(targetId, targets);
+      let targetId = findTarget(this.targets, targets);
+      if (!targetId) {
+        targetId = "@auto_" + ++this.targetIds_;
+        this.target(targetId, targets);
+      }
       targets = targetId;
     }
 
@@ -381,5 +386,25 @@ export class TimelineAnimation implements ja.TimelineAnimation {
     }
 
     return this;
+  }
+
+  /**
+   * Forces an update. This can be used after updating timing or keyframes in
+   * configure() to force an
+   */
+  update(): this {
+    animate(this);
+    return this;
+  }
+}
+
+function findTarget(
+  targets: Record<string, ja.AnimationTarget>,
+  target: ja.AnimationTarget
+): string | undefined {
+  for (const targetid in targets) {
+    if (target === targets[targetid]) {
+      return targetid;
+    }
   }
 }

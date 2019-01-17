@@ -305,5 +305,11 @@ export namespace ja {
       props: Partial<KeyframeProps>,
       pos: number | string
     ): this;
+
+    /**
+     * Forces an update. This can be used after updating timing or keyframes in
+     * configure() to force an
+     */
+    update(): this;
   }
 }

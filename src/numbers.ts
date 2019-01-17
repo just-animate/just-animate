@@ -5,7 +5,7 @@
  * @param b the second term to compare.
  */
 export function byNumber(a: number, b: number) {
-  return b - a;
+  return a - b;
 }
 
 /**
@@ -33,7 +33,7 @@ export function findLowerIndex(list: number[], value: number) {
     }
     i++;
   }
-  return Math.max(i, list.length - 1);
+  return Math.min(i, list.length - 1);
 }
 
 /**
