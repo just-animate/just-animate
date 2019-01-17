@@ -299,7 +299,7 @@ export namespace ja {
      * if not specified.
      * @public
      */
-    tween<T>(
+    animate<T>(
       targets: T | string,
       duration: number,
       props: Partial<KeyframeProps>,

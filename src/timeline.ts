@@ -161,7 +161,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    * @public
    */
   delay(duration: number, pos?: string | number): this {
-    return this.tween("", duration, { "": 0 }, pos);
+    return this.animate("", duration, { "": 0 }, pos);
   }
 
   /**
@@ -311,7 +311,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    */
   set<T>(targets: T | string, props: ja.KeyframeProps, pos?: number | string) {
     props["ease" as string] = "steps(1,end)";
-    return this.tween(targets, 0, props, pos);
+    return this.animate(targets, 0, props, pos);
   }
 
   /**
@@ -337,7 +337,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    * if not specified.
    * @public
    */
-  tween<T>(
+  animate<T>(
     targets: T | string,
     duration: number,
     props: Partial<ja.KeyframeProps>,

@@ -12,7 +12,7 @@ context('timeline.duration', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const t1 = just.timeline().tween('target', 2000, { x: 0 });
+        const t1 = just.timeline().animate('target', 2000, { x: 0 });
         expect(t1.duration).to.equal(2000);
       });
   });
