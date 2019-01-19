@@ -207,7 +207,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <single-transition-timing-function>', () => {
+  it('tweens <timing-function>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -226,7 +226,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <timing-function>', () => {
+  it('tweens <transform-function>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -236,17 +236,17 @@ context('timeline.animate()', () => {
         just
           .timeline()
           .set(target, {
-            transform: 'translateX(20px) scale(1.2) rotateZ(20deg)',
+            transform: 'translateX(20px) scale(1.2) rotate(20deg)',
           })
           .animate(target, 1000, {
-            transform: 'translateX(120px) scale(.8) rotateZ(-120deg)',
+            transform: 'translate(120px) scale(.8) rotateZ(-120deg)',
           })
           .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
         expect(target.transform).to.equal(
-          'translateX(70px) scale(1) rotateZ(-50deg)'
+          'matrix(0.364,-0.141,0.141,0.364,70,0)'
         );
       });
   });
@@ -381,7 +381,7 @@ context('timeline.animate()', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.d).to.equal('M 0,0C 50,50 50,50 50,50z');
+        expect(target.d).to.equal('M 0 0 C 50 50 50 50 50 50 z');
       });
   });
 
@@ -404,7 +404,7 @@ context('timeline.animate()', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.d).to.equal('M 0 0C 50 50 50 50 50 50z');
+        expect(target.d).to.equal('M 0 0 C 50 50 50 50 50 50 z');
       });
   });
 });

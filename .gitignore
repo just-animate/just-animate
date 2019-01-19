@@ -3,7 +3,6 @@
 /cypress/screenshots
 /cypress/videos
 /node_modules
-/dist
 src/**/*.js
 src/**/*.map
 npm-debug.log*
