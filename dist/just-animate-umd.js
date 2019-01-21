@@ -53,14 +53,161 @@
   function toNumber(str) {
       return +str;
   }
-  //# sourceMappingURL=numbers.js.map
+
+  var END = 0;
+  var NUMBER = 1;
+  var UNIT = 2;
+  var KEYWORD = 3;
+  var FUNCTION = 4;
+  var DELIMITER = 5;
+  var PRECISION = 100000;
+  var DELIMITER_REGEX = /^\s*[\(\),\/\s]\s*/;
+  var HEX_REGEX = /^#[a-f\d]{3,6}/i;
+  var KEYWORD_REGEX = /^[a-z][a-z\d\-]*/i;
+  var NUMBER_REGEX = /^\-?\d*\.?\d+/;
+  var UNIT_REGEX = /^\-?\d*\.?\d+[a-z%]+/i;
+  var UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
+  var PATH_COMMAND_REGEX = /^[mhvlcsqt]/i;
+  var PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
+  var SPACE_REGEX = /\s+/;
+  function startProcessing(ctx, value) {
+      ctx.isPath = PATH_REGEX.test(value);
+      ctx.current = "";
+      ctx.pos = 0;
+      ctx.last = 0;
+      ctx.state = NUMBER;
+      ctx.subject = value;
+  }
+  function match(ctx, regex) {
+      var match = regex.exec(ctx.subject.substring(ctx.pos));
+      if (match) {
+          ctx.current = match[0];
+          ctx.last = ctx.pos;
+          ctx.pos += ctx.current.length;
+      }
+      return match != null;
+  }
+  function nextToken(ctx) {
+      if (match(ctx, DELIMITER_REGEX)) {
+          // Remove double spaces to make it consistent.
+          ctx.current = ctx.current.replace(SPACE_REGEX, " ");
+          return DELIMITER;
+      }
+      if ((ctx.isPath && match(ctx, PATH_COMMAND_REGEX)) ||
+          match(ctx, KEYWORD_REGEX)) {
+          var isFunction = !ctx.isPath &&
+              ctx.pos < ctx.subject.length - 1 &&
+              ctx.subject[ctx.pos] === "(";
+          if (isFunction) {
+              if (ctx.current.toLowerCase() === "rgb") {
+                  var searchString = ctx.subject.substring(ctx.pos);
+                  var endOfString = searchString.indexOf(")");
+                  var terms = searchString.substring(1, endOfString);
+                  ctx.subject =
+                      ctx.subject.substring(0, ctx.pos + 1 + terms.length) +
+                          ",1" +
+                          ctx.subject.substring(ctx.pos + 1 + terms.length);
+                  ctx.current = "rgba";
+              }
+              return FUNCTION;
+          }
+          return KEYWORD;
+      }
+      if (!ctx.isPath && match(ctx, UNIT_REGEX)) {
+          return UNIT;
+      }
+      if (match(ctx, NUMBER_REGEX)) {
+          return NUMBER;
+      }
+      if (match(ctx, HEX_REGEX)) {
+          // If the value was hex, replace it with RGB in the string and parse that.
+          var hexValue = ctx.subject.substring(ctx.last + 1, ctx.pos);
+          ctx.subject =
+              ctx.subject.substring(0, ctx.last) +
+                  hexToRgb(hexValue) +
+                  ctx.subject.substring(ctx.pos);
+          // Reset the position and chain another call to nextToken.
+          ctx.pos = ctx.last;
+          return nextToken(ctx);
+      }
+      return END;
+  }
+  function hexToRgb(hex) {
+      // Parse 3 or 6 hex to an integer using 16 base.
+      var h = parseInt(hex.length === 3
+          ? hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
+          : hex, 16);
+      var r = (h >> 16) & 0xff;
+      var g = (h >> 8) & 0xff;
+      var b = h & 0xff;
+      return "rgba(" + r + "," + g + "," + b + ",1)";
+  }
+  var ctx1 = {};
+  var ctx2 = {};
+  /**
+   * @param {string} valueA
+   * @param {string} valueB
+   * @param {number} offset
+   */
+  function mix(valueA, valueB, offset) {
+      // Reuse contexts to process this request.
+      startProcessing(ctx1, valueA);
+      startProcessing(ctx2, valueB);
+      var output = "";
+      var remainingSquaredChannels = 0;
+      var token1;
+      var token2;
+      while (true) {
+          token1 = nextToken(ctx1);
+          token2 = nextToken(ctx2);
+          if (!token1 || !token2) {
+              break;
+          }
+          var term1 = ctx1.current;
+          var term2 = ctx2.current;
+          if (token1 === NUMBER && token2 === NUMBER) {
+              var numericTerm = void 0;
+              if (remainingSquaredChannels) {
+                  numericTerm = Math.round(Math.sqrt(Math.min(Math.max(0, (+term1 * +term1 + +term2 * +term2) * offset), 255 * 255)));
+                  remainingSquaredChannels--;
+              }
+              else {
+                  numericTerm =
+                      Math.round((+term1 + +term2) * offset * PRECISION) / PRECISION;
+              }
+              output += numericTerm;
+          }
+          else if (token1 === UNIT || token2 === UNIT) {
+              var unitMatch = UNIT_EXTRACTOR_REGEX.exec(token1 === UNIT ? term1 : term2);
+              var unit = unitMatch[1];
+              var precision = unit === "px" ? 1 : PRECISION;
+              var unitNumber1 = parseFloat(term1);
+              var unitNumber2 = parseFloat(term2);
+              // Round to the nearest whole number or 6th decimal.
+              var numericTerm = Math.round((unitNumber1 + unitNumber2) * offset * precision) /
+                  precision;
+              // The parseFloat should remove px & % automatically
+              output += numericTerm + unit;
+          }
+          else if (token1 === FUNCTION && token2 === FUNCTION) {
+              var term = offset < 0.5 ? term1 : term2;
+              if (term === "rgb" || term === "rgba") {
+                  remainingSquaredChannels = 3;
+              }
+              output += term;
+          }
+          else {
+              output += offset < 0.5 ? term1 : term2;
+          }
+      }
+      return output;
+  }
 
   var htmlAttributeOnly = ["viewBox"];
   var htmlPropOnly = ["innerHTML", "textContent"];
   var TRANSFORM_REGEX = 
   // Match on all transform functions.
   /(perspective|matrix(3d)?|skew[xy]?|(translate|scale|rotate)([xyz]|3d)?)\(/i;
-  var UNIT_REGEX = /^(\-?[0-9.]+)([a-z%]*)$/i;
   var attributeReaderWriter = {
       read: function (target, key) {
           return target.getAttribute(key) || "";
@@ -120,124 +267,16 @@
    * @param offset The progression offset to use.
    */
   function autoMixer(valueA, valueB, offset) {
-      return detectMixer(valueA, valueB)(valueA, valueB, offset);
-  }
-  /**
-   * This mixer attempts to automatically parse CSS expressions from each value
-   * and then create an interpolated value from it.
-   * @param valueA The left value to mix.
-   * @param valueB The right value to mix.
-   * @param offset The progression offset to use.
-   */
-  function detectMixer(valueA, valueB) {
-      var isNumericA = isNumeric(valueA);
-      var isNumericB = isNumeric(valueB);
-      if (isNumericA && isNumericB) {
-          return numberMixer;
+      if (isNumeric(valueA) && isNumeric(valueB)) {
+          return (+valueA + +valueB) * offset;
       }
-      if (isPath(valueA) || isPath(valueB)) {
-          return pathMixer;
-      }
-      if (isUnit(valueA) || isUnit(valueB)) {
-          return unitMixer;
-      }
-      return fallbackMixer;
-  }
-  function numberMixer(a, b, o) {
-      return (+a + +b) * o;
-  }
-  function isUnit(value) {
-      return !!UNIT_REGEX.test(value.toString());
-  }
-  function isPath(value) {
-      return /^([mhvlcsqt][0-9, \-.]+)+z?$/i.test(value + "");
-  }
-  function pathMixer(a, b, o) {
-      var pathA = getAllTerms(a + "", /([mhvlcsqtz]|[0-9\-.]+)/gi);
-      var pathB = getAllTerms(b + "", /([mhvlcsqtz]|[0-9\-.]+)/gi);
-      if (pathA.length !== pathB.length) {
-          throw new Error("Paths do not have the same number of terms");
-      }
-      var result = "";
-      for (var i = 0; i < pathA.length; i++) {
-          if (!!i) {
-              result += " ";
-          }
-          result += autoMixer(pathA[i], pathB[i], o);
-      }
-      return result;
-  }
-  function unitMixer(a, b, o) {
-      var unitA = UNIT_REGEX.exec(a + "");
-      var unitB = UNIT_REGEX.exec(b + "");
-      // Prefer the unit on the left.  This allows 0 and 10px to mix properly.
-      return numberMixer(unitA[1], unitB[1], o) + (unitA[2] || unitB[2] || "");
-  }
-  /**
-   * This mixer attempts to automatically parse CSS expressions from each value
-   * and then create an interpolated value from it.
-   * @param valueA The left value to mix.
-   * @param valueB The right value to mix.
-   * @param offset The progression offset to use.
-   */
-  function fallbackMixer(valueA, valueB, offset) {
       // If either looks like a transform function, convert them.
       if (TRANSFORM_REGEX.test(valueA.toString()) ||
           TRANSFORM_REGEX.test(valueB.toString())) {
           valueA = toMatrix(valueA);
           valueB = toMatrix(valueB);
       }
-      // Parse both into expression lists.
-      var expressionA = parseCssExpression(valueA);
-      var expressionB = parseCssExpression(valueB);
-      if (expressionA.length !== expressionB.length) {
-          // If the two sets are not equal, the best thing we can do is interpolate.
-          return offset < 0.5 ? valueB : valueA;
-      }
-      // Walk through the terms and decide whether it is a numeric mixer or a
-      // discrete mixer.  Append these results together.
-      var result = [];
-      var remainingColorChannels = 0;
-      var listLength = expressionA.length;
-      for (var i = 0; i < listLength; i++) {
-          var termA = expressionA[i];
-          var termB = expressionB[i];
-          // True if there is at least one term after this.
-          var hasNextTerm = i < listLength - 1;
-          // Test if this expression is part of an RGB css function.
-          var isRgbFunction = (termA === "rgb" || termA === "rgba") &&
-              hasNextTerm &&
-              expressionA[i + 1] === "(";
-          if (isRgbFunction) {
-              // Wait for 3 color channels.
-              remainingColorChannels = 3;
-          }
-          // If the next expression is a px value on a or b, we should lock to whole
-          // numbers, otherwise lock to 4.
-          var precision = hasNextTerm &&
-              (expressionA[i + 1] === "px" || expressionB[i + 1] === "px")
-              ? 1
-              : 1000;
-          if (typeof termA === "number" && typeof termB === "number") {
-              if (remainingColorChannels) {
-                  // Mixing RGB channels properly requires squaring the terms, performing
-                  // interpolation, and then unsquaring it.
-                  result.push(Math.round(Math.sqrt(clamp((termA * termA + termB * termB) * offset, 0, 255 * 255))));
-                  remainingColorChannels--;
-              }
-              else {
-                  // Otherwise perform normal numeric interplation.
-                  result.push(Math.round((termA + termB) * offset * precision) / precision);
-              }
-          }
-          else if (isUnit(termA) || isUnit(termB)) {
-              result.push(unitMixer(termA, termB, offset));
-          }
-          else {
-              result.push(offset < 0.5 ? termB : termA);
-          }
-      }
-      return termsToString(result);
+      return mix(valueA.toString(), valueB.toString(), offset);
   }
   function getReaderWriter(target, propertyName) {
       if (target instanceof Element) {
@@ -254,75 +293,6 @@
       }
       return propertyReaderWriter;
   }
-  function getAllTerms(input, regex) {
-      var terms = [];
-      var result;
-      // tslint:disable-next-line:no-conditional-assignment
-      while ((result = regex.exec(input))) {
-          terms.push(result[1]);
-      }
-      return terms;
-  }
-  /**
-   * Parse a string into a list of terms.
-   * @param value the value to parse
-   */
-  function parseCssExpression(input) {
-      input = input
-          .toString()
-          .replace(/#[a-f0-9]{3}([a-f0-9]{3})?/gi, hexToRgb)
-          .trim();
-      // tslint:disable-next-line:max-line-length
-      var TERM_REGEX = /([a-z]{2,}[a-z0-9]+|[0-9\.\-]+[a-z%]*|[mhvlcsqtz\/,\(\)])/gi;
-      // ([a-z][a-z0-9_-]*|#?\-?\d*\.?\d*[a-z%]*) <- everything but paths.
-      return getAllTerms(input, TERM_REGEX).reduce(function (c, n) {
-          var value = maybeParseNumber(n);
-          if (value !== "") {
-              c.push(value);
-          }
-          return c;
-      }, []);
-  }
-  /**
-   * Attempts to parse the a number from the string, otherwise just returns the
-   * original string.
-   * @param value The value to attempt to parse.
-   */
-  function maybeParseNumber(value) {
-      value = value.trim();
-      return !value ? "" : isFinite(+value) ? +value : value;
-  }
-  function hexToRgb(stringValue) {
-      var hex = stringValue.substring(1);
-      var hexColor = parseInt(hex.length === 3
-          ? hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
-          : hex, 16);
-      var r = (hexColor >> 16) & 0xff;
-      var g = (hexColor >> 8) & 0xff;
-      var b = hexColor & 0xff;
-      return "rgb(" + r + "," + g + "," + b + ")";
-  }
-  function termsToString(aTerms) {
-      var NUM = 1;
-      var PUNCT = 2;
-      var WORD = 3;
-      var result = "";
-      var lastType = 0;
-      for (var i = 0, len = aTerms.length; i < len; i++) {
-          var term = aTerms[i];
-          var type = typeof term === "number" ? NUM : /^[\(\)\/,]$/i.test(term) ? PUNCT : WORD;
-          if (i !== 0 && type === NUM && lastType !== PUNCT) {
-              result += " ";
-          }
-          result += term;
-          if (term === ")" && aTerms[i + 1] !== ")" && i !== len - 1) {
-              result += " ";
-          }
-          lastType = type;
-      }
-      return result;
-  }
-  //# sourceMappingURL=render.js.map
 
   var tasks = [];
   var promise;
@@ -379,7 +349,6 @@
           done2();
       }
   }
-  //# sourceMappingURL=loop.js.map
 
   var FRAME_SIZE = 1000 / 60;
   var queue = [];
@@ -592,7 +561,6 @@
       // Ensure current time is not out of bounds.
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
   }
-  //# sourceMappingURL=animator.js.map
 
   var TimelineAnimation = /** @class */ (function () {
       function TimelineAnimation(options) {
@@ -958,12 +926,10 @@
           }
       }
   }
-  //# sourceMappingURL=timeline.js.map
 
   function timeline(opts) {
       return new TimelineAnimation(opts);
   }
-  //# sourceMappingURL=main.js.map
 
   exports.timeline = timeline;
   exports.nextAnimationFrame = nextAnimationFrame;

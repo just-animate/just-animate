@@ -126,7 +126,7 @@ context('timeline.animate()', () => {
       })
       .then(() => {
         expect(target.background).to.equal(
-          'linear-gradient(rgb(180,180,180) ,rgb(180,180,180))'
+          'linear-gradient(rgba(180,180,180,1), rgba(180,180,180,1))'
         );
       });
   });
@@ -246,7 +246,7 @@ context('timeline.animate()', () => {
       })
       .then(() => {
         expect(target.transform).to.equal(
-          'matrix(0.364,-0.141,0.141,0.364,70,0)'
+          'matrix(0.36382, -0.1412, 0.1412, 0.36382, 70, 0)'
         );
       });
   });
@@ -266,7 +266,9 @@ context('timeline.animate()', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.color).to.equal('rgb(180,180,180) rgb(180,180,180)');
+        expect(target.color).to.equal(
+          'rgba(180,180,180,1) rgba(180,180,180,1)'
+        );
       });
   });
 
@@ -289,7 +291,7 @@ context('timeline.animate()', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.color).to.equal('rgb(180,180,180)');
+        expect(target.color).to.equal('rgba(180,180,180,1)');
       });
   });
 
@@ -303,16 +305,16 @@ context('timeline.animate()', () => {
         just
           .timeline()
           .set(target, {
-            color: 'rgb(255,255,255,.5)',
+            color: 'rgb(255,255,255)',
           })
           .animate(target, 1000, {
-            color: 'rgb(0,0,0, 1)',
+            color: 'rgb(0,0,0)',
           })
           .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.color).to.equal('rgb(180,180,180,0.75)');
+        expect(target.color).to.equal('rgba(180,180,180,1)');
       });
   });
 
@@ -335,7 +337,7 @@ context('timeline.animate()', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.color).to.equal('hsl(180,75%,75%)');
+        expect(target.color).to.equal('hsl(180, 75%, 75%)');
       });
   });
 
@@ -358,7 +360,7 @@ context('timeline.animate()', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.color).to.equal('hsla(180,75%,75%,0.25)');
+        expect(target.color).to.equal('hsla(180, 75%, 75%, 0.25)');
       });
   });
 
@@ -381,7 +383,7 @@ context('timeline.animate()', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.d).to.equal('M 0 0 C 50 50 50 50 50 50 z');
+        expect(target.d).to.equal('M0,0 C50,50 50,50 50,50z');
       });
   });
 
@@ -404,7 +406,7 @@ context('timeline.animate()', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(target.d).to.equal('M 0 0 C 50 50 50 50 50 50 z');
+        expect(target.d).to.equal('M0 0 C 50 50 50 50 50 50z');
       });
   });
 });
