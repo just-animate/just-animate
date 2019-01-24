@@ -78,37 +78,14 @@ export namespace ja {
 
   export interface Keyframe {
     ease?: string;
-    stagger?: number;
     value: AnimationValue;
   }
 
   export type KeyframeProps = {
     ease: string;
-    stagger: number;
     [propertyName: string]: AnimationValue;
   };
 
-  export interface Animator {
-    mix: AnimatorMixer;
-    read: AnimatorReader;
-    write: AnimatorRender;
-  }
-
-  export interface AnimatorMixer {
-    (
-      left: ja.AnimationValue,
-      right: ja.AnimationValue,
-      offset: number
-    ): ja.AnimationValue;
-  }
-
-  export interface AnimatorReader {
-    (target: {}, key: string): ja.AnimationValue;
-  }
-
-  export interface AnimatorRender {
-    (target: {}, key: string, value: ja.AnimationValue): void;
-  }
   export type PlayState = "cancel" | "finish" | "idle" | "paused" | "running";
 
   export interface TargetKeyframes {

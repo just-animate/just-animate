@@ -1,3 +1,36 @@
+import { ja } from "../types";
+import { isNumeric } from "../utils/numbers";
+
+const TRANSFORM_REGEX =
+  // Match on all transform functions.
+  /(perspective|matrix(3d)?|skew[xy]?|(translate|scale|rotate)([xyz]|3d)?)\(/i;
+
+/**
+ * This mixer attempts to automatically parse CSS expressions from each value
+ * and then create an interpolated value from it.
+ * @param valueA The left value to mix.
+ * @param valueB The right value to mix.
+ * @param offset The progression offset to use.
+ */
+export function autoMix(
+  valueA: ja.AnimationValue,
+  valueB: ja.AnimationValue,
+  offset: number
+): ja.AnimationValue {
+  if (isNumeric(valueA) && isNumeric(valueB)) {
+    return (+valueA + +valueB) * offset;
+  }
+  // If either looks like a transform function, convert them.
+  if (
+    TRANSFORM_REGEX.test(valueB.toString()) &&
+    !TRANSFORM_REGEX.test(valueA.toString())
+  ) {
+    // If tweening between two matrices and the right side doesn't exist,
+    // create a 0 matrix to match the pattern.
+  }
+  return mix(valueA.toString(), valueB.toString(), offset);
+}
+
 const END = 0;
 const NUMBER = 1;
 const UNIT = 2;
@@ -16,7 +49,7 @@ const PATH_COMMAND_REGEX = /^[mhvlcsqt]/i;
 const PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
 const SPACE_REGEX = /\s+/;
 
-interface Mixer {
+interface ParserContext {
   isPath: boolean;
   current: string;
   pos: number;
@@ -25,7 +58,7 @@ interface Mixer {
   subject: string;
 }
 
-function startProcessing(ctx: Mixer, value: string) {
+function startProcessing(ctx: ParserContext, value: string) {
   ctx.isPath = PATH_REGEX.test(value);
   ctx.current = "";
   ctx.pos = 0;
@@ -34,7 +67,7 @@ function startProcessing(ctx: Mixer, value: string) {
   ctx.subject = value;
 }
 
-function match(ctx: Mixer, regex: RegExp) {
+function match(ctx: ParserContext, regex: RegExp) {
   const match = regex.exec(ctx.subject.substring(ctx.pos));
   if (match) {
     ctx.current = match[0];
@@ -44,7 +77,7 @@ function match(ctx: Mixer, regex: RegExp) {
   return match != null;
 }
 
-function nextToken(ctx: Mixer) {
+function nextToken(ctx: ParserContext) {
   if (match(ctx, DELIMITER_REGEX)) {
     // Remove double spaces to make it consistent.
     ctx.current = ctx.current.replace(SPACE_REGEX, " ");
@@ -111,15 +144,15 @@ function hexToRgb(hex: string) {
   return `rgba(${r},${g},${b},1)`;
 }
 
-const ctx1 = {} as Mixer;
-const ctx2 = {} as Mixer;
+const ctx1 = {} as ParserContext;
+const ctx2 = {} as ParserContext;
 
 /**
  * @param {string} valueA
  * @param {string} valueB
  * @param {number} offset
  */
-export function mix(valueA: string, valueB: string, offset: number): string {
+function mix(valueA: string, valueB: string, offset: number): string {
   // Reuse contexts to process this request.
   startProcessing(ctx1, valueA);
   startProcessing(ctx2, valueB);

@@ -24,7 +24,7 @@
       return Math.min(Math.max(value, min), max);
   }
   /**
-   * Finds the index before the provided value.
+   * Finds the index before the provided value in the list of numbers.
    * @param list The list to search.
    * @param value The value to reference.
    */
@@ -54,6 +54,109 @@
       return +str;
   }
 
+  var tasks = [];
+  var promise;
+  var done;
+  var taskId;
+  function nextAnimationFrame() {
+      if (!promise) {
+          // If we haven't used a promise, this frame, create one.
+          promise = new Promise(function (resolve) {
+              done = resolve;
+          });
+      }
+      if (!taskId) {
+          // For consistency, simply asking for the nextAnimationFrame schedules
+          // a tick if one isn't already scheduled.
+          taskId = requestAnimationFrame(updateAll);
+      }
+      return promise;
+  }
+  function tick(task) {
+      if (tasks.indexOf(task) === -1) {
+          // If this task isn't already in the list, add it.
+          tasks.push(task);
+      }
+      if (!taskId) {
+          // If a tick isn't scheduled, schedule it.
+          taskId = requestAnimationFrame(updateAll);
+      }
+  }
+  function updateAll() {
+      // Grab the current time so we can consistently provide a frame time to all
+      // animations if they need a time.
+      var tick = performance.now();
+      for (var i = 0; i < tasks.length; i++) {
+          // Call the update function. Functions that return truthy stay in queue.
+          var stayInQueue = tasks[i](tick);
+          if (!stayInQueue) {
+              // Remove update functions that returned falsey values.
+              tasks.splice(i, 1);
+              i--;
+          }
+      }
+      // If there are any tasks in queue, schedule next frame.
+      taskId = tasks.length ? requestAnimationFrame(updateAll) : 0;
+      if (done) {
+          // If nextAnimationFrame() was called, resolve the promise to notify
+          // all interested parties. We have to store the done call in a local
+          // variable in case the code executed by then wants to reschedule another
+          // event. In that case, we need a new promise, so we have to store it,
+          // unassign it, and then resolve it.
+          var done2 = done;
+          done = 0;
+          promise = 0;
+          done2();
+      }
+  }
+
+  function readAttribute(target, key) {
+      return target.getAttribute(key) || "";
+  }
+  function writeAttribute(target, key, value) {
+      target.setAttribute(key, value.toString());
+  }
+
+  function readCssVar(target, key) {
+      return target.style.getPropertyValue(key);
+  }
+  function writeCssVar(target, key, value) {
+      target.style.setProperty(key, value.toString());
+  }
+
+  function readStyle(target, key) {
+      return getComputedStyle(target)[key];
+  }
+  function writeStyle(target, key, value) {
+      target.style[key] = value;
+  }
+
+  function readProperty(target, key) {
+      return target[key];
+  }
+  function writeProperty(target, key, value) {
+      target[key] = value;
+  }
+
+  var TRANSFORM_REGEX = 
+  // Match on all transform functions.
+  /(perspective|matrix(3d)?|skew[xy]?|(translate|scale|rotate)([xyz]|3d)?)\(/i;
+  /**
+   * This mixer attempts to automatically parse CSS expressions from each value
+   * and then create an interpolated value from it.
+   * @param valueA The left value to mix.
+   * @param valueB The right value to mix.
+   * @param offset The progression offset to use.
+   */
+  function autoMix(valueA, valueB, offset) {
+      if (isNumeric(valueA) && isNumeric(valueB)) {
+          return (+valueA + +valueB) * offset;
+      }
+      // If either looks like a transform function, convert them.
+      if (TRANSFORM_REGEX.test(valueB.toString()) &&
+          !TRANSFORM_REGEX.test(valueA.toString())) ;
+      return mix(valueA.toString(), valueB.toString(), offset);
+  }
   var END = 0;
   var NUMBER = 1;
   var UNIT = 2;
@@ -203,151 +306,59 @@
       return output;
   }
 
+  var PROPERTY = 0, CSS_VAR = 1, ATTRIBUTE = 2, STYLE = 3;
   var htmlAttributeOnly = ["viewBox"];
   var htmlPropOnly = ["innerHTML", "textContent"];
-  var TRANSFORM_REGEX = 
-  // Match on all transform functions.
-  /(perspective|matrix(3d)?|skew[xy]?|(translate|scale|rotate)([xyz]|3d)?)\(/i;
-  var attributeReaderWriter = {
-      read: function (target, key) {
-          return target.getAttribute(key) || "";
-      },
-      write: function (target, key, value) {
-          target.setAttribute(key, value.toString());
+  function detectTargetType(target, propertyName) {
+      if (!(target instanceof Element)) {
+          return PROPERTY;
       }
-  };
-  var cssVarReaderWriter = {
-      read: function (target, key) {
-          return target.style.getPropertyValue(key);
-      },
-      write: function (target, key, value) {
-          target.style.setProperty(key, value.toString());
+      if (propertyName.indexOf("--") === 0) {
+          return CSS_VAR;
       }
-  };
-  var propertyReaderWriter = {
-      read: function (target, key) {
-          return target[key];
-      },
-      write: function (target, key, value) {
-          target[key] = value;
+      if (htmlAttributeOnly.indexOf(propertyName) !== -1) {
+          return ATTRIBUTE;
       }
-  };
-  var styleReaderWriter = {
-      read: function (target, key) {
-          return getComputedStyle(target)[key];
-      },
-      write: function (target, key, value) {
-          target.style[key] = value;
+      if (htmlPropOnly.indexOf(propertyName) !== -1) {
+          return PROPERTY;
       }
-  };
-  function getAnimator(target, propertyName) {
-      var readerWriter = getReaderWriter(target, propertyName);
-      return {
-          mix: autoMixer,
-          read: readerWriter.read,
-          write: readerWriter.write
-      };
-  }
-  // tslint:disable-next-line:no-any
-  var matrix;
-  function toMatrix(value) {
-      if (!matrix) {
-          // tslint:disable-next-line:no-any
-          var w = window;
-          matrix = w.WebKitCSSMatrix || w.MSCSSMatrix || w.DOMMatrix;
-      }
-      // TODO: ensure 3d is used with 3d at some point.
-      return new matrix(value || "").toString();
+      return STYLE;
   }
   /**
-   * This mixer attempts to automatically parse CSS expressions from each value
-   * and then create an interpolated value from it.
-   * @param valueA The left value to mix.
-   * @param valueB The right value to mix.
-   * @param offset The progression offset to use.
+   * Returns a reader for the given targetType.
    */
-  function autoMixer(valueA, valueB, offset) {
-      if (isNumeric(valueA) && isNumeric(valueB)) {
-          return (+valueA + +valueB) * offset;
+  function getReader(targetType) {
+      if (targetType === ATTRIBUTE) {
+          return readAttribute;
       }
-      // If either looks like a transform function, convert them.
-      if (TRANSFORM_REGEX.test(valueA.toString()) ||
-          TRANSFORM_REGEX.test(valueB.toString())) {
-          valueA = toMatrix(valueA);
-          valueB = toMatrix(valueB);
+      if (targetType === CSS_VAR) {
+          return readCssVar;
       }
-      return mix(valueA.toString(), valueB.toString(), offset);
+      if (targetType === STYLE) {
+          return readStyle;
+      }
+      return readProperty;
   }
-  function getReaderWriter(target, propertyName) {
-      if (target instanceof Element) {
-          if (propertyName.indexOf("--") === 0) {
-              return cssVarReaderWriter;
-          }
-          if (htmlAttributeOnly.indexOf(propertyName) !== -1) {
-              return attributeReaderWriter;
-          }
-          if (htmlPropOnly.indexOf(propertyName) !== -1) {
-              return propertyReaderWriter;
-          }
-          return styleReaderWriter;
+  /**
+   * Returns a writer for the given targetType.
+   */
+  function getWriter(targetType) {
+      if (targetType === ATTRIBUTE) {
+          return writeAttribute;
       }
-      return propertyReaderWriter;
+      if (targetType === CSS_VAR) {
+          return writeCssVar;
+      }
+      if (targetType === STYLE) {
+          return writeStyle;
+      }
+      return writeProperty;
   }
-
-  var tasks = [];
-  var promise;
-  var done;
-  var taskId;
-  function nextAnimationFrame() {
-      if (!promise) {
-          // If we haven't used a promise, this frame, create one.
-          promise = new Promise(function (resolve) {
-              done = resolve;
-          });
-      }
-      if (!taskId) {
-          // For consistency, simply asking for the nextAnimationFrame schedules
-          // a tick if one isn't already scheduled.
-          taskId = requestAnimationFrame(updateAll);
-      }
-      return promise;
-  }
-  function tick(task) {
-      if (tasks.indexOf(task) === -1) {
-          // If this task isn't already in the list, add it.
-          tasks.push(task);
-      }
-      if (!taskId) {
-          // If a tick isn't scheduled, schedule it.
-          taskId = requestAnimationFrame(updateAll);
-      }
-  }
-  function updateAll() {
-      // Grab the current time so we can consistently provide a frame time to all
-      // animations if they need a time.
-      var tick = performance.now();
-      for (var i = 0; i < tasks.length; i++) {
-          // Call the update function. Functions that return truthy stay in queue.
-          var stayInQueue = tasks[i](tick);
-          if (!stayInQueue) {
-              // Remove update functions that returned falsey values.
-              tasks.splice(i, 1);
-              i--;
-          }
-      }
-      // If there are any tasks in queue, schedule next frame.
-      taskId = tasks.length ? requestAnimationFrame(updateAll) : 0;
-      if (done) {
-          // If nextAnimationFrame() was called, resolve the promise to notify
-          // all interested parties. We have to store the done call in a local
-          // variable in case the code executed by then wants to reschedule another
-          // event. In that case, we need a new promise, so we have to store it,
-          // unassign it, and then resolve it.
-          var done2 = done;
-          done = 0;
-          promise = 0;
-          done2();
-      }
+  /**
+   * Returns a mixers for the given targetType.
+   */
+  function getMixer(_targetType) {
+      return autoMix;
   }
 
   var FRAME_SIZE = 1000 / 60;
@@ -357,7 +368,7 @@
    * Enqueues the timeline to be updated and rendered.
    * @param configurator
    */
-  function animate(configurator) {
+  function queueTransition(configurator) {
       if (!queue.length) {
           lastTime = performance.now();
           tick(processTimelines);
@@ -453,7 +464,11 @@
               var property = keyframes[propName];
               var times = getTimes(property);
               var _loop_2 = function (target) {
-                  var animator = getAnimator(target, propName);
+                  // Unpack these immediately because the return object is shared.
+                  var targetType = detectTargetType(target, propName);
+                  var read = getReader(targetType);
+                  var write = getWriter(targetType);
+                  var mix = getMixer(targetType);
                   var lowerIndex = findLowerIndex(times, currentTime);
                   var lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
                   var lowerFrame = property[times[lowerIndex]];
@@ -465,11 +480,11 @@
                   // render if they are different. It is assumed that the cost of reading
                   // constantly is less than the cost of writing constantly.
                   var offset = (upperTime - currentTime) / (upperTime - lowerTime);
-                  var currentValue = animator.read(target, propName);
-                  var value = animator.mix(lowerFrame.value, upperFrame.value, offset);
+                  var currentValue = read(target, propName);
+                  var value = mix(lowerFrame.value, upperFrame.value, offset);
                   if (currentValue !== value) {
                       // Queue up the rendering of the value.
-                      operations.push(function () { return animator.write(target, propName, value); });
+                      operations.push(function () { return write(target, propName, value); });
                   }
               };
               for (var _i = 0, targets_1 = targets; _i < targets_1.length; _i++) {
@@ -682,7 +697,7 @@
       TimelineAnimation.prototype.cancel = function () {
           this.playState = "cancel";
           this.events.push("cancel");
-          animate(this);
+          queueTransition(this);
           return this;
       };
       /**
@@ -718,7 +733,7 @@
       TimelineAnimation.prototype.finish = function () {
           this.playState = "finish";
           this.events.push("finish");
-          animate(this);
+          queueTransition(this);
           return this;
       };
       /**
@@ -810,7 +825,7 @@
       TimelineAnimation.prototype.pause = function () {
           this.playState = "paused";
           this.events.push("pause");
-          animate(this);
+          queueTransition(this);
           return this;
       };
       /**
@@ -820,7 +835,7 @@
       TimelineAnimation.prototype.play = function () {
           this.playState = "running";
           this.events.push("play");
-          animate(this);
+          queueTransition(this);
           return this;
       };
       /**
@@ -891,7 +906,6 @@
           }
           // Figure out what ease and stagger to use.
           var ease = props.ease || "linear";
-          var stagger = props.stagger || 0;
           // tslint:disable-next-line:forin
           for (var prop in props) {
               var value = props[prop];
@@ -902,7 +916,6 @@
                   }
                   propKeyframes[pos + duration] = {
                       ease: ease,
-                      stagger: stagger,
                       value: value
                   };
               }
@@ -914,7 +927,7 @@
        * configure() to force an
        */
       TimelineAnimation.prototype.update = function () {
-          animate(this);
+          queueTransition(this);
           return this;
       };
       return TimelineAnimation;

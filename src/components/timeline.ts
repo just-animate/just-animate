@@ -1,6 +1,6 @@
-import { ja } from "./types";
-import { clamp } from "./numbers";
-import { animate } from "./animator";
+import { ja } from "../types";
+import { clamp } from "../utils/numbers";
+import { queueTransition } from "../services/animator";
 
 export class TimelineAnimation implements ja.TimelineAnimation {
   /**
@@ -134,7 +134,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   cancel(): this {
     this.playState = "cancel";
     this.events.push("cancel");
-    animate(this);
+    queueTransition(this);
     return this;
   }
 
@@ -173,7 +173,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   finish(): this {
     this.playState = "finish";
     this.events.push("finish");
-    animate(this);
+    queueTransition(this);
     return this;
   }
 
@@ -272,7 +272,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   pause(): this {
     this.playState = "paused";
     this.events.push("pause");
-    animate(this);
+    queueTransition(this);
     return this;
   }
 
@@ -283,7 +283,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   play(): this {
     this.playState = "running";
     this.events.push("play");
-    animate(this);
+    queueTransition(this);
     return this;
   }
 
@@ -366,7 +366,6 @@ export class TimelineAnimation implements ja.TimelineAnimation {
 
     // Figure out what ease and stagger to use.
     const ease = props.ease || "linear";
-    const stagger = props.stagger || 0;
 
     // tslint:disable-next-line:forin
     for (const prop in props) {
@@ -379,7 +378,6 @@ export class TimelineAnimation implements ja.TimelineAnimation {
 
         propKeyframes[pos + duration] = {
           ease,
-          stagger,
           value
         };
       }
@@ -393,7 +391,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    * configure() to force an
    */
   update(): this {
-    animate(this);
+    queueTransition(this);
     return this;
   }
 }

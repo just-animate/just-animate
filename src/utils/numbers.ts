@@ -20,7 +20,7 @@ export function clamp(value: number, min: number, max: number) {
 }
 
 /**
- * Finds the index before the provided value.
+ * Finds the index before the provided value in the list of numbers.
  * @param list The list to search.
  * @param value The value to reference.
  */

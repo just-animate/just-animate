@@ -1,57 +1,12 @@
 /// <reference types="Cypress" />
 /// <reference types="../../dist/types" />
 
-context('timeline.animate()', () => {
+context('mixers', () => {
   beforeEach(() => {
     cy.visit('cypress/index.html');
   });
 
-  it('has a basic usage', () => {
-    cy.window().then(({ just }) => {
-      const state = just
-        .timeline()
-        .animate('target', 2000, { x: 1 })
-        .getConfig();
-
-      expect(state.keyframes.target, 'target').to.exist;
-      expect(state.keyframes.target.x, 'x').to.exist;
-      expect(state.keyframes.target.x[2000], '[2000]').to.exist;
-      expect(state.keyframes.target.x[2000].value, 'value').equal(1);
-      expect(state.keyframes.target.x[2000].ease, 'ease').equal('linear');
-    });
-  });
-
-  it('can configure multiple properties in each call', () => {
-    cy.window().then(({ just }) => {
-      const state = just
-        .timeline()
-        .animate('target', 5, { x: 0, y: 0, ease: 'linear' })
-        .animate('target', 5, { x: 1, y: 0, ease: 'easeIn' })
-        .animate('target', 5, { x: 0, y: 1, ease: 'easeOut' })
-        .animate('target', 5, { x: 1, y: 1, ease: 'easeInOut' })
-        .getConfig();
-
-      expect(state.keyframes.target.x[5].value, 'x 5 value').equal(0);
-      expect(state.keyframes.target.x[5].ease, 'x 5 ease').equal('linear');
-      expect(state.keyframes.target.x[10].value, 'x 10 value').equal(1);
-      expect(state.keyframes.target.x[10].ease, 'x 10 ease').equal('easeIn');
-      expect(state.keyframes.target.x[15].value, 'x 15 value').equal(0);
-      expect(state.keyframes.target.x[15].ease, 'x 15 ease').equal('easeOut');
-      expect(state.keyframes.target.x[20].value, 'x 20 value').equal(1);
-      expect(state.keyframes.target.x[20].ease, 'x 20 ease').equal('easeInOut');
-
-      expect(state.keyframes.target.y[5].value, 'y 5 value').equal(0);
-      expect(state.keyframes.target.y[5].ease, 'y 5 ease').equal('linear');
-      expect(state.keyframes.target.y[10].value, 'y 10 value').equal(0);
-      expect(state.keyframes.target.y[10].ease, 'y 10 ease').equal('easeIn');
-      expect(state.keyframes.target.y[15].value, 'y 15 value').equal(1);
-      expect(state.keyframes.target.y[15].ease, 'y 15ease').equal('easeOut');
-      expect(state.keyframes.target.y[20].value, 'y 20 value').equal(1);
-      expect(state.keyframes.target.y[20].ease, 'y 20 ease').equal('easeInOut');
-    });
-  });
-
-  it('tweens <angle>', () => {
+  it('mixes <angle>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -70,7 +25,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <integer>', () => {
+  it('mixes <integer>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -89,7 +44,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <flex>', () => {
+  it('mixes <flex>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -108,7 +63,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <gradient>', () => {
+  it('mixes <gradient>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -131,7 +86,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <length>', () => {
+  it('mixes <length>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -150,7 +105,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <number>', () => {
+  it('mixes <number>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -169,7 +124,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <percentage>', () => {
+  it('mixes <percentage>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -188,7 +143,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <ratio>', () => {
+  it('mixes <ratio>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -207,7 +162,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <timing-function>', () => {
+  it('mixes <timing-function>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -226,7 +181,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens <transform-function>', () => {
+  it('mixes <transform-function>', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -246,12 +201,12 @@ context('timeline.animate()', () => {
       })
       .then(() => {
         expect(target.transform).to.equal(
-          'matrix(0.36382, -0.1412, 0.1412, 0.36382, 70, 0)'
+          'translate(70px) scale(1) rotateZ(-50deg)'
         );
       });
   });
 
-  it('tweens hex colors', () => {
+  it('mixes hex colors', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -272,7 +227,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens rgb()', () => {
+  it('mixes rgb()', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -295,7 +250,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens rgba()', () => {
+  it('mixes rgba()', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -318,7 +273,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens hsl()', () => {
+  it('mixes hsl()', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -341,7 +296,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens hsla()', () => {
+  it('mixes hsla()', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -364,7 +319,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens path data', () => {
+  it('mixes path data', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};
@@ -387,7 +342,7 @@ context('timeline.animate()', () => {
       });
   });
 
-  it('tweens path data', () => {
+  it('mixes path data', () => {
     /** @type {typeof window.just} */
     let just;
     const target = {};

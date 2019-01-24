@@ -1,7 +1,7 @@
-import { byNumber, clamp, toNumber, findLowerIndex } from "./numbers";
-import { getAnimator } from "./render";
-import { ja } from "./types";
-import { tick } from "./loop";
+import { byNumber, clamp, toNumber, findLowerIndex } from "../utils/numbers";
+import { ja } from "../types";
+import { tick } from "./tick";
+import { detectTargetType, getReader, getWriter, getMixer } from "../adapters";
 
 const FRAME_SIZE = 1000 / 60;
 
@@ -12,7 +12,7 @@ let lastTime: number;
  * Enqueues the timeline to be updated and rendered.
  * @param configurator
  */
-export function animate(configurator: ja.TimelineConfigurator) {
+export function queueTransition(configurator: ja.TimelineConfigurator) {
   if (!queue.length) {
     lastTime = performance.now();
     tick(processTimelines);
@@ -105,7 +105,11 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
       const times = getTimes(property);
 
       for (const target of targets) {
-        const animator = getAnimator(target, propName);
+        // Unpack these immediately because the return object is shared.
+        const targetType = detectTargetType(target, propName);
+        const read = getReader(targetType);
+        const write = getWriter(targetType);
+        const mix = getMixer(targetType);
 
         const lowerIndex = findLowerIndex(times, currentTime);
         const lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
@@ -120,11 +124,11 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
         // render if they are different. It is assumed that the cost of reading
         // constantly is less than the cost of writing constantly.
         const offset = (upperTime - currentTime) / (upperTime - lowerTime);
-        const currentValue = animator.read(target, propName);
-        const value = animator.mix(lowerFrame.value, upperFrame.value, offset);
+        const currentValue = read(target, propName);
+        const value = mix(lowerFrame.value, upperFrame.value, offset);
         if (currentValue !== value) {
           // Queue up the rendering of the value.
-          operations.push(() => animator.write(target, propName, value));
+          operations.push(() => write(target, propName, value));
         }
       }
     }

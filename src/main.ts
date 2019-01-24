@@ -1,6 +1,6 @@
-import { TimelineAnimation } from "./timeline";
+import { TimelineAnimation } from "./components/timeline";
 import { ja } from "./types";
-import { nextAnimationFrame, tick } from "./loop";
+import { nextAnimationFrame, tick } from "./services/tick";
 
 function timeline(opts?: Partial<ja.TimelineConfig>): TimelineAnimation {
   return new TimelineAnimation(opts);
