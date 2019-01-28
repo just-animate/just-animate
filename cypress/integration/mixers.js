@@ -14,7 +14,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { width: '0deg' })
           .animate(target, 1000, { width: '100deg' })
           .seek(500);
@@ -33,7 +33,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { x: 0 })
           .animate(target, 1000, { x: 100 })
           .seek(500);
@@ -52,7 +52,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { width: '1fr' })
           .animate(target, 1000, { width: '2fr' })
           .seek(500);
@@ -71,7 +71,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { background: 'linear-gradient(#000, #FFF)' })
           .animate(target, 1000, {
             background: 'linear-gradient(#FFFFFF, #000000)',
@@ -94,7 +94,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { width: '0px' })
           .animate(target, 1000, { width: '100px' })
           .seek(500);
@@ -113,7 +113,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { opacity: 0 })
           .animate(target, 1000, { opacity: 1 })
           .seek(500);
@@ -132,7 +132,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { width: '0%' })
           .animate(target, 1000, { width: '100%' })
           .seek(500);
@@ -151,7 +151,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { minWidth: '10/4' })
           .animate(target, 1000, { minWidth: '2/2' })
           .seek(500);
@@ -170,7 +170,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { easeFn: 'cubic-bezier(0,0,1,1)' })
           .animate(target, 1000, { easeFn: 'cubic-bezier(1,1,0,0)' })
           .seek(500);
@@ -189,7 +189,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, {
             transform: 'translateX(20px) scale(1.2) rotate(20deg)',
           })
@@ -214,7 +214,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, { color: '#000 #000000' })
           .animate(target, 1000, { color: '#FFF #FFFFFF' })
           .seek(500);
@@ -235,7 +235,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, {
             color: 'rgb(255,255,255)',
           })
@@ -258,7 +258,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, {
             color: 'rgb(255,255,255)',
           })
@@ -281,7 +281,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, {
             color: 'hsl(0, 50%, 50%)',
           })
@@ -304,7 +304,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, {
             color: 'hsla(0, 50%, 50%, 0.5)',
           })
@@ -327,7 +327,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, {
             d: 'M0,0 C0,0 0,0 0,0z',
           })
@@ -350,7 +350,7 @@ context('mixers', () => {
       .then(win => (just = win.just))
       .then(() => {
         just
-          .timeline()
+          .timeline({ playState: 'paused' })
           .set(target, {
             d: 'M0 0 C 0 0 0 0 0 0z',
           })

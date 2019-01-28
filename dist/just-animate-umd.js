@@ -495,7 +495,7 @@
       var delta = clamp(time - lastTime, 0, FRAME_SIZE * 2);
       lastTime = time;
       // Get a list of all configs, this should match by index, the queue.
-      var configs = queue.map(function (configurator) { return configurator.getConfig(); });
+      var configs = queue.slice();
       // Update timing and fix inconsistencies.
       for (var _i = 0, configs_1 = configs; _i < configs_1.length; _i++) {
           var config = configs_1[_i];
@@ -528,10 +528,10 @@
           var config = configs_4[_e];
           renderState(config, operations);
       }
-      // Write configurations back to their configurators.
-      for (var i = 0; i < queue.length; i++) {
-          queue[i].configure(configs[i]);
-      }
+      // // Write configurations back to their configurators.
+      // for (let i = 0; i < queue.length; i++) {
+      //   queue[i].configure(configs[i]);
+      // }
       // Remove items from the queue if they no longer need to be updated.
       for (var i = queue.length - 1; i > -1; i--) {
           if (configs[i].playState !== "running") {
@@ -692,68 +692,17 @@
 
   var TimelineAnimation = /** @class */ (function () {
       function TimelineAnimation(options) {
-          /**
-           * True if the timeline should alternate.
-           * @public
-           */
           this.alternate = false;
-          /**
-           * The current time of the timeline. When using multiple iterations, this
-           * represents the actual time, not the time of the iteration.
-           * @public
-           */
           this.currentTime = 0;
-          /**
-           * The queued up events to be processed by the animation renderer.
-           * @public
-           */
           this.events = [];
-          /**
-           * The number of iterations this Animation should play.
-           * @public
-           */
           this.iterations = 1;
-          /**
-           * The keyframes that make up the animation.
-           * @public
-           */
           this.keyframes = {};
-          /**
-           * The labels present in the animation. This is a dictionary of named times
-           * that can be used to configure or seek in the Animation.
-           * @public
-           */
           this.labels = {};
-          /**
-           * The event listeners in the animation.
-           * @public
-           */
           this.listeners = {};
-          /**
-           * The current playState.  This can be cancel, idle, running, or paused.
-           * @publi
-           */
-          this.playState = "idle";
-          /**
-           * The current playbackRate.  1 is forwards, -1 is in reverse.  Use decimals
-           * to perform slowmotion.
-           * @public
-           */
+          this.playState = "running";
           this.playbackRate = 1;
-          /**
-           * A counter for generating target ids.
-           * @private
-           */
           this.targetIds_ = 0;
-          /**
-           * A dictionary of target aliases.
-           * @private
-           */
           this.targets = {};
-          /**
-           * The sub-timelines contained within this timeline.
-           * @private
-           */
           this.timelines_ = [];
           if (options) {
               this.configure(options);
@@ -801,7 +750,7 @@
               animation: animation,
               pos: pos
           });
-          return this;
+          return this.update();
       };
       /**
        * Cancels the animation. The currentTime is set to 0 and the playState is set
@@ -820,8 +769,6 @@
        * @public
        */
       TimelineAnimation.prototype.configure = function (json) {
-          var currentTime = this.currentTime;
-          var duration = this.duration;
           for (var k in json) {
               if (typeof this[k] !== "function" && k !== "duration") {
                   this[k] = json[k];
@@ -959,10 +906,8 @@
           if (time || time === 0) {
               this.currentTime = time;
           }
-          if (this.playState !== "running") {
-              this.pause();
-          }
-          return this;
+          // If this is running, pause; otherwise ensure an update occurs.
+          return this.playState !== "running" ? this.pause() : this.update();
       };
       /**
        * Sets the properties at a given time. This is a convenience method for
@@ -984,7 +929,8 @@
        */
       TimelineAnimation.prototype.target = function (alias, target) {
           this.targets[alias] = target;
-          return this;
+          // If targets change, ensure update in case a target has been replaced.
+          return this.update();
       };
       /**
        * Configure a tween from the (current) position for the duration specified.
@@ -1005,7 +951,7 @@
           if (typeof targets !== "string") {
               var targetId = findTarget(this.targets, targets);
               if (!targetId) {
-                  targetId = "@auto_" + ++this.targetIds_;
+                  targetId = "@_" + ++this.targetIds_;
                   this.target(targetId, targets);
               }
               targets = targetId;
@@ -1030,7 +976,7 @@
                   };
               }
           }
-          return this;
+          return this.update();
       };
       /**
        * Forces an update. This can be used after updating timing or keyframes in

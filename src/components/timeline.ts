@@ -6,14 +6,14 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    * True if the timeline should alternate.
    * @public
    */
-  alternate = false;
+  alternate: boolean;
 
   /**
    * The current time of the timeline. When using multiple iterations, this
    * represents the actual time, not the time of the iteration.
    * @public
    */
-  currentTime = 0;
+  currentTime: number;
 
   /**
    * The duration of one iteration of the Animation.
@@ -49,65 +49,81 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    * The queued up events to be processed by the animation renderer.
    * @public
    */
-  events: string[] = [];
+  events: string[];
 
   /**
    * The number of iterations this Animation should play.
    * @public
    */
-  iterations = 1;
+  iterations: number;
 
   /**
    * The keyframes that make up the animation.
    * @public
    */
-  keyframes: Record<string, ja.TargetKeyframes> = {};
+  keyframes: Record<string, ja.TargetKeyframes>;
 
   /**
    * The labels present in the animation. This is a dictionary of named times
    * that can be used to configure or seek in the Animation.
    * @public
    */
-  labels: Record<string, number> = {};
+  labels: Record<string, number>;
 
   /**
    * The event listeners in the animation.
    * @public
    */
-  listeners = {} as Record<ja.AnimationEvent, ja.AnimationEventListener[]>;
+  listeners: Record<string, ja.AnimationEventListener[]>;
 
   /**
    * The current playState.  This can be cancel, idle, running, or paused.
    * @publi
    */
-  playState = "idle" as ja.PlayState;
+  playState: ja.PlayState;
 
   /**
    * The current playbackRate.  1 is forwards, -1 is in reverse.  Use decimals
    * to perform slowmotion.
    * @public
    */
-  playbackRate = 1;
+  playbackRate: number;
 
   /**
    * A counter for generating target ids.
    * @private
    */
-  private targetIds_ = 0;
+  private targetIds_: number;
 
   /**
    * A dictionary of target aliases.
    * @private
    */
-  targets = {} as Record<string, ja.AnimationTarget>;
+  targets: Record<string, ja.AnimationTarget>;
 
   /**
    * The sub-timelines contained within this timeline.
    * @private
    */
-  private timelines_: Array<{ pos: number; animation: ja.Animation }> = [];
+  private timelines_: Array<{ pos: number; animation: ja.Animation }>;
 
   constructor(options?: Partial<ja.TimelineConfig>) {
+    this.alternate = false;
+    this.currentTime = 0;
+    this.events = [];
+    this.iterations = 1;
+    this.keyframes = {};
+    this.labels = {};
+    this.listeners = {} as Record<
+      ja.AnimationEvent,
+      ja.AnimationEventListener[]
+    >;
+    this.playState = "running";
+    this.playbackRate = 1;
+    this.targetIds_ = 0;
+    this.targets = {};
+    this.timelines_ = [];
+
     if (options) {
       this.configure(options);
     }
@@ -122,7 +138,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
       animation,
       pos
     });
-    return this;
+    return this.update();
   }
 
   /**
@@ -143,8 +159,6 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    * @public
    */
   configure(json: Partial<ja.TimelineConfig>) {
-    const currentTime = this.currentTime;
-    const duration = this.duration;
     for (const k in json) {
       if (typeof this[k] !== "function" && k !== "duration") {
         this[k] = json[k];
@@ -293,10 +307,8 @@ export class TimelineAnimation implements ja.TimelineAnimation {
     if (time || time === 0) {
       this.currentTime = time;
     }
-    if (this.playState !== "running") {
-      this.pause();
-    }
-    return this;
+    // If this is running, pause; otherwise ensure an update occurs.
+    return this.playState !== "running" ? this.pause() : this.update();
   }
 
   /**
@@ -320,7 +332,8 @@ export class TimelineAnimation implements ja.TimelineAnimation {
    */
   target(alias: string, target: ja.AnimationTarget): this {
     this.targets[alias] = target;
-    return this;
+    // If targets change, ensure update in case a target has been replaced.
+    return this.update();
   }
 
   /**
@@ -348,7 +361,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
     if (typeof targets !== "string") {
       let targetId = findTarget(this.targets, targets);
       if (!targetId) {
-        targetId = "@auto_" + ++this.targetIds_;
+        targetId = "@_" + ++this.targetIds_;
         this.target(targetId, targets);
       }
       targets = targetId;
@@ -378,7 +391,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
       }
     }
 
-    return this;
+    return this.update();
   }
 
   /**

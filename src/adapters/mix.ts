@@ -14,7 +14,6 @@ import {
 
 import { nextToken as nextTransform } from "../parsers/transforms";
 
-const PRECISION_DEFAULT = 100000;
 const UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
 const PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
 const TRANSFORM_REGEX =

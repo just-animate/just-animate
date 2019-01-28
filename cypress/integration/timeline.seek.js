@@ -11,7 +11,8 @@ context('timeline.seek()', () => {
       const t1 = just
         .timeline()
         .delay(100)
-        .seek(42);
+        .seek(42)
+        .pause();
 
       expect(t1.currentTime).to.equal(42);
       expect(t1.playState).to.equal('paused');
@@ -23,7 +24,6 @@ context('timeline.seek()', () => {
       const t1 = just
         .timeline()
         .delay(100)
-        .play()
         .seek(42);
 
       expect(t1.playState).to.equal('running');

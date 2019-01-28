@@ -16,7 +16,10 @@ context('animate', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { opacity: 0 }).seek(500);
+        just
+          .animate(el, 1000, { opacity: 0 })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -34,7 +37,10 @@ context('animate', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { color: '#00F' }).seek(500);
+        just
+          .animate(el, 1000, { color: '#00F' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {

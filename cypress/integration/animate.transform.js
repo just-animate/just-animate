@@ -16,7 +16,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'matrix(3,2,2,3,2,2)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'matrix(3,2,2,3,2,2)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -38,6 +41,7 @@ context('animate.transform', () => {
           .animate(el, 1000, {
             transform: 'matrix3d(3,2,2,2,2,3,2,2,2,2,3,2,2,2,2,3)',
           })
+          .pause()
           .seek(500);
         return just.nextAnimationFrame();
       })
@@ -58,7 +62,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'rotate(360deg)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'rotate(360deg)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -76,7 +83,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'rotateX(360deg)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'rotateX(360deg)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -94,7 +104,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'rotateY(360deg)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'rotateY(360deg)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -112,7 +125,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'rotateZ(360deg)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'rotateZ(360deg)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -130,7 +146,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'scale(0)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'scale(0)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -148,7 +167,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'scale(0, .2)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'scale(0, .2)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -166,7 +188,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'scale3d(0,0,0)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'scale3d(0,0,0)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -184,7 +209,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'translate(100px)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'translate(100px)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -204,6 +232,7 @@ context('animate.transform', () => {
         document.body.appendChild(el);
         just
           .animate(el, 1000, { transform: 'translate(100px, 100px)' })
+          .pause()
           .seek(500);
         return just.nextAnimationFrame();
       })
@@ -222,7 +251,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'translateX(100px)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'translateX(100px)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {
@@ -240,7 +272,10 @@ context('animate.transform', () => {
       .then(() => {
         el = document.createElement('div');
         document.body.appendChild(el);
-        just.animate(el, 1000, { transform: 'translateY(100px)' }).seek(500);
+        just
+          .animate(el, 1000, { transform: 'translateY(100px)' })
+          .pause()
+          .seek(500);
         return just.nextAnimationFrame();
       })
       .then(() => {

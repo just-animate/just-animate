@@ -58,7 +58,7 @@ export namespace ja {
     iterations: number;
     keyframes: Record<string, TargetKeyframes>;
     labels: Record<string, number>;
-    listeners: Record<string, AnimationEventListener>;
+    listeners: Record<string, AnimationEventListener[]>;
     playState: PlayState;
     playbackRate: number;
     targets: Record<string, AnimationTarget>;
@@ -92,22 +92,6 @@ export namespace ja {
     [prop: string]: {
       [time: string]: Keyframe;
     };
-  }
-
-  export interface TimelineConfigurator {
-    /**
-     * This method can also be used to declaratively configure the animation
-     * instead of using animate, set, etc.
-     * @param json The state to restore.
-     * @public
-     */
-    configure(json: Partial<TimelineConfig>): {};
-
-    /**
-     * This can be used to save and restore the value of the timeline.
-     * @public
-     */
-    getConfig(): TimelineConfig;
   }
 
   export interface TimelineAnimation extends Animation {

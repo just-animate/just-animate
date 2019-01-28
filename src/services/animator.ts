@@ -6,14 +6,14 @@ import { getValueFromCache, putValueInCache } from "./valuecache";
 
 const FRAME_SIZE = 1000 / 60;
 
-const queue: ja.TimelineConfigurator[] = [];
+const queue: ja.TimelineConfig[] = [];
 let lastTime: number;
 
 /**
  * Enqueues the timeline to be updated and rendered.
  * @param configurator
  */
-export function queueTransition(configurator: ja.TimelineConfigurator) {
+export function queueTransition(configurator: ja.TimelineConfig) {
   if (!queue.length) {
     lastTime = performance.now();
     tick(processTimelines);
@@ -42,7 +42,7 @@ function processTimelines(time: number) {
   const delta = clamp(time - lastTime, 0, FRAME_SIZE * 2);
   lastTime = time;
   // Get a list of all configs, this should match by index, the queue.
-  const configs = queue.map(configurator => configurator.getConfig());
+  const configs = queue.slice();
   // Update timing and fix inconsistencies.
   for (const config of configs) {
     updateTiming(delta, config);
@@ -70,10 +70,10 @@ function processTimelines(time: number) {
   for (const config of configs) {
     renderState(config, operations);
   }
-  // Write configurations back to their configurators.
-  for (let i = 0; i < queue.length; i++) {
-    queue[i].configure(configs[i]);
-  }
+  // // Write configurations back to their configurators.
+  // for (let i = 0; i < queue.length; i++) {
+  //   queue[i].configure(configs[i]);
+  // }
   // Remove items from the queue if they no longer need to be updated.
   for (let i = queue.length - 1; i > -1; i--) {
     if (configs[i].playState !== "running") {
