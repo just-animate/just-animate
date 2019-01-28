@@ -2,6 +2,7 @@ import { byNumber, clamp, toNumber, findLowerIndex } from "../utils/numbers";
 import { ja } from "../types";
 import { tick } from "./tick";
 import { detectTargetType, getReader, getWriter, getMixer } from "../adapters";
+import { getValueFromCache, putValueInCache } from "./valuecache";
 
 const FRAME_SIZE = 1000 / 60;
 
@@ -111,6 +112,7 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
         const write = getWriter(targetType);
         const mix = getMixer(targetType);
 
+        const currentValue = read(target, propName);
         const lowerIndex = findLowerIndex(times, currentTime);
         const lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
         const lowerFrame = property[times[lowerIndex]];
@@ -118,14 +120,26 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
         // Get the final value. This can be done for all targets.
         const upperIndex = Math.min(lowerIndex + 1, times.length - 1);
         const upperTime = times[upperIndex];
-        const upperFrame = property[upperTime];
+        const upperValue = property[upperTime].value;
+
+        // Attempt to load initial value from cache or add the current as init.
+        let lowerValue: ja.AnimationValue;
+        if (!lowerFrame) {
+          let initialValue = getValueFromCache(target, propName);
+          if (initialValue == null) {
+            initialValue = currentValue;
+            putValueInCache(target, propName, currentValue);
+          }
+          lowerValue = initialValue;
+        } else {
+          lowerValue = lowerFrame.value;
+        }
 
         // Get the current value and calculate the next value, only attempt to
         // render if they are different. It is assumed that the cost of reading
         // constantly is less than the cost of writing constantly.
-        const offset = (upperTime - currentTime) / (upperTime - lowerTime);
-        const currentValue = read(target, propName);
-        const value = mix(lowerFrame.value, upperFrame.value, offset);
+        const offset = (lowerTime - currentTime) / (lowerTime - upperTime);
+        const value = mix(lowerValue, upperValue, offset);
         if (currentValue !== value) {
           // Queue up the rendering of the value.
           operations.push(() => write(target, propName, value));

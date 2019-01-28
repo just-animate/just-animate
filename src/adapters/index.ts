@@ -3,7 +3,7 @@ import { readAttribute, writeAttribute } from "./attribute";
 import { readCssVar, writeCssVar } from "./cssvar";
 import { readStyle, writeStyle } from "./style";
 import { readProperty, writeProperty } from "./property";
-import { autoMix } from "./automix";
+import { autoMix } from "./mix";
 
 export interface TargetMixer {
   (
@@ -39,7 +39,11 @@ export function detectTargetType(
   target: ja.AnimationTarget,
   propertyName: string
 ): TargetType {
-  if (!(target instanceof Element)) {
+  const isProbablyHTMLElement =
+    typeof (target as HTMLElement).tagName === "string" &&
+    (target as HTMLElement).style;
+
+  if (!isProbablyHTMLElement) {
     return PROPERTY;
   }
 

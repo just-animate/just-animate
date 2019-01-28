@@ -138,6 +138,99 @@
       target[key] = value;
   }
 
+  var DELIMITER_REGEX = /^\s*[\(\),\/\s]\s*/;
+  var HEX_REGEX = /^#[a-f\d]{3,6}/i;
+  var KEYWORD_REGEX = /^[a-z][a-z\d\-]*/i;
+  var NUMBER_REGEX = /^\-?\d*\.?\d+/;
+  var UNIT_REGEX = /^\-?\d*\.?\d+[a-z%]+/i;
+  var PATH_COMMAND_REGEX = /^[mhvlcsqt]/i;
+  var NUMBER = 1, UNIT = 2, KEYWORD = 3, FUNCTION = 4, DELIMITER = 5;
+  function clearContext(ctx, value) {
+      ctx.match = "";
+      ctx.pos = ctx.last = ctx.state = 0;
+      ctx.pattern = value;
+  }
+  function match(ctx, regex) {
+      var match = regex.exec(ctx.pattern.substring(ctx.pos));
+      if (match) {
+          ctx.match = match[0];
+          ctx.last = ctx.pos;
+          ctx.pos += ctx.match.length;
+      }
+      return match != null;
+  }
+
+  function hexToRgb(hex) {
+      // Parse 3 or 6 hex to an integer using 16 base.
+      var h = parseInt(hex.length === 3
+          ? hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
+          : hex, 16);
+      var r = (h >> 16) & 0xff;
+      var g = (h >> 8) & 0xff;
+      var b = h & 0xff;
+      return "rgba(" + r + "," + g + "," + b + ",1)";
+  }
+
+  function nextToken(ctx) {
+      if (match(ctx, DELIMITER_REGEX)) {
+          return DELIMITER;
+      }
+      if ((ctx.isPath && match(ctx, PATH_COMMAND_REGEX)) ||
+          match(ctx, KEYWORD_REGEX)) {
+          var isFunction = !ctx.isPath &&
+              ctx.pos < ctx.pattern.length - 1 &&
+              ctx.pattern[ctx.pos] === "(";
+          if (!isFunction) {
+              return KEYWORD;
+          }
+          if (ctx.match.toLowerCase() === "rgb") {
+              var searchString = ctx.pattern.substring(ctx.pos);
+              var endOfString = searchString.indexOf(")");
+              var terms = searchString.substring(1, endOfString);
+              ctx.pattern =
+                  ctx.pattern.substring(0, ctx.pos + 1 + terms.length) +
+                      ",1" +
+                      ctx.pattern.substring(ctx.pos + 1 + terms.length);
+              ctx.match = "rgba";
+          }
+          return FUNCTION;
+      }
+      if (!ctx.isPath && match(ctx, UNIT_REGEX)) {
+          return UNIT;
+      }
+      if (match(ctx, NUMBER_REGEX)) {
+          return NUMBER;
+      }
+      if (match(ctx, HEX_REGEX)) {
+          // If the value was hex, replace it with RGB in the string and parse that.
+          var hexValue = ctx.pattern.substring(ctx.last + 1, ctx.pos);
+          ctx.pattern =
+              ctx.pattern.substring(0, ctx.last) +
+                  hexToRgb(hexValue) +
+                  ctx.pattern.substring(ctx.pos);
+          // Reset the position and chain another call to nextToken.
+          ctx.pos = ctx.last;
+          return nextToken(ctx);
+      }
+  }
+
+  function nextToken$1(ctx) {
+      if (match(ctx, DELIMITER_REGEX)) {
+          return DELIMITER;
+      }
+      if (match(ctx, NUMBER_REGEX)) {
+          return NUMBER;
+      }
+      if (match(ctx, UNIT_REGEX)) {
+          return UNIT;
+      }
+      if (match(ctx, KEYWORD_REGEX)) {
+          return FUNCTION;
+      }
+  }
+
+  var UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
+  var PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
   var TRANSFORM_REGEX = 
   // Match on all transform functions.
   /(perspective|matrix(3d)?|skew[xy]?|(translate|scale|rotate)([xyz]|3d)?)\(/i;
@@ -150,167 +243,157 @@
    */
   function autoMix(valueA, valueB, offset) {
       if (isNumeric(valueA) && isNumeric(valueB)) {
-          return (+valueA + +valueB) * offset;
+          return mixNumber(+valueA, +valueB, offset);
       }
       // If either looks like a transform function, convert them.
       if (TRANSFORM_REGEX.test(valueB.toString()) &&
-          !TRANSFORM_REGEX.test(valueA.toString())) ;
+          !TRANSFORM_REGEX.test(valueA.toString())) {
+          // If tweening between two matrices and the right side doesn't exist,
+          // create a zero-net effect matrix to match the pattern.
+          valueA = negateTransformList(valueB.toString());
+      }
+      // If value A or B is null or undefined, swap to empty string.
+      if (valueA == null) {
+          valueA = "";
+      }
+      if (valueB == null) {
+          valueB = "";
+      }
       return mix(valueA.toString(), valueB.toString(), offset);
   }
-  var END = 0;
-  var NUMBER = 1;
-  var UNIT = 2;
-  var KEYWORD = 3;
-  var FUNCTION = 4;
-  var DELIMITER = 5;
-  var PRECISION = 100000;
-  var DELIMITER_REGEX = /^\s*[\(\),\/\s]\s*/;
-  var HEX_REGEX = /^#[a-f\d]{3,6}/i;
-  var KEYWORD_REGEX = /^[a-z][a-z\d\-]*/i;
-  var NUMBER_REGEX = /^\-?\d*\.?\d+/;
-  var UNIT_REGEX = /^\-?\d*\.?\d+[a-z%]+/i;
-  var UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
-  var PATH_COMMAND_REGEX = /^[mhvlcsqt]/i;
-  var PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
-  var SPACE_REGEX = /\s+/;
-  function startProcessing(ctx, value) {
-      ctx.isPath = PATH_REGEX.test(value);
-      ctx.current = "";
-      ctx.pos = 0;
-      ctx.last = 0;
-      ctx.state = NUMBER;
-      ctx.subject = value;
-  }
-  function match(ctx, regex) {
-      var match = regex.exec(ctx.subject.substring(ctx.pos));
-      if (match) {
-          ctx.current = match[0];
-          ctx.last = ctx.pos;
-          ctx.pos += ctx.current.length;
-      }
-      return match != null;
-  }
-  function nextToken(ctx) {
-      if (match(ctx, DELIMITER_REGEX)) {
-          // Remove double spaces to make it consistent.
-          ctx.current = ctx.current.replace(SPACE_REGEX, " ");
-          return DELIMITER;
-      }
-      if ((ctx.isPath && match(ctx, PATH_COMMAND_REGEX)) ||
-          match(ctx, KEYWORD_REGEX)) {
-          var isFunction = !ctx.isPath &&
-              ctx.pos < ctx.subject.length - 1 &&
-              ctx.subject[ctx.pos] === "(";
-          if (isFunction) {
-              if (ctx.current.toLowerCase() === "rgb") {
-                  var searchString = ctx.subject.substring(ctx.pos);
-                  var endOfString = searchString.indexOf(")");
-                  var terms = searchString.substring(1, endOfString);
-                  ctx.subject =
-                      ctx.subject.substring(0, ctx.pos + 1 + terms.length) +
-                          ",1" +
-                          ctx.subject.substring(ctx.pos + 1 + terms.length);
-                  ctx.current = "rgba";
-              }
-              return FUNCTION;
-          }
-          return KEYWORD;
-      }
-      if (!ctx.isPath && match(ctx, UNIT_REGEX)) {
-          return UNIT;
-      }
-      if (match(ctx, NUMBER_REGEX)) {
-          return NUMBER;
-      }
-      if (match(ctx, HEX_REGEX)) {
-          // If the value was hex, replace it with RGB in the string and parse that.
-          var hexValue = ctx.subject.substring(ctx.last + 1, ctx.pos);
-          ctx.subject =
-              ctx.subject.substring(0, ctx.last) +
-                  hexToRgb(hexValue) +
-                  ctx.subject.substring(ctx.pos);
-          // Reset the position and chain another call to nextToken.
-          ctx.pos = ctx.last;
-          return nextToken(ctx);
-      }
-      return END;
-  }
-  function hexToRgb(hex) {
-      // Parse 3 or 6 hex to an integer using 16 base.
-      var h = parseInt(hex.length === 3
-          ? hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
-          : hex, 16);
-      var r = (h >> 16) & 0xff;
-      var g = (h >> 8) & 0xff;
-      var b = h & 0xff;
-      return "rgba(" + r + "," + g + "," + b + ",1)";
-  }
-  var ctx1 = {};
-  var ctx2 = {};
-  /**
-   * @param {string} valueA
-   * @param {string} valueB
-   * @param {number} offset
-   */
-  function mix(valueA, valueB, offset) {
-      // Reuse contexts to process this request.
-      startProcessing(ctx1, valueA);
-      startProcessing(ctx2, valueB);
+  var ctxTransform = {};
+  function negateTransformList(value) {
+      clearContext(ctxTransform, value);
+      var token;
+      var fn;
+      var termCount = 0;
       var output = "";
-      var remainingSquaredChannels = 0;
-      var token1;
-      var token2;
       while (true) {
-          token1 = nextToken(ctx1);
-          token2 = nextToken(ctx2);
-          if (!token1 || !token2) {
+          token = nextToken$1(ctxTransform);
+          if (!token) {
+              // Exit when there is nothing left to do.
               break;
           }
-          var term1 = ctx1.current;
-          var term2 = ctx2.current;
-          if (token1 === NUMBER && token2 === NUMBER) {
+          if (token === FUNCTION) {
+              // Use functions to start over counting numbers/units.
+              fn = ctxTransform.match.toLowerCase();
+              termCount = 0;
+          }
+          if (token !== UNIT && token !== NUMBER) {
+              // If a number or unit, pass content through.
+              output += ctxTransform.match;
+              continue;
+          }
+          if (/matrix/i.test(fn)) {
+              // First (0) and fourth (3) position start at 1.
+              output += termCount % 3 ? "1" : "0";
+          }
+          else if (/matrix3d/i.test(fn)) {
+              output += termCount % 4 ? "1" : "0";
+          }
+          else if (/scale/i.test(fn)) {
+              output += "1";
+          }
+          else {
+              output += "0";
+          }
+          termCount++;
+      }
+      return output;
+  }
+  var ctxLeft = {};
+  var ctxRight = {};
+  /**
+   * Mixes a css or path expression.
+   * @param {string} left
+   * @param {string} right
+   * @param {number} progress
+   */
+  function mix(left, right, progress) {
+      // Reuse contexts to process this request.
+      clearContext(ctxLeft, left);
+      clearContext(ctxRight, right);
+      // Identify if these are paths.
+      ctxLeft.isPath = PATH_REGEX.test(left);
+      ctxRight.isPath = PATH_REGEX.test(right);
+      var output = "";
+      var rgbChannelsRemaining = 0;
+      var tokenLeft;
+      var tokenRight;
+      while (true) {
+          tokenLeft = nextToken(ctxLeft);
+          tokenRight = nextToken(ctxRight);
+          if (!tokenLeft || !tokenRight) {
+              break;
+          }
+          var termLeft = ctxLeft.match;
+          var termRight = ctxRight.match;
+          if (tokenLeft === NUMBER && tokenRight === NUMBER) {
               var numericTerm = void 0;
-              if (remainingSquaredChannels) {
-                  numericTerm = Math.round(Math.sqrt(Math.min(Math.max(0, (+term1 * +term1 + +term2 * +term2) * offset), 255 * 255)));
-                  remainingSquaredChannels--;
+              if (rgbChannelsRemaining) {
+                  numericTerm = mixRgbChannel(+termLeft, +termRight, progress);
+                  rgbChannelsRemaining--;
               }
               else {
-                  numericTerm =
-                      Math.round((+term1 + +term2) * offset * PRECISION) / PRECISION;
+                  numericTerm = mixNumber(+termLeft, +termRight, progress);
               }
               output += numericTerm;
           }
-          else if (token1 === UNIT || token2 === UNIT) {
-              var unitMatch = UNIT_EXTRACTOR_REGEX.exec(token1 === UNIT ? term1 : term2);
+          else if (tokenLeft === UNIT || tokenRight === UNIT) {
+              var unitMatch = UNIT_EXTRACTOR_REGEX.exec(tokenLeft === UNIT ? termLeft : termRight);
               var unit = unitMatch[1];
-              var precision = unit === "px" ? 1 : PRECISION;
-              var unitNumber1 = parseFloat(term1);
-              var unitNumber2 = parseFloat(term2);
-              // Round to the nearest whole number or 6th decimal.
-              var numericTerm = Math.round((unitNumber1 + unitNumber2) * offset * precision) /
-                  precision;
+              var unitLeft = parseFloat(termLeft);
+              var unitRight = parseFloat(termRight);
+              var numericTerm = mixNumber(unitLeft, unitRight, progress
+              //isWholeNumber
+              );
               // The parseFloat should remove px & % automatically
               output += numericTerm + unit;
           }
-          else if (token1 === FUNCTION && token2 === FUNCTION) {
-              var term = offset < 0.5 ? term1 : term2;
-              if (term === "rgb" || term === "rgba") {
-                  remainingSquaredChannels = 3;
+          else {
+              var term = progress < 0.5 ? termLeft : termRight;
+              var isRgbFunction = tokenLeft === FUNCTION &&
+                  tokenRight === FUNCTION &&
+                  (term === "rgb" || term === "rgba");
+              if (isRgbFunction) {
+                  rgbChannelsRemaining = 3;
               }
               output += term;
           }
-          else {
-              output += offset < 0.5 ? term1 : term2;
-          }
       }
       return output;
+  }
+  /**
+   * Mixes two numeric terms.
+   * @param left The left side of the mix operation.
+   * @param right The right side of the mix operation.
+   * @param progress The progression between left and right.
+   * @param precision The precision expressed a multiple of 10. Ex: 3 precision
+   *    would be 100.
+   */
+  function mixNumber(left, right, progress, isWholeNumber) {
+      var n = left + (right - left) * progress;
+      return isWholeNumber ? Math.round(n) : n;
+  }
+  /**
+   * Mixes two RGB channels. In order to match CSS color interpolation, the terms
+   * need to first be squared, then multiplied by the progress, then finally,
+   * unsquared.
+   * @param left The left side of the mix operation.
+   * @param right The right side of the mix operation.
+   * @param progress The progression between left and right.
+   */
+  function mixRgbChannel(left, right, progress) {
+      return Math.round(Math.sqrt(Math.min(Math.max(0, (left * left + right * right) * progress), 255 * 255)));
   }
 
   var PROPERTY = 0, CSS_VAR = 1, ATTRIBUTE = 2, STYLE = 3;
   var htmlAttributeOnly = ["viewBox"];
   var htmlPropOnly = ["innerHTML", "textContent"];
   function detectTargetType(target, propertyName) {
-      if (!(target instanceof Element)) {
+      var isProbablyHTMLElement = typeof target.tagName === "string" &&
+          target.style;
+      if (!isProbablyHTMLElement) {
           return PROPERTY;
       }
       if (propertyName.indexOf("--") === 0) {
@@ -359,6 +442,18 @@
    */
   function getMixer(_targetType) {
       return autoMix;
+  }
+
+  function getValueFromCache(target, propName) {
+      if (target["__ja"]) {
+          return target["__ja"][propName];
+      }
+  }
+  function putValueInCache(target, propName, value) {
+      if (!target["__ja"]) {
+          target["__ja"] = {};
+      }
+      target["__ja"][propName] = value;
   }
 
   var FRAME_SIZE = 1000 / 60;
@@ -469,19 +564,32 @@
                   var read = getReader(targetType);
                   var write = getWriter(targetType);
                   var mix = getMixer(targetType);
+                  var currentValue = read(target, propName);
                   var lowerIndex = findLowerIndex(times, currentTime);
                   var lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
                   var lowerFrame = property[times[lowerIndex]];
                   // Get the final value. This can be done for all targets.
                   var upperIndex = Math.min(lowerIndex + 1, times.length - 1);
                   var upperTime = times[upperIndex];
-                  var upperFrame = property[upperTime];
+                  var upperValue = property[upperTime].value;
+                  // Attempt to load initial value from cache or add the current as init.
+                  var lowerValue = void 0;
+                  if (!lowerFrame) {
+                      var initialValue = getValueFromCache(target, propName);
+                      if (initialValue == null) {
+                          initialValue = currentValue;
+                          putValueInCache(target, propName, currentValue);
+                      }
+                      lowerValue = initialValue;
+                  }
+                  else {
+                      lowerValue = lowerFrame.value;
+                  }
                   // Get the current value and calculate the next value, only attempt to
                   // render if they are different. It is assumed that the cost of reading
                   // constantly is less than the cost of writing constantly.
-                  var offset = (upperTime - currentTime) / (upperTime - lowerTime);
-                  var currentValue = read(target, propName);
-                  var value = mix(lowerFrame.value, upperFrame.value, offset);
+                  var offset = (lowerTime - currentTime) / (lowerTime - upperTime);
+                  var value = mix(lowerValue, upperValue, offset);
                   if (currentValue !== value) {
                       // Queue up the rendering of the value.
                       operations.push(function () { return write(target, propName, value); });
@@ -940,10 +1048,14 @@
       }
   }
 
+  function animate(targets, duration, props) {
+      return new TimelineAnimation().animate(targets, duration, props);
+  }
   function timeline(opts) {
       return new TimelineAnimation(opts);
   }
 
+  exports.animate = animate;
   exports.timeline = timeline;
   exports.nextAnimationFrame = nextAnimationFrame;
   exports.tick = tick;
