@@ -53,6 +53,7 @@
   function toNumber(str) {
       return +str;
   }
+  //# sourceMappingURL=numbers.js.map
 
   var tasks = [];
   var promise;
@@ -109,6 +110,7 @@
           done2();
       }
   }
+  //# sourceMappingURL=tick.js.map
 
   function readAttribute(target, key) {
       return target.getAttribute(key) || "";
@@ -116,6 +118,7 @@
   function writeAttribute(target, key, value) {
       target.setAttribute(key, value.toString());
   }
+  //# sourceMappingURL=attribute.js.map
 
   function readCssVar(target, key) {
       return target.style.getPropertyValue(key);
@@ -123,6 +126,7 @@
   function writeCssVar(target, key, value) {
       target.style.setProperty(key, value.toString());
   }
+  //# sourceMappingURL=cssvar.js.map
 
   function readStyle(target, key) {
       return getComputedStyle(target)[key];
@@ -130,6 +134,7 @@
   function writeStyle(target, key, value) {
       target.style[key] = value;
   }
+  //# sourceMappingURL=style.js.map
 
   function readProperty(target, key) {
       return target[key];
@@ -137,6 +142,7 @@
   function writeProperty(target, key, value) {
       target[key] = value;
   }
+  //# sourceMappingURL=property.js.map
 
   var DELIMITER_REGEX = /^\s*[\(\),\/\s]\s*/;
   var HEX_REGEX = /^#[a-f\d]{3,6}/i;
@@ -159,6 +165,7 @@
       }
       return match != null;
   }
+  //# sourceMappingURL=common.js.map
 
   function hexToRgb(hex) {
       // Parse 3 or 6 hex to an integer using 16 base.
@@ -170,6 +177,7 @@
       var b = h & 0xff;
       return "rgba(" + r + "," + g + "," + b + ",1)";
   }
+  //# sourceMappingURL=colors.js.map
 
   function nextToken(ctx) {
       if (match(ctx, DELIMITER_REGEX)) {
@@ -213,6 +221,7 @@
           return nextToken(ctx);
       }
   }
+  //# sourceMappingURL=expressions.js.map
 
   function nextToken$1(ctx) {
       if (match(ctx, DELIMITER_REGEX)) {
@@ -228,6 +237,7 @@
           return FUNCTION;
       }
   }
+  //# sourceMappingURL=transforms.js.map
 
   var UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
   var PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
@@ -245,11 +255,11 @@
       if (isNumeric(valueA) && isNumeric(valueB)) {
           return mixNumber(+valueA, +valueB, offset);
       }
-      // If either looks like a transform function, convert them.
+      // If the right is a transform list and the left is not, create net-0
+      // transform list on the left that mirrors the right. This allows for tweening
+      // values like none or empty string for the initial keyframe.
       if (TRANSFORM_REGEX.test(valueB.toString()) &&
           !TRANSFORM_REGEX.test(valueA.toString())) {
-          // If tweening between two matrices and the right side doesn't exist,
-          // create a zero-net effect matrix to match the pattern.
           valueA = negateTransformList(valueB.toString());
       }
       // If value A or B is null or undefined, swap to empty string.
@@ -284,14 +294,20 @@
               output += ctxTransform.match;
               continue;
           }
-          if (/matrix/i.test(fn)) {
-              // First (0) and fourth (3) position start at 1.
-              output += termCount % 3 ? "1" : "0";
+          if (fn === "matrix") {
+              // Scale defaults to 1 (position 0 and 3)
+              output += termCount % 3 ? "0" : "1";
           }
-          else if (/matrix3d/i.test(fn)) {
-              output += termCount % 4 ? "1" : "0";
+          else if (fn === "matrix3d") {
+              // Scale defaults to 1.
+              // Example net-0 3d matrix:
+              // 1 0 0 0
+              // 0 1 0 0
+              // 0 0 1 0
+              // 0 0 0 1
+              output += termCount % 5 ? "0" : "1";
           }
-          else if (/scale/i.test(fn)) {
+          else if (/scale([xyz]|3d)?/i.test(fn)) {
               output += "1";
           }
           else {
@@ -342,11 +358,10 @@
           else if (tokenLeft === UNIT || tokenRight === UNIT) {
               var unitMatch = UNIT_EXTRACTOR_REGEX.exec(tokenLeft === UNIT ? termLeft : termRight);
               var unit = unitMatch[1];
+              var isWholeNumber = unit === "px";
               var unitLeft = parseFloat(termLeft);
               var unitRight = parseFloat(termRight);
-              var numericTerm = mixNumber(unitLeft, unitRight, progress
-              //isWholeNumber
-              );
+              var numericTerm = mixNumber(unitLeft, unitRight, progress, isWholeNumber);
               // The parseFloat should remove px & % automatically
               output += numericTerm + unit;
           }
@@ -443,6 +458,7 @@
   function getMixer(_targetType) {
       return autoMix;
   }
+  //# sourceMappingURL=index.js.map
 
   function getValueFromCache(target, propName) {
       if (target["__ja"]) {
@@ -455,6 +471,7 @@
       }
       target["__ja"][propName] = value;
   }
+  //# sourceMappingURL=valuecache.js.map
 
   var FRAME_SIZE = 1000 / 60;
   var queue = [];
@@ -684,6 +701,7 @@
       // Ensure current time is not out of bounds.
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
   }
+  //# sourceMappingURL=animator.js.map
 
   var TimelineAnimation = /** @class */ (function () {
       function TimelineAnimation(options) {
@@ -1047,6 +1065,7 @@
           }
       }
   }
+  //# sourceMappingURL=timeline.js.map
 
   function animate(targets, duration, props) {
       return new TimelineAnimation().animate(targets, duration, props);
@@ -1054,6 +1073,7 @@
   function timeline(opts) {
       return new TimelineAnimation(opts);
   }
+  //# sourceMappingURL=main.js.map
 
   exports.animate = animate;
   exports.timeline = timeline;

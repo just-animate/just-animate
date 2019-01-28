@@ -36,13 +36,13 @@ export function autoMix(
   if (isNumeric(valueA) && isNumeric(valueB)) {
     return mixNumber(+valueA, +valueB, offset);
   }
-  // If either looks like a transform function, convert them.
+  // If the right is a transform list and the left is not, create net-0
+  // transform list on the left that mirrors the right. This allows for tweening
+  // values like none or empty string for the initial keyframe.
   if (
     TRANSFORM_REGEX.test(valueB.toString()) &&
     !TRANSFORM_REGEX.test(valueA.toString())
   ) {
-    // If tweening between two matrices and the right side doesn't exist,
-    // create a zero-net effect matrix to match the pattern.
     valueA = negateTransformList(valueB.toString());
   }
   // If value A or B is null or undefined, swap to empty string.
@@ -81,12 +81,18 @@ function negateTransformList(value: string) {
       continue;
     }
 
-    if (/matrix/i.test(fn!)) {
-      // First (0) and fourth (3) position start at 1.
-      output += termCount % 3 ? "1" : "0";
-    } else if (/matrix3d/i.test(fn!)) {
-      output += termCount % 4 ? "1" : "0";
-    } else if (/scale/i.test(fn!)) {
+    if (fn === "matrix") {
+      // Scale defaults to 1 (position 0 and 3)
+      output += termCount % 3 ? "0" : "1";
+    } else if (fn === "matrix3d") {
+      // Scale defaults to 1.
+      // Example net-0 3d matrix:
+      // 1 0 0 0
+      // 0 1 0 0
+      // 0 0 1 0
+      // 0 0 0 1
+      output += termCount % 5 ? "0" : "1";
+    } else if (/scale([xyz]|3d)?/i.test(fn!)) {
       output += "1";
     } else {
       output += "0";
@@ -150,8 +156,8 @@ function mix(left: string, right: string, progress: number): string {
       const numericTerm = mixNumber(
         unitLeft,
         unitRight,
-        progress
-        //isWholeNumber
+        progress,
+        isWholeNumber
       );
 
       // The parseFloat should remove px & % automatically
