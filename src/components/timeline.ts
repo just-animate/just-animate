@@ -1,5 +1,4 @@
 import { ja } from "../types";
-import { clamp } from "../utils/numbers";
 import { queueTransition } from "../services/animator";
 
 export class TimelineAnimation implements ja.TimelineAnimation {
@@ -23,12 +22,12 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   get duration() {
     let duration = 0;
     // Walk through all timelines and determine the longest duration.
-    this.timelines_.forEach(timeline => {
+    for (const timeline of this.timelines_) {
       const endTime = timeline.animation.duration + timeline.pos;
       if (endTime > duration) {
         duration = endTime;
       }
-    });
+    }
 
     // Walk through all keyframes and determine the longest duration.
     // tslint:disable-next-line:forin
@@ -134,8 +133,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   cancel(): this {
     this.playState = "cancel";
     this.events.push("cancel");
-    queueTransition(this);
-    return this;
+    return this.update();
   }
 
   /**
@@ -173,8 +171,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   finish(): this {
     this.playState = "finish";
     this.events.push("finish");
-    queueTransition(this);
-    return this;
+    return this.update();
   }
 
   /**
@@ -272,8 +269,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   pause(): this {
     this.playState = "paused";
     this.events.push("pause");
-    queueTransition(this);
-    return this;
+    return this.update();
   }
 
   /**
@@ -283,8 +279,7 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   play(): this {
     this.playState = "running";
     this.events.push("play");
-    queueTransition(this);
-    return this;
+    return this.update();
   }
 
   /**
