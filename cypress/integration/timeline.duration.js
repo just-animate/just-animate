@@ -12,7 +12,7 @@ context('timeline.duration', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const t1 = just.timeline().animate('target', 2000, { x: 0 });
+        const t1 = new just.Timeline().animate('target', 2000, { x: 0 });
         expect(t1.duration).to.equal(2000);
       });
   });
@@ -26,7 +26,7 @@ context('timeline.duration', () => {
         const mockAnimation = {
           duration: 900,
         };
-        const t1 = just.timeline().add(mockAnimation, 100);
+        const t1 = new just.Timeline().add(mockAnimation, 100);
         expect(t1.duration).to.equal(1000);
       });
   });

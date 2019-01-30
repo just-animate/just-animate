@@ -8,8 +8,7 @@ context('timeline.label()', () => {
 
   it('automatically set at current duration', () => {
     cy.window().then(({ just }) => {
-      const state = just
-        .timeline()
+      const state = new just.Timeline()
         .delay(100)
         .label('mid')
         .label(100)
@@ -21,8 +20,7 @@ context('timeline.label()', () => {
 
   it('can be set to a particular time', () => {
     cy.window().then(({ just }) => {
-      const state = just
-        .timeline()
+      const state = new just.Timeline()
         .delay(100)
         .label('start', 0)
         .label(100)

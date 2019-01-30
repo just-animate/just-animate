@@ -9,10 +9,7 @@ context('timeline.target()', () => {
   it('has a basic usage', () => {
     cy.window().then(({ just }) => {
       const target = {};
-      const state = just
-        .timeline()
-        .target('@target', target)
-        .getConfig();
+      const state = new just.Timeline().target('@target', target).getConfig();
 
       expect(state.targets['@target']).to.equal(target);
     });

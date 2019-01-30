@@ -13,7 +13,7 @@ context('timeline.add()', () => {
       .then(win => (just = win.just))
       .then(() => {
         const animation = { duration: 1000 };
-        const t1 = just.timeline().add(animation);
+        const t1 = new just.Timeline().add(animation);
         expect(t1.duration).to.equal(1000);
       });
   });

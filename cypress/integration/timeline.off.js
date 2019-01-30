@@ -12,8 +12,7 @@ context('timeline.off()', () => {
       .then(({ just }) => {
         const cancelHandler = () => eventCount++;
 
-        just
-          .timeline()
+        new just.Timeline()
           .on('cancel', cancelHandler)
           .off('cancel', cancelHandler)
           .cancel();

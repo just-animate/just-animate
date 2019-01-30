@@ -1,4 +1,4 @@
-import { TimelineAnimation } from "./components/timeline";
+import { Timeline } from "./components/timeline";
 import { ja } from "./types";
 import { nextAnimationFrame, tick } from "./services/tick";
 
@@ -7,11 +7,7 @@ export function animate<T>(
   duration: number,
   props: Partial<ja.KeyframeProps>
 ) {
-  return new TimelineAnimation().animate(targets, duration, props);
+  return new Timeline().animate(targets, duration, props);
 }
 
-export function timeline(opts?: Partial<ja.TimelineConfig>): TimelineAnimation {
-  return new TimelineAnimation(opts);
-}
-
-export { nextAnimationFrame, tick };
+export { nextAnimationFrame, tick, Timeline };

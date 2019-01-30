@@ -8,7 +8,7 @@ context('timeline.play()', () => {
 
   it('sets the current playState', () => {
     cy.window().then(({ just }) => {
-      const t1 = just.timeline().play();
+      const t1 = new just.Timeline().play();
       expect(t1.playState).to.equal('running');
     });
   });

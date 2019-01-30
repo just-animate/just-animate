@@ -12,8 +12,7 @@ context('timeline.cancel()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const t1 = just
-          .timeline()
+        const t1 = new just.Timeline()
           .delay(100)
           .finish()
           .cancel();
@@ -29,10 +28,7 @@ context('timeline.cancel()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        just
-          .timeline()
-          .on('cancel', () => eventCount++)
-          .cancel();
+        new just.Timeline().on('cancel', () => eventCount++).cancel();
         return just.nextAnimationFrame();
       })
       .then(() => {

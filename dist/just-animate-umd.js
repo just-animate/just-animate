@@ -690,8 +690,12 @@
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
   }
 
-  var TimelineAnimation = /** @class */ (function () {
-      function TimelineAnimation(options) {
+  var Timeline = /** @class */ (function () {
+      function Timeline(options) {
+          // Ensure new in case js user forgets new or chooses to rebel against new :)
+          if (!(this instanceof Timeline)) {
+              return new Timeline(options);
+          }
           this.alternate = false;
           this.currentTime = 0;
           this.events = [];
@@ -708,7 +712,7 @@
               this.configure(options);
           }
       }
-      Object.defineProperty(TimelineAnimation.prototype, "duration", {
+      Object.defineProperty(Timeline.prototype, "duration", {
           /**
            * The duration of one iteration of the Animation.
            * @public
@@ -741,7 +745,7 @@
           enumerable: true,
           configurable: true
       });
-      TimelineAnimation.prototype.add = function (animation, pos) {
+      Timeline.prototype.add = function (animation, pos) {
           pos = this.getPosition_(pos);
           if (pos === undefined) {
               pos = this.duration;
@@ -757,7 +761,7 @@
        * to 'idle'.
        * @public
        */
-      TimelineAnimation.prototype.cancel = function () {
+      Timeline.prototype.cancel = function () {
           this.playState = "cancel";
           this.events.push("cancel");
           return this.update();
@@ -768,7 +772,7 @@
        * @param json The state to restore.
        * @public
        */
-      TimelineAnimation.prototype.configure = function (json) {
+      Timeline.prototype.configure = function (json) {
           for (var k in json) {
               if (typeof this[k] !== "function" && k !== "duration") {
                   this[k] = json[k];
@@ -781,7 +785,7 @@
        * @param duration the amount to delay.
        * @public
        */
-      TimelineAnimation.prototype.delay = function (duration, pos) {
+      Timeline.prototype.delay = function (duration, pos) {
           return this.animate("", duration, { "": 0 }, pos);
       };
       /**
@@ -790,7 +794,7 @@
        * activeDuration.
        * @public
        */
-      TimelineAnimation.prototype.finish = function () {
+      Timeline.prototype.finish = function () {
           this.playState = "finish";
           this.events.push("finish");
           return this.update();
@@ -800,7 +804,7 @@
        * restore the value of the timeline.
        * @public
        */
-      TimelineAnimation.prototype.getConfig = function () {
+      Timeline.prototype.getConfig = function () {
           var memento = {};
           for (var key in this) {
               if (key[key.length - 1] !== "_") {
@@ -817,7 +821,7 @@
        * @param ev The event group to geja.
        * @private
        */
-      TimelineAnimation.prototype.getEventGroup_ = function (ev) {
+      Timeline.prototype.getEventGroup_ = function (ev) {
           var eventGroup = this.listeners[ev];
           if (!eventGroup) {
               eventGroup = this.listeners[ev] = [];
@@ -830,7 +834,7 @@
        * @param pos The position to insert the next animation objecja.
        * @private
        */
-      TimelineAnimation.prototype.getPosition_ = function (pos) {
+      Timeline.prototype.getPosition_ = function (pos) {
           // Figure out where to insert this keyframe.
           if (pos && typeof pos !== "number") {
               pos = this.labels[pos];
@@ -845,7 +849,7 @@
        * @param time
        * @public
        */
-      TimelineAnimation.prototype.label = function (name, time) {
+      Timeline.prototype.label = function (name, time) {
           this.labels[name] = time === undefined ? this.duration : time;
           return this;
       };
@@ -855,7 +859,7 @@
        * @param f The function to unregister for handling the evenja.
        * @public
        */
-      TimelineAnimation.prototype.off = function (ev, f) {
+      Timeline.prototype.off = function (ev, f) {
           var callbacks = this.getEventGroup_(ev);
           var index = callbacks.indexOf(f);
           if (index !== -1) {
@@ -869,7 +873,7 @@
        * @param f The function to handle the evenja.
        * @public
        */
-      TimelineAnimation.prototype.on = function (ev, f) {
+      Timeline.prototype.on = function (ev, f) {
           var callbacks = this.getEventGroup_(ev);
           var index = callbacks.indexOf(f);
           if (index === -1) {
@@ -881,7 +885,7 @@
        * Pauses the animation.
        * @public
        */
-      TimelineAnimation.prototype.pause = function () {
+      Timeline.prototype.pause = function () {
           this.playState = "paused";
           this.events.push("pause");
           return this.update();
@@ -890,7 +894,7 @@
        * Plays the animation.
        * @public
        */
-      TimelineAnimation.prototype.play = function () {
+      Timeline.prototype.play = function () {
           this.playState = "running";
           this.events.push("play");
           return this.update();
@@ -901,7 +905,7 @@
        * @param time
        * @public
        */
-      TimelineAnimation.prototype.seek = function (time) {
+      Timeline.prototype.seek = function (time) {
           time = this.getPosition_(time);
           if (time || time === 0) {
               this.currentTime = time;
@@ -914,7 +918,7 @@
        * calling animate with an ease of steps(1, end).
        * @public
        */
-      TimelineAnimation.prototype.set = function (targets, props, pos) {
+      Timeline.prototype.set = function (targets, props, pos) {
           props["ease"] = "steps(1,end)";
           return this.animate(targets, 0, props, pos);
       };
@@ -927,7 +931,7 @@
        * @param target
        * @public
        */
-      TimelineAnimation.prototype.target = function (alias, target) {
+      Timeline.prototype.target = function (alias, target) {
           this.targets[alias] = target;
           // If targets change, ensure update in case a target has been replaced.
           return this.update();
@@ -941,7 +945,7 @@
        * if not specified.
        * @public
        */
-      TimelineAnimation.prototype.animate = function (targets, duration, props, pos) {
+      Timeline.prototype.animate = function (targets, duration, props, pos) {
           pos = this.getPosition_(pos);
           if (pos === undefined) {
               pos = this.duration;
@@ -982,11 +986,11 @@
        * Forces an update. This can be used after updating timing or keyframes in
        * configure() to force an
        */
-      TimelineAnimation.prototype.update = function () {
+      Timeline.prototype.update = function () {
           queueTransition(this);
           return this;
       };
-      return TimelineAnimation;
+      return Timeline;
   }());
   function findTarget(targets, target) {
       for (var targetid in targets) {
@@ -997,16 +1001,13 @@
   }
 
   function animate(targets, duration, props) {
-      return new TimelineAnimation().animate(targets, duration, props);
-  }
-  function timeline(opts) {
-      return new TimelineAnimation(opts);
+      return new Timeline().animate(targets, duration, props);
   }
 
   exports.animate = animate;
-  exports.timeline = timeline;
   exports.nextAnimationFrame = nextAnimationFrame;
   exports.tick = tick;
+  exports.Timeline = Timeline;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

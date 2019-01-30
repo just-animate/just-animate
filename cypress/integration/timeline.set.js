@@ -8,8 +8,7 @@ context('timeline.set()', () => {
 
   it('has a basic usage', () => {
     cy.window().then(({ just }) => {
-      const state = just
-        .timeline()
+      const state = new just.Timeline()
         .set('target', { opacity: 0 })
         .getConfig();
 

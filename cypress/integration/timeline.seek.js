@@ -8,8 +8,7 @@ context('timeline.seek()', () => {
 
   it('has a basic usage', () => {
     cy.window().then(({ just }) => {
-      const t1 = just
-        .timeline()
+      const t1 = new just.Timeline()
         .delay(100)
         .seek(42)
         .pause();
@@ -21,10 +20,7 @@ context('timeline.seek()', () => {
 
   it('does not alter the playState if already running', () => {
     cy.window().then(({ just }) => {
-      const t1 = just
-        .timeline()
-        .delay(100)
-        .seek(42);
+      const t1 = new just.Timeline().delay(100).seek(42);
 
       expect(t1.playState).to.equal('running');
     });

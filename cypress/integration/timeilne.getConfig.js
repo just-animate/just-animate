@@ -12,7 +12,7 @@ context('timeline.getConfig()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just.timeline().getConfig();
+        const state = new just.Timeline().getConfig();
 
         // Ensure initial timeline state is correct.
         expect(state.alternate, 'alternate').equal(false);

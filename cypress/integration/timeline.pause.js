@@ -8,7 +8,7 @@ context('timeline.pause()', () => {
 
   it('sets the current playState', () => {
     cy.window().then(({ just }) => {
-      const t1 = just.timeline().pause();
+      const t1 = new just.Timeline().pause();
       expect(t1.playState).to.equal('paused');
     });
   });
@@ -17,11 +17,7 @@ context('timeline.pause()', () => {
     let eventCount = 0;
     cy.window()
       .then(({ just }) => {
-        just
-          .timeline()
-          .on('play', () => eventCount++)
-          .play();
-
+        new just.Timeline().on('play', () => eventCount++).play();
         return just.nextAnimationFrame();
       })
       .then(() => {

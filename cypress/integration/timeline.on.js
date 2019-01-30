@@ -10,10 +10,7 @@ context('timeline.on()', () => {
     let eventCount = 0;
     cy.window()
       .then(({ just }) => {
-        just
-          .timeline()
-          .on('pause', () => eventCount++)
-          .pause();
+        new just.Timeline().on('pause', () => eventCount++).pause();
 
         return just.nextAnimationFrame();
       })

@@ -8,8 +8,7 @@ context('timeline.animate()', () => {
 
   it('has a basic usage', () => {
     cy.window().then(({ just }) => {
-      const state = just
-        .timeline()
+      const state = new just.Timeline()
         .animate('target', 2000, { x: 1 })
         .getConfig();
 
@@ -23,8 +22,7 @@ context('timeline.animate()', () => {
 
   it('can configure multiple properties in each call', () => {
     cy.window().then(({ just }) => {
-      const state = just
-        .timeline()
+      const state = new just.Timeline()
         .animate('target', 5, { x: 0, y: 0, ease: 'linear' })
         .animate('target', 5, { x: 1, y: 0, ease: 'easeIn' })
         .animate('target', 5, { x: 0, y: 1, ease: 'easeOut' })

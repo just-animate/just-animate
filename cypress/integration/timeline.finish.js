@@ -12,7 +12,7 @@ context('timeline.finish()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const t1 = just.timeline().finish();
+        const t1 = new just.Timeline().finish();
         expect(t1.playState).to.equal('finish');
       });
   });
@@ -25,8 +25,7 @@ context('timeline.finish()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        t1 = just
-          .timeline()
+        t1 = new just.Timeline()
           .delay(1000)
           .seek(1000)
           .finish();
@@ -48,10 +47,7 @@ context('timeline.finish()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        t1 = just
-          .timeline()
-          .delay(1000)
-          .seek(1000);
+        t1 = new just.Timeline().delay(1000).seek(1000);
 
         t1.playbackRate = -1;
         t1.finish();
@@ -72,10 +68,7 @@ context('timeline.finish()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        just
-          .timeline()
-          .on('finish', () => eventCount++)
-          .finish();
+        new just.Timeline().on('finish', () => eventCount++).finish();
         return just.nextAnimationFrame();
       })
       .then(() => {

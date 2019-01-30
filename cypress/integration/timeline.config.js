@@ -12,8 +12,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({ alternate: true })
           .getConfig();
 
@@ -27,8 +26,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({ currentTime: 1 })
           .getConfig();
 
@@ -42,8 +40,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({ events: ['cancel'] })
           .getConfig();
 
@@ -57,8 +54,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({ iterations: 2 })
           .getConfig();
 
@@ -72,8 +68,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({
             keyframes: {
               i: {
@@ -95,8 +90,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({ labels: { start: 0 } })
           .getConfig();
 
@@ -110,8 +104,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({ playState: 'cancel' })
           .getConfig();
 
@@ -125,8 +118,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({ playbackRate: 2 })
           .getConfig();
 
@@ -140,8 +132,7 @@ context('timeline.config()', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const state = just
-          .timeline()
+        const state = new just.Timeline()
           .configure({
             targets: {
               '@target': 1,

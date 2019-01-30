@@ -1,7 +1,7 @@
 import { ja } from "../types";
 import { queueTransition } from "../services/animator";
 
-export class TimelineAnimation implements ja.TimelineAnimation {
+export class Timeline implements ja.TimelineAnimation {
   /**
    * True if the timeline should alternate.
    * @public
@@ -108,6 +108,10 @@ export class TimelineAnimation implements ja.TimelineAnimation {
   private timelines_: Array<{ pos: number; animation: ja.Animation }>;
 
   constructor(options?: Partial<ja.TimelineConfig>) {
+    // Ensure new in case js user forgets new or chooses to rebel against new :)
+    if (!(this instanceof Timeline)) {
+      return new Timeline(options);
+    }
     this.alternate = false;
     this.currentTime = 0;
     this.events = [];

@@ -12,7 +12,7 @@ context('timeline.delay', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
-        const t1 = just.timeline().delay(100);
+        const t1 = new just.Timeline().delay(100);
         expect(t1.duration).to.equal(100);
       });
   });
