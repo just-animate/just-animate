@@ -2,7 +2,7 @@ import { byNumber, clamp, toNumber, findLowerIndex } from "../utils/numbers";
 import { ja } from "../types";
 import { tick } from "./tick";
 import { detectTargetType, getReader, getWriter, getMixer } from "../adapters";
-import { getValueFromCache, putValueInCache } from "./valuecache";
+import { retrieveValue, storeValue, clearKeys } from "./valuecache";
 
 const FRAME_SIZE = 1000 / 60;
 
@@ -97,7 +97,7 @@ function processTimelines(time: number) {
  * @param config The configuration to read.
  */
 function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
-  const { currentTime } = config;
+  const { currentTime, playState, id } = config;
   for (const targetName in config.keyframes) {
     const keyframes = config.keyframes[targetName];
     const targets = resolveTargets(config, targetName);
@@ -108,42 +108,55 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
       for (const target of targets) {
         // Unpack these immediately because the return object is shared.
         const targetType = detectTargetType(target, propName);
-        const read = getReader(targetType);
         const write = getWriter(targetType);
-        const mix = getMixer(targetType);
+        if (playState !== "idle") {
+          const read = getReader(targetType);
+          const mix = getMixer(targetType);
+          const currentValue = read(target, propName);
+          const lowerIndex = findLowerIndex(times, currentTime);
+          const lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
+          const lowerFrame = property[times[lowerIndex]];
 
-        const currentValue = read(target, propName);
-        const lowerIndex = findLowerIndex(times, currentTime);
-        const lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
-        const lowerFrame = property[times[lowerIndex]];
+          // Get the final value. This can be done for all targets.
+          const upperIndex = Math.min(lowerIndex + 1, times.length - 1);
+          const upperTime = times[upperIndex];
+          const upperValue = property[upperTime].value;
 
-        // Get the final value. This can be done for all targets.
-        const upperIndex = Math.min(lowerIndex + 1, times.length - 1);
-        const upperTime = times[upperIndex];
-        const upperValue = property[upperTime].value;
-
-        // Attempt to load initial value from cache or add the current as init.
-        let lowerValue: ja.AnimationValue;
-        if (!lowerFrame) {
-          let initialValue = getValueFromCache(target, propName);
-          if (initialValue == null) {
-            initialValue = currentValue;
-            putValueInCache(target, propName, currentValue);
+          // Attempt to load initial value from cache or add the current as init
+          let lowerValue: ja.AnimationValue;
+          if (!lowerFrame) {
+            let initialValue = retrieveValue(id, target, propName);
+            if (initialValue == null) {
+              initialValue = currentValue;
+              storeValue(id, target, propName, currentValue);
+            }
+            lowerValue = initialValue;
+          } else {
+            lowerValue = lowerFrame.value;
           }
-          lowerValue = initialValue;
-        } else {
-          lowerValue = lowerFrame.value;
-        }
 
-        // Get the current value and calculate the next value, only attempt to
-        // render if they are different. It is assumed that the cost of reading
-        // constantly is less than the cost of writing constantly.
-        const offset = (lowerTime - currentTime) / (lowerTime - upperTime);
-        const value = mix(lowerValue, upperValue, offset);
-        if (currentValue !== value) {
-          // Queue up the rendering of the value.
-          operations.push(() => write(target, propName, value));
+          // Get the current value and calculate the next value, only attempt to
+          // render if they are different. It is assumed that the cost of
+          // reading constantly is less than the cost of writing constantly.
+          const offset = (lowerTime - currentTime) / (lowerTime - upperTime);
+          const value = mix(lowerValue, upperValue, offset);
+          if (currentValue !== value) {
+            // Queue up the rendering of the value.
+            operations.push(() => write(target, propName, value));
+          }
+        } else {
+          const initialValue = retrieveValue(id, target, propName);
+          if (initialValue != null) {
+            write(target, propName, initialValue);
+          }
         }
+      }
+    }
+
+    // Clear cache for targets that have gone idle.
+    for (const target of targets) {
+      if (playState === "idle") {
+        clearKeys(id, target);
       }
     }
   }

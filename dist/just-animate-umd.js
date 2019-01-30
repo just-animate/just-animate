@@ -125,7 +125,7 @@
   }
 
   function readStyle(target, key) {
-      return getComputedStyle(target)[key];
+      return target.style[key] || getComputedStyle(target)[key];
   }
   function writeStyle(target, key, value) {
       target.style[key] = value;
@@ -449,16 +449,43 @@
       return autoMix;
   }
 
-  function getValueFromCache(target, propName) {
-      if (target["__ja"]) {
-          return target["__ja"][propName];
+  var CACHE = "__just_cache";
+  /**
+   * Clear the cache for the target and id.
+   * @param id
+   * @param target
+   */
+  function clearKeys(id, target) {
+      if (target[CACHE] && target[CACHE][id]) {
+          delete target[CACHE][id];
       }
   }
-  function putValueInCache(target, propName, value) {
-      if (!target["__ja"]) {
-          target["__ja"] = {};
+  /**
+   * Retrieve value against the id, target, and value.
+   * @param id
+   * @param target
+   * @param key
+   */
+  function retrieveValue(id, target, key) {
+      if (target[CACHE] && target[CACHE][id]) {
+          return target[CACHE][id][key];
       }
-      target["__ja"][propName] = value;
+  }
+  /**
+   * Store the value against the id, target, and propname.
+   * @param id
+   * @param target
+   * @param key
+   * @param value
+   */
+  function storeValue(id, target, key, value) {
+      if (!target[CACHE]) {
+          target[CACHE] = {};
+      }
+      if (!target[CACHE][id]) {
+          target[CACHE][id] = {};
+      }
+      target[CACHE][id][key] = value;
   }
 
   var FRAME_SIZE = 1000 / 60;
@@ -556,7 +583,7 @@
    * @param config The configuration to read.
    */
   function renderState(config, operations) {
-      var currentTime = config.currentTime;
+      var currentTime = config.currentTime, playState = config.playState, id = config.id;
       for (var targetName in config.keyframes) {
           var keyframes = config.keyframes[targetName];
           var targets = resolveTargets(config, targetName);
@@ -566,47 +593,62 @@
               var _loop_2 = function (target) {
                   // Unpack these immediately because the return object is shared.
                   var targetType = detectTargetType(target, propName);
-                  var read = getReader(targetType);
                   var write = getWriter(targetType);
-                  var mix = getMixer(targetType);
-                  var currentValue = read(target, propName);
-                  var lowerIndex = findLowerIndex(times, currentTime);
-                  var lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
-                  var lowerFrame = property[times[lowerIndex]];
-                  // Get the final value. This can be done for all targets.
-                  var upperIndex = Math.min(lowerIndex + 1, times.length - 1);
-                  var upperTime = times[upperIndex];
-                  var upperValue = property[upperTime].value;
-                  // Attempt to load initial value from cache or add the current as init.
-                  var lowerValue = void 0;
-                  if (!lowerFrame) {
-                      var initialValue = getValueFromCache(target, propName);
-                      if (initialValue == null) {
-                          initialValue = currentValue;
-                          putValueInCache(target, propName, currentValue);
+                  if (playState !== "idle") {
+                      var read = getReader(targetType);
+                      var mix = getMixer(targetType);
+                      var currentValue = read(target, propName);
+                      var lowerIndex = findLowerIndex(times, currentTime);
+                      var lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
+                      var lowerFrame = property[times[lowerIndex]];
+                      // Get the final value. This can be done for all targets.
+                      var upperIndex = Math.min(lowerIndex + 1, times.length - 1);
+                      var upperTime = times[upperIndex];
+                      var upperValue = property[upperTime].value;
+                      // Attempt to load initial value from cache or add the current as init
+                      var lowerValue = void 0;
+                      if (!lowerFrame) {
+                          var initialValue = retrieveValue(id, target, propName);
+                          if (initialValue == null) {
+                              initialValue = currentValue;
+                              storeValue(id, target, propName, currentValue);
+                          }
+                          lowerValue = initialValue;
                       }
-                      lowerValue = initialValue;
+                      else {
+                          lowerValue = lowerFrame.value;
+                      }
+                      // Get the current value and calculate the next value, only attempt to
+                      // render if they are different. It is assumed that the cost of
+                      // reading constantly is less than the cost of writing constantly.
+                      var offset = (lowerTime - currentTime) / (lowerTime - upperTime);
+                      var value_1 = mix(lowerValue, upperValue, offset);
+                      if (currentValue !== value_1) {
+                          // Queue up the rendering of the value.
+                          operations.push(function () { return write(target, propName, value_1); });
+                      }
                   }
                   else {
-                      lowerValue = lowerFrame.value;
-                  }
-                  // Get the current value and calculate the next value, only attempt to
-                  // render if they are different. It is assumed that the cost of reading
-                  // constantly is less than the cost of writing constantly.
-                  var offset = (lowerTime - currentTime) / (lowerTime - upperTime);
-                  var value = mix(lowerValue, upperValue, offset);
-                  if (currentValue !== value) {
-                      // Queue up the rendering of the value.
-                      operations.push(function () { return write(target, propName, value); });
+                      var initialValue = retrieveValue(id, target, propName);
+                      if (initialValue != null) {
+                          write(target, propName, initialValue);
+                      }
                   }
               };
-              for (var _i = 0, targets_1 = targets; _i < targets_1.length; _i++) {
-                  var target = targets_1[_i];
+              for (var _i = 0, targets_2 = targets; _i < targets_2.length; _i++) {
+                  var target = targets_2[_i];
                   _loop_2(target);
               }
           };
           for (var propName in keyframes) {
               _loop_1(propName);
+          }
+          // Clear cache for targets that have gone idle.
+          for (var _i = 0, targets_1 = targets; _i < targets_1.length; _i++) {
+              var target = targets_1[_i];
+              if (playState === "idle") {
+                  clearKeys(id, target);
+              }
           }
       }
   }
@@ -690,12 +732,14 @@
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
   }
 
+  var autoNumber = 0;
   var Timeline = /** @class */ (function () {
       function Timeline(options) {
           // Ensure new in case js user forgets new or chooses to rebel against new :)
           if (!(this instanceof Timeline)) {
               return new Timeline(options);
           }
+          this.id = "_" + ++autoNumber;
           this.alternate = false;
           this.currentTime = 0;
           this.events = [];
@@ -711,6 +755,7 @@
           if (options) {
               this.configure(options);
           }
+          if (!this.id.indexOf("_")) ;
       }
       Object.defineProperty(Timeline.prototype, "duration", {
           /**

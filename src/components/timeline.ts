@@ -1,7 +1,15 @@
 import { ja } from "../types";
 import { queueTransition } from "../services/animator";
 
+let autoNumber = 0;
+
 export class Timeline implements ja.TimelineAnimation {
+  /**
+   * A unique identifier for the timeline.
+   * @public
+   */
+  id: string;
+
   /**
    * True if the timeline should alternate.
    * @public
@@ -112,6 +120,7 @@ export class Timeline implements ja.TimelineAnimation {
     if (!(this instanceof Timeline)) {
       return new Timeline(options);
     }
+    this.id = "_" + ++autoNumber;
     this.alternate = false;
     this.currentTime = 0;
     this.events = [];
@@ -130,6 +139,9 @@ export class Timeline implements ja.TimelineAnimation {
 
     if (options) {
       this.configure(options);
+    }
+    if (!this.id.indexOf("_")) {
+      // If starts with _, it does not need to be registered globally.
     }
   }
 

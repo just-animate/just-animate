@@ -46,24 +46,6 @@ export namespace ja {
     labels: Record<string, number>;
   }
 
-  export interface TimelineConfig {
-    alternate: boolean;
-    currentTime: number;
-    /**
-     * The duration of one animation cycle.
-     * @readonly
-     */
-    duration: number;
-    events: string[];
-    iterations: number;
-    keyframes: Record<string, TargetKeyframes>;
-    labels: Record<string, number>;
-    listeners: Record<string, AnimationEventListener[]>;
-    playState: PlayState;
-    playbackRate: number;
-    targets: Record<string, AnimationTarget>;
-  }
-
   export type AnimationTarget = {};
 
   export type AnimationValue = number | string;
@@ -94,71 +76,10 @@ export namespace ja {
     };
   }
 
-  export interface TimelineAnimation extends Animation {
+  export interface TimelineAnimation extends TimelineConfig {
     /**
-     * True if the timeline should alternate.
      * @public
      */
-    alternate: boolean;
-
-    /**
-     * The current time of the timeline. When using multiple iterations, this
-     * represents the actual time, not the time of the iteration.
-     * @public
-     */
-    currentTime: number;
-
-    /**
-     * The duration of one iteration of the Animation.
-     * @public
-     */
-    duration: number;
-
-    /**
-     * The queued up events to be processed by the animation renderer.
-     * @public
-     */
-    events: string[];
-
-    /**
-     * The number of iterations this Animation should play.
-     * @public
-     */
-    iterations: number;
-
-    /**
-     * The keyframes that make up the animation.
-     * @public
-     */
-    keyframes: Record<string, TargetKeyframes>;
-
-    /**
-     * The labels present in the animation. This is a dictionary of named times
-     * that can be used to configure or seek in the Animation.
-     * @public
-     */
-    labels: Record<string, number>;
-
-    /**
-     * The current playState.  This can be cancel, idle, running, or paused
-     * @public
-     */
-    playState: PlayState;
-
-    /**
-     * The current playbackRate.  1 is forwards, -1 is in reverse.  Use decimals
-     * to perform slowmotion.
-     * @public
-     */
-    playbackRate: number;
-
-    /**
-     * A dictionary of target aliases.
-     * @public
-     */
-    targets: Record<string, AnimationTarget>;
-
-    /** TODO */
     add(animation: Animation, pos: number | string): this;
 
     /**
@@ -172,6 +93,7 @@ export namespace ja {
      * Adds an empty animation in order to add a delay.
      * @param duration the amount of delay to add in milliseconds.
      * @param pos the position to insert the empty animation.
+     * @public
      */
     delay(duration: number, pos?: string | number): this;
 
@@ -270,7 +192,84 @@ export namespace ja {
     /**
      * Forces an update. This can be used after updating timing or keyframes in
      * configure() to force an
+     * @public
      */
     update(): this;
+  }
+
+  export interface TimelineConfig {
+    /**
+     * A unique identifier for the timeline.
+     * @public
+     */
+    id: string;
+
+    /**
+     * True if the timeline should alternate.
+     * @public
+     */
+    alternate: boolean;
+
+    /**
+     * The current time of the timeline. When using multiple iterations, this
+     * represents the actual time, not the time of the iteration.
+     * @public
+     */
+    currentTime: number;
+
+    /**
+     * The duration of one iteration of the Animation.
+     * @public
+     */
+    duration: number;
+
+    /**
+     * The queued up events to be processed by the animation renderer.
+     * @public
+     */
+    events: string[];
+
+    /**
+     * The number of iterations this Animation should play.
+     * @public
+     */
+    iterations: number;
+
+    /**
+     * The keyframes that make up the animation.
+     * @public
+     */
+    keyframes: Record<string, TargetKeyframes>;
+
+    /**
+     * The labels present in the animation. This is a dictionary of named times
+     * that can be used to configure or seek in the Animation.
+     * @public
+     */
+    labels: Record<string, number>;
+
+    /**
+     * A list of listeners for animation events.
+     */
+    listeners: Record<string, AnimationEventListener[]>;
+
+    /**
+     * The current playState.  This can be cancel, idle, running, or paused
+     * @public
+     */
+    playState: PlayState;
+
+    /**
+     * The current playbackRate.  1 is forwards, -1 is in reverse.  Use decimals
+     * to perform slowmotion.
+     * @public
+     */
+    playbackRate: number;
+
+    /**
+     * A dictionary of target aliases.
+     * @public
+     */
+    targets: Record<string, AnimationTarget>;
   }
 }

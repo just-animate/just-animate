@@ -1,7 +1,7 @@
 import { ja } from "../types";
 
 export function readStyle(target: HTMLElement, key: string) {
-  return getComputedStyle(target)[key];
+  return target.style[key] || getComputedStyle(target)[key];
 }
 export function writeStyle(
   target: HTMLElement,
