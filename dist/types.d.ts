@@ -2,6 +2,16 @@ declare global {
   interface Window {
     just: {
       /**
+       * A dictionary of ease names and functions to generate easing functions.
+       */
+      eases: Record<string, ja.EaseFactory>;
+      /**
+       * Parses the easeString and returns an ease function by calling the
+       * appropriate ease from just.ease.
+       * @param easeString String to transform into an easing function.
+       */
+      getEase(easeString: string): ja.Ease;
+      /**
        * Returns a promise that resolves after all work is complete on the next
        * animation frame. This is intended mostly for integration testing.
        */

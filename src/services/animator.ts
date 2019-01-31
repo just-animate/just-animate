@@ -193,17 +193,17 @@ function updatePlayState(config: ja.TimelineConfig) {
   if (config.playState === "cancel") {
     config.playState = "idle";
   } else if (config.playState === "finish") {
-    config.playState = "idle";
+    config.playState = "paused";
   } else {
     const activeDuration = config.duration * config.iterations;
     if (config.playbackRate < 0) {
       if (config.currentTime === 0) {
-        config.playState = "idle";
+        config.playState = "paused";
         config.events.push("finish");
       }
     } else {
       if (config.currentTime === activeDuration) {
-        config.playState = "idle";
+        config.playState = "paused";
         config.events.push("finish");
       }
     }

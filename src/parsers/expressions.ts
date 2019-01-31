@@ -1,17 +1,21 @@
 import {
   ParserContext,
   match,
-  DELIMITER,
   FUNCTION,
-  KEYWORD,
+  STRING,
   UNIT,
-  NUMBER
+  NUMBER,
+  PAREN_CLOSE,
+  PAREN_CLOSE_REGEX,
+  PAREN_OPEN_REGEX,
+  PAREN_OPEN,
+  SYNTAX_REGEX,
+  SYNTAX
 } from "./common";
 
 import {
-  DELIMITER_REGEX,
   PATH_COMMAND_REGEX,
-  KEYWORD_REGEX,
+  STRING_REGEX,
   UNIT_REGEX,
   NUMBER_REGEX,
   HEX_REGEX
@@ -24,12 +28,18 @@ export interface MixerParserContext extends ParserContext {
 }
 
 export function nextToken(ctx: MixerParserContext): number | undefined {
-  if (match(ctx, DELIMITER_REGEX)) {
-    return DELIMITER;
+  if (match(ctx, PAREN_CLOSE_REGEX)) {
+    return PAREN_CLOSE;
+  }
+  if (match(ctx, PAREN_OPEN_REGEX)) {
+    return PAREN_OPEN;
+  }
+  if (match(ctx, SYNTAX_REGEX)) {
+    return SYNTAX;
   }
   if (
     (ctx.isPath && match(ctx, PATH_COMMAND_REGEX)) ||
-    match(ctx, KEYWORD_REGEX)
+    match(ctx, STRING_REGEX)
   ) {
     const isFunction =
       !ctx.isPath &&
@@ -37,7 +47,7 @@ export function nextToken(ctx: MixerParserContext): number | undefined {
       ctx.pattern[ctx.pos] === "(";
 
     if (!isFunction) {
-      return KEYWORD;
+      return STRING;
     }
     if (ctx.match.toLowerCase() === "rgb") {
       const searchString = ctx.pattern.substring(ctx.pos);

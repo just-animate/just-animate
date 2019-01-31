@@ -35,7 +35,7 @@ context('timeline.finish()', () => {
       })
       .then(() => {
         expect(t1.currentTime).to.equal(1000);
-        expect(t1.playState).to.equal('idle');
+        expect(t1.playState).to.equal('paused');
       });
   });
 
@@ -57,7 +57,7 @@ context('timeline.finish()', () => {
       })
       .then(() => {
         expect(t1.currentTime).to.equal(0);
-        expect(t1.playState).to.equal('idle');
+        expect(t1.playState).to.equal('paused');
       });
   });
 

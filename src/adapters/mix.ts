@@ -167,7 +167,6 @@ function mix(left: string, right: string, progress: number): string {
         tokenLeft === FUNCTION &&
         tokenRight === FUNCTION &&
         (term === "rgb" || term === "rgba");
-
       if (isRgbFunction) {
         rgbChannelsRemaining = 3;
       }

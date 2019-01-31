@@ -53,6 +53,7 @@
   function toNumber(str) {
       return +str;
   }
+  //# sourceMappingURL=numbers.js.map
 
   var tasks = [];
   var promise;
@@ -109,6 +110,7 @@
           done2();
       }
   }
+  //# sourceMappingURL=tick.js.map
 
   function readAttribute(target, key) {
       return target.getAttribute(key) || "";
@@ -116,6 +118,7 @@
   function writeAttribute(target, key, value) {
       target.setAttribute(key, value.toString());
   }
+  //# sourceMappingURL=attribute.js.map
 
   function readCssVar(target, key) {
       return target.style.getPropertyValue(key);
@@ -123,6 +126,7 @@
   function writeCssVar(target, key, value) {
       target.style.setProperty(key, value.toString());
   }
+  //# sourceMappingURL=cssvar.js.map
 
   function readStyle(target, key) {
       return target.style[key] || getComputedStyle(target)[key];
@@ -130,6 +134,7 @@
   function writeStyle(target, key, value) {
       target.style[key] = value;
   }
+  //# sourceMappingURL=style.js.map
 
   function readProperty(target, key) {
       return target[key];
@@ -137,14 +142,30 @@
   function writeProperty(target, key, value) {
       target[key] = value;
   }
+  //# sourceMappingURL=property.js.map
 
-  var DELIMITER_REGEX = /^\s*[\(\),\/\s]\s*/;
+  var SYNTAX_REGEX = /^\s*[\(\),\/\s]\s*/;
+  var PAREN_OPEN_REGEX = /^\(/;
+  var PAREN_CLOSE_REGEX = /^\)/;
   var HEX_REGEX = /^#[a-f\d]{3,6}/i;
-  var KEYWORD_REGEX = /^[a-z][a-z\d\-]*/i;
+  var STRING_REGEX = /^[a-z][a-z\d\-]*/i;
   var NUMBER_REGEX = /^\-?\d*\.?\d+/;
   var UNIT_REGEX = /^\-?\d*\.?\d+[a-z%]+/i;
   var PATH_COMMAND_REGEX = /^[mhvlcsqt]/i;
-  var NUMBER = 1, UNIT = 2, KEYWORD = 3, FUNCTION = 4, DELIMITER = 5;
+  /** A bitflag token for a number. */
+  var NUMBER = 1;
+  /** A bitflag token for expression delimiter. */
+  var SYNTAX = 2;
+  /** A bitflag token for a keyword. */
+  var STRING = 4;
+  /** A bitflag token for a unit. */
+  var UNIT = NUMBER | STRING;
+  /** A bitflag token for a ( */
+  var PAREN_OPEN = 8 | SYNTAX;
+  /** A bitflag token for a ) which is also considered delimiter. */
+  var PAREN_CLOSE = 16 | SYNTAX;
+  /** A bitflag token for a function, which is composed of a keyword and a (. */
+  var FUNCTION = 32;
   function clearContext(ctx, value) {
       ctx.match = "";
       ctx.pos = ctx.last = ctx.state = 0;
@@ -159,6 +180,7 @@
       }
       return match != null;
   }
+  //# sourceMappingURL=common.js.map
 
   function hexToRgb(hex) {
       // Parse 3 or 6 hex to an integer using 16 base.
@@ -170,18 +192,25 @@
       var b = h & 0xff;
       return "rgba(" + r + "," + g + "," + b + ",1)";
   }
+  //# sourceMappingURL=colors.js.map
 
   function nextToken(ctx) {
-      if (match(ctx, DELIMITER_REGEX)) {
-          return DELIMITER;
+      if (match(ctx, PAREN_CLOSE_REGEX)) {
+          return PAREN_CLOSE;
+      }
+      if (match(ctx, PAREN_OPEN_REGEX)) {
+          return PAREN_OPEN;
+      }
+      if (match(ctx, SYNTAX_REGEX)) {
+          return SYNTAX;
       }
       if ((ctx.isPath && match(ctx, PATH_COMMAND_REGEX)) ||
-          match(ctx, KEYWORD_REGEX)) {
+          match(ctx, STRING_REGEX)) {
           var isFunction = !ctx.isPath &&
               ctx.pos < ctx.pattern.length - 1 &&
               ctx.pattern[ctx.pos] === "(";
           if (!isFunction) {
-              return KEYWORD;
+              return STRING;
           }
           if (ctx.match.toLowerCase() === "rgb") {
               var searchString = ctx.pattern.substring(ctx.pos);
@@ -213,10 +242,11 @@
           return nextToken(ctx);
       }
   }
+  //# sourceMappingURL=expressions.js.map
 
   function nextToken$1(ctx) {
-      if (match(ctx, DELIMITER_REGEX)) {
-          return DELIMITER;
+      if (match(ctx, SYNTAX_REGEX)) {
+          return SYNTAX;
       }
       if (match(ctx, NUMBER_REGEX)) {
           return NUMBER;
@@ -224,10 +254,11 @@
       if (match(ctx, UNIT_REGEX)) {
           return UNIT;
       }
-      if (match(ctx, KEYWORD_REGEX)) {
+      if (match(ctx, STRING_REGEX)) {
           return FUNCTION;
       }
   }
+  //# sourceMappingURL=transforms.js.map
 
   var UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
   var PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
@@ -391,6 +422,7 @@
   function mixRgbChannel(left, right, progress) {
       return Math.round(Math.sqrt(Math.min(Math.max(0, (left * left + right * right) * progress), 255 * 255)));
   }
+  //# sourceMappingURL=mix.js.map
 
   var PROPERTY = 0, CSS_VAR = 1, ATTRIBUTE = 2, STYLE = 3;
   var htmlAttributeOnly = ["viewBox"];
@@ -448,6 +480,7 @@
   function getMixer(_targetType) {
       return autoMix;
   }
+  //# sourceMappingURL=index.js.map
 
   var CACHE = "__just_cache";
   /**
@@ -487,6 +520,7 @@
       }
       target[CACHE][id][key] = value;
   }
+  //# sourceMappingURL=valuecache.js.map
 
   var FRAME_SIZE = 1000 / 60;
   var queue = [];
@@ -683,19 +717,19 @@
           config.playState = "idle";
       }
       else if (config.playState === "finish") {
-          config.playState = "idle";
+          config.playState = "paused";
       }
       else {
           var activeDuration = config.duration * config.iterations;
           if (config.playbackRate < 0) {
               if (config.currentTime === 0) {
-                  config.playState = "idle";
+                  config.playState = "paused";
                   config.events.push("finish");
               }
           }
           else {
               if (config.currentTime === activeDuration) {
-                  config.playState = "idle";
+                  config.playState = "paused";
                   config.events.push("finish");
               }
           }
@@ -731,6 +765,7 @@
       // Ensure current time is not out of bounds.
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
   }
+  //# sourceMappingURL=animator.js.map
 
   var autoNumber = 0;
   var Timeline = /** @class */ (function () {
@@ -1044,13 +1079,76 @@
           }
       }
   }
+  //# sourceMappingURL=timeline.js.map
+
+  var eases = {};
+  var DEFAULT_EASING = function (o) { return o; };
+  var easeCtx = {};
+  /**
+   *
+   * @param easeString
+   */
+  function getEase(easeString) {
+      clearContext(easeCtx, easeString);
+      var token;
+      var fn = DEFAULT_EASING;
+      var waitingForTerms = false;
+      var fnName;
+      var terms = [];
+      while (true) {
+          token = nextToken(easeCtx);
+          if (!token) {
+              fn = composeEase(fn, fnName, terms);
+              break;
+          }
+          if (token === PAREN_CLOSE) {
+              fn = composeEase(fn, fnName, terms);
+              fnName = undefined;
+              waitingForTerms = false;
+              terms.length = 0;
+          }
+          else if (waitingForTerms &&
+              ((token & NUMBER) !== 0 || (token & STRING) !== 0)) {
+              terms.push(easeCtx.match);
+          }
+          else if (token === STRING) {
+              fn = composeEase(fn, easeCtx.match);
+          }
+          else if (token === FUNCTION) {
+              fnName = easeCtx.match;
+              waitingForTerms = true;
+          }
+      }
+      return fn;
+  }
+  /**
+   * Combines the provided function with a new function from the factory.
+   * @param fn
+   * @param factoryName
+   * @param args
+   */
+  function composeEase(fn, factoryName, args) {
+      if (!factoryName) {
+          return fn;
+      }
+      var easeFactory = eases[factoryName];
+      if (!easeFactory) {
+          return fn;
+      }
+      var outerFn = easeFactory.apply(0, args);
+      return function (o) { return outerFn(fn(o)); };
+  }
+  //# sourceMappingURL=eases.js.map
 
   function animate(targets, duration, props) {
       return new Timeline().animate(targets, duration, props);
   }
+  //# sourceMappingURL=main.js.map
 
   exports.animate = animate;
   exports.nextAnimationFrame = nextAnimationFrame;
+  exports.eases = eases;
+  exports.getEase = getEase;
   exports.tick = tick;
   exports.Timeline = Timeline;
 

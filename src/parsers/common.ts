@@ -1,6 +1,8 @@
-export const DELIMITER_REGEX = /^\s*[\(\),\/\s]\s*/;
+export const SYNTAX_REGEX = /^\s*[\(\),\/\s]\s*/;
+export const PAREN_OPEN_REGEX = /^\(/;
+export const PAREN_CLOSE_REGEX = /^\)/;
 export const HEX_REGEX = /^#[a-f\d]{3,6}/i;
-export const KEYWORD_REGEX = /^[a-z][a-z\d\-]*/i;
+export const STRING_REGEX = /^[a-z][a-z\d\-]*/i;
 export const NUMBER_REGEX = /^\-?\d*\.?\d+/;
 export const UNIT_REGEX = /^\-?\d*\.?\d+[a-z%]+/i;
 export const PATH_COMMAND_REGEX = /^[mhvlcsqt]/i;
@@ -13,11 +15,20 @@ export interface ParserContext {
   pattern: string;
 }
 
-export const NUMBER = 1,
-  UNIT = 2,
-  KEYWORD = 3,
-  FUNCTION = 4,
-  DELIMITER = 5;
+/** A bitflag token for a number. */
+export const NUMBER = 1;
+/** A bitflag token for expression delimiter. */
+export const SYNTAX = 2;
+/** A bitflag token for a keyword. */
+export const STRING = 4;
+/** A bitflag token for a unit. */
+export const UNIT = NUMBER | STRING;
+/** A bitflag token for a ( */
+export const PAREN_OPEN = 8 | SYNTAX;
+/** A bitflag token for a ) which is also considered delimiter. */
+export const PAREN_CLOSE = 16 | SYNTAX;
+/** A bitflag token for a function, which is composed of a keyword and a (. */
+export const FUNCTION = 32;
 
 export function clearContext(ctx: ParserContext, value: string) {
   ctx.match = "";
