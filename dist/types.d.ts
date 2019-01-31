@@ -65,8 +65,10 @@ export namespace ja {
   }
 
   export interface EaseFactory {
-    (...args: Array<string | number>): Ease;
+    (...args: any[]): Ease;
   }
+
+  export type EaseTypes = "in" | "out" | "in-out";
 
   export interface Keyframe {
     ease?: string;

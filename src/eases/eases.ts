@@ -1,9 +1,15 @@
 import { ja } from "../types";
-import { clearContext, PAREN_CLOSE, NUMBER, STRING, FUNCTION } from "./common";
-import { nextToken, MixerParserContext } from "./expressions";
+import {
+  clearContext,
+  PAREN_CLOSE,
+  NUMBER,
+  STRING,
+  FUNCTION
+} from "../parsers/common";
+import { nextToken, MixerParserContext } from "../parsers/expressions";
+import { linear } from "./linear";
 
 const eases = {} as Record<string, ja.EaseFactory>;
-const DEFAULT_EASING = (o: number) => o;
 const easeCtx = {} as MixerParserContext;
 
 /**
@@ -14,7 +20,7 @@ function getEase(easeString: string): ja.Ease {
   clearContext(easeCtx, easeString);
 
   let token: number | undefined;
-  let fn = DEFAULT_EASING;
+  let fn = linear;
   let waitingForTerms = false;
   let fnName: string | undefined;
   const terms: string[] = [];

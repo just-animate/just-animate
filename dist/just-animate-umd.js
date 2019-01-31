@@ -4,56 +4,285 @@
   (global = global || self, factory(global.just = {}));
 }(this, function (exports) { 'use strict';
 
-  /**
-   * A helper for numeric sort. The default JavaScript sort is alphanumeric,
-   * which would sort 1,9,10 to 1,10,9.
-   * @param a the first term to compare.
-   * @param b the second term to compare.
-   */
-  function byNumber(a, b) {
-      return a - b;
+  function inOut(ease, type) {
+      if (type === "out") {
+          return function (o) { return 1 - ease(1 - o); };
+      }
+      if (type === "in-out") {
+          return function (o) {
+              return o < 0.5 ? ease(o * 2.0) / 2.0 : 1 - ease((1 - o) * 2) / 2;
+          };
+      }
+      return ease;
   }
-  /**
-   * Returns the min if the value is less than, the max if the value is greater
-   * than, or the value if in between the min and max.
-   * @param value The value to clamp.
-   * @param min The minimum value to return.
-   * @param max The maximum value to return.
-   */
-  function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
+
+  var factor = 1.70158;
+  function back(type) {
+      return inOut(function (n) { return n * n * ((factor + 1) * n - factor); }, type);
   }
+
+  function mirror(ease) {
+      return function (n) { return 1 - ease(1 - n); };
+  }
+
+  function bounce(type, factor) {
+      // Guard if factor comes in as a string.
+      factor = +(factor || factor === 0 ? factor : 7.5625);
+      return inOut(mirror(function (o) {
+          if (o < 0.36363636) {
+              // (-1.0/2.75) to (1.0/2.75), centered on (0.0/2.75)
+              return factor * o * o;
+          }
+          if (o < 0.72727273) {
+              // (1.0/2.75) to (2.0/2.75), centered on (1.5/2.75)
+              return factor * (o -= 0.545455) * o + 0.75;
+          }
+          if (o < 0.90909091) {
+              // (2.0/2.75) to (2.5/2.75), centered on (2.25/2.75)
+              return factor * (o -= 0.818182) * o + 0.9375;
+          }
+          // (2.5/2.75) to (2.75/2.75), centered on (2.625/2.75)
+          return factor * (o -= 0.954545) * o + 0.984375;
+      }), type);
+  }
+
+  function linear(o) {
+      return o;
+  }
+
+  var MAX_ITERATIONS = 19;
+  // calculates cubic bezier value in one dimension, assuming initial point = 0
+  // and final point = 1
+  var bezier = function (c1, c2, t) {
+      var it = 1 - t;
+      return ((it * c1 + t * c2) * 3 * it + t * t) * t;
+  };
+  var cubicBezier = function (cx1, cy1, cx2, cy2) {
+      // Ensure converted to numbers since they might actually be strings.
+      cx1 = +cx1;
+      cy1 = +cy1;
+      cx2 = +cx2;
+      cy2 = +cy2;
+      // if control point x component is out of range 0..1, return linear ease
+      // function instead of cubic bezier ease
+      if (cx1 < 0 || cx1 > 1 || cx2 < 0 || cx2 > 1) {
+          return linear;
+      }
+      return function (t) {
+          // return linear if out of bounds
+          if (t <= 0 || t >= 1) {
+              return t;
+          }
+          var min = 0;
+          var max = 1;
+          var iterations = MAX_ITERATIONS;
+          var mid;
+          var tPos;
+          do {
+              mid = 0.5 * (min + max);
+              tPos = bezier(cx1, cx2, mid);
+              // if this curve point is close enough to the target t value,
+              // return the ease value here
+              if (Math.abs(t - tPos) < 0.0001) {
+                  return bezier(cy1, cy2, mid);
+              }
+              // update bounds and try again
+              if (tPos < t) {
+                  min = mid;
+              }
+              else {
+                  max = mid;
+              }
+          } while (--iterations);
+          // iteration limit reached, return the ease value at the current
+          // point on the curve
+          mid = 0.5 * (min + max);
+          return bezier(cy1, cy2, mid);
+      };
+  };
+
+  function easeIn() {
+      return back("in");
+  }
+
+  function easeInOut() {
+      return back("in-out");
+  }
+
+  function easeOut() {
+      return back("out");
+  }
+
+  function yoyo(times) {
+      times = +(times || times === 0 ? times : 2);
+      return function (o) {
+          o = o * times;
+          var floor = ~~o;
+          return floor % 2 ? 1.0 - o + floor : o - floor;
+      };
+  }
+
+  function repeat(times) {
+      times = +(times || times === 0 ? times : 2);
+      return function (o) {
+          o = o * times;
+          return o - ~~o;
+      };
+  }
+
+  var SYNTAX_REGEX = /^\s*[\(\),\/\s]\s*/;
+  var PAREN_OPEN_REGEX = /^\(/;
+  var PAREN_CLOSE_REGEX = /^\)/;
+  var HEX_REGEX = /^#[a-f\d]{3,6}/i;
+  var STRING_REGEX = /^[a-z][a-z\d\-]*/i;
+  var NUMBER_REGEX = /^\-?\d*\.?\d+/;
+  var UNIT_REGEX = /^\-?\d*\.?\d+[a-z%]+/i;
+  var PATH_COMMAND_REGEX = /^[mhvlcsqt]/i;
+  /** A bitflag token for a number. */
+  var NUMBER = 1;
+  /** A bitflag token for expression delimiter. */
+  var SYNTAX = 2;
+  /** A bitflag token for a keyword. */
+  var STRING = 4;
+  /** A bitflag token for a unit. */
+  var UNIT = NUMBER | STRING;
+  /** A bitflag token for a ( */
+  var PAREN_OPEN = 8 | SYNTAX;
+  /** A bitflag token for a ) which is also considered delimiter. */
+  var PAREN_CLOSE = 16 | SYNTAX;
+  /** A bitflag token for a function, which is composed of a keyword and a (. */
+  var FUNCTION = 32;
+  function clearContext(ctx, value) {
+      ctx.match = "";
+      ctx.pos = ctx.last = ctx.state = 0;
+      ctx.pattern = value;
+  }
+  function match(ctx, regex) {
+      var match = regex.exec(ctx.pattern.substring(ctx.pos));
+      if (match) {
+          ctx.match = match[0];
+          ctx.last = ctx.pos;
+          ctx.pos += ctx.match.length;
+      }
+      return match != null;
+  }
+
+  function hexToRgb(hex) {
+      // Parse 3 or 6 hex to an integer using 16 base.
+      var h = parseInt(hex.length === 3
+          ? hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
+          : hex, 16);
+      var r = (h >> 16) & 0xff;
+      var g = (h >> 8) & 0xff;
+      var b = h & 0xff;
+      return "rgba(" + r + "," + g + "," + b + ",1)";
+  }
+
+  function nextToken(ctx) {
+      if (match(ctx, PAREN_CLOSE_REGEX)) {
+          return PAREN_CLOSE;
+      }
+      if (match(ctx, PAREN_OPEN_REGEX)) {
+          return PAREN_OPEN;
+      }
+      if (match(ctx, SYNTAX_REGEX)) {
+          return SYNTAX;
+      }
+      if ((ctx.isPath && match(ctx, PATH_COMMAND_REGEX)) ||
+          match(ctx, STRING_REGEX)) {
+          var isFunction = !ctx.isPath &&
+              ctx.pos < ctx.pattern.length - 1 &&
+              ctx.pattern[ctx.pos] === "(";
+          if (!isFunction) {
+              return STRING;
+          }
+          if (ctx.match.toLowerCase() === "rgb") {
+              var searchString = ctx.pattern.substring(ctx.pos);
+              var endOfString = searchString.indexOf(")");
+              var terms = searchString.substring(1, endOfString);
+              ctx.pattern =
+                  ctx.pattern.substring(0, ctx.pos + 1 + terms.length) +
+                      ",1" +
+                      ctx.pattern.substring(ctx.pos + 1 + terms.length);
+              ctx.match = "rgba";
+          }
+          return FUNCTION;
+      }
+      if (!ctx.isPath && match(ctx, UNIT_REGEX)) {
+          return UNIT;
+      }
+      if (match(ctx, NUMBER_REGEX)) {
+          return NUMBER;
+      }
+      if (match(ctx, HEX_REGEX)) {
+          // If the value was hex, replace it with RGB in the string and parse that.
+          var hexValue = ctx.pattern.substring(ctx.last + 1, ctx.pos);
+          ctx.pattern =
+              ctx.pattern.substring(0, ctx.last) +
+                  hexToRgb(hexValue) +
+                  ctx.pattern.substring(ctx.pos);
+          // Reset the position and chain another call to nextToken.
+          ctx.pos = ctx.last;
+          return nextToken(ctx);
+      }
+  }
+
+  var eases = {};
+  var easeCtx = {};
   /**
-   * Finds the index before the provided value in the list of numbers.
-   * @param list The list to search.
-   * @param value The value to reference.
+   *
+   * @param easeString
    */
-  function findLowerIndex(list, value) {
-      var i = 0;
-      while (i < list.length) {
-          if (list[i] > value) {
-              --i;
+  function getEase(easeString) {
+      clearContext(easeCtx, easeString);
+      var token;
+      var fn = linear;
+      var waitingForTerms = false;
+      var fnName;
+      var terms = [];
+      while (true) {
+          token = nextToken(easeCtx);
+          if (!token) {
+              fn = composeEase(fn, fnName, terms);
               break;
           }
-          i++;
+          if (token === PAREN_CLOSE) {
+              fn = composeEase(fn, fnName, terms);
+              fnName = undefined;
+              waitingForTerms = false;
+              terms.length = 0;
+          }
+          else if (waitingForTerms &&
+              ((token & NUMBER) !== 0 || (token & STRING) !== 0)) {
+              terms.push(easeCtx.match);
+          }
+          else if (token === STRING) {
+              fn = composeEase(fn, easeCtx.match);
+          }
+          else if (token === FUNCTION) {
+              fnName = easeCtx.match;
+              waitingForTerms = true;
+          }
       }
-      return Math.min(i, list.length - 1);
+      return fn;
   }
   /**
-   * Returns true if the string or nunmber is numeric.
-   * @param obj to test for numbers
+   * Combines the provided function with a new function from the factory.
+   * @param fn
+   * @param factoryName
+   * @param args
    */
-  function isNumeric(obj) {
-      return typeof obj === "number" || isFinite(+obj);
+  function composeEase(fn, factoryName, args) {
+      if (!factoryName) {
+          return fn;
+      }
+      var easeFactory = eases[factoryName];
+      if (!easeFactory) {
+          return fn;
+      }
+      var outerFn = easeFactory.apply(0, args);
+      return function (o) { return outerFn(fn(o)); };
   }
-  /**
-   * Coerces a number string into a number;
-   * @param str the string to coerce.
-   */
-  function toNumber(str) {
-      return +str;
-  }
-  //# sourceMappingURL=numbers.js.map
 
   var tasks = [];
   var promise;
@@ -110,7 +339,74 @@
           done2();
       }
   }
-  //# sourceMappingURL=tick.js.map
+
+  function power(type, c) {
+      // Ensure it is actually a number.
+      c = +(c || c === 0 ? c : 2);
+      return inOut(function (o) { return Math.pow(o, c); }, type);
+  }
+
+  function sine(type) {
+      return inOut(function (o) { return -Math.cos((o * Math.PI) / 2) + 1; }, type);
+  }
+
+  function steps(count, type) {
+      var fn = type === "end" ? Math.floor : Math.ceil;
+      return function (x) {
+          var n = fn(x * +count) / +count;
+          return n < 0 ? 0 : n > 1 ? 1 : n;
+      };
+  }
+
+  /**
+   * A helper for numeric sort. The default JavaScript sort is alphanumeric,
+   * which would sort 1,9,10 to 1,10,9.
+   * @param a the first term to compare.
+   * @param b the second term to compare.
+   */
+  function byNumber(a, b) {
+      return a - b;
+  }
+  /**
+   * Returns the min if the value is less than, the max if the value is greater
+   * than, or the value if in between the min and max.
+   * @param value The value to clamp.
+   * @param min The minimum value to return.
+   * @param max The maximum value to return.
+   */
+  function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+  }
+  /**
+   * Finds the index before the provided value in the list of numbers.
+   * @param list The list to search.
+   * @param value The value to reference.
+   */
+  function findLowerIndex(list, value) {
+      var i = 0;
+      while (i < list.length) {
+          if (list[i] > value) {
+              --i;
+              break;
+          }
+          i++;
+      }
+      return Math.min(i, list.length - 1);
+  }
+  /**
+   * Returns true if the string or nunmber is numeric.
+   * @param obj to test for numbers
+   */
+  function isNumeric(obj) {
+      return typeof obj === "number" || isFinite(+obj);
+  }
+  /**
+   * Coerces a number string into a number;
+   * @param str the string to coerce.
+   */
+  function toNumber(str) {
+      return +str;
+  }
 
   function readAttribute(target, key) {
       return target.getAttribute(key) || "";
@@ -118,7 +414,6 @@
   function writeAttribute(target, key, value) {
       target.setAttribute(key, value.toString());
   }
-  //# sourceMappingURL=attribute.js.map
 
   function readCssVar(target, key) {
       return target.style.getPropertyValue(key);
@@ -126,7 +421,6 @@
   function writeCssVar(target, key, value) {
       target.style.setProperty(key, value.toString());
   }
-  //# sourceMappingURL=cssvar.js.map
 
   function readStyle(target, key) {
       return target.style[key] || getComputedStyle(target)[key];
@@ -134,7 +428,6 @@
   function writeStyle(target, key, value) {
       target.style[key] = value;
   }
-  //# sourceMappingURL=style.js.map
 
   function readProperty(target, key) {
       return target[key];
@@ -142,107 +435,6 @@
   function writeProperty(target, key, value) {
       target[key] = value;
   }
-  //# sourceMappingURL=property.js.map
-
-  var SYNTAX_REGEX = /^\s*[\(\),\/\s]\s*/;
-  var PAREN_OPEN_REGEX = /^\(/;
-  var PAREN_CLOSE_REGEX = /^\)/;
-  var HEX_REGEX = /^#[a-f\d]{3,6}/i;
-  var STRING_REGEX = /^[a-z][a-z\d\-]*/i;
-  var NUMBER_REGEX = /^\-?\d*\.?\d+/;
-  var UNIT_REGEX = /^\-?\d*\.?\d+[a-z%]+/i;
-  var PATH_COMMAND_REGEX = /^[mhvlcsqt]/i;
-  /** A bitflag token for a number. */
-  var NUMBER = 1;
-  /** A bitflag token for expression delimiter. */
-  var SYNTAX = 2;
-  /** A bitflag token for a keyword. */
-  var STRING = 4;
-  /** A bitflag token for a unit. */
-  var UNIT = NUMBER | STRING;
-  /** A bitflag token for a ( */
-  var PAREN_OPEN = 8 | SYNTAX;
-  /** A bitflag token for a ) which is also considered delimiter. */
-  var PAREN_CLOSE = 16 | SYNTAX;
-  /** A bitflag token for a function, which is composed of a keyword and a (. */
-  var FUNCTION = 32;
-  function clearContext(ctx, value) {
-      ctx.match = "";
-      ctx.pos = ctx.last = ctx.state = 0;
-      ctx.pattern = value;
-  }
-  function match(ctx, regex) {
-      var match = regex.exec(ctx.pattern.substring(ctx.pos));
-      if (match) {
-          ctx.match = match[0];
-          ctx.last = ctx.pos;
-          ctx.pos += ctx.match.length;
-      }
-      return match != null;
-  }
-  //# sourceMappingURL=common.js.map
-
-  function hexToRgb(hex) {
-      // Parse 3 or 6 hex to an integer using 16 base.
-      var h = parseInt(hex.length === 3
-          ? hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
-          : hex, 16);
-      var r = (h >> 16) & 0xff;
-      var g = (h >> 8) & 0xff;
-      var b = h & 0xff;
-      return "rgba(" + r + "," + g + "," + b + ",1)";
-  }
-  //# sourceMappingURL=colors.js.map
-
-  function nextToken(ctx) {
-      if (match(ctx, PAREN_CLOSE_REGEX)) {
-          return PAREN_CLOSE;
-      }
-      if (match(ctx, PAREN_OPEN_REGEX)) {
-          return PAREN_OPEN;
-      }
-      if (match(ctx, SYNTAX_REGEX)) {
-          return SYNTAX;
-      }
-      if ((ctx.isPath && match(ctx, PATH_COMMAND_REGEX)) ||
-          match(ctx, STRING_REGEX)) {
-          var isFunction = !ctx.isPath &&
-              ctx.pos < ctx.pattern.length - 1 &&
-              ctx.pattern[ctx.pos] === "(";
-          if (!isFunction) {
-              return STRING;
-          }
-          if (ctx.match.toLowerCase() === "rgb") {
-              var searchString = ctx.pattern.substring(ctx.pos);
-              var endOfString = searchString.indexOf(")");
-              var terms = searchString.substring(1, endOfString);
-              ctx.pattern =
-                  ctx.pattern.substring(0, ctx.pos + 1 + terms.length) +
-                      ",1" +
-                      ctx.pattern.substring(ctx.pos + 1 + terms.length);
-              ctx.match = "rgba";
-          }
-          return FUNCTION;
-      }
-      if (!ctx.isPath && match(ctx, UNIT_REGEX)) {
-          return UNIT;
-      }
-      if (match(ctx, NUMBER_REGEX)) {
-          return NUMBER;
-      }
-      if (match(ctx, HEX_REGEX)) {
-          // If the value was hex, replace it with RGB in the string and parse that.
-          var hexValue = ctx.pattern.substring(ctx.last + 1, ctx.pos);
-          ctx.pattern =
-              ctx.pattern.substring(0, ctx.last) +
-                  hexToRgb(hexValue) +
-                  ctx.pattern.substring(ctx.pos);
-          // Reset the position and chain another call to nextToken.
-          ctx.pos = ctx.last;
-          return nextToken(ctx);
-      }
-  }
-  //# sourceMappingURL=expressions.js.map
 
   function nextToken$1(ctx) {
       if (match(ctx, SYNTAX_REGEX)) {
@@ -258,7 +450,6 @@
           return FUNCTION;
       }
   }
-  //# sourceMappingURL=transforms.js.map
 
   var UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
   var PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
@@ -422,7 +613,6 @@
   function mixRgbChannel(left, right, progress) {
       return Math.round(Math.sqrt(Math.min(Math.max(0, (left * left + right * right) * progress), 255 * 255)));
   }
-  //# sourceMappingURL=mix.js.map
 
   var PROPERTY = 0, CSS_VAR = 1, ATTRIBUTE = 2, STYLE = 3;
   var htmlAttributeOnly = ["viewBox"];
@@ -480,7 +670,6 @@
   function getMixer(_targetType) {
       return autoMix;
   }
-  //# sourceMappingURL=index.js.map
 
   var CACHE = "__just_cache";
   /**
@@ -520,7 +709,6 @@
       }
       target[CACHE][id][key] = value;
   }
-  //# sourceMappingURL=valuecache.js.map
 
   var FRAME_SIZE = 1000 / 60;
   var queue = [];
@@ -765,7 +953,6 @@
       // Ensure current time is not out of bounds.
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
   }
-  //# sourceMappingURL=animator.js.map
 
   var autoNumber = 0;
   var Timeline = /** @class */ (function () {
@@ -1079,78 +1266,61 @@
           }
       }
   }
-  //# sourceMappingURL=timeline.js.map
 
-  var eases = {};
-  var DEFAULT_EASING = function (o) { return o; };
-  var easeCtx = {};
-  /**
-   *
-   * @param easeString
-   */
-  function getEase(easeString) {
-      clearContext(easeCtx, easeString);
-      var token;
-      var fn = DEFAULT_EASING;
-      var waitingForTerms = false;
-      var fnName;
-      var terms = [];
-      while (true) {
-          token = nextToken(easeCtx);
-          if (!token) {
-              fn = composeEase(fn, fnName, terms);
-              break;
+  var TAU = 2 * Math.PI;
+  function elastic(type, amplitude, period, bounces) {
+      // Add defaults where necessary and convert from string.
+      amplitude = +(amplitude || amplitude === 0 ? amplitude : 1);
+      period = +(period || period === 0 ? period : 0.4);
+      bounces = +(bounces || bounces === 0 ? bounces : 4);
+      var s = period / bounces;
+      return inOut(function (n) {
+          if (n === 0 || n === 1) {
+              return n;
           }
-          if (token === PAREN_CLOSE) {
-              fn = composeEase(fn, fnName, terms);
-              fnName = undefined;
-              waitingForTerms = false;
-              terms.length = 0;
-          }
-          else if (waitingForTerms &&
-              ((token & NUMBER) !== 0 || (token & STRING) !== 0)) {
-              terms.push(easeCtx.match);
-          }
-          else if (token === STRING) {
-              fn = composeEase(fn, easeCtx.match);
-          }
-          else if (token === FUNCTION) {
-              fnName = easeCtx.match;
-              waitingForTerms = true;
-          }
-      }
-      return fn;
+          return (-amplitude *
+              Math.pow(2, 10 * (n - 1)) *
+              Math.sin(((n - 1 - s) * TAU) / period));
+      }, type);
   }
-  /**
-   * Combines the provided function with a new function from the factory.
-   * @param fn
-   * @param factoryName
-   * @param args
-   */
-  function composeEase(fn, factoryName, args) {
-      if (!factoryName) {
-          return fn;
-      }
-      var easeFactory = eases[factoryName];
-      if (!easeFactory) {
-          return fn;
-      }
-      var outerFn = easeFactory.apply(0, args);
-      return function (o) { return outerFn(fn(o)); };
-  }
-  //# sourceMappingURL=eases.js.map
 
+  function stepEnd() {
+      return steps(1, "end");
+  }
+
+  function stepStart() {
+      return steps(1);
+  }
+
+  // Register built-in easings
+  // Linear is the fallback when an easing isn't found, so we won't register it.
+  eases.back = back;
+  eases.bounce = bounce;
+  eases["cubic-bezier"] = cubicBezier;
+  eases["ease-in"] = easeIn;
+  eases["ease-in-out"] = easeInOut;
+  eases["ease-out"] = easeOut;
+  eases.elastic = elastic;
+  eases.power = power;
+  eases.repeat = repeat;
+  eases.sine = sine;
+  eases.steps = steps;
+  eases["step-end"] = stepEnd;
+  eases["step-start"] = stepStart;
+  eases.yoyo = yoyo;
+  /**
+   * Convenience method for doing animations.
+   */
   function animate(targets, duration, props) {
       return new Timeline().animate(targets, duration, props);
   }
-  //# sourceMappingURL=main.js.map
 
   exports.animate = animate;
-  exports.nextAnimationFrame = nextAnimationFrame;
   exports.eases = eases;
   exports.getEase = getEase;
-  exports.tick = tick;
+  exports.nextAnimationFrame = nextAnimationFrame;
   exports.Timeline = Timeline;
+  exports.tick = tick;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

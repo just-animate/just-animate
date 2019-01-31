@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 /// <reference types="../../dist/types" />
 
-context('getEasing()', () => {
+context('eases.custom', () => {
   beforeEach(() => {
     cy.visit('cypress/index.html');
   });
