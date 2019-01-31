@@ -3,6 +3,7 @@ import { ja } from "../types";
 import { tick } from "./tick";
 import { detectTargetType, getReader, getWriter, getMixer } from "../adapters";
 import { retrieveValue, storeValue, clearKeys } from "./valuecache";
+import { getEase } from "../main";
 
 const FRAME_SIZE = 1000 / 60;
 
@@ -121,6 +122,7 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           const upperIndex = Math.min(lowerIndex + 1, times.length - 1);
           const upperTime = times[upperIndex];
           const upperValue = property[upperTime].value;
+          const upperEase = getEase(property[upperTime].ease || "linear");
 
           // Attempt to load initial value from cache or add the current as init
           let lowerValue: ja.AnimationValue;
@@ -138,7 +140,9 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           // Get the current value and calculate the next value, only attempt to
           // render if they are different. It is assumed that the cost of
           // reading constantly is less than the cost of writing constantly.
-          const offset = (lowerTime - currentTime) / (lowerTime - upperTime);
+          const offset = upperEase(
+            (lowerTime - currentTime) / (lowerTime - upperTime)
+          );
           const value = mix(lowerValue, upperValue, offset);
           if (currentValue !== value) {
             // Queue up the rendering of the value.

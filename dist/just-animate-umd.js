@@ -827,6 +827,7 @@
                       var upperIndex = Math.min(lowerIndex + 1, times.length - 1);
                       var upperTime = times[upperIndex];
                       var upperValue = property[upperTime].value;
+                      var upperEase = getEase(property[upperTime].ease || "linear");
                       // Attempt to load initial value from cache or add the current as init
                       var lowerValue = void 0;
                       if (!lowerFrame) {
@@ -843,7 +844,7 @@
                       // Get the current value and calculate the next value, only attempt to
                       // render if they are different. It is assumed that the cost of
                       // reading constantly is less than the cost of writing constantly.
-                      var offset = (lowerTime - currentTime) / (lowerTime - upperTime);
+                      var offset = upperEase((lowerTime - currentTime) / (lowerTime - upperTime));
                       var value_1 = mix(lowerValue, upperValue, offset);
                       if (currentValue !== value_1) {
                           // Queue up the rendering of the value.
