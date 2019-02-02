@@ -1,5 +1,5 @@
-import { ja } from "../types";
-import { queueTransition } from "../services/animator";
+import { ja } from '../types';
+import { queueTransition } from '../services/animator';
 
 let autoNumber = 0;
 
@@ -120,7 +120,7 @@ export class Timeline implements ja.TimelineAnimation {
     if (!(this instanceof Timeline)) {
       return new Timeline(options);
     }
-    this.id = "_" + ++autoNumber;
+    this.id = '_' + ++autoNumber;
     this.alternate = false;
     this.currentTime = 0;
     this.events = [];
@@ -131,7 +131,7 @@ export class Timeline implements ja.TimelineAnimation {
       ja.AnimationEvent,
       ja.AnimationEventListener[]
     >;
-    this.playState = "running";
+    this.playState = 'running';
     this.playbackRate = 1;
     this.targetIds_ = 0;
     this.targets = {};
@@ -140,7 +140,7 @@ export class Timeline implements ja.TimelineAnimation {
     if (options) {
       this.configure(options);
     }
-    if (!this.id.indexOf("_")) {
+    if (!this.id.indexOf('_')) {
       // If starts with _, it does not need to be registered globally.
     }
   }
@@ -152,7 +152,7 @@ export class Timeline implements ja.TimelineAnimation {
     }
     this.timelines_.push({
       animation,
-      pos
+      pos,
     });
     return this.update();
   }
@@ -163,8 +163,8 @@ export class Timeline implements ja.TimelineAnimation {
    * @public
    */
   cancel(): this {
-    this.playState = "cancel";
-    this.events.push("cancel");
+    this.playState = 'cancel';
+    this.events.push('cancel');
     return this.update();
   }
 
@@ -176,10 +176,12 @@ export class Timeline implements ja.TimelineAnimation {
    */
   configure(json: Partial<ja.TimelineConfig>) {
     for (const k in json) {
-      if (typeof this[k] !== "function" && k !== "duration") {
+      if (typeof this[k] !== 'function' && k !== 'duration') {
         this[k] = json[k];
       }
     }
+    // Configure could result in rendering changes.
+    this.update();
     return this;
   }
 
@@ -189,7 +191,7 @@ export class Timeline implements ja.TimelineAnimation {
    * @public
    */
   delay(duration: number, pos?: string | number): this {
-    return this.animate("", duration, { "": 0 }, pos);
+    return this.animate('', duration, { '': 0 }, pos);
   }
 
   /**
@@ -199,8 +201,8 @@ export class Timeline implements ja.TimelineAnimation {
    * @public
    */
   finish(): this {
-    this.playState = "finish";
-    this.events.push("finish");
+    this.playState = 'finish';
+    this.events.push('finish');
     return this.update();
   }
 
@@ -212,9 +214,9 @@ export class Timeline implements ja.TimelineAnimation {
   getConfig(): ja.TimelineConfig {
     const memento = {} as ja.TimelineConfig;
     for (const key in this) {
-      if (key[key.length - 1] !== "_") {
+      if (key[key.length - 1] !== '_') {
         const val = this[key];
-        if (typeof val !== "function") {
+        if (typeof val !== 'function') {
           memento[key as string] = val;
         }
       }
@@ -243,7 +245,7 @@ export class Timeline implements ja.TimelineAnimation {
    */
   private getPosition_(pos?: string | number): number {
     // Figure out where to insert this keyframe.
-    if (pos && typeof pos !== "number") {
+    if (pos && typeof pos !== 'number') {
       pos = this.labels[pos];
     }
     return pos as number;
@@ -297,8 +299,8 @@ export class Timeline implements ja.TimelineAnimation {
    * @public
    */
   pause(): this {
-    this.playState = "paused";
-    this.events.push("pause");
+    this.playState = 'paused';
+    this.events.push('pause');
     return this.update();
   }
 
@@ -307,8 +309,8 @@ export class Timeline implements ja.TimelineAnimation {
    * @public
    */
   play(): this {
-    this.playState = "running";
-    this.events.push("play");
+    this.playState = 'running';
+    this.events.push('play');
     return this.update();
   }
 
@@ -324,7 +326,7 @@ export class Timeline implements ja.TimelineAnimation {
       this.currentTime = time;
     }
     // If this is running, pause; otherwise ensure an update occurs.
-    return this.playState !== "running" ? this.pause() : this.update();
+    return this.playState !== 'running' ? this.pause() : this.update();
   }
 
   /**
@@ -333,7 +335,7 @@ export class Timeline implements ja.TimelineAnimation {
    * @public
    */
   set<T>(targets: T | string, props: ja.KeyframeProps, pos?: number | string) {
-    props["ease" as string] = "steps(1,end)";
+    props['ease' as string] = 'steps(1,end)';
     return this.animate(targets, 0, props, pos);
   }
 
@@ -374,10 +376,10 @@ export class Timeline implements ja.TimelineAnimation {
 
     /* If the target is not a string, create an alias so the keyframe can be
      * stored separatedly from the objects themselves. */
-    if (typeof targets !== "string") {
+    if (typeof targets !== 'string') {
       let targetId = findTarget(this.targets, targets);
       if (!targetId) {
-        targetId = "@_" + ++this.targetIds_;
+        targetId = '@_' + ++this.targetIds_;
         this.target(targetId, targets);
       }
       targets = targetId;
@@ -389,12 +391,12 @@ export class Timeline implements ja.TimelineAnimation {
     }
 
     // Figure out what ease and stagger to use.
-    const ease = props.ease || "linear";
+    const ease = props.ease || 'linear';
 
     // tslint:disable-next-line:forin
     for (const prop in props) {
       const value = props[prop];
-      if (prop !== "ease" && (value || value === 0)) {
+      if (prop !== 'ease' && (value || value === 0)) {
         let propKeyframes = targetProps[prop];
         if (!propKeyframes) {
           propKeyframes = targetProps[prop] = {};
@@ -402,7 +404,7 @@ export class Timeline implements ja.TimelineAnimation {
 
         propKeyframes[pos + duration] = {
           ease,
-          value
+          value,
         };
       }
     }

@@ -962,7 +962,7 @@
           if (!(this instanceof Timeline)) {
               return new Timeline(options);
           }
-          this.id = "_" + ++autoNumber;
+          this.id = '_' + ++autoNumber;
           this.alternate = false;
           this.currentTime = 0;
           this.events = [];
@@ -970,7 +970,7 @@
           this.keyframes = {};
           this.labels = {};
           this.listeners = {};
-          this.playState = "running";
+          this.playState = 'running';
           this.playbackRate = 1;
           this.targetIds_ = 0;
           this.targets = {};
@@ -978,7 +978,7 @@
           if (options) {
               this.configure(options);
           }
-          if (!this.id.indexOf("_")) ;
+          if (!this.id.indexOf('_')) ;
       }
       Object.defineProperty(Timeline.prototype, "duration", {
           /**
@@ -1020,7 +1020,7 @@
           }
           this.timelines_.push({
               animation: animation,
-              pos: pos
+              pos: pos,
           });
           return this.update();
       };
@@ -1030,8 +1030,8 @@
        * @public
        */
       Timeline.prototype.cancel = function () {
-          this.playState = "cancel";
-          this.events.push("cancel");
+          this.playState = 'cancel';
+          this.events.push('cancel');
           return this.update();
       };
       /**
@@ -1042,10 +1042,12 @@
        */
       Timeline.prototype.configure = function (json) {
           for (var k in json) {
-              if (typeof this[k] !== "function" && k !== "duration") {
+              if (typeof this[k] !== 'function' && k !== 'duration') {
                   this[k] = json[k];
               }
           }
+          // Configure could result in rendering changes.
+          this.update();
           return this;
       };
       /**
@@ -1054,7 +1056,7 @@
        * @public
        */
       Timeline.prototype.delay = function (duration, pos) {
-          return this.animate("", duration, { "": 0 }, pos);
+          return this.animate('', duration, { '': 0 }, pos);
       };
       /**
        * Finish the animation. If the playbackRate is negative (in reverse), finish
@@ -1063,8 +1065,8 @@
        * @public
        */
       Timeline.prototype.finish = function () {
-          this.playState = "finish";
-          this.events.push("finish");
+          this.playState = 'finish';
+          this.events.push('finish');
           return this.update();
       };
       /**
@@ -1075,9 +1077,9 @@
       Timeline.prototype.getConfig = function () {
           var memento = {};
           for (var key in this) {
-              if (key[key.length - 1] !== "_") {
+              if (key[key.length - 1] !== '_') {
                   var val = this[key];
-                  if (typeof val !== "function") {
+                  if (typeof val !== 'function') {
                       memento[key] = val;
                   }
               }
@@ -1104,7 +1106,7 @@
        */
       Timeline.prototype.getPosition_ = function (pos) {
           // Figure out where to insert this keyframe.
-          if (pos && typeof pos !== "number") {
+          if (pos && typeof pos !== 'number') {
               pos = this.labels[pos];
           }
           return pos;
@@ -1154,8 +1156,8 @@
        * @public
        */
       Timeline.prototype.pause = function () {
-          this.playState = "paused";
-          this.events.push("pause");
+          this.playState = 'paused';
+          this.events.push('pause');
           return this.update();
       };
       /**
@@ -1163,8 +1165,8 @@
        * @public
        */
       Timeline.prototype.play = function () {
-          this.playState = "running";
-          this.events.push("play");
+          this.playState = 'running';
+          this.events.push('play');
           return this.update();
       };
       /**
@@ -1179,7 +1181,7 @@
               this.currentTime = time;
           }
           // If this is running, pause; otherwise ensure an update occurs.
-          return this.playState !== "running" ? this.pause() : this.update();
+          return this.playState !== 'running' ? this.pause() : this.update();
       };
       /**
        * Sets the properties at a given time. This is a convenience method for
@@ -1187,7 +1189,7 @@
        * @public
        */
       Timeline.prototype.set = function (targets, props, pos) {
-          props["ease"] = "steps(1,end)";
+          props['ease'] = 'steps(1,end)';
           return this.animate(targets, 0, props, pos);
       };
       /**
@@ -1220,10 +1222,10 @@
           }
           /* If the target is not a string, create an alias so the keyframe can be
            * stored separatedly from the objects themselves. */
-          if (typeof targets !== "string") {
+          if (typeof targets !== 'string') {
               var targetId = findTarget(this.targets, targets);
               if (!targetId) {
-                  targetId = "@_" + ++this.targetIds_;
+                  targetId = '@_' + ++this.targetIds_;
                   this.target(targetId, targets);
               }
               targets = targetId;
@@ -1233,18 +1235,18 @@
               targetProps = this.keyframes[targets] = {};
           }
           // Figure out what ease and stagger to use.
-          var ease = props.ease || "linear";
+          var ease = props.ease || 'linear';
           // tslint:disable-next-line:forin
           for (var prop in props) {
               var value = props[prop];
-              if (prop !== "ease" && (value || value === 0)) {
+              if (prop !== 'ease' && (value || value === 0)) {
                   var propKeyframes = targetProps[prop];
                   if (!propKeyframes) {
                       propKeyframes = targetProps[prop] = {};
                   }
                   propKeyframes[pos + duration] = {
                       ease: ease,
-                      value: value
+                      value: value,
                   };
               }
           }
