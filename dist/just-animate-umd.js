@@ -741,26 +741,37 @@
    */
   function processTimelines(time) {
       // Determine the delta, clamp between 0ms and 34ms (0 frames and 2 frames).
-      var delta = clamp(time - lastTime, 0, FRAME_SIZE * 2);
+      // Also round to clamp to milliseconds.
+      var delta = Math.round(clamp(time - lastTime, 0, FRAME_SIZE * 2));
       lastTime = time;
       // Get a list of all configs, this should match by index, the queue.
       var configs = queue.slice();
-      // Update timing and fix inconsistencies.
+      // Detect automatic playState changes
       for (var _i = 0, configs_1 = configs; _i < configs_1.length; _i++) {
           var config = configs_1[_i];
-          updateTiming(delta, config);
+          detectPlayStateChanges(config);
       }
-      // Update the playStates.
+      // Update timing and fix inconsistencies.
       for (var _a = 0, configs_2 = configs; _a < configs_2.length; _a++) {
           var config = configs_2[_a];
-          updatePlayState(config);
+          updateTiming(delta, config);
+      }
+      // Update the transient playStates.
+      for (var _b = 0, configs_3 = configs; _b < configs_3.length; _b++) {
+          var config = configs_3[_b];
+          if (config.playState === 'cancel') {
+              config.playState = 'idle';
+          }
+          else if (config.playState === 'finish') {
+              config.playState = 'paused';
+          }
       }
       // Queue up all events.
       var listenersToCall = [];
-      for (var _b = 0, configs_3 = configs; _b < configs_3.length; _b++) {
-          var config = configs_3[_b];
-          for (var _c = 0, _d = config.events; _c < _d.length; _c++) {
-              var event = _d[_c];
+      for (var _c = 0, configs_4 = configs; _c < configs_4.length; _c++) {
+          var config = configs_4[_c];
+          for (var _d = 0, _e = config.events; _d < _e.length; _d++) {
+              var event = _e[_d];
               if (config.listeners) {
                   var listeners = config.listeners[event];
                   if (listeners && listeners.length) {
@@ -773,8 +784,8 @@
       }
       // Render changes to the targets.
       var operations = [];
-      for (var _e = 0, configs_4 = configs; _e < configs_4.length; _e++) {
-          var config = configs_4[_e];
+      for (var _f = 0, configs_5 = configs; _f < configs_5.length; _f++) {
+          var config = configs_5[_f];
           renderState(config, operations);
       }
       // // Write configurations back to their configurators.
@@ -783,18 +794,18 @@
       // }
       // Remove items from the queue if they no longer need to be updated.
       for (var i = queue.length - 1; i > -1; i--) {
-          if (configs[i].playState !== "running") {
+          if (configs[i].playState !== 'running') {
               queue.splice(i, 1);
           }
       }
       // Call all render operations.
-      for (var _f = 0, operations_1 = operations; _f < operations_1.length; _f++) {
-          var operation = operations_1[_f];
+      for (var _g = 0, operations_1 = operations; _g < operations_1.length; _g++) {
+          var operation = operations_1[_g];
           operation();
       }
       // Call all listener callbacks.
-      for (var _g = 0, listenersToCall_1 = listenersToCall; _g < listenersToCall_1.length; _g++) {
-          var listener = listenersToCall_1[_g];
+      for (var _h = 0, listenersToCall_1 = listenersToCall; _h < listenersToCall_1.length; _h++) {
+          var listener = listenersToCall_1[_h];
           listener(time);
       }
       // Continue on the next loop if any configurators remain.
@@ -816,7 +827,7 @@
                   // Unpack these immediately because the return object is shared.
                   var targetType = detectTargetType(target, propName);
                   var write = getWriter(targetType);
-                  if (playState !== "idle") {
+                  if (playState !== 'idle') {
                       var read = getReader(targetType);
                       var mix = getMixer(targetType);
                       var currentValue = read(target, propName);
@@ -827,7 +838,7 @@
                       var upperIndex = Math.min(lowerIndex + 1, times.length - 1);
                       var upperTime = times[upperIndex];
                       var upperValue = property[upperTime].value;
-                      var upperEase = getEase(property[upperTime].ease || "linear");
+                      var upperEase = getEase(property[upperTime].ease || 'linear');
                       // Attempt to load initial value from cache or add the current as init
                       var lowerValue = void 0;
                       if (!lowerFrame) {
@@ -841,10 +852,15 @@
                       else {
                           lowerValue = lowerFrame.value;
                       }
-                      // Get the current value and calculate the next value, only attempt to
-                      // render if they are different. It is assumed that the cost of
-                      // reading constantly is less than the cost of writing constantly.
-                      var offset = upperEase((lowerTime - currentTime) / (lowerTime - upperTime));
+                      // Calculate the offset and apply the easing
+                      var offset = upperEase(
+                      // If lower and upper time are the same, the offset is 0; hard code
+                      // this, because it breaks the formula (NaN).
+                      upperTime === lowerTime
+                          ? 1
+                          : (currentTime - lowerTime) / (upperTime - lowerTime));
+                      // Find the next value, but only set it if it differs from the current
+                      // value.
                       var value_1 = mix(lowerValue, upperValue, offset);
                       if (currentValue !== value_1) {
                           // Queue up the rendering of the value.
@@ -869,7 +885,7 @@
           // Clear cache for targets that have gone idle.
           for (var _i = 0, targets_1 = targets; _i < targets_1.length; _i++) {
               var target = targets_1[_i];
-              if (playState === "idle") {
+              if (playState === 'idle') {
                   clearKeys(id, target);
               }
           }
@@ -884,7 +900,7 @@
       if (!target) {
           return [];
       }
-      if (target.indexOf("@") !== 0) {
+      if (target.indexOf('@') !== 0) {
           // TODO:(add component scoping here)
           // If it isn't a reference, use it as a selector and make that into an [].
           return Array.prototype.slice.call(document.querySelectorAll(target));
@@ -892,35 +908,26 @@
       // Get the target if it exists
       var maybeTarget = config.targets[target];
       if (!maybeTarget) {
-          throw Error("Target " + target + " not configured.");
+          throw Error('Target ' + target + ' not configured.');
       }
       // If the target is an array, just return it.
-      if (typeof maybeTarget.length === "number") {
+      if (typeof maybeTarget.length === 'number') {
           return maybeTarget;
       }
       // If the target is not an array, wrap it.
       return [maybeTarget];
   }
-  function updatePlayState(config) {
-      if (config.playState === "cancel") {
-          config.playState = "idle";
-      }
-      else if (config.playState === "finish") {
-          config.playState = "paused";
-      }
-      else {
+  function detectPlayStateChanges(config) {
+      if (config.playState === 'running') {
+          var isBackwards = config.playbackRate < 0;
           var activeDuration = config.duration * config.iterations;
-          if (config.playbackRate < 0) {
-              if (config.currentTime === 0) {
-                  config.playState = "paused";
-                  config.events.push("finish");
-              }
-          }
-          else {
-              if (config.currentTime === activeDuration) {
-                  config.playState = "paused";
-                  config.events.push("finish");
-              }
+          // If it is off by one, clamp it.
+          var isFinished = (isBackwards && config.currentTime <= 1) ||
+              (!isBackwards && config.currentTime >= activeDuration - 1);
+          if (isFinished) {
+              config.currentTime = isBackwards ? 0 : activeDuration;
+              config.playState = 'finish';
+              config.events.push('finish');
           }
       }
   }
@@ -936,17 +943,17 @@
       config.iterations = clamp(config.iterations, 1, SECONDS_IN_A_DAY * 7);
       // Figure out the active duration.
       var activeDuration = config.duration * config.iterations;
-      if (config.playState === "cancel") {
+      if (config.playState === 'cancel') {
           // Reset the timeline.
           config.currentTime = 0;
           config.playbackRate = 1;
       }
-      else if (config.playState === "finish") {
+      else if (config.playState === 'finish') {
           // Finish at 0 or the duration based on the playbackRate.
           config.currentTime = config.playbackRate < 0 ? 0 : activeDuration;
       }
       else {
-          if (config.playState === "running") {
+          if (config.playState === 'running') {
               // Find the current time and clamp it between 0 and the active duration.
               config.currentTime += delta * config.playbackRate;
           }

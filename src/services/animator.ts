@@ -1,9 +1,9 @@
-import { byNumber, clamp, toNumber, findLowerIndex } from "../utils/numbers";
-import { ja } from "../types";
-import { tick } from "./tick";
-import { detectTargetType, getReader, getWriter, getMixer } from "../adapters";
-import { retrieveValue, storeValue, clearKeys } from "./valuecache";
-import { getEase } from "../main";
+import { byNumber, clamp, toNumber, findLowerIndex } from '../utils/numbers';
+import { ja } from '../types';
+import { tick } from './tick';
+import { detectTargetType, getReader, getWriter, getMixer } from '../adapters';
+import { retrieveValue, storeValue, clearKeys } from './valuecache';
+import { getEase } from '../main';
 
 const FRAME_SIZE = 1000 / 60;
 
@@ -44,13 +44,21 @@ function processTimelines(time: number) {
   lastTime = time;
   // Get a list of all configs, this should match by index, the queue.
   const configs = queue.slice();
+  // Detect automatic playState changes
+  for (const config of configs) {
+    detectPlayStateChanges(config);
+  }
   // Update timing and fix inconsistencies.
   for (const config of configs) {
     updateTiming(delta, config);
   }
-  // Update the playStates.
+  // Update the transient playStates.
   for (const config of configs) {
-    updatePlayState(config);
+    if (config.playState === 'cancel') {
+      config.playState = 'idle';
+    } else if (config.playState === 'finish') {
+      config.playState = 'paused';
+    }
   }
   // Queue up all events.
   const listenersToCall: ja.AnimationEventListener[] = [];
@@ -77,7 +85,7 @@ function processTimelines(time: number) {
   // }
   // Remove items from the queue if they no longer need to be updated.
   for (let i = queue.length - 1; i > -1; i--) {
-    if (configs[i].playState !== "running") {
+    if (configs[i].playState !== 'running') {
       queue.splice(i, 1);
     }
   }
@@ -110,7 +118,7 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
         // Unpack these immediately because the return object is shared.
         const targetType = detectTargetType(target, propName);
         const write = getWriter(targetType);
-        if (playState !== "idle") {
+        if (playState !== 'idle') {
           const read = getReader(targetType);
           const mix = getMixer(targetType);
           const currentValue = read(target, propName);
@@ -122,7 +130,7 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           const upperIndex = Math.min(lowerIndex + 1, times.length - 1);
           const upperTime = times[upperIndex];
           const upperValue = property[upperTime].value;
-          const upperEase = getEase(property[upperTime].ease || "linear");
+          const upperEase = getEase(property[upperTime].ease || 'linear');
 
           // Attempt to load initial value from cache or add the current as init
           let lowerValue: ja.AnimationValue;
@@ -137,12 +145,17 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
             lowerValue = lowerFrame.value;
           }
 
-          // Get the current value and calculate the next value, only attempt to
-          // render if they are different. It is assumed that the cost of
-          // reading constantly is less than the cost of writing constantly.
+          // Calculate the offset and apply the easing
           const offset = upperEase(
-            (lowerTime - currentTime) / (lowerTime - upperTime)
+            // If lower and upper time are the same, the offset is 0; hard code
+            // this, because it breaks the formula (NaN).
+            upperTime === lowerTime
+              ? 1
+              : (currentTime - lowerTime) / (upperTime - lowerTime)
           );
+
+          // Find the next value, but only set it if it differs from the current
+          // value.
           const value = mix(lowerValue, upperValue, offset);
           if (currentValue !== value) {
             // Queue up the rendering of the value.
@@ -159,7 +172,7 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
 
     // Clear cache for targets that have gone idle.
     for (const target of targets) {
-      if (playState === "idle") {
+      if (playState === 'idle') {
         clearKeys(id, target);
       }
     }
@@ -175,7 +188,7 @@ function resolveTargets(config: ja.TimelineConfig, target: string): Array<{}> {
   if (!target) {
     return [];
   }
-  if (target.indexOf("@") !== 0) {
+  if (target.indexOf('@') !== 0) {
     // TODO:(add component scoping here)
     // If it isn't a reference, use it as a selector and make that into an [].
     return Array.prototype.slice.call(document.querySelectorAll(target));
@@ -183,33 +196,29 @@ function resolveTargets(config: ja.TimelineConfig, target: string): Array<{}> {
   // Get the target if it exists
   const maybeTarget = config.targets[target];
   if (!maybeTarget) {
-    throw Error("Target " + target + " not configured.");
+    throw Error('Target ' + target + ' not configured.');
   }
   // If the target is an array, just return it.
-  if (typeof (maybeTarget as []).length === "number") {
+  if (typeof (maybeTarget as []).length === 'number') {
     return maybeTarget as Array<{}>;
   }
   // If the target is not an array, wrap it.
   return [maybeTarget];
 }
 
-function updatePlayState(config: ja.TimelineConfig) {
-  if (config.playState === "cancel") {
-    config.playState = "idle";
-  } else if (config.playState === "finish") {
-    config.playState = "paused";
-  } else {
+function detectPlayStateChanges(config: ja.TimelineConfig) {
+  if (config.playState === 'running') {
+    const isBackwards = config.playbackRate < 0;
     const activeDuration = config.duration * config.iterations;
-    if (config.playbackRate < 0) {
-      if (config.currentTime === 0) {
-        config.playState = "paused";
-        config.events.push("finish");
-      }
-    } else {
-      if (config.currentTime === activeDuration) {
-        config.playState = "paused";
-        config.events.push("finish");
-      }
+    // If it is off by one, clamp it.
+    const isFinished =
+      (isBackwards && config.currentTime <= 1) ||
+      (!isBackwards && config.currentTime >= activeDuration - 1);
+
+    if (isFinished) {
+      config.currentTime = isBackwards ? 0 : activeDuration;
+      config.playState = 'finish';
+      config.events.push('finish');
     }
   }
 }
@@ -228,15 +237,15 @@ function updateTiming(delta: number, config: ja.TimelineConfig) {
   // Figure out the active duration.
   const activeDuration = config.duration * config.iterations;
 
-  if (config.playState === "cancel") {
+  if (config.playState === 'cancel') {
     // Reset the timeline.
     config.currentTime = 0;
     config.playbackRate = 1;
-  } else if (config.playState === "finish") {
+  } else if (config.playState === 'finish') {
     // Finish at 0 or the duration based on the playbackRate.
     config.currentTime = config.playbackRate < 0 ? 0 : activeDuration;
   } else {
-    if (config.playState === "running") {
+    if (config.playState === 'running') {
       // Find the current time and clamp it between 0 and the active duration.
       config.currentTime += delta * config.playbackRate;
     }
