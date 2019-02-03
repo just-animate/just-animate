@@ -101,18 +101,6 @@
       };
   };
 
-  function easeIn() {
-      return back("in");
-  }
-
-  function easeInOut() {
-      return back("in-out");
-  }
-
-  function easeOut() {
-      return back("out");
-  }
-
   function yoyo(times) {
       times = +(times || times === 0 ? times : 2);
       return function (o) {
@@ -1291,29 +1279,16 @@
       }, type);
   }
 
-  function stepEnd() {
-      return steps(1, "end");
-  }
-
-  function stepStart() {
-      return steps(1);
-  }
-
   // Register built-in easings
   // Linear is the fallback when an easing isn't found, so we won't register it.
   eases.back = back;
   eases.bounce = bounce;
   eases['cubic-bezier'] = cubicBezier;
-  eases['ease-in'] = easeIn;
-  eases['ease-in-out'] = easeInOut;
-  eases['ease-out'] = easeOut;
   eases.elastic = elastic;
   eases.power = power;
   eases.repeat = repeat;
   eases.sine = sine;
   eases.steps = steps;
-  eases['step-end'] = stepEnd;
-  eases['step-start'] = stepStart;
   eases.yoyo = yoyo;
   /**
    * Convenience method for doing animations.

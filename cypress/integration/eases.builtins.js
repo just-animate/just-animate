@@ -41,7 +41,7 @@ context('eases.builtins', () => {
 
   it('step-end', () => {
     cy.window().then(({ just }) => {
-      const ease = just.getEase('step-end');
+      const ease = just.getEase('steps(1, end)');
       expect(ease(0)).to.equal(0);
       expect(ease(0.1)).to.equal(0);
       expect(ease(0.9)).to.equal(0);
@@ -51,7 +51,7 @@ context('eases.builtins', () => {
 
   it('step-start', () => {
     cy.window().then(({ just }) => {
-      const ease = just.getEase('step-start');
+      const ease = just.getEase('steps(1, start)');
       expect(ease(0)).to.equal(0);
       expect(ease(0.1)).to.equal(1);
       expect(ease(0.9)).to.equal(1);
