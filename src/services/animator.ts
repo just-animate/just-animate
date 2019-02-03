@@ -1,4 +1,4 @@
-import { byNumber, clamp, toNumber, findLowerIndex } from '../utils/numbers';
+import { byNumber, clamp, toNumber, findUpperIndex } from '../utils/numbers';
 import { ja } from '../types';
 import { tick } from './tick';
 import { detectTargetType, getReader, getWriter, getMixer } from '../adapters';
@@ -122,19 +122,21 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           const read = getReader(targetType);
           const mix = getMixer(targetType);
           const currentValue = read(target, propName);
-          const lowerIndex = findLowerIndex(times, currentTime);
-          const lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
-          const lowerFrame = property[times[lowerIndex]];
+          const upperIndex = findUpperIndex(times, currentTime);
+          const lowerIndex = upperIndex - 1;
+
+          const lowerTime = lowerIndex < 0 ? 0 : times[lowerIndex];
 
           // Get the final value. This can be done for all targets.
-          const upperIndex = Math.min(lowerIndex + 1, times.length - 1);
           const upperTime = times[upperIndex];
           const upperValue = property[upperTime].value;
           const upperEase = getEase(property[upperTime].ease || 'linear');
+          const lowerFrame = property[times[lowerIndex]];
 
           // Attempt to load initial value from cache or add the current as init
           let lowerValue: ja.AnimationValue;
-          if (!lowerFrame) {
+
+          if (lowerIndex < 0 || !lowerFrame) {
             let initialValue = retrieveValue(id, target, propName);
             if (initialValue == null) {
               initialValue = currentValue;

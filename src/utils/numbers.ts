@@ -24,16 +24,15 @@ export function clamp(value: number, min: number, max: number) {
  * @param list The list to search.
  * @param value The value to reference.
  */
-export function findLowerIndex(list: number[], value: number) {
+export function findUpperIndex(list: number[], value: number) {
   let i = 0;
   while (i < list.length) {
     if (list[i] > value) {
-      --i;
       break;
     }
     i++;
   }
-  return Math.min(i, list.length - 1);
+  return i;
 }
 
 /**
@@ -41,7 +40,7 @@ export function findLowerIndex(list: number[], value: number) {
  * @param obj to test for numbers
  */
 export function isNumeric(obj: number | string): boolean {
-  return typeof obj === "number" || isFinite(+obj);
+  return typeof obj === 'number' || isFinite(+obj);
 }
 
 /**

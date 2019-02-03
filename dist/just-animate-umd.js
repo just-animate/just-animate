@@ -382,23 +382,22 @@
    * @param list The list to search.
    * @param value The value to reference.
    */
-  function findLowerIndex(list, value) {
+  function findUpperIndex(list, value) {
       var i = 0;
       while (i < list.length) {
           if (list[i] > value) {
-              --i;
               break;
           }
           i++;
       }
-      return Math.min(i, list.length - 1);
+      return i;
   }
   /**
    * Returns true if the string or nunmber is numeric.
    * @param obj to test for numbers
    */
   function isNumeric(obj) {
-      return typeof obj === "number" || isFinite(+obj);
+      return typeof obj === 'number' || isFinite(+obj);
   }
   /**
    * Coerces a number string into a number;
@@ -741,8 +740,7 @@
    */
   function processTimelines(time) {
       // Determine the delta, clamp between 0ms and 34ms (0 frames and 2 frames).
-      // Also round to clamp to milliseconds.
-      var delta = Math.round(clamp(time - lastTime, 0, FRAME_SIZE * 2));
+      var delta = clamp(time - lastTime, 0, FRAME_SIZE * 2);
       lastTime = time;
       // Get a list of all configs, this should match by index, the queue.
       var configs = queue.slice();
@@ -831,17 +829,17 @@
                       var read = getReader(targetType);
                       var mix = getMixer(targetType);
                       var currentValue = read(target, propName);
-                      var lowerIndex = findLowerIndex(times, currentTime);
-                      var lowerTime = lowerIndex === -1 ? 0 : times[lowerIndex];
-                      var lowerFrame = property[times[lowerIndex]];
+                      var upperIndex = findUpperIndex(times, currentTime);
+                      var lowerIndex = upperIndex - 1;
+                      var lowerTime = lowerIndex < 0 ? 0 : times[lowerIndex];
                       // Get the final value. This can be done for all targets.
-                      var upperIndex = Math.min(lowerIndex + 1, times.length - 1);
                       var upperTime = times[upperIndex];
                       var upperValue = property[upperTime].value;
                       var upperEase = getEase(property[upperTime].ease || 'linear');
+                      var lowerFrame = property[times[lowerIndex]];
                       // Attempt to load initial value from cache or add the current as init
                       var lowerValue = void 0;
-                      if (!lowerFrame) {
+                      if (lowerIndex < 0 || !lowerFrame) {
                           var initialValue = retrieveValue(id, target, propName);
                           if (initialValue == null) {
                               initialValue = currentValue;
@@ -1306,17 +1304,17 @@
   // Linear is the fallback when an easing isn't found, so we won't register it.
   eases.back = back;
   eases.bounce = bounce;
-  eases["cubic-bezier"] = cubicBezier;
-  eases["ease-in"] = easeIn;
-  eases["ease-in-out"] = easeInOut;
-  eases["ease-out"] = easeOut;
+  eases['cubic-bezier'] = cubicBezier;
+  eases['ease-in'] = easeIn;
+  eases['ease-in-out'] = easeInOut;
+  eases['ease-out'] = easeOut;
   eases.elastic = elastic;
   eases.power = power;
   eases.repeat = repeat;
   eases.sine = sine;
   eases.steps = steps;
-  eases["step-end"] = stepEnd;
-  eases["step-start"] = stepStart;
+  eases['step-end'] = stepEnd;
+  eases['step-start'] = stepStart;
   eases.yoyo = yoyo;
   /**
    * Convenience method for doing animations.
