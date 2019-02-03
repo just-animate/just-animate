@@ -385,7 +385,7 @@
   function findUpperIndex(list, value) {
       var i = 0;
       while (i < list.length) {
-          if (list[i] > value) {
+          if (list[i] >= value) {
               break;
           }
           i++;
@@ -923,7 +923,6 @@
           var isFinished = (isBackwards && config.currentTime <= 1) ||
               (!isBackwards && config.currentTime >= activeDuration - 1);
           if (isFinished) {
-              config.currentTime = isBackwards ? 0 : activeDuration;
               config.playState = 'finish';
               config.events.push('finish');
           }

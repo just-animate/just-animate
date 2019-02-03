@@ -218,7 +218,6 @@ function detectPlayStateChanges(config: ja.TimelineConfig) {
       (!isBackwards && config.currentTime >= activeDuration - 1);
 
     if (isFinished) {
-      config.currentTime = isBackwards ? 0 : activeDuration;
       config.playState = 'finish';
       config.events.push('finish');
     }

@@ -27,7 +27,7 @@ export function clamp(value: number, min: number, max: number) {
 export function findUpperIndex(list: number[], value: number) {
   let i = 0;
   while (i < list.length) {
-    if (list[i] > value) {
+    if (list[i] >= value) {
       break;
     }
     i++;
