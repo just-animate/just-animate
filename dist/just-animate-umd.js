@@ -1226,8 +1226,6 @@
           if (!targetProps) {
               targetProps = this.keyframes[targets] = {};
           }
-          // Figure out what ease and stagger to use.
-          var ease = props.ease || 'linear';
           // tslint:disable-next-line:forin
           for (var prop in props) {
               var value = props[prop];
@@ -1236,10 +1234,18 @@
                   if (!propKeyframes) {
                       propKeyframes = targetProps[prop] = {};
                   }
-                  propKeyframes[pos + duration] = {
-                      ease: ease,
-                      value: value,
-                  };
+                  // Copy options to individual keyframe.
+                  var keyframe = { value: value };
+                  if (props.ease) {
+                      keyframe.ease = props.ease;
+                  }
+                  if (props.padStart) {
+                      keyframe.padStart = props.padStart;
+                  }
+                  if (props.padEnd) {
+                      keyframe.padStart = props.padEnd;
+                  }
+                  propKeyframes[pos + duration] = keyframe;
               }
           }
           return this.update();

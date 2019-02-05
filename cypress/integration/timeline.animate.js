@@ -16,7 +16,7 @@ context('timeline.animate()', () => {
       expect(state.keyframes.target.x, 'x').to.exist;
       expect(state.keyframes.target.x[2000], '[2000]').to.exist;
       expect(state.keyframes.target.x[2000].value, 'value').equal(1);
-      expect(state.keyframes.target.x[2000].ease, 'ease').equal('linear');
+      expect(state.keyframes.target.x[2000].ease, 'ease').equal(undefined);
     });
   });
 

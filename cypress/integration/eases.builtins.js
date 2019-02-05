@@ -35,7 +35,7 @@ context('eases.builtins', () => {
       expect(ease(0.25)).to.equal(0.5);
       expect(ease(0.5)).to.equal(0);
       expect(ease(0.75)).to.equal(0.5);
-      expect(ease(1)).to.equal(0);
+      expect(ease(1)).to.equal(1);
     });
   });
 

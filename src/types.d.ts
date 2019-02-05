@@ -46,7 +46,7 @@ export namespace ja {
     play(): void | this;
   }
 
-  export type AnimationEvent = "cancel" | "finish" | "pause" | "play";
+  export type AnimationEvent = 'cancel' | 'finish' | 'pause' | 'play';
 
   export interface AnimationEventListener {
     (time: number): void;
@@ -68,19 +68,28 @@ export namespace ja {
     (...args: any[]): Ease;
   }
 
-  export type EaseTypes = "in" | "out" | "in-out";
+  export type EaseTypes = 'in' | 'out' | 'in-out';
 
   export interface Keyframe {
     ease?: string;
+    padStart?: number | PadOptions;
+    padEnd?: number | PadOptions;
     value: AnimationValue;
   }
 
   export type KeyframeProps = {
     ease: string;
-    [propertyName: string]: AnimationValue;
+    padStart?: number | PadOptions;
+    padEnd?: number | PadOptions;
+    [propertyName: string]: any;
   };
 
-  export type PlayState = "cancel" | "finish" | "idle" | "paused" | "running";
+  export interface PadOptions {
+    duration?: number;
+    stagger?: number | string;
+  }
+
+  export type PlayState = 'cancel' | 'finish' | 'idle' | 'paused' | 'running';
 
   export interface TargetKeyframes {
     [prop: string]: {

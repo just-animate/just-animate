@@ -390,9 +390,6 @@ export class Timeline implements ja.TimelineAnimation {
       targetProps = this.keyframes[targets] = {};
     }
 
-    // Figure out what ease and stagger to use.
-    const ease = props.ease || 'linear';
-
     // tslint:disable-next-line:forin
     for (const prop in props) {
       const value = props[prop];
@@ -402,10 +399,18 @@ export class Timeline implements ja.TimelineAnimation {
           propKeyframes = targetProps[prop] = {};
         }
 
-        propKeyframes[pos + duration] = {
-          ease,
-          value,
-        };
+        // Copy options to individual keyframe.
+        const keyframe = { value } as ja.Keyframe;
+        if (props.ease) {
+          keyframe.ease = props.ease;
+        }
+        if (props.padStart) {
+          keyframe.padStart = props.padStart;
+        }
+        if (props.padEnd) {
+          keyframe.padStart = props.padEnd;
+        }
+        propKeyframes[pos + duration] = keyframe;
       }
     }
 
