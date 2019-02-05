@@ -809,7 +809,9 @@
           var _loop_1 = function (propName) {
               var property = keyframes[propName];
               var times = getTimes(property);
-              var _loop_2 = function (target) {
+              var total = targets.length;
+              var _loop_2 = function (index) {
+                  var target = targets[index];
                   // Unpack these immediately because the return object is shared.
                   var targetType = detectTargetType(target, propName);
                   var write = getWriter(targetType);
@@ -820,10 +822,10 @@
                       var upperIndex = findUpperIndex(times, currentTime);
                       var lowerIndex = upperIndex - 1;
                       var lowerTime = lowerIndex < 0 ? 0 : times[lowerIndex];
-                      // Get the final value. This can be done for all targets.
                       var upperTime = times[upperIndex];
-                      var upperValue = property[upperTime].value;
-                      var upperEase = getEase(property[upperTime].$ease || '');
+                      var upperProp = property[upperTime];
+                      var upperValue = upperProp.value;
+                      var upperEase = getEase(upperProp.$ease || '');
                       var lowerFrame = property[times[lowerIndex]];
                       // Attempt to load initial value from cache or add the current as init
                       var lowerValue = void 0;
@@ -838,13 +840,10 @@
                       else {
                           lowerValue = lowerFrame.value;
                       }
+                      // Get the lower time with padding calculated.
+                      var offset = getOffset(lowerTime, upperTime, currentTime, index, total, upperProp.$padStart || 0, upperProp.$padEnd || 0);
                       // Calculate the offset and apply the easing
-                      var offset = upperEase(
-                      // If lower and upper time are the same, the offset is 0; hard code
-                      // this, because it breaks the formula (NaN).
-                      upperTime === lowerTime
-                          ? 1
-                          : (currentTime - lowerTime) / (upperTime - lowerTime));
+                      offset = upperEase(offset);
                       // Find the next value, but only set it if it differs from the current
                       // value.
                       var value_1 = mix(lowerValue, upperValue, offset);
@@ -860,9 +859,8 @@
                       }
                   }
               };
-              for (var _i = 0, targets_2 = targets; _i < targets_2.length; _i++) {
-                  var target = targets_2[_i];
-                  _loop_2(target);
+              for (var index = 0; index < total; index++) {
+                  _loop_2(index);
               }
           };
           for (var propName in keyframes) {
@@ -945,6 +943,31 @@
       }
       // Ensure current time is not out of bounds.
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
+  }
+  function getOffset(lower, upper, time, index, total, padStart, padEnd) {
+      var paddedLowerTime = lower + getPadding(index, total, padStart);
+      var paddedUpperTime = upper + getPadding(index, total, padEnd) * -1;
+      var localTime = clamp(time, paddedLowerTime, paddedUpperTime);
+      // If lower and upper time are the same, the offset is 0; hard code
+      // this, because it breaks the formula (NaN).
+      return paddedUpperTime === paddedLowerTime
+          ? 1
+          : (localTime - paddedLowerTime) / (paddedUpperTime - paddedLowerTime);
+  }
+  function getPadding(index, total, pad) {
+      if (typeof pad === 'number') {
+          return pad;
+      }
+      if (!pad.stagger) {
+          return pad.duration || 0;
+      }
+      if (typeof pad.stagger === 'number') {
+          return pad.stagger * (index + 1);
+      }
+      var staggerEase = getEase(typeof pad.stagger === 'string' ? pad.stagger : 'steps(' + total + ',end)');
+      var stagger = staggerEase((index + 1) / total);
+      var duration = pad.duration || 0;
+      return duration * stagger;
   }
 
   var autoNumber = 0;

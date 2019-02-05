@@ -1,4 +1,10 @@
-import { byNumber, clamp, toNumber, findUpperIndex } from '../utils/numbers';
+import {
+  byNumber,
+  clamp,
+  toNumber,
+  findUpperIndex,
+  isNumeric,
+} from '../utils/numbers';
 import { ja } from '../types';
 import { tick } from './tick';
 import { detectTargetType, getReader, getWriter, getMixer } from '../adapters';
@@ -113,8 +119,9 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
     for (const propName in keyframes) {
       const property = keyframes[propName];
       const times = getTimes(property);
-
-      for (const target of targets) {
+      const total = targets.length;
+      for (let index = 0; index < total; index++) {
+        const target = targets[index];
         // Unpack these immediately because the return object is shared.
         const targetType = detectTargetType(target, propName);
         const write = getWriter(targetType);
@@ -124,13 +131,12 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           const currentValue = read(target, propName);
           const upperIndex = findUpperIndex(times, currentTime);
           const lowerIndex = upperIndex - 1;
-
           const lowerTime = lowerIndex < 0 ? 0 : times[lowerIndex];
-
-          // Get the final value. This can be done for all targets.
           const upperTime = times[upperIndex];
-          const upperValue = property[upperTime].value;
-          const upperEase = getEase(property[upperTime].$ease || '');
+          const upperProp = property[upperTime];
+
+          const upperValue = upperProp.value;
+          const upperEase = getEase(upperProp.$ease || '');
           const lowerFrame = property[times[lowerIndex]];
 
           // Attempt to load initial value from cache or add the current as init
@@ -147,14 +153,19 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
             lowerValue = lowerFrame.value;
           }
 
-          // Calculate the offset and apply the easing
-          const offset = upperEase(
-            // If lower and upper time are the same, the offset is 0; hard code
-            // this, because it breaks the formula (NaN).
-            upperTime === lowerTime
-              ? 1
-              : (currentTime - lowerTime) / (upperTime - lowerTime)
+          // Get the lower time with padding calculated.
+          let offset = getOffset(
+            lowerTime,
+            upperTime,
+            currentTime,
+            index,
+            total,
+            upperProp.$padStart || 0,
+            upperProp.$padEnd || 0
           );
+
+          // Calculate the offset and apply the easing
+          offset = upperEase(offset);
 
           // Find the next value, but only set it if it differs from the current
           // value.
@@ -254,4 +265,46 @@ function updateTiming(delta: number, config: ja.TimelineConfig) {
 
   // Ensure current time is not out of bounds.
   config.currentTime = clamp(config.currentTime, 0, activeDuration);
+}
+
+function getOffset(
+  lower: number,
+  upper: number,
+  time: number,
+  index: number,
+  total: number,
+  padStart: number | ja.PadOptions,
+  padEnd: number | ja.PadOptions
+): number {
+  const paddedLowerTime = lower + getPadding(index, total, padStart);
+  const paddedUpperTime = upper + getPadding(index, total, padEnd) * -1;
+  const localTime = clamp(time, paddedLowerTime, paddedUpperTime);
+
+  // If lower and upper time are the same, the offset is 0; hard code
+  // this, because it breaks the formula (NaN).
+  return paddedUpperTime === paddedLowerTime
+    ? 1
+    : (localTime - paddedLowerTime) / (paddedUpperTime - paddedLowerTime);
+}
+
+function getPadding(
+  index: number,
+  total: number,
+  pad: number | ja.PadOptions
+): number {
+  if (typeof pad === 'number') {
+    return pad;
+  }
+  if (!pad.stagger) {
+    return pad.duration || 0;
+  }
+  if (typeof pad.stagger === 'number') {
+    return pad.stagger * (index + 1);
+  }
+  const staggerEase = getEase(
+    typeof pad.stagger === 'string' ? pad.stagger : 'steps(' + total + ',end)'
+  );
+  const stagger = staggerEase((index + 1) / total);
+  const duration = pad.duration || 0;
+  return duration * stagger;
 }
