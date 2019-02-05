@@ -72,9 +72,9 @@ context('pad', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(targets[0].x).to.be.approximately(55.555, 0.001);
-        expect(targets[1].x).to.be.approximately(50, 0.001);
-        expect(targets[2].x).to.be.approximately(42.857, 0.001);
+        expect(targets[0].x).to.be.approximately(69.23, 0.001);
+        expect(targets[1].x).to.be.approximately(66.666, 0.001);
+        expect(targets[2].x).to.be.approximately(63.636, 0.001);
       });
   });
 
@@ -98,9 +98,9 @@ context('pad', () => {
         return just.nextAnimationFrame();
       })
       .then(() => {
-        expect(targets[0].x).to.be.approximately(58.62, 0.001);
+        expect(targets[0].x).to.be.approximately(42.857, 0.001);
         expect(targets[1].x).to.be.approximately(53.846, 0.001);
-        expect(targets[2].x).to.be.approximately(42.857, 0.001);
+        expect(targets[2].x).to.be.approximately(58.62, 0.001);
       });
   });
 

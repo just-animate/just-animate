@@ -301,10 +301,10 @@ function getPadding(
   if (typeof pad.stagger === 'number') {
     return pad.stagger * (index + 1);
   }
-  const staggerEase = getEase(
-    typeof pad.stagger === 'string' ? pad.stagger : 'steps(' + total + ',end)'
-  );
-  const stagger = staggerEase((index + 1) / total);
+  let stagger = index / total - 1;
+  if (typeof pad.stagger === 'string') {
+    stagger = getEase(pad.stagger)(stagger);
+  }
   const duration = pad.duration || 0;
   return duration * stagger;
 }

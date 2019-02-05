@@ -964,8 +964,10 @@
       if (typeof pad.stagger === 'number') {
           return pad.stagger * (index + 1);
       }
-      var staggerEase = getEase(typeof pad.stagger === 'string' ? pad.stagger : 'steps(' + total + ',end)');
-      var stagger = staggerEase((index + 1) / total);
+      var stagger = index / total - 1;
+      if (typeof pad.stagger === 'string') {
+          stagger = getEase(pad.stagger)(stagger);
+      }
       var duration = pad.duration || 0;
       return duration * stagger;
   }
