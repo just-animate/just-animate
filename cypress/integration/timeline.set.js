@@ -16,7 +16,7 @@ context('timeline.set()', () => {
       expect(state.keyframes.target.opacity, 'opacity').to.exist;
       expect(state.keyframes.target.opacity[0], '[0]').to.exist;
       expect(state.keyframes.target.opacity[0].value, 'value').equal(0);
-      expect(state.keyframes.target.opacity[0].ease, 'ease').equal(
+      expect(state.keyframes.target.opacity[0].$ease, '$ease').equal(
         'steps(1,end)'
       );
     });

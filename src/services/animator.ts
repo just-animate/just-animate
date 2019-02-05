@@ -130,7 +130,7 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           // Get the final value. This can be done for all targets.
           const upperTime = times[upperIndex];
           const upperValue = property[upperTime].value;
-          const upperEase = getEase(property[upperTime].ease || 'linear');
+          const upperEase = getEase(property[upperTime].$ease || '');
           const lowerFrame = property[times[lowerIndex]];
 
           // Attempt to load initial value from cache or add the current as init

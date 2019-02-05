@@ -27,7 +27,7 @@ context('animate', () => {
       });
   });
 
-  it('tweens opacity with ease', () => {
+  it('tweens opacity with $ease', () => {
     /** @type {typeof window.just} */
     let just;
     /** @type {HTMLElement} */
@@ -38,7 +38,7 @@ context('animate', () => {
         el = document.createElement('div');
         document.body.appendChild(el);
         just
-          .animate(el, 1000, { opacity: 0, ease: 'repeat(2)' })
+          .animate(el, 1000, { opacity: 0, $ease: 'repeat(2)' })
           .pause()
           .seek(250);
         return just.nextAnimationFrame();

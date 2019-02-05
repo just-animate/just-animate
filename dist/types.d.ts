@@ -7,7 +7,7 @@ declare global {
       eases: Record<string, ja.EaseFactory>;
       /**
        * Parses the easeString and returns an ease function by calling the
-       * appropriate ease from just.ease.
+       * appropriate ease from just.getEase().
        * @param easeString String to transform into an easing function.
        */
       getEase(easeString: string): ja.Ease;
@@ -71,16 +71,16 @@ export namespace ja {
   export type EaseTypes = 'in' | 'out' | 'in-out';
 
   export interface Keyframe {
-    ease?: string;
-    padStart?: number | PadOptions;
-    padEnd?: number | PadOptions;
+    $ease?: string;
+    $padStart?: number | PadOptions;
+    $padEnd?: number | PadOptions;
     value: AnimationValue;
   }
 
   export type KeyframeProps = {
-    ease: string;
-    padStart?: number | PadOptions;
-    padEnd?: number | PadOptions;
+    $ease: string;
+    $padStart?: number | PadOptions;
+    $padEnd?: number | PadOptions;
     [propertyName: string]: any;
   };
 

@@ -335,7 +335,7 @@ export class Timeline implements ja.TimelineAnimation {
    * @public
    */
   set<T>(targets: T | string, props: ja.KeyframeProps, pos?: number | string) {
-    props['ease' as string] = 'steps(1,end)';
+    props.$ease = 'steps(1,end)';
     return this.animate(targets, 0, props, pos);
   }
 
@@ -390,25 +390,21 @@ export class Timeline implements ja.TimelineAnimation {
       targetProps = this.keyframes[targets] = {};
     }
 
-    // tslint:disable-next-line:forin
     for (const prop in props) {
       const value = props[prop];
-      if (prop !== 'ease' && (value || value === 0)) {
+      // Handle all properties (not $ease, $padStart, etc.)
+      if (prop[0] !== '$' && (value || value === 0)) {
+        // Get or create a property to hold this keyframe.
         let propKeyframes = targetProps[prop];
         if (!propKeyframes) {
           propKeyframes = targetProps[prop] = {};
         }
-
-        // Copy options to individual keyframe.
+        // Copy options to individual keyframe. ($ease, $padStart, etc.)
         const keyframe = { value } as ja.Keyframe;
-        if (props.ease) {
-          keyframe.ease = props.ease;
-        }
-        if (props.padStart) {
-          keyframe.padStart = props.padStart;
-        }
-        if (props.padEnd) {
-          keyframe.padStart = props.padEnd;
+        for (const option in props) {
+          if (option[0] === '$' && props[option]) {
+            keyframe[option] = props[option];
+          }
         }
         propKeyframes[pos + duration] = keyframe;
       }

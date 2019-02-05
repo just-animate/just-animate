@@ -823,7 +823,7 @@
                       // Get the final value. This can be done for all targets.
                       var upperTime = times[upperIndex];
                       var upperValue = property[upperTime].value;
-                      var upperEase = getEase(property[upperTime].ease || 'linear');
+                      var upperEase = getEase(property[upperTime].$ease || '');
                       var lowerFrame = property[times[lowerIndex]];
                       // Attempt to load initial value from cache or add the current as init
                       var lowerValue = void 0;
@@ -1181,7 +1181,7 @@
        * @public
        */
       Timeline.prototype.set = function (targets, props, pos) {
-          props['ease'] = 'steps(1,end)';
+          props.$ease = 'steps(1,end)';
           return this.animate(targets, 0, props, pos);
       };
       /**
@@ -1226,24 +1226,21 @@
           if (!targetProps) {
               targetProps = this.keyframes[targets] = {};
           }
-          // tslint:disable-next-line:forin
           for (var prop in props) {
               var value = props[prop];
-              if (prop !== 'ease' && (value || value === 0)) {
+              // Handle all properties (not $ease, $padStart, etc.)
+              if (prop[0] !== '$' && (value || value === 0)) {
+                  // Get or create a property to hold this keyframe.
                   var propKeyframes = targetProps[prop];
                   if (!propKeyframes) {
                       propKeyframes = targetProps[prop] = {};
                   }
-                  // Copy options to individual keyframe.
+                  // Copy options to individual keyframe. ($ease, $padStart, etc.)
                   var keyframe = { value: value };
-                  if (props.ease) {
-                      keyframe.ease = props.ease;
-                  }
-                  if (props.padStart) {
-                      keyframe.padStart = props.padStart;
-                  }
-                  if (props.padEnd) {
-                      keyframe.padStart = props.padEnd;
+                  for (var option in props) {
+                      if (option[0] === '$' && props[option]) {
+                          keyframe[option] = props[option];
+                      }
                   }
                   propKeyframes[pos + duration] = keyframe;
               }

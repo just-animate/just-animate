@@ -13,6 +13,7 @@ context('mixers', () => {
     cy.window()
       .then(win => (just = win.just))
       .then(() => {
+        debugger;
         new just.Timeline({ playState: 'paused' })
           .set(target, { width: '0deg' })
           .animate(target, 1000, { width: '100deg' })
