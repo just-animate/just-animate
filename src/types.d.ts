@@ -72,22 +72,13 @@ export namespace ja {
 
   export interface Keyframe {
     $ease?: string;
-    $padStart?: number | PadOptions;
-    $padEnd?: number | PadOptions;
     value: AnimationValue;
   }
 
   export type KeyframeProps = {
     $ease: string;
-    $padStart?: number | PadOptions;
-    $padEnd?: number | PadOptions;
     [propertyName: string]: any;
   };
-
-  export interface PadOptions {
-    duration?: number;
-    stagger?: number | string;
-  }
 
   export type PlayState = 'cancel' | 'finish' | 'idle' | 'paused' | 'running';
 
@@ -102,6 +93,22 @@ export namespace ja {
      * @public
      */
     add(animation: Animation, pos: number | string): this;
+
+    /**
+     * Configure a tween from the (current) position for the duration specified.
+     * @param targets The element, object, or selector to animate.
+     * @param duration The duration in milliseconds of the tween.
+     * @param props The end state properties of the tween.
+     * @param pos The position to insert the tween. This defaults to the duration
+     * if not specified.
+     * @public
+     */
+    animate<T>(
+      targets: T | string,
+      duration: number,
+      props: Partial<KeyframeProps>,
+      pos: number | string
+    ): this;
 
     /**
      * Cancels the animation. The currentTime is set to 0 and the playState is set
@@ -184,6 +191,24 @@ export namespace ja {
     ): this;
 
     /**
+     * Animate targets staggered from the current position.
+     * @param targets The element, object, or selector to animate.
+     * @param duration The duration in milliseconds of the tween.
+     * @param stagger The duration between each target starting.
+     * @param props The end state properties of the tween.
+     * @param pos The position to insert the tween. This defaults to the duration
+     * if not specified.
+     * @public
+     */
+    staggerAnimate<T>(
+      targets: object | string,
+      duration: number,
+      stagger: number,
+      props: Partial<ja.KeyframeProps>,
+      pos?: number | string
+    ): this;
+
+    /**
      * Creates a target alias that can be referred to in the targets parameter in
      * animate() and set().  It is recommended to prefix the alias with @ to
      * prevent conflicts with CSS selectors. This is useful for creating generic
@@ -193,22 +218,6 @@ export namespace ja {
      * @public
      */
     target(alias: string, target: AnimationTarget): this;
-
-    /**
-     * Configure a tween from the (current) position for the duration specified.
-     * @param targets The element, object, or selector to animate.
-     * @param duration The duration in milliseconds of the tween.
-     * @param props The end state properties of the tween.
-     * @param pos The position to insert the tween. This defaults to the duration
-     * if not specified.
-     * @public
-     */
-    animate<T>(
-      targets: T | string,
-      duration: number,
-      props: Partial<KeyframeProps>,
-      pos: number | string
-    ): this;
 
     /**
      * Forces an update. This can be used after updating timing or keyframes in

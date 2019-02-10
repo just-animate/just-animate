@@ -1,5 +1,6 @@
 import { ja } from '../types';
 import { queueTransition } from '../services/animator';
+import { resolveTargets } from '../services/targets';
 
 let autoNumber = 0;
 
@@ -355,6 +356,39 @@ export class Timeline implements ja.TimelineAnimation {
   }
 
   /**
+   * Animate targets staggered from the current position.
+   * @param targets The element, object, or selector to animate.
+   * @param duration The duration in milliseconds of the tween.
+   * @param stagger The duration between each target starting.
+   * @param props The end state properties of the tween.
+   * @param pos The position to insert the tween. This defaults to the duration
+   * if not specified.
+   * @public
+   */
+  staggerAnimate(
+    targets: object | string,
+    duration: number,
+    stagger: number,
+    props: Partial<ja.KeyframeProps>,
+    pos?: number | string
+  ): this {
+    pos = this.getPosition_(pos);
+    if (pos == null) {
+      pos = this.duration;
+    }
+    const targetList =
+      typeof targets === 'string'
+        ? resolveTargets(this, targets)
+        : // tslint:disable-next-line:no-any
+          ((targets as any) as object[]);
+    for (let i = 0; i < targetList.length; i++) {
+      const delay = (i + 1) * stagger;
+      this.animate(targetList[i], duration, props, pos + delay);
+    }
+    return this;
+  }
+
+  /**
    * Configure a tween from the (current) position for the duration specified.
    * @param targets The element, object, or selector to animate.
    * @param duration The duration in milliseconds of the tween.
@@ -370,7 +404,7 @@ export class Timeline implements ja.TimelineAnimation {
     pos?: number | string
   ): this {
     pos = this.getPosition_(pos);
-    if (pos === undefined) {
+    if (pos == null) {
       pos = this.duration;
     }
 
@@ -392,14 +426,14 @@ export class Timeline implements ja.TimelineAnimation {
 
     for (const prop in props) {
       const value = props[prop];
-      // Handle all properties (not $ease, $padStart, etc.)
+      // Handle all properties (not $ease, etc.)
       if (prop[0] !== '$' && (value || value === 0)) {
         // Get or create a property to hold this keyframe.
         let propKeyframes = targetProps[prop];
         if (!propKeyframes) {
           propKeyframes = targetProps[prop] = {};
         }
-        // Copy options to individual keyframe. ($ease, $padStart, etc.)
+        // Copy options to individual keyframe. ($ease, etc.)
         const keyframe = { value } as ja.Keyframe;
         for (const option in props) {
           if (option[0] === '$' && props[option]) {

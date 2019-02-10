@@ -1,4 +1,6 @@
-export function hexToRgb(hex: string) {
+import { cachefn } from '../services/cachefn';
+
+function hexToRgb(hex: string) {
   // Parse 3 or 6 hex to an integer using 16 base.
   const h = parseInt(
     hex.length === 3
@@ -12,3 +14,5 @@ export function hexToRgb(hex: string) {
 
   return `rgba(${r},${g},${b},1)`;
 }
+const cachedHexToRgb = cachefn(hexToRgb);
+export { cachedHexToRgb as hexToRgb };

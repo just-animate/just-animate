@@ -1,18 +1,12 @@
-import { ja } from "../types";
-import { isNumeric } from "../utils/numbers";
-import {
-  clearContext,
-  NUMBER,
-  UNIT,
-  FUNCTION,
-  ParserContext
-} from "../parsers/common";
+import { ja } from '../types';
+import { isNumeric } from '../utils/numbers';
+import { clearContext, NUMBER, UNIT, FUNCTION } from '../parsers/common';
 import {
   MixerParserContext,
-  nextToken as nextExp
-} from "../parsers/expressions";
+  nextToken as nextExp,
+} from '../parsers/expressions';
 
-import { nextToken as nextTransform } from "../parsers/transforms";
+import { negateTransformList } from './negateTransformList';
 
 const UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
 const PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
@@ -46,60 +40,12 @@ export function autoMix(
   }
   // If value A or B is null or undefined, swap to empty string.
   if (valueA == null) {
-    valueA = "";
+    valueA = '';
   }
   if (valueB == null) {
-    valueB = "";
+    valueB = '';
   }
   return mix(valueA.toString(), valueB.toString(), offset);
-}
-
-const ctxTransform = {} as ParserContext;
-
-function negateTransformList(value: string) {
-  clearContext(ctxTransform, value);
-
-  let token: number | undefined;
-  let fn: string | undefined;
-  let termCount = 0;
-  let output = "";
-  while (true) {
-    token = nextTransform(ctxTransform);
-    if (!token) {
-      // Exit when there is nothing left to do.
-      break;
-    }
-    if (token === FUNCTION) {
-      // Use functions to start over counting numbers/units.
-      fn = ctxTransform.match.toLowerCase();
-      termCount = 0;
-    }
-    if (token !== UNIT && token !== NUMBER) {
-      // If a number or unit, pass content through.
-      output += ctxTransform.match;
-      continue;
-    }
-
-    if (fn === "matrix") {
-      // Scale defaults to 1 (position 0 and 3)
-      output += termCount % 3 ? "0" : "1";
-    } else if (fn === "matrix3d") {
-      // Scale defaults to 1.
-      // Example net-0 3d matrix:
-      // 1 0 0 0
-      // 0 1 0 0
-      // 0 0 1 0
-      // 0 0 0 1
-      output += termCount % 5 ? "0" : "1";
-    } else if (/scale([xyz]|3d)?/i.test(fn!)) {
-      output += "1";
-    } else {
-      output += "0";
-    }
-
-    termCount++;
-  }
-  return output;
 }
 
 const ctxLeft = {} as MixerParserContext;
@@ -120,7 +66,7 @@ function mix(left: string, right: string, progress: number): string {
   ctxLeft.isPath = PATH_REGEX.test(left);
   ctxRight.isPath = PATH_REGEX.test(right);
 
-  let output = "";
+  let output = '';
   let rgbChannelsRemaining = 0;
   let tokenLeft: number | undefined;
   let tokenRight: number | undefined;
@@ -148,7 +94,7 @@ function mix(left: string, right: string, progress: number): string {
         tokenLeft === UNIT ? termLeft : termRight
       )!;
       const unit = unitMatch[1];
-      const isWholeNumber = unit === "px";
+      const isWholeNumber = unit === 'px';
       const unitLeft = parseFloat(termLeft);
       const unitRight = parseFloat(termRight);
 
@@ -166,7 +112,7 @@ function mix(left: string, right: string, progress: number): string {
       const isRgbFunction =
         tokenLeft === FUNCTION &&
         tokenRight === FUNCTION &&
-        (term === "rgb" || term === "rgba");
+        (term === 'rgb' || term === 'rgba');
       if (isRgbFunction) {
         rgbChannelsRemaining = 3;
       }

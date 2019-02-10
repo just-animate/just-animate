@@ -15,15 +15,18 @@
       }
       return ease;
   }
+  //# sourceMappingURL=inOut.js.map
 
   var factor = 1.70158;
   function back(type) {
       return inOut(function (n) { return n * n * ((factor + 1) * n - factor); }, type);
   }
+  //# sourceMappingURL=back.js.map
 
   function mirror(ease) {
       return function (n) { return 1 - ease(1 - n); };
   }
+  //# sourceMappingURL=mirror.js.map
 
   function bounce(type, factor) {
       // Guard if factor comes in as a string.
@@ -45,10 +48,12 @@
           return factor * (o -= 0.954545) * o + 0.984375;
       }), type);
   }
+  //# sourceMappingURL=bounce.js.map
 
   function linear(o) {
       return o;
   }
+  //# sourceMappingURL=linear.js.map
 
   var MAX_ITERATIONS = 19;
   // calculates cubic bezier value in one dimension, assuming initial point = 0
@@ -100,6 +105,7 @@
           return bezier(cy1, cy2, mid);
       };
   };
+  //# sourceMappingURL=cubicBezier.js.map
 
   function yoyo(times) {
       times = +(times || times === 0 ? times : 2);
@@ -109,6 +115,7 @@
           return floor % 2 ? 1.0 - o + floor : o - floor;
       };
   }
+  //# sourceMappingURL=yoyo.js.map
 
   function repeat(times) {
       times = +(times || times === 0 ? times : 2);
@@ -117,6 +124,7 @@
           return o === times ? 1 : o - ~~o;
       };
   }
+  //# sourceMappingURL=repeat.js.map
 
   var SYNTAX_REGEX = /^\s*[\(\),\/\s]\s*/;
   var PAREN_OPEN_REGEX = /^\(/;
@@ -154,6 +162,38 @@
       }
       return match != null;
   }
+  //# sourceMappingURL=common.js.map
+
+  function cachefn(fn) {
+      var cache = {};
+      var rank = [];
+      var limit = 1000;
+      return function (str) {
+          var cachedValue = cache[str];
+          if (cachedValue == null) {
+              // Calculate our new value.
+              cachedValue = fn(str);
+              if (rank.length >= limit) {
+                  // If we have reached the limit, remove from the top.
+                  delete cache[rank[0]];
+                  rank.unshift();
+              }
+              // Add our new value to the rank and cache.
+              cache[str] = cachedValue;
+              rank.push(str);
+          }
+          else {
+              // Every time we see the value move it higher up the ranking.
+              var rankIndex = rank.indexOf(str);
+              if (rankIndex === 0) {
+                  rank.splice(rankIndex, 1);
+                  rank.push(str);
+              }
+          }
+          return cachedValue;
+      };
+  }
+  //# sourceMappingURL=cachefn.js.map
 
   function hexToRgb(hex) {
       // Parse 3 or 6 hex to an integer using 16 base.
@@ -165,6 +205,8 @@
       var b = h & 0xff;
       return "rgba(" + r + "," + g + "," + b + ",1)";
   }
+  var cachedHexToRgb = cachefn(hexToRgb);
+  //# sourceMappingURL=colors.js.map
 
   function nextToken(ctx) {
       if (match(ctx, PAREN_CLOSE_REGEX)) {
@@ -207,13 +249,14 @@
           var hexValue = ctx.pattern.substring(ctx.last + 1, ctx.pos);
           ctx.pattern =
               ctx.pattern.substring(0, ctx.last) +
-                  hexToRgb(hexValue) +
+                  cachedHexToRgb(hexValue) +
                   ctx.pattern.substring(ctx.pos);
           // Reset the position and chain another call to nextToken.
           ctx.pos = ctx.last;
           return nextToken(ctx);
       }
   }
+  //# sourceMappingURL=expressions.js.map
 
   var eases = {};
   var easeCtx = {};
@@ -271,6 +314,8 @@
       var outerFn = easeFactory.apply(0, args);
       return function (o) { return outerFn(fn(o)); };
   }
+  var cachedGetEases = cachefn(getEase);
+  //# sourceMappingURL=eases.js.map
 
   var tasks = [];
   var promise;
@@ -327,16 +372,19 @@
           done2();
       }
   }
+  //# sourceMappingURL=tick.js.map
 
   function power(type, c) {
       // Ensure it is actually a number.
       c = +(c || c === 0 ? c : 2);
       return inOut(function (o) { return Math.pow(o, c); }, type);
   }
+  //# sourceMappingURL=power.js.map
 
   function sine(type) {
       return inOut(function (o) { return -Math.cos((o * Math.PI) / 2) + 1; }, type);
   }
+  //# sourceMappingURL=sine.js.map
 
   function steps(count, type) {
       var fn = type === "end" ? Math.floor : Math.ceil;
@@ -345,6 +393,7 @@
           return n < 0 ? 0 : n > 1 ? 1 : n;
       };
   }
+  //# sourceMappingURL=steps.js.map
 
   /**
    * A helper for numeric sort. The default JavaScript sort is alphanumeric,
@@ -394,6 +443,7 @@
   function toNumber(str) {
       return +str;
   }
+  //# sourceMappingURL=numbers.js.map
 
   function readAttribute(target, key) {
       return target.getAttribute(key) || "";
@@ -401,6 +451,7 @@
   function writeAttribute(target, key, value) {
       target.setAttribute(key, value.toString());
   }
+  //# sourceMappingURL=attribute.js.map
 
   function readCssVar(target, key) {
       return target.style.getPropertyValue(key);
@@ -408,6 +459,7 @@
   function writeCssVar(target, key, value) {
       target.style.setProperty(key, value.toString());
   }
+  //# sourceMappingURL=cssvar.js.map
 
   function readStyle(target, key) {
       return target.style[key] || getComputedStyle(target)[key];
@@ -415,6 +467,7 @@
   function writeStyle(target, key, value) {
       target.style[key] = value;
   }
+  //# sourceMappingURL=style.js.map
 
   function readProperty(target, key) {
       return target[key];
@@ -422,6 +475,7 @@
   function writeProperty(target, key, value) {
       target[key] = value;
   }
+  //# sourceMappingURL=property.js.map
 
   function nextToken$1(ctx) {
       if (match(ctx, SYNTAX_REGEX)) {
@@ -437,6 +491,56 @@
           return FUNCTION;
       }
   }
+  //# sourceMappingURL=transforms.js.map
+
+  var ctxTransform = {};
+  function negateTransformList(value) {
+      clearContext(ctxTransform, value);
+      var token;
+      var fn;
+      var termCount = 0;
+      var output = '';
+      while (true) {
+          token = nextToken$1(ctxTransform);
+          if (!token) {
+              // Exit when there is nothing left to do.
+              break;
+          }
+          if (token === FUNCTION) {
+              // Use functions to start over counting numbers/units.
+              fn = ctxTransform.match.toLowerCase();
+              termCount = 0;
+          }
+          if (token !== UNIT && token !== NUMBER) {
+              // If a number or unit, pass content through.
+              output += ctxTransform.match;
+              continue;
+          }
+          if (fn === 'matrix') {
+              // Scale defaults to 1 (position 0 and 3)
+              output += termCount % 3 ? '0' : '1';
+          }
+          else if (fn === 'matrix3d') {
+              // Scale defaults to 1.
+              // Example net-0 3d matrix:
+              // 1 0 0 0
+              // 0 1 0 0
+              // 0 0 1 0
+              // 0 0 0 1
+              output += termCount % 5 ? '0' : '1';
+          }
+          else if (/scale([xyz]|3d)?/i.test(fn)) {
+              output += '1';
+          }
+          else {
+              output += '0';
+          }
+          termCount++;
+      }
+      return output;
+  }
+  var cachedNegateTransformList = cachefn(negateTransformList);
+  //# sourceMappingURL=negateTransformList.js.map
 
   var UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
   var PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
@@ -459,62 +563,16 @@
       // values like none or empty string for the initial keyframe.
       if (TRANSFORM_REGEX.test(valueB.toString()) &&
           !TRANSFORM_REGEX.test(valueA.toString())) {
-          valueA = negateTransformList(valueB.toString());
+          valueA = cachedNegateTransformList(valueB.toString());
       }
       // If value A or B is null or undefined, swap to empty string.
       if (valueA == null) {
-          valueA = "";
+          valueA = '';
       }
       if (valueB == null) {
-          valueB = "";
+          valueB = '';
       }
       return mix(valueA.toString(), valueB.toString(), offset);
-  }
-  var ctxTransform = {};
-  function negateTransformList(value) {
-      clearContext(ctxTransform, value);
-      var token;
-      var fn;
-      var termCount = 0;
-      var output = "";
-      while (true) {
-          token = nextToken$1(ctxTransform);
-          if (!token) {
-              // Exit when there is nothing left to do.
-              break;
-          }
-          if (token === FUNCTION) {
-              // Use functions to start over counting numbers/units.
-              fn = ctxTransform.match.toLowerCase();
-              termCount = 0;
-          }
-          if (token !== UNIT && token !== NUMBER) {
-              // If a number or unit, pass content through.
-              output += ctxTransform.match;
-              continue;
-          }
-          if (fn === "matrix") {
-              // Scale defaults to 1 (position 0 and 3)
-              output += termCount % 3 ? "0" : "1";
-          }
-          else if (fn === "matrix3d") {
-              // Scale defaults to 1.
-              // Example net-0 3d matrix:
-              // 1 0 0 0
-              // 0 1 0 0
-              // 0 0 1 0
-              // 0 0 0 1
-              output += termCount % 5 ? "0" : "1";
-          }
-          else if (/scale([xyz]|3d)?/i.test(fn)) {
-              output += "1";
-          }
-          else {
-              output += "0";
-          }
-          termCount++;
-      }
-      return output;
   }
   var ctxLeft = {};
   var ctxRight = {};
@@ -531,7 +589,7 @@
       // Identify if these are paths.
       ctxLeft.isPath = PATH_REGEX.test(left);
       ctxRight.isPath = PATH_REGEX.test(right);
-      var output = "";
+      var output = '';
       var rgbChannelsRemaining = 0;
       var tokenLeft;
       var tokenRight;
@@ -557,7 +615,7 @@
           else if (tokenLeft === UNIT || tokenRight === UNIT) {
               var unitMatch = UNIT_EXTRACTOR_REGEX.exec(tokenLeft === UNIT ? termLeft : termRight);
               var unit = unitMatch[1];
-              var isWholeNumber = unit === "px";
+              var isWholeNumber = unit === 'px';
               var unitLeft = parseFloat(termLeft);
               var unitRight = parseFloat(termRight);
               var numericTerm = mixNumber(unitLeft, unitRight, progress, isWholeNumber);
@@ -568,7 +626,7 @@
               var term = progress < 0.5 ? termLeft : termRight;
               var isRgbFunction = tokenLeft === FUNCTION &&
                   tokenRight === FUNCTION &&
-                  (term === "rgb" || term === "rgba");
+                  (term === 'rgb' || term === 'rgba');
               if (isRgbFunction) {
                   rgbChannelsRemaining = 3;
               }
@@ -600,6 +658,7 @@
   function mixRgbChannel(left, right, progress) {
       return Math.round(Math.sqrt(Math.min(Math.max(0, (left * left + right * right) * progress), 255 * 255)));
   }
+  //# sourceMappingURL=mix.js.map
 
   var PROPERTY = 0, CSS_VAR = 1, ATTRIBUTE = 2, STYLE = 3;
   var htmlAttributeOnly = ["viewBox"];
@@ -657,6 +716,7 @@
   function getMixer(_targetType) {
       return autoMix;
   }
+  //# sourceMappingURL=index.js.map
 
   var CACHE = "__just_cache";
   /**
@@ -696,6 +756,35 @@
       }
       target[CACHE][id][key] = value;
   }
+  //# sourceMappingURL=valuecache.js.map
+
+  /**
+   * Resolves a selector or an at-target.
+   * @param config The timeline configuration.
+   * @param target The target to resolve.
+   */
+  function resolveTargets(config, target) {
+      if (!target) {
+          return [];
+      }
+      if (target.indexOf('@') !== 0) {
+          // TODO:(add component scoping here)
+          // If it isn't a reference, use it as a selector and make that into an [].
+          return Array.prototype.slice.call(document.querySelectorAll(target));
+      }
+      // Get the target if it exists
+      var maybeTarget = config.targets[target];
+      if (!maybeTarget) {
+          throw Error('Target ' + target + ' not configured.');
+      }
+      // If the target is an array, just return it.
+      if (typeof maybeTarget.length === 'number') {
+          return maybeTarget;
+      }
+      // If the target is not an array, wrap it.
+      return [maybeTarget];
+  }
+  //# sourceMappingURL=targets.js.map
 
   var FRAME_SIZE = 1000 / 60;
   var queue = [];
@@ -825,7 +914,7 @@
                       var upperTime = times[upperIndex];
                       var upperProp = property[upperTime];
                       var upperValue = upperProp.value;
-                      var upperEase = getEase(upperProp.$ease || '');
+                      var upperEase = cachedGetEases(upperProp.$ease || '');
                       var lowerFrame = property[times[lowerIndex]];
                       // Attempt to load initial value from cache or add the current as init
                       var lowerValue = void 0;
@@ -840,8 +929,8 @@
                       else {
                           lowerValue = lowerFrame.value;
                       }
-                      // Get the lower time with padding calculated.
-                      var offset = getOffset(lowerTime, upperTime, currentTime, index, total, upperProp.$padStart || 0, upperProp.$padEnd || 0);
+                      // Calculate the offset.
+                      var offset = getOffset(lowerTime, upperTime, currentTime);
                       // Calculate the offset and apply the easing
                       offset = upperEase(offset);
                       // Find the next value, but only set it if it differs from the current
@@ -874,32 +963,6 @@
               }
           }
       }
-  }
-  /**
-   * Resolves a selector or an at-target.
-   * @param config The timeline configuration.
-   * @param target The target to resolve.
-   */
-  function resolveTargets(config, target) {
-      if (!target) {
-          return [];
-      }
-      if (target.indexOf('@') !== 0) {
-          // TODO:(add component scoping here)
-          // If it isn't a reference, use it as a selector and make that into an [].
-          return Array.prototype.slice.call(document.querySelectorAll(target));
-      }
-      // Get the target if it exists
-      var maybeTarget = config.targets[target];
-      if (!maybeTarget) {
-          throw Error('Target ' + target + ' not configured.');
-      }
-      // If the target is an array, just return it.
-      if (typeof maybeTarget.length === 'number') {
-          return maybeTarget;
-      }
-      // If the target is not an array, wrap it.
-      return [maybeTarget];
   }
   function detectPlayStateChanges(config) {
       if (config.playState === 'running') {
@@ -944,33 +1007,12 @@
       // Ensure current time is not out of bounds.
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
   }
-  function getOffset(lower, upper, time, index, total, padStart, padEnd) {
-      var paddedLowerTime = lower + getPadding(index, total, padStart);
-      var paddedUpperTime = upper + getPadding(index, total, padEnd) * -1;
-      var localTime = clamp(time, paddedLowerTime, paddedUpperTime);
+  function getOffset(lower, upper, localTime) {
       // If lower and upper time are the same, the offset is 0; hard code
       // this, because it breaks the formula (NaN).
-      return paddedUpperTime === paddedLowerTime
-          ? 1
-          : (localTime - paddedLowerTime) / (paddedUpperTime - paddedLowerTime);
+      return upper === lower ? 1 : (localTime - lower) / (upper - lower);
   }
-  function getPadding(index, total, pad) {
-      if (typeof pad === 'number') {
-          return pad;
-      }
-      if (!pad.stagger) {
-          return pad.duration || 0;
-      }
-      if (typeof pad.stagger === 'number') {
-          return pad.stagger * (index + 1);
-      }
-      var stagger = index / total - 1;
-      if (typeof pad.stagger === 'string') {
-          stagger = getEase(pad.stagger)(stagger);
-      }
-      var duration = pad.duration || 0;
-      return duration * stagger;
-  }
+  //# sourceMappingURL=animator.js.map
 
   var autoNumber = 0;
   var Timeline = /** @class */ (function () {
@@ -1224,6 +1266,31 @@
           return this.update();
       };
       /**
+       * Animate targets staggered from the current position.
+       * @param targets The element, object, or selector to animate.
+       * @param duration The duration in milliseconds of the tween.
+       * @param stagger The duration between each target starting.
+       * @param props The end state properties of the tween.
+       * @param pos The position to insert the tween. This defaults to the duration
+       * if not specified.
+       * @public
+       */
+      Timeline.prototype.staggerAnimate = function (targets, duration, stagger, props, pos) {
+          pos = this.getPosition_(pos);
+          if (pos == null) {
+              pos = this.duration;
+          }
+          var targetList = typeof targets === 'string'
+              ? resolveTargets(this, targets)
+              : // tslint:disable-next-line:no-any
+                  targets;
+          for (var i = 0; i < targetList.length; i++) {
+              var delay = (i + 1) * stagger;
+              this.animate(targetList[i], duration, props, pos + delay);
+          }
+          return this;
+      };
+      /**
        * Configure a tween from the (current) position for the duration specified.
        * @param targets The element, object, or selector to animate.
        * @param duration The duration in milliseconds of the tween.
@@ -1234,7 +1301,7 @@
        */
       Timeline.prototype.animate = function (targets, duration, props, pos) {
           pos = this.getPosition_(pos);
-          if (pos === undefined) {
+          if (pos == null) {
               pos = this.duration;
           }
           /* If the target is not a string, create an alias so the keyframe can be
@@ -1253,14 +1320,14 @@
           }
           for (var prop in props) {
               var value = props[prop];
-              // Handle all properties (not $ease, $padStart, etc.)
+              // Handle all properties (not $ease, etc.)
               if (prop[0] !== '$' && (value || value === 0)) {
                   // Get or create a property to hold this keyframe.
                   var propKeyframes = targetProps[prop];
                   if (!propKeyframes) {
                       propKeyframes = targetProps[prop] = {};
                   }
-                  // Copy options to individual keyframe. ($ease, $padStart, etc.)
+                  // Copy options to individual keyframe. ($ease, etc.)
                   var keyframe = { value: value };
                   for (var option in props) {
                       if (option[0] === '$' && props[option]) {
@@ -1289,6 +1356,7 @@
           }
       }
   }
+  //# sourceMappingURL=timeline.js.map
 
   var TAU = 2 * Math.PI;
   function elastic(type, amplitude, period, bounces) {
@@ -1306,6 +1374,7 @@
               Math.sin(((n - 1 - s) * TAU) / period));
       }, type);
   }
+  //# sourceMappingURL=elastic.js.map
 
   // Register built-in easings
   // Linear is the fallback when an easing isn't found, so we won't register it.
@@ -1324,10 +1393,11 @@
   function animate(targets, duration, props) {
       return new Timeline().animate(targets, duration, props);
   }
+  //# sourceMappingURL=main.js.map
 
   exports.animate = animate;
   exports.eases = eases;
-  exports.getEase = getEase;
+  exports.getEase = cachedGetEases;
   exports.nextAnimationFrame = nextAnimationFrame;
   exports.Timeline = Timeline;
   exports.tick = tick;

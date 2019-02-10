@@ -10,6 +10,7 @@ import { tick } from './tick';
 import { detectTargetType, getReader, getWriter, getMixer } from '../adapters';
 import { retrieveValue, storeValue, clearKeys } from './valuecache';
 import { getEase } from '../main';
+import { resolveTargets } from './targets';
 
 const FRAME_SIZE = 1000 / 60;
 
@@ -153,16 +154,8 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
             lowerValue = lowerFrame.value;
           }
 
-          // Get the lower time with padding calculated.
-          let offset = getOffset(
-            lowerTime,
-            upperTime,
-            currentTime,
-            index,
-            total,
-            upperProp.$padStart || 0,
-            upperProp.$padEnd || 0
-          );
+          // Calculate the offset.
+          let offset = getOffset(lowerTime, upperTime, currentTime);
 
           // Calculate the offset and apply the easing
           offset = upperEase(offset);
@@ -190,33 +183,6 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
       }
     }
   }
-}
-
-/**
- * Resolves a selector or an at-target.
- * @param config The timeline configuration.
- * @param target The target to resolve.
- */
-function resolveTargets(config: ja.TimelineConfig, target: string): Array<{}> {
-  if (!target) {
-    return [];
-  }
-  if (target.indexOf('@') !== 0) {
-    // TODO:(add component scoping here)
-    // If it isn't a reference, use it as a selector and make that into an [].
-    return Array.prototype.slice.call(document.querySelectorAll(target));
-  }
-  // Get the target if it exists
-  const maybeTarget = config.targets[target];
-  if (!maybeTarget) {
-    throw Error('Target ' + target + ' not configured.');
-  }
-  // If the target is an array, just return it.
-  if (typeof (maybeTarget as []).length === 'number') {
-    return maybeTarget as Array<{}>;
-  }
-  // If the target is not an array, wrap it.
-  return [maybeTarget];
 }
 
 function detectPlayStateChanges(config: ja.TimelineConfig) {
@@ -267,44 +233,8 @@ function updateTiming(delta: number, config: ja.TimelineConfig) {
   config.currentTime = clamp(config.currentTime, 0, activeDuration);
 }
 
-function getOffset(
-  lower: number,
-  upper: number,
-  time: number,
-  index: number,
-  total: number,
-  padStart: number | ja.PadOptions,
-  padEnd: number | ja.PadOptions
-): number {
-  const paddedLowerTime = lower + getPadding(index, total, padStart);
-  const paddedUpperTime = upper + getPadding(index, total, padEnd) * -1;
-  const localTime = clamp(time, paddedLowerTime, paddedUpperTime);
-
+function getOffset(lower: number, upper: number, localTime: number): number {
   // If lower and upper time are the same, the offset is 0; hard code
   // this, because it breaks the formula (NaN).
-  return paddedUpperTime === paddedLowerTime
-    ? 1
-    : (localTime - paddedLowerTime) / (paddedUpperTime - paddedLowerTime);
-}
-
-function getPadding(
-  index: number,
-  total: number,
-  pad: number | ja.PadOptions
-): number {
-  if (typeof pad === 'number') {
-    return pad;
-  }
-  if (!pad.stagger) {
-    return pad.duration || 0;
-  }
-  if (typeof pad.stagger === 'number') {
-    return pad.stagger * (index + 1);
-  }
-  let stagger = index / total - 1;
-  if (typeof pad.stagger === 'string') {
-    stagger = getEase(pad.stagger)(stagger);
-  }
-  const duration = pad.duration || 0;
-  return duration * stagger;
+  return upper === lower ? 1 : (localTime - lower) / (upper - lower);
 }
