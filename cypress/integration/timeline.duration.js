@@ -26,7 +26,7 @@ context('timeline.duration', () => {
         const mockAnimation = {
           duration: 900,
         };
-        const t1 = new just.Timeline().add(mockAnimation, 100);
+        const t1 = new just.Timeline().add(mockAnimation, { $pos: 100 });
         expect(t1.duration).to.equal(1000);
       });
   });

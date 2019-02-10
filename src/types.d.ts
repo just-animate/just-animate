@@ -77,6 +77,7 @@ export namespace ja {
 
   export type KeyframeProps = {
     $ease: string;
+    $pos: string;
     [propertyName: string]: any;
   };
 
@@ -92,22 +93,20 @@ export namespace ja {
     /**
      * @public
      */
-    add(animation: Animation, pos: number | string): this;
+    add(animation: Animation, options?: any): this;
 
     /**
      * Configure a tween from the (current) position for the duration specified.
      * @param targets The element, object, or selector to animate.
      * @param duration The duration in milliseconds of the tween.
      * @param props The end state properties of the tween.
-     * @param pos The position to insert the tween. This defaults to the duration
      * if not specified.
      * @public
      */
     animate<T>(
       targets: T | string,
       duration: number,
-      props: Partial<KeyframeProps>,
-      pos: number | string
+      props: Partial<KeyframeProps>
     ): this;
 
     /**
@@ -120,10 +119,9 @@ export namespace ja {
     /**
      * Adds an empty animation in order to add a delay.
      * @param duration the amount of delay to add in milliseconds.
-     * @param pos the position to insert the empty animation.
      * @public
      */
-    delay(duration: number, pos?: string | number): this;
+    delay(duration: number): this;
 
     /**
      * Finish the animation. If the playbackRate is negative (in reverse), finish
@@ -135,7 +133,7 @@ export namespace ja {
 
     /**
      * Creates a label for a specific time. Labels can be used to seek to specific
-     * times in an animation and can be used to configure keyframes using the pos
+     * times in an animation and can be used to configure keyframes
      * parameter in animate() and set().
      * @param name
      * @param time
@@ -184,29 +182,7 @@ export namespace ja {
      * calling animate with an ease of steps(1, end).
      * @public
      */
-    set<T>(
-      targets: T | string,
-      props: Partial<KeyframeProps>,
-      pos: number | string
-    ): this;
-
-    /**
-     * Animate targets staggered from the current position.
-     * @param targets The element, object, or selector to animate.
-     * @param duration The duration in milliseconds of the tween.
-     * @param stagger The duration between each target starting.
-     * @param props The end state properties of the tween.
-     * @param pos The position to insert the tween. This defaults to the duration
-     * if not specified.
-     * @public
-     */
-    staggerAnimate<T>(
-      targets: object | string,
-      duration: number,
-      stagger: number,
-      props: Partial<ja.KeyframeProps>,
-      pos?: number | string
-    ): this;
+    set<T>(targets: T | string, props: Partial<KeyframeProps>): this;
 
     /**
      * Creates a target alias that can be referred to in the targets parameter in

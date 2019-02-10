@@ -15,18 +15,15 @@
       }
       return ease;
   }
-  //# sourceMappingURL=inOut.js.map
 
   var factor = 1.70158;
   function back(type) {
       return inOut(function (n) { return n * n * ((factor + 1) * n - factor); }, type);
   }
-  //# sourceMappingURL=back.js.map
 
   function mirror(ease) {
       return function (n) { return 1 - ease(1 - n); };
   }
-  //# sourceMappingURL=mirror.js.map
 
   function bounce(type, factor) {
       // Guard if factor comes in as a string.
@@ -48,12 +45,10 @@
           return factor * (o -= 0.954545) * o + 0.984375;
       }), type);
   }
-  //# sourceMappingURL=bounce.js.map
 
   function linear(o) {
       return o;
   }
-  //# sourceMappingURL=linear.js.map
 
   var MAX_ITERATIONS = 19;
   // calculates cubic bezier value in one dimension, assuming initial point = 0
@@ -105,7 +100,6 @@
           return bezier(cy1, cy2, mid);
       };
   };
-  //# sourceMappingURL=cubicBezier.js.map
 
   function yoyo(times) {
       times = +(times || times === 0 ? times : 2);
@@ -115,7 +109,6 @@
           return floor % 2 ? 1.0 - o + floor : o - floor;
       };
   }
-  //# sourceMappingURL=yoyo.js.map
 
   function repeat(times) {
       times = +(times || times === 0 ? times : 2);
@@ -124,7 +117,6 @@
           return o === times ? 1 : o - ~~o;
       };
   }
-  //# sourceMappingURL=repeat.js.map
 
   var SYNTAX_REGEX = /^\s*[\(\),\/\s]\s*/;
   var PAREN_OPEN_REGEX = /^\(/;
@@ -162,7 +154,6 @@
       }
       return match != null;
   }
-  //# sourceMappingURL=common.js.map
 
   function cachefn(fn) {
       var cache = {};
@@ -193,7 +184,6 @@
           return cachedValue;
       };
   }
-  //# sourceMappingURL=cachefn.js.map
 
   function hexToRgb(hex) {
       // Parse 3 or 6 hex to an integer using 16 base.
@@ -206,7 +196,6 @@
       return "rgba(" + r + "," + g + "," + b + ",1)";
   }
   var cachedHexToRgb = cachefn(hexToRgb);
-  //# sourceMappingURL=colors.js.map
 
   function nextToken(ctx) {
       if (match(ctx, PAREN_CLOSE_REGEX)) {
@@ -256,7 +245,6 @@
           return nextToken(ctx);
       }
   }
-  //# sourceMappingURL=expressions.js.map
 
   var eases = {};
   var easeCtx = {};
@@ -315,7 +303,6 @@
       return function (o) { return outerFn(fn(o)); };
   }
   var cachedGetEases = cachefn(getEase);
-  //# sourceMappingURL=eases.js.map
 
   var tasks = [];
   var promise;
@@ -372,19 +359,16 @@
           done2();
       }
   }
-  //# sourceMappingURL=tick.js.map
 
   function power(type, c) {
       // Ensure it is actually a number.
       c = +(c || c === 0 ? c : 2);
       return inOut(function (o) { return Math.pow(o, c); }, type);
   }
-  //# sourceMappingURL=power.js.map
 
   function sine(type) {
       return inOut(function (o) { return -Math.cos((o * Math.PI) / 2) + 1; }, type);
   }
-  //# sourceMappingURL=sine.js.map
 
   function steps(count, type) {
       var fn = type === "end" ? Math.floor : Math.ceil;
@@ -393,7 +377,6 @@
           return n < 0 ? 0 : n > 1 ? 1 : n;
       };
   }
-  //# sourceMappingURL=steps.js.map
 
   /**
    * A helper for numeric sort. The default JavaScript sort is alphanumeric,
@@ -443,7 +426,6 @@
   function toNumber(str) {
       return +str;
   }
-  //# sourceMappingURL=numbers.js.map
 
   function readAttribute(target, key) {
       return target.getAttribute(key) || "";
@@ -451,7 +433,6 @@
   function writeAttribute(target, key, value) {
       target.setAttribute(key, value.toString());
   }
-  //# sourceMappingURL=attribute.js.map
 
   function readCssVar(target, key) {
       return target.style.getPropertyValue(key);
@@ -459,7 +440,6 @@
   function writeCssVar(target, key, value) {
       target.style.setProperty(key, value.toString());
   }
-  //# sourceMappingURL=cssvar.js.map
 
   function readStyle(target, key) {
       return target.style[key] || getComputedStyle(target)[key];
@@ -467,7 +447,6 @@
   function writeStyle(target, key, value) {
       target.style[key] = value;
   }
-  //# sourceMappingURL=style.js.map
 
   function readProperty(target, key) {
       return target[key];
@@ -475,7 +454,6 @@
   function writeProperty(target, key, value) {
       target[key] = value;
   }
-  //# sourceMappingURL=property.js.map
 
   function nextToken$1(ctx) {
       if (match(ctx, SYNTAX_REGEX)) {
@@ -491,7 +469,6 @@
           return FUNCTION;
       }
   }
-  //# sourceMappingURL=transforms.js.map
 
   var ctxTransform = {};
   function negateTransformList(value) {
@@ -540,7 +517,6 @@
       return output;
   }
   var cachedNegateTransformList = cachefn(negateTransformList);
-  //# sourceMappingURL=negateTransformList.js.map
 
   var UNIT_EXTRACTOR_REGEX = /([a-z%]+)/i;
   var PATH_REGEX = /^m[\s,]*-?\d*\.?\d+/i;
@@ -658,7 +634,6 @@
   function mixRgbChannel(left, right, progress) {
       return Math.round(Math.sqrt(Math.min(Math.max(0, (left * left + right * right) * progress), 255 * 255)));
   }
-  //# sourceMappingURL=mix.js.map
 
   var PROPERTY = 0, CSS_VAR = 1, ATTRIBUTE = 2, STYLE = 3;
   var htmlAttributeOnly = ["viewBox"];
@@ -716,7 +691,6 @@
   function getMixer(_targetType) {
       return autoMix;
   }
-  //# sourceMappingURL=index.js.map
 
   var CACHE = "__just_cache";
   /**
@@ -756,7 +730,6 @@
       }
       target[CACHE][id][key] = value;
   }
-  //# sourceMappingURL=valuecache.js.map
 
   /**
    * Resolves a selector or an at-target.
@@ -784,7 +757,6 @@
       // If the target is not an array, wrap it.
       return [maybeTarget];
   }
-  //# sourceMappingURL=targets.js.map
 
   var FRAME_SIZE = 1000 / 60;
   var queue = [];
@@ -1012,7 +984,6 @@
       // this, because it breaks the formula (NaN).
       return upper === lower ? 1 : (localTime - lower) / (upper - lower);
   }
-  //# sourceMappingURL=animator.js.map
 
   var autoNumber = 0;
   var Timeline = /** @class */ (function () {
@@ -1072,9 +1043,11 @@
           enumerable: true,
           configurable: true
       });
-      Timeline.prototype.add = function (animation, pos) {
-          pos = this.getPosition_(pos);
-          if (pos === undefined) {
+      // tslint:disable-next-line:no-any
+      Timeline.prototype.add = function (animation, options) {
+          options = options || {};
+          var pos = this.getPosition_(options.$pos);
+          if (pos == null) {
               pos = this.duration;
           }
           this.timelines_.push({
@@ -1110,12 +1083,12 @@
           return this;
       };
       /**
-       * Adds an empty animation.
+       * Adds a delay at the current position.
        * @param duration the amount to delay.
        * @public
        */
-      Timeline.prototype.delay = function (duration, pos) {
-          return this.animate('', duration, { '': 0 }, pos);
+      Timeline.prototype.delay = function (duration) {
+          return this.animate('', duration, { '': 0 });
       };
       /**
        * Finish the animation. If the playbackRate is negative (in reverse), finish
@@ -1160,7 +1133,7 @@
       /**
        * Gets the position by resolving a label or just returning the number if it
        * was already a number
-       * @param pos The position to insert the next animation objecja.
+       * @param pos The position to insert the next animation object.
        * @private
        */
       Timeline.prototype.getPosition_ = function (pos) {
@@ -1247,9 +1220,9 @@
        * calling animate with an ease of steps(1, end).
        * @public
        */
-      Timeline.prototype.set = function (targets, props, pos) {
+      Timeline.prototype.set = function (targets, props) {
           props.$ease = 'steps(1,end)';
-          return this.animate(targets, 0, props, pos);
+          return this.animate(targets, 0, props);
       };
       /**
        * Creates a target alias that can be referred to in the targets parameter in
@@ -1266,41 +1239,15 @@
           return this.update();
       };
       /**
-       * Animate targets staggered from the current position.
-       * @param targets The element, object, or selector to animate.
-       * @param duration The duration in milliseconds of the tween.
-       * @param stagger The duration between each target starting.
-       * @param props The end state properties of the tween.
-       * @param pos The position to insert the tween. This defaults to the duration
-       * if not specified.
-       * @public
-       */
-      Timeline.prototype.staggerAnimate = function (targets, duration, stagger, props, pos) {
-          pos = this.getPosition_(pos);
-          if (pos == null) {
-              pos = this.duration;
-          }
-          var targetList = typeof targets === 'string'
-              ? resolveTargets(this, targets)
-              : // tslint:disable-next-line:no-any
-                  targets;
-          for (var i = 0; i < targetList.length; i++) {
-              var delay = (i + 1) * stagger;
-              this.animate(targetList[i], duration, props, pos + delay);
-          }
-          return this;
-      };
-      /**
        * Configure a tween from the (current) position for the duration specified.
        * @param targets The element, object, or selector to animate.
        * @param duration The duration in milliseconds of the tween.
        * @param props The end state properties of the tween.
-       * @param pos The position to insert the tween. This defaults to the duration
        * if not specified.
        * @public
        */
-      Timeline.prototype.animate = function (targets, duration, props, pos) {
-          pos = this.getPosition_(pos);
+      Timeline.prototype.animate = function (targets, duration, props) {
+          var pos = this.getPosition_(props.$pos);
           if (pos == null) {
               pos = this.duration;
           }
@@ -1356,7 +1303,6 @@
           }
       }
   }
-  //# sourceMappingURL=timeline.js.map
 
   var TAU = 2 * Math.PI;
   function elastic(type, amplitude, period, bounces) {
@@ -1374,7 +1320,6 @@
               Math.sin(((n - 1 - s) * TAU) / period));
       }, type);
   }
-  //# sourceMappingURL=elastic.js.map
 
   // Register built-in easings
   // Linear is the fallback when an easing isn't found, so we won't register it.
@@ -1393,7 +1338,6 @@
   function animate(targets, duration, props) {
       return new Timeline().animate(targets, duration, props);
   }
-  //# sourceMappingURL=main.js.map
 
   exports.animate = animate;
   exports.eases = eases;

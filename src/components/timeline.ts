@@ -146,9 +146,11 @@ export class Timeline implements ja.TimelineAnimation {
     }
   }
 
-  add(animation: ja.Animation, pos?: number | string): this {
-    pos = this.getPosition_(pos);
-    if (pos === undefined) {
+  // tslint:disable-next-line:no-any
+  add(animation: ja.Animation, options?: any): this {
+    options = options || {};
+    let pos = this.getPosition_(options.$pos);
+    if (pos == null) {
       pos = this.duration;
     }
     this.timelines_.push({
@@ -187,12 +189,12 @@ export class Timeline implements ja.TimelineAnimation {
   }
 
   /**
-   * Adds an empty animation.
+   * Adds a delay at the current position.
    * @param duration the amount to delay.
    * @public
    */
-  delay(duration: number, pos?: string | number): this {
-    return this.animate('', duration, { '': 0 }, pos);
+  delay(duration: number): this {
+    return this.animate('', duration, { '': 0 });
   }
 
   /**
@@ -241,7 +243,7 @@ export class Timeline implements ja.TimelineAnimation {
   /**
    * Gets the position by resolving a label or just returning the number if it
    * was already a number
-   * @param pos The position to insert the next animation objecja.
+   * @param pos The position to insert the next animation object.
    * @private
    */
   private getPosition_(pos?: string | number): number {
@@ -335,9 +337,9 @@ export class Timeline implements ja.TimelineAnimation {
    * calling animate with an ease of steps(1, end).
    * @public
    */
-  set<T>(targets: T | string, props: ja.KeyframeProps, pos?: number | string) {
+  set<T>(targets: T | string, props: ja.KeyframeProps) {
     props.$ease = 'steps(1,end)';
-    return this.animate(targets, 0, props, pos);
+    return this.animate(targets, 0, props);
   }
 
   /**
@@ -356,54 +358,19 @@ export class Timeline implements ja.TimelineAnimation {
   }
 
   /**
-   * Animate targets staggered from the current position.
-   * @param targets The element, object, or selector to animate.
-   * @param duration The duration in milliseconds of the tween.
-   * @param stagger The duration between each target starting.
-   * @param props The end state properties of the tween.
-   * @param pos The position to insert the tween. This defaults to the duration
-   * if not specified.
-   * @public
-   */
-  staggerAnimate(
-    targets: object | string,
-    duration: number,
-    stagger: number,
-    props: Partial<ja.KeyframeProps>,
-    pos?: number | string
-  ): this {
-    pos = this.getPosition_(pos);
-    if (pos == null) {
-      pos = this.duration;
-    }
-    const targetList =
-      typeof targets === 'string'
-        ? resolveTargets(this, targets)
-        : // tslint:disable-next-line:no-any
-          ((targets as any) as object[]);
-    for (let i = 0; i < targetList.length; i++) {
-      const delay = (i + 1) * stagger;
-      this.animate(targetList[i], duration, props, pos + delay);
-    }
-    return this;
-  }
-
-  /**
    * Configure a tween from the (current) position for the duration specified.
    * @param targets The element, object, or selector to animate.
    * @param duration The duration in milliseconds of the tween.
    * @param props The end state properties of the tween.
-   * @param pos The position to insert the tween. This defaults to the duration
    * if not specified.
    * @public
    */
   animate<T>(
     targets: T | string,
     duration: number,
-    props: Partial<ja.KeyframeProps>,
-    pos?: number | string
+    props: Partial<ja.KeyframeProps>
   ): this {
-    pos = this.getPosition_(pos);
+    let pos = this.getPosition_(props.$pos);
     if (pos == null) {
       pos = this.duration;
     }
