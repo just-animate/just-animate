@@ -71,21 +71,34 @@ export namespace ja {
   export type EaseTypes = 'in' | 'out' | 'in-out';
 
   export interface Keyframe {
-    $stagger?: number;
+    $delay: number;
     $ease?: string;
+    $endDelay: number;
+    $stagger?: number;
     value: AnimationValue;
   }
 
   export type KeyframeProps = {
+    /**
+     * Adds a delay * n item resolved.  Using stagger resolves all targets
+     */
+    $stagger: number;
+    /**
+     * Adds a delay to the beginning of the keyframe.
+     */
+    $delay: number;
+    /**
+     * Applies an ease function (timing-function) to the keyframe.
+     */
     $ease: string;
     /**
      * Position on the timeline to insert this animation.
      */
     $from: number | string;
     /**
-     * Adds a delay * n item resolved.  Using stagger resolves all targets
+     * Adds a delay to the end of the keyframe.
      */
-    $stagger: number;
+    $endDelay: number;
     [propertyName: string]: any;
   };
 

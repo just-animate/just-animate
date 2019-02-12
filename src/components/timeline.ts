@@ -386,6 +386,12 @@ export class Timeline implements ja.TimelineAnimation {
       targets = targetId;
     }
 
+    if (props.$delay) {
+      duration += props.$delay;
+    }
+    if (props.$endDelay) {
+      duration += props.$endDelay;
+    }
     if (props.$stagger) {
       // Extend the duration to fit staggering in all of the targets.
       duration += resolveTargets(this, targets).length * props.$stagger;

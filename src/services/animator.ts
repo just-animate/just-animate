@@ -165,7 +165,9 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
             currentTime,
             index,
             total,
-            upperProp.$stagger || 0
+            upperProp.$stagger || 0,
+            upperProp.$delay || 0,
+            upperProp.$endDelay || 0
           );
 
           // Calculate the offset and apply the easing
@@ -250,10 +252,18 @@ function getOffset(
   localTime: number,
   targetIndex: number,
   targetCount: number,
-  stagger: number
+  stagger: number,
+  delay: number,
+  endDelay: number
 ): number {
   let lower = frameLower;
   let upper = frameUpper;
+  if (delay) {
+    lower += delay;
+  }
+  if (endDelay) {
+    upper -= endDelay;
+  }
   if (stagger) {
     // Adjust stagger so the front and end are delayed equal to the stagger.
     const staggerDelay = Math.abs((targetIndex + 1) * stagger);
