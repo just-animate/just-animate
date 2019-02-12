@@ -1277,7 +1277,6 @@
               targets = targetId;
           }
           if (props.$stagger) {
-              debugger;
               // Extend the duration to fit staggering in all of the targets.
               duration += resolveTargets(this, targets).length * props.$stagger;
           }
