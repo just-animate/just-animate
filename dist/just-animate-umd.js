@@ -880,8 +880,11 @@
                       var read = getReader(targetType);
                       var mix = getMixer(targetType);
                       var currentValue = read(target, propName);
-                      var upperIndex = findUpperIndex(times, currentTime);
-                      var lowerIndex = upperIndex - 1;
+                      var maybeUpperIndex = findUpperIndex(times, currentTime);
+                      var upperIndex = clamp(maybeUpperIndex, 0, times.length - 1);
+                      // If the last frame is out of range, use the last frame for both
+                      // upper and lower indexes.
+                      var lowerIndex = upperIndex !== maybeUpperIndex ? upperIndex : upperIndex - 1;
                       var lowerTime = lowerIndex < 0 ? 0 : times[lowerIndex];
                       var upperTime = times[upperIndex];
                       var upperProp = property[upperTime];

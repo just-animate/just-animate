@@ -130,8 +130,12 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           const read = getReader(targetType);
           const mix = getMixer(targetType);
           const currentValue = read(target, propName);
-          const upperIndex = findUpperIndex(times, currentTime);
-          const lowerIndex = upperIndex - 1;
+          const maybeUpperIndex = findUpperIndex(times, currentTime);
+          const upperIndex = clamp(maybeUpperIndex, 0, times.length - 1);
+          // If the last frame is out of range, use the last frame for both
+          // upper and lower indexes.
+          const lowerIndex =
+            upperIndex !== maybeUpperIndex ? upperIndex : upperIndex - 1;
           const lowerTime = lowerIndex < 0 ? 0 : times[lowerIndex];
           const upperTime = times[upperIndex];
           const upperProp = property[upperTime];
