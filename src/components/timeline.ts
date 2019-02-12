@@ -149,7 +149,7 @@ export class Timeline implements ja.TimelineAnimation {
   // tslint:disable-next-line:no-any
   add(animation: ja.Animation, options?: any): this {
     options = options || {};
-    let pos = this.getPosition_(options.$pos);
+    let pos = this.getPosition_(options.$from);
     if (pos == null) {
       pos = this.duration;
     }
@@ -370,7 +370,7 @@ export class Timeline implements ja.TimelineAnimation {
     duration: number,
     props: Partial<ja.KeyframeProps>
   ): this {
-    let pos = this.getPosition_(props.$pos);
+    let pos = this.getPosition_(props.$from);
     if (pos == null) {
       pos = this.duration;
     }
@@ -380,10 +380,16 @@ export class Timeline implements ja.TimelineAnimation {
     if (typeof targets !== 'string') {
       let targetId = findTarget(this.targets, targets);
       if (!targetId) {
-        targetId = '@_' + ++this.targetIds_;
+        targetId = '@_object_' + ++this.targetIds_;
         this.target(targetId, targets);
       }
       targets = targetId;
+    }
+
+    if (props.$stagger) {
+      debugger;
+      // Extend the duration to fit staggering in all of the targets.
+      duration += resolveTargets(this, targets).length * props.$stagger;
     }
 
     let targetProps = this.keyframes[targets];

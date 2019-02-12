@@ -902,7 +902,7 @@
                           lowerValue = lowerFrame.value;
                       }
                       // Calculate the offset.
-                      var offset = getOffset(lowerTime, upperTime, currentTime);
+                      var offset = getOffset(lowerTime, upperTime, currentTime, index, total, upperProp.$stagger || 0);
                       // Calculate the offset and apply the easing
                       offset = upperEase(offset);
                       // Find the next value, but only set it if it differs from the current
@@ -979,10 +979,25 @@
       // Ensure current time is not out of bounds.
       config.currentTime = clamp(config.currentTime, 0, activeDuration);
   }
-  function getOffset(lower, upper, localTime) {
-      // If lower and upper time are the same, the offset is 0; hard code
-      // this, because it breaks the formula (NaN).
-      return upper === lower ? 1 : (localTime - lower) / (upper - lower);
+  function getOffset(frameLower, frameUpper, localTime, targetIndex, targetCount, stagger) {
+      var lower = frameLower;
+      var upper = frameUpper;
+      if (stagger) {
+          // Adjust stagger so the front and end are delayed equal to the stagger.
+          var staggerDelay = Math.abs((targetIndex + 1) * stagger);
+          var totalDelay = Math.abs(targetCount * stagger);
+          lower += staggerDelay;
+          upper -= totalDelay - staggerDelay;
+      }
+      if (localTime <= lower) {
+          // Safeguard against offsets less than 0.
+          return 0;
+      }
+      if (localTime >= upper) {
+          // Safeguard against offsets greater than 1.
+          return 1;
+      }
+      return (localTime - lower) / (upper - lower);
   }
 
   var autoNumber = 0;
@@ -1046,7 +1061,7 @@
       // tslint:disable-next-line:no-any
       Timeline.prototype.add = function (animation, options) {
           options = options || {};
-          var pos = this.getPosition_(options.$pos);
+          var pos = this.getPosition_(options.$from);
           if (pos == null) {
               pos = this.duration;
           }
@@ -1247,7 +1262,7 @@
        * @public
        */
       Timeline.prototype.animate = function (targets, duration, props) {
-          var pos = this.getPosition_(props.$pos);
+          var pos = this.getPosition_(props.$from);
           if (pos == null) {
               pos = this.duration;
           }
@@ -1256,10 +1271,15 @@
           if (typeof targets !== 'string') {
               var targetId = findTarget(this.targets, targets);
               if (!targetId) {
-                  targetId = '@_' + ++this.targetIds_;
+                  targetId = '@_object_' + ++this.targetIds_;
                   this.target(targetId, targets);
               }
               targets = targetId;
+          }
+          if (props.$stagger) {
+              debugger;
+              // Extend the duration to fit staggering in all of the targets.
+              duration += resolveTargets(this, targets).length * props.$stagger;
           }
           var targetProps = this.keyframes[targets];
           if (!targetProps) {

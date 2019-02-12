@@ -68,4 +68,62 @@ context('animate', () => {
         expect(el.style.color).to.equal('rgb(0, 0, 180)');
       });
   });
+
+  it('staggers objects properly', () => {
+    /** @type {typeof window.just} */
+    let just;
+    /** @type {{}[]} */
+    let targets;
+    let t1;
+    cy.window()
+      .then(win => (just = win.just))
+      .then(() => {
+        targets = [{ x: 0 }, { x: 0 }, { x: 0 }];
+        t1 = just
+          .animate(targets, 1000, { x: 10, $stagger: 100 })
+          .pause()
+          .seek(400);
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(t1.duration).to.equal(1300);
+        expect(targets[0].x).to.equal(3);
+        expect(targets[1].x).to.equal(2);
+        expect(targets[2].x).to.equal(1);
+      });
+  });
+
+  it('staggers selectors properly', () => {
+    /** @type {typeof window.just} */
+    let just;
+    /** @type {HTMLElement[]} */
+    let targets;
+    let t1;
+    cy.window()
+      .then(win => {
+        just = win.just;
+        return win;
+      })
+      .then(win => {
+        targets = [
+          win.document.createElement('button'),
+          win.document.createElement('button'),
+          win.document.createElement('button'),
+        ];
+        targets.forEach(el => win.document.body.appendChild(el));
+
+        t1 = just
+          .animate('button', 1000, { width: '100px', $stagger: 100 })
+          .set('button', { width: 0, $from: 0 }) // Override initial button size.
+          .pause()
+          .seek(400);
+        return just.nextAnimationFrame();
+      })
+      .then(() => {
+        expect(t1.duration).to.equal(1300);
+        expect(targets[0].style.width).to.equal('30px');
+        expect(targets[1].style.width).to.equal('20px');
+        expect(targets[2].style.width).to.equal('10px');
+      });
+  });
 });

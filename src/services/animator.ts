@@ -155,7 +155,14 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           }
 
           // Calculate the offset.
-          let offset = getOffset(lowerTime, upperTime, currentTime);
+          let offset = getOffset(
+            lowerTime,
+            upperTime,
+            currentTime,
+            index,
+            total,
+            upperProp.$stagger || 0
+          );
 
           // Calculate the offset and apply the easing
           offset = upperEase(offset);
@@ -233,8 +240,30 @@ function updateTiming(delta: number, config: ja.TimelineConfig) {
   config.currentTime = clamp(config.currentTime, 0, activeDuration);
 }
 
-function getOffset(lower: number, upper: number, localTime: number): number {
-  // If lower and upper time are the same, the offset is 0; hard code
-  // this, because it breaks the formula (NaN).
-  return upper === lower ? 1 : (localTime - lower) / (upper - lower);
+function getOffset(
+  frameLower: number,
+  frameUpper: number,
+  localTime: number,
+  targetIndex: number,
+  targetCount: number,
+  stagger: number
+): number {
+  let lower = frameLower;
+  let upper = frameUpper;
+  if (stagger) {
+    // Adjust stagger so the front and end are delayed equal to the stagger.
+    const staggerDelay = Math.abs((targetIndex + 1) * stagger);
+    const totalDelay = Math.abs(targetCount * stagger);
+    lower += staggerDelay;
+    upper -= totalDelay - staggerDelay;
+  }
+  if (localTime <= lower) {
+    // Safeguard against offsets less than 0.
+    return 0;
+  }
+  if (localTime >= upper) {
+    // Safeguard against offsets greater than 1.
+    return 1;
+  }
+  return (localTime - lower) / (upper - lower);
 }

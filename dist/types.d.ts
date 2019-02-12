@@ -71,13 +71,21 @@ export namespace ja {
   export type EaseTypes = 'in' | 'out' | 'in-out';
 
   export interface Keyframe {
+    $stagger?: number;
     $ease?: string;
     value: AnimationValue;
   }
 
   export type KeyframeProps = {
     $ease: string;
-    $pos: string;
+    /**
+     * Position on the timeline to insert this animation.
+     */
+    $from: number | string;
+    /**
+     * Adds a delay * n item resolved.  Using stagger resolves all targets
+     */
+    $stagger: number;
     [propertyName: string]: any;
   };
 
@@ -93,7 +101,7 @@ export namespace ja {
     /**
      * @public
      */
-    add(animation: Animation): this;
+    add(animation: Animation, options?: any): this;
 
     /**
      * Configure a tween from the (current) position for the duration specified.
