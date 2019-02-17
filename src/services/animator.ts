@@ -114,6 +114,7 @@ function processTimelines(time: number) {
  */
 function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
   const { currentTime, playState, id } = config;
+  const localTime = currentTime % config.duration;
   for (const targetName in config.keyframes) {
     const keyframes = config.keyframes[targetName];
     const targets = resolveTargets(config, targetName);
@@ -130,7 +131,7 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           const read = getReader(targetType);
           const mix = getMixer(targetType);
           const currentValue = read(target, propName);
-          const maybeUpperIndex = findUpperIndex(times, currentTime);
+          const maybeUpperIndex = findUpperIndex(times, localTime);
           const upperIndex = clamp(maybeUpperIndex, 0, times.length - 1);
           // If the last frame is out of range, use the last frame for both
           // upper and lower indexes.
@@ -162,7 +163,7 @@ function renderState(config: ja.TimelineConfig, operations: Array<() => void>) {
           let offset = getOffset(
             lowerTime,
             upperTime,
-            currentTime,
+            localTime,
             index,
             total,
             upperProp.$stagger || 0,

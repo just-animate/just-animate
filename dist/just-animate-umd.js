@@ -864,6 +864,7 @@
    */
   function renderState(config, operations) {
       var currentTime = config.currentTime, playState = config.playState, id = config.id;
+      var localTime = currentTime % config.duration;
       for (var targetName in config.keyframes) {
           var keyframes = config.keyframes[targetName];
           var targets = resolveTargets(config, targetName);
@@ -880,7 +881,7 @@
                       var read = getReader(targetType);
                       var mix = getMixer(targetType);
                       var currentValue = read(target, propName);
-                      var maybeUpperIndex = findUpperIndex(times, currentTime);
+                      var maybeUpperIndex = findUpperIndex(times, localTime);
                       var upperIndex = clamp(maybeUpperIndex, 0, times.length - 1);
                       // If the last frame is out of range, use the last frame for both
                       // upper and lower indexes.
@@ -905,7 +906,7 @@
                           lowerValue = lowerFrame.value;
                       }
                       // Calculate the offset.
-                      var offset = getOffset(lowerTime, upperTime, currentTime, index, total, upperProp.$stagger || 0, upperProp.$delay || 0, upperProp.$endDelay || 0);
+                      var offset = getOffset(lowerTime, upperTime, localTime, index, total, upperProp.$stagger || 0, upperProp.$delay || 0, upperProp.$endDelay || 0);
                       // Calculate the offset and apply the easing
                       offset = upperEase(offset);
                       // Find the next value, but only set it if it differs from the current
