@@ -161,6 +161,74 @@ export class Timeline implements ja.TimelineAnimation {
   }
 
   /**
+   * Configure a tween from the (current) position for the duration specified.
+   * @param targets The element, object, or selector to animate.
+   * @param duration The duration in milliseconds of the tween.
+   * @param props The end state properties of the tween.
+   * if not specified.
+   * @public
+   */
+  animate<T>(
+    targets: T | string,
+    duration: number,
+    props: Partial<ja.KeyframeProps>
+  ): this {
+    let pos = this.getPosition_(props.$from);
+    if (pos == null) {
+      pos = this.duration;
+    }
+
+    /* If the target is not a string, create an alias so the keyframe can be
+     * stored separatedly from the objects themselves. */
+    if (typeof targets !== 'string') {
+      let targetId = findTarget(this.targets, targets);
+      if (!targetId) {
+        targetId = '@_object_' + ++this.targetIds_;
+        this.target(targetId, targets);
+      }
+      targets = targetId;
+    }
+
+    if (props.$delay) {
+      duration += props.$delay;
+    }
+    if (props.$endDelay) {
+      duration += props.$endDelay;
+    }
+    if (props.$stagger) {
+      // Extend the duration to fit staggering in all of the targets.
+      duration += resolveTargets(this, targets).length * props.$stagger;
+    }
+
+    let targetProps = this.keyframes[targets];
+    if (!targetProps) {
+      targetProps = this.keyframes[targets] = {};
+    }
+
+    for (const prop in props) {
+      const value = props[prop];
+      // Handle all properties (not $ease, etc.)
+      if (prop[0] !== '$' && (value || value === 0)) {
+        // Get or create a property to hold this keyframe.
+        let propKeyframes = targetProps[prop];
+        if (!propKeyframes) {
+          propKeyframes = targetProps[prop] = {};
+        }
+        // Copy options to individual keyframe. ($ease, etc.)
+        const keyframe = { value } as ja.Keyframe;
+        for (const option in props) {
+          if (option[0] === '$' && props[option]) {
+            keyframe[option] = props[option];
+          }
+        }
+        propKeyframes[pos + duration] = keyframe;
+      }
+    }
+
+    return this.update();
+  }
+
+  /**
    * Cancels the animation. The currentTime is set to 0 and the playState is set
    * to 'idle'.
    * @public
@@ -354,74 +422,6 @@ export class Timeline implements ja.TimelineAnimation {
   target(alias: string, target: ja.AnimationTarget): this {
     this.targets[alias] = target;
     // If targets change, ensure update in case a target has been replaced.
-    return this.update();
-  }
-
-  /**
-   * Configure a tween from the (current) position for the duration specified.
-   * @param targets The element, object, or selector to animate.
-   * @param duration The duration in milliseconds of the tween.
-   * @param props The end state properties of the tween.
-   * if not specified.
-   * @public
-   */
-  animate<T>(
-    targets: T | string,
-    duration: number,
-    props: Partial<ja.KeyframeProps>
-  ): this {
-    let pos = this.getPosition_(props.$from);
-    if (pos == null) {
-      pos = this.duration;
-    }
-
-    /* If the target is not a string, create an alias so the keyframe can be
-     * stored separatedly from the objects themselves. */
-    if (typeof targets !== 'string') {
-      let targetId = findTarget(this.targets, targets);
-      if (!targetId) {
-        targetId = '@_object_' + ++this.targetIds_;
-        this.target(targetId, targets);
-      }
-      targets = targetId;
-    }
-
-    if (props.$delay) {
-      duration += props.$delay;
-    }
-    if (props.$endDelay) {
-      duration += props.$endDelay;
-    }
-    if (props.$stagger) {
-      // Extend the duration to fit staggering in all of the targets.
-      duration += resolveTargets(this, targets).length * props.$stagger;
-    }
-
-    let targetProps = this.keyframes[targets];
-    if (!targetProps) {
-      targetProps = this.keyframes[targets] = {};
-    }
-
-    for (const prop in props) {
-      const value = props[prop];
-      // Handle all properties (not $ease, etc.)
-      if (prop[0] !== '$' && (value || value === 0)) {
-        // Get or create a property to hold this keyframe.
-        let propKeyframes = targetProps[prop];
-        if (!propKeyframes) {
-          propKeyframes = targetProps[prop] = {};
-        }
-        // Copy options to individual keyframe. ($ease, etc.)
-        const keyframe = { value } as ja.Keyframe;
-        for (const option in props) {
-          if (option[0] === '$' && props[option]) {
-            keyframe[option] = props[option];
-          }
-        }
-        propKeyframes[pos + duration] = keyframe;
-      }
-    }
-
     return this.update();
   }
 
