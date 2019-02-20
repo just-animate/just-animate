@@ -23,7 +23,6 @@ context('timeline.getConfig()', () => {
         expect(state.labels, 'labels').deep.equal({});
         expect(state.playState, 'playState').equal('running');
         expect(state.playbackRate, 'playbackRate').equal(1);
-        expect(state.targets, 'targets').deep.equal({});
       });
   });
 });

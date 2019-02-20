@@ -1,10 +1,9 @@
 import { ja } from '../types';
 import { queueTransition } from '../services/animator';
-import { resolveTargets } from '../services/targets';
 
 let autoNumber = 0;
 
-export class Timeline implements ja.TimelineAnimation {
+export class Timeline {
   /**
    * A unique identifier for the timeline.
    * @public
@@ -99,18 +98,6 @@ export class Timeline implements ja.TimelineAnimation {
   playbackRate: number;
 
   /**
-   * A counter for generating target ids.
-   * @private
-   */
-  private targetIds_: number;
-
-  /**
-   * A dictionary of target aliases.
-   * @private
-   */
-  targets: Record<string, ja.AnimationTarget>;
-
-  /**
    * The sub-timelines contained within this timeline.
    * @private
    */
@@ -134,8 +121,6 @@ export class Timeline implements ja.TimelineAnimation {
     >;
     this.playState = 'running';
     this.playbackRate = 1;
-    this.targetIds_ = 0;
-    this.targets = {};
     this.timelines_ = [];
 
     if (options) {
@@ -157,74 +142,6 @@ export class Timeline implements ja.TimelineAnimation {
       animation,
       pos,
     });
-    return this.update();
-  }
-
-  /**
-   * Configure a tween from the (current) position for the duration specified.
-   * @param targets The element, object, or selector to animate.
-   * @param duration The duration in milliseconds of the tween.
-   * @param props The end state properties of the tween.
-   * if not specified.
-   * @public
-   */
-  animate<T>(
-    targets: T | string,
-    duration: number,
-    props: Partial<ja.KeyframeProps>
-  ): this {
-    let pos = this.getPosition_(props.$from);
-    if (pos == null) {
-      pos = this.duration;
-    }
-
-    /* If the target is not a string, create an alias so the keyframe can be
-     * stored separatedly from the objects themselves. */
-    if (typeof targets !== 'string') {
-      let targetId = findTarget(this.targets, targets);
-      if (!targetId) {
-        targetId = '@_object_' + ++this.targetIds_;
-        this.target(targetId, targets);
-      }
-      targets = targetId;
-    }
-
-    if (props.$delay) {
-      duration += props.$delay;
-    }
-    if (props.$endDelay) {
-      duration += props.$endDelay;
-    }
-    if (props.$stagger) {
-      // Extend the duration to fit staggering in all of the targets.
-      duration += resolveTargets(this, targets).length * props.$stagger;
-    }
-
-    let targetProps = this.keyframes[targets];
-    if (!targetProps) {
-      targetProps = this.keyframes[targets] = {};
-    }
-
-    for (const prop in props) {
-      const value = props[prop];
-      // Handle all properties (not $ease, etc.)
-      if (prop[0] !== '$' && (value || value === 0)) {
-        // Get or create a property to hold this keyframe.
-        let propKeyframes = targetProps[prop];
-        if (!propKeyframes) {
-          propKeyframes = targetProps[prop] = {};
-        }
-        // Copy options to individual keyframe. ($ease, etc.)
-        const keyframe = { value } as ja.Keyframe;
-        for (const option in props) {
-          if (option[0] === '$' && props[option]) {
-            keyframe[option] = props[option];
-          }
-        }
-        propKeyframes[pos + duration] = keyframe;
-      }
-    }
-
     return this.update();
   }
 
@@ -254,15 +171,6 @@ export class Timeline implements ja.TimelineAnimation {
     // Configure could result in rendering changes.
     this.update();
     return this;
-  }
-
-  /**
-   * Adds a delay at the current position.
-   * @param duration the amount to delay.
-   * @public
-   */
-  delay(duration: number): this {
-    return this.animate('', duration, { '': 0 });
   }
 
   /**
@@ -312,9 +220,9 @@ export class Timeline implements ja.TimelineAnimation {
    * Gets the position by resolving a label or just returning the number if it
    * was already a number
    * @param pos The position to insert the next animation object.
-   * @private
+   * @protected
    */
-  private getPosition_(pos?: string | number): number {
+  protected getPosition_(pos?: string | number): number {
     // Figure out where to insert this keyframe.
     if (pos && typeof pos !== 'number') {
       pos = this.labels[pos];
@@ -401,47 +309,11 @@ export class Timeline implements ja.TimelineAnimation {
   }
 
   /**
-   * Sets the properties at a given time. This is a convenience method for
-   * calling animate with an ease of steps(1, end).
-   * @public
-   */
-  set<T>(targets: T | string, props: ja.KeyframeProps) {
-    props.$ease = 'steps(1,end)';
-    return this.animate(targets, 0, props);
-  }
-
-  /**
-   * Creates a target alias that can be referred to in the targets parameter in
-   * animate() and set().  It is recommended to prefix the alias with @ to
-   * prevent conflicts with CSS selectors. This is useful for creating generic
-   * animations where the target is not known when defining the tweens.
-   * @param alias
-   * @param target
-   * @public
-   */
-  target(alias: string, target: ja.AnimationTarget): this {
-    this.targets[alias] = target;
-    // If targets change, ensure update in case a target has been replaced.
-    return this.update();
-  }
-
-  /**
    * Forces an update. This can be used after updating timing or keyframes in
    * configure() to force an
    */
   update(): this {
     queueTransition(this);
     return this;
-  }
-}
-
-function findTarget(
-  targets: Record<string, ja.AnimationTarget>,
-  target: ja.AnimationTarget
-): string | undefined {
-  for (const targetid in targets) {
-    if (target === targets[targetid]) {
-      return targetid;
-    }
   }
 }

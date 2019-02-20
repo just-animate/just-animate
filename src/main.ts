@@ -11,6 +11,12 @@ import { sine } from './eases/sine';
 import { steps } from './eases/steps';
 import { Timeline } from './components/timeline';
 import { elastic } from './eases/elastic';
+import { renderers } from './services/animator';
+import { renderTween } from './renderers/renderTween';
+import { renderSubtimeline } from './renderers/renderSubtimeline';
+
+// Register second half of Timeline
+import './components/timeline.animate';
 
 // Register built-in easings
 // Linear is the fallback when an easing isn't found, so we won't register it.
@@ -23,6 +29,10 @@ eases.repeat = repeat;
 eases.sine = sine;
 eases.steps = steps;
 eases.yoyo = yoyo;
+
+// Register timeline renderers.
+renderers.push(renderSubtimeline);
+renderers.push(renderTween);
 
 /**
  * Convenience method for doing animations.

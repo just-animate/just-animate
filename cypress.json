@@ -1,4 +1,5 @@
 {
   "video": false,
-  "screenshot": false
+  "screenshot": false,
+  "defaultCommandTimeout": 45000
 }
