@@ -4,6 +4,7 @@ import { retrieveValue, storeValue, clearKeys } from '../services/valuecache';
 import { getEase } from '../main';
 import { resolveTargets } from '../services/targets';
 import { ja } from '../types';
+import { IDLE } from '../utils/playStates';
 
 /**
  * Renders the current state of the dopesheet.
@@ -27,7 +28,7 @@ export function renderTween(
         // Unpack these immediately because the return object is shared.
         const targetType = detectTargetType(target, propName);
         const write = getWriter(targetType);
-        if (playState !== 'idle') {
+        if (playState !== IDLE) {
           const read = getReader(targetType);
           const mix = getMixer(targetType);
           const currentValue = read(target, propName);
@@ -59,20 +60,19 @@ export function renderTween(
             lowerValue = lowerFrame.value;
           }
 
-          // Calculate the offset.
-          let offset = getOffset(
-            lowerTime,
-            upperTime,
-            localTime,
-            index,
-            total,
-            upperProp.$stagger || 0,
-            upperProp.$delay || 0,
-            upperProp.$endDelay || 0
-          );
-
           // Calculate the offset and apply the easing
-          offset = upperEase(offset);
+          const offset = upperEase(
+            getOffset(
+              lowerTime,
+              upperTime,
+              localTime,
+              index,
+              total,
+              upperProp.$stagger || 0,
+              upperProp.$delay || 0,
+              upperProp.$endDelay || 0
+            )
+          );
 
           // Find the next value, but only set it if it differs from the current
           // value.
@@ -92,7 +92,7 @@ export function renderTween(
 
     // Clear cache for targets that have gone idle.
     for (const target of targets) {
-      if (playState === 'idle') {
+      if (playState === IDLE) {
         clearKeys(id, target);
       }
     }

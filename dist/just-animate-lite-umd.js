@@ -77,6 +77,8 @@
       return Math.min(Math.max(value, min), max);
   }
 
+  var IDLE = 'idle', PAUSED = 'paused', RUNNING = 'running', FINISH = 'finish', CANCEL = 'cancel';
+
   var FRAME_SIZE = 1000 / 60;
   var queue = [];
   var lastTime;
@@ -93,6 +95,7 @@
       if (queue.indexOf(configurator) === -1) {
           queue.push(configurator);
       }
+      return configurator;
   }
   /**
    * Updates all the timelines.
@@ -117,11 +120,11 @@
       // Update the transient playStates.
       for (var _b = 0, configs_3 = configs; _b < configs_3.length; _b++) {
           var config = configs_3[_b];
-          if (config.playState === 'cancel') {
-              config.playState = 'idle';
+          if (config.playState === CANCEL) {
+              config.playState = IDLE;
           }
-          else if (config.playState === 'finish') {
-              config.playState = 'paused';
+          else if (config.playState === FINISH) {
+              config.playState = PAUSED;
           }
       }
       // Queue up all events.
@@ -155,7 +158,7 @@
       // }
       // Remove items from the queue if they no longer need to be updated.
       for (var i = queue.length - 1; i > -1; i--) {
-          if (configs[i].playState !== 'running') {
+          if (configs[i].playState !== RUNNING) {
               queue.splice(i, 1);
           }
       }
@@ -173,15 +176,15 @@
       return !!queue.length;
   }
   function detectPlayStateChanges(config) {
-      if (config.playState === 'running') {
+      if (config.playState === RUNNING) {
           var isBackwards = config.playbackRate < 0;
           var activeDuration = config.duration * config.iterations;
           // If it is off by one, clamp it.
           var isFinished = (isBackwards && config.currentTime <= 1) ||
               (!isBackwards && config.currentTime >= activeDuration - 1);
           if (isFinished) {
-              config.playState = 'finish';
-              config.events.push('finish');
+              config.playState = FINISH;
+              config.events.push(FINISH);
           }
       }
   }
@@ -197,17 +200,17 @@
       config.iterations = clamp(config.iterations, 1, SECONDS_IN_A_DAY * 7);
       // Figure out the active duration.
       var activeDuration = config.duration * config.iterations;
-      if (config.playState === 'cancel') {
+      if (config.playState === CANCEL) {
           // Reset the timeline.
           config.currentTime = 0;
           config.playbackRate = 1;
       }
-      else if (config.playState === 'finish') {
+      else if (config.playState === FINISH) {
           // Finish at 0 or the duration based on the playbackRate.
           config.currentTime = config.playbackRate < 0 ? 0 : activeDuration;
       }
       else {
-          if (config.playState === 'running') {
+          if (config.playState === RUNNING) {
               // Find the current time and clamp it between 0 and the active duration.
               config.currentTime += delta * config.playbackRate;
           }
@@ -219,25 +222,26 @@
   var autoNumber = 0;
   var Timeline = /** @class */ (function () {
       function Timeline(options) {
+          var self = this;
           // Ensure new in case js user forgets new or chooses to rebel against new :)
-          if (!(this instanceof Timeline)) {
+          if (!(self instanceof Timeline)) {
               return new Timeline(options);
           }
-          this.id = '_' + ++autoNumber;
-          this.alternate = false;
-          this.currentTime = 0;
-          this.events = [];
-          this.iterations = 1;
-          this.keyframes = {};
-          this.labels = {};
-          this.listeners = {};
-          this.playState = 'running';
-          this.playbackRate = 1;
-          this.timelines_ = [];
+          self.id = '_' + ++autoNumber;
+          self.alternate = false;
+          self.currentTime = 0;
+          self.events = [];
+          self.iterations = 1;
+          self.keyframes = {};
+          self.labels = {};
+          self.listeners = {};
+          self.playState = RUNNING;
+          self.playbackRate = 1;
+          self.timelines_ = [];
           if (options) {
-              this.configure(options);
+              self.configure(options);
           }
-          if (!this.id.indexOf('_')) ;
+          if (!self.id.indexOf('_')) ;
       }
       Object.defineProperty(Timeline.prototype, "duration", {
           /**
@@ -247,13 +251,9 @@
           get: function () {
               var duration = 0;
               // Walk through all timelines and determine the longest duration.
-              for (var _i = 0, _a = this.timelines_; _i < _a.length; _i++) {
-                  var timeline = _a[_i];
-                  var endTime = timeline.animation.duration + timeline.pos;
-                  if (endTime > duration) {
-                      duration = endTime;
-                  }
-              }
+              this.timelines_.forEach(function (timeline) {
+                  duration = Math.max(duration, timeline.animation.duration + timeline.pos);
+              });
               // Walk through all keyframes and determine the longest duration.
               // tslint:disable-next-line:forin
               for (var targetName in this.keyframes) {
@@ -283,7 +283,7 @@
               animation: animation,
               pos: pos,
           });
-          return this.update();
+          return queueTransition(this);
       };
       /**
        * Cancels the animation. The currentTime is set to 0 and the playState is set
@@ -291,9 +291,9 @@
        * @public
        */
       Timeline.prototype.cancel = function () {
-          this.playState = 'cancel';
-          this.events.push('cancel');
-          return this.update();
+          this.playState = CANCEL;
+          this.events.push(CANCEL);
+          return queueTransition(this);
       };
       /**
        * Restores the state. This method can also be used to declaratively configure
@@ -308,8 +308,7 @@
               }
           }
           // Configure could result in rendering changes.
-          this.update();
-          return this;
+          return queueTransition(this);
       };
       /**
        * Finish the animation. If the playbackRate is negative (in reverse), finish
@@ -318,9 +317,9 @@
        * @public
        */
       Timeline.prototype.finish = function () {
-          this.playState = 'finish';
-          this.events.push('finish');
-          return this.update();
+          this.playState = FINISH;
+          this.events.push(FINISH);
+          return queueTransition(this);
       };
       /**
        * Gets the internal state of the Animation. This can be used to save and
@@ -409,18 +408,18 @@
        * @public
        */
       Timeline.prototype.pause = function () {
-          this.playState = 'paused';
+          this.playState = PAUSED;
           this.events.push('pause');
-          return this.update();
+          return queueTransition(this);
       };
       /**
        * Plays the animation.
        * @public
        */
       Timeline.prototype.play = function () {
-          this.playState = 'running';
+          this.playState = RUNNING;
           this.events.push('play');
-          return this.update();
+          return queueTransition(this);
       };
       /**
        * Seeks to the specified time or label. If a undefined label is provided,
@@ -434,15 +433,14 @@
               this.currentTime = time;
           }
           // If this is running, pause; otherwise ensure an update occurs.
-          return this.playState !== 'running' ? this.pause() : this.update();
+          return this.playState !== RUNNING ? this.pause() : queueTransition(this);
       };
       /**
        * Forces an update. This can be used after updating timing or keyframes in
        * configure() to force an
        */
       Timeline.prototype.update = function () {
-          queueTransition(this);
-          return this;
+          return queueTransition(this);
       };
       return Timeline;
   }());

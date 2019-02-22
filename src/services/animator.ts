@@ -1,7 +1,7 @@
 import { clamp } from '../utils/numbers';
 import { ja } from '../types';
 import { tick } from './tick';
-import { renderTween } from '../renderers/renderTween';
+import { IDLE, CANCEL, FINISH, PAUSED, RUNNING } from '../utils/playStates';
 
 const FRAME_SIZE = 1000 / 60;
 
@@ -16,7 +16,9 @@ export const renderers: Array<
  * Enqueues the timeline to be updated and rendered.
  * @param configurator
  */
-export function queueTransition(configurator: ja.TimelineConfig) {
+export function queueTransition<T extends ja.TimelineConfig>(
+  configurator: T
+): T {
   if (!queue.length) {
     lastTime = performance.now();
     tick(processTimelines);
@@ -24,6 +26,7 @@ export function queueTransition(configurator: ja.TimelineConfig) {
   if (queue.indexOf(configurator) === -1) {
     queue.push(configurator);
   }
+  return configurator;
 }
 
 /**
@@ -46,10 +49,10 @@ function processTimelines(time: number) {
   }
   // Update the transient playStates.
   for (const config of configs) {
-    if (config.playState === 'cancel') {
-      config.playState = 'idle';
-    } else if (config.playState === 'finish') {
-      config.playState = 'paused';
+    if (config.playState === CANCEL) {
+      config.playState = IDLE;
+    } else if (config.playState === FINISH) {
+      config.playState = PAUSED;
     }
   }
   // Queue up all events.
@@ -79,7 +82,7 @@ function processTimelines(time: number) {
   // }
   // Remove items from the queue if they no longer need to be updated.
   for (let i = queue.length - 1; i > -1; i--) {
-    if (configs[i].playState !== 'running') {
+    if (configs[i].playState !== RUNNING) {
       queue.splice(i, 1);
     }
   }
@@ -96,7 +99,7 @@ function processTimelines(time: number) {
 }
 
 function detectPlayStateChanges(config: ja.TimelineConfig) {
-  if (config.playState === 'running') {
+  if (config.playState === RUNNING) {
     const isBackwards = config.playbackRate < 0;
     const activeDuration = config.duration * config.iterations;
     // If it is off by one, clamp it.
@@ -105,8 +108,8 @@ function detectPlayStateChanges(config: ja.TimelineConfig) {
       (!isBackwards && config.currentTime >= activeDuration - 1);
 
     if (isFinished) {
-      config.playState = 'finish';
-      config.events.push('finish');
+      config.playState = FINISH;
+      config.events.push(FINISH);
     }
   }
 }
@@ -125,15 +128,15 @@ function updateTiming(delta: number, config: ja.TimelineConfig) {
   // Figure out the active duration.
   const activeDuration = config.duration * config.iterations;
 
-  if (config.playState === 'cancel') {
+  if (config.playState === CANCEL) {
     // Reset the timeline.
     config.currentTime = 0;
     config.playbackRate = 1;
-  } else if (config.playState === 'finish') {
+  } else if (config.playState === FINISH) {
     // Finish at 0 or the duration based on the playbackRate.
     config.currentTime = config.playbackRate < 0 ? 0 : activeDuration;
   } else {
-    if (config.playState === 'running') {
+    if (config.playState === RUNNING) {
       // Find the current time and clamp it between 0 and the active duration.
       config.currentTime += delta * config.playbackRate;
     }

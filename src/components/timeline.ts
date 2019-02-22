@@ -1,5 +1,6 @@
 import { ja } from '../types';
 import { queueTransition } from '../services/animator';
+import { FINISH, RUNNING, CANCEL, PAUSED } from '../utils/playStates';
 
 let autoNumber = 0;
 
@@ -30,12 +31,9 @@ export class Timeline {
   get duration() {
     let duration = 0;
     // Walk through all timelines and determine the longest duration.
-    for (const timeline of this.timelines_) {
-      const endTime = timeline.animation.duration + timeline.pos;
-      if (endTime > duration) {
-        duration = endTime;
-      }
-    }
+    this.timelines_.forEach(timeline => {
+      duration = Math.max(duration, timeline.animation.duration + timeline.pos);
+    });
 
     // Walk through all keyframes and determine the longest duration.
     // tslint:disable-next-line:forin
@@ -104,29 +102,30 @@ export class Timeline {
   private timelines_: Array<{ pos: number; animation: ja.Animation }>;
 
   constructor(options?: Partial<ja.TimelineConfig>) {
+    const self = this;
     // Ensure new in case js user forgets new or chooses to rebel against new :)
-    if (!(this instanceof Timeline)) {
+    if (!(self instanceof Timeline)) {
       return new Timeline(options);
     }
-    this.id = '_' + ++autoNumber;
-    this.alternate = false;
-    this.currentTime = 0;
-    this.events = [];
-    this.iterations = 1;
-    this.keyframes = {};
-    this.labels = {};
-    this.listeners = {} as Record<
+    self.id = '_' + ++autoNumber;
+    self.alternate = false;
+    self.currentTime = 0;
+    self.events = [];
+    self.iterations = 1;
+    self.keyframes = {};
+    self.labels = {};
+    self.listeners = {} as Record<
       ja.AnimationEvent,
       ja.AnimationEventListener[]
     >;
-    this.playState = 'running';
-    this.playbackRate = 1;
-    this.timelines_ = [];
+    self.playState = RUNNING;
+    self.playbackRate = 1;
+    self.timelines_ = [];
 
     if (options) {
-      this.configure(options);
+      self.configure(options);
     }
-    if (!this.id.indexOf('_')) {
+    if (!self.id.indexOf('_')) {
       // If starts with _, it does not need to be registered globally.
     }
   }
@@ -142,7 +141,7 @@ export class Timeline {
       animation,
       pos,
     });
-    return this.update();
+    return queueTransition(this);
   }
 
   /**
@@ -151,9 +150,9 @@ export class Timeline {
    * @public
    */
   cancel(): this {
-    this.playState = 'cancel';
-    this.events.push('cancel');
-    return this.update();
+    this.playState = CANCEL;
+    this.events.push(CANCEL);
+    return queueTransition(this);
   }
 
   /**
@@ -169,8 +168,7 @@ export class Timeline {
       }
     }
     // Configure could result in rendering changes.
-    this.update();
-    return this;
+    return queueTransition(this);
   }
 
   /**
@@ -180,9 +178,9 @@ export class Timeline {
    * @public
    */
   finish(): this {
-    this.playState = 'finish';
-    this.events.push('finish');
-    return this.update();
+    this.playState = FINISH;
+    this.events.push(FINISH);
+    return queueTransition(this);
   }
 
   /**
@@ -278,9 +276,9 @@ export class Timeline {
    * @public
    */
   pause(): this {
-    this.playState = 'paused';
+    this.playState = PAUSED;
     this.events.push('pause');
-    return this.update();
+    return queueTransition(this);
   }
 
   /**
@@ -288,9 +286,9 @@ export class Timeline {
    * @public
    */
   play(): this {
-    this.playState = 'running';
+    this.playState = RUNNING;
     this.events.push('play');
-    return this.update();
+    return queueTransition(this);
   }
 
   /**
@@ -305,7 +303,7 @@ export class Timeline {
       this.currentTime = time;
     }
     // If this is running, pause; otherwise ensure an update occurs.
-    return this.playState !== 'running' ? this.pause() : this.update();
+    return this.playState !== RUNNING ? this.pause() : queueTransition(this);
   }
 
   /**
@@ -313,7 +311,6 @@ export class Timeline {
    * configure() to force an
    */
   update(): this {
-    queueTransition(this);
-    return this;
+    return queueTransition(this);
   }
 }
