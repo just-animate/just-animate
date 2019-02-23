@@ -587,7 +587,6 @@
           self.listeners = {};
           self.playState = RUNNING;
           self.playbackRate = 1;
-          self.timelines_ = [];
           if (options) {
               self.configure(options);
           }
@@ -600,10 +599,6 @@
            */
           get: function () {
               var duration = 0;
-              // Walk through all timelines and determine the longest duration.
-              this.timelines_.forEach(function (timeline) {
-                  duration = Math.max(duration, timeline.animation.duration + timeline.pos);
-              });
               // Walk through all keyframes and determine the longest duration.
               // tslint:disable-next-line:forin
               for (var targetName in this.keyframes) {
@@ -622,19 +617,6 @@
           enumerable: true,
           configurable: true
       });
-      // tslint:disable-next-line:no-any
-      Timeline.prototype.add = function (animation, options) {
-          options = options || {};
-          var pos = this.getPosition_(options.$from);
-          if (pos == null) {
-              pos = this.duration;
-          }
-          this.timelines_.push({
-              animation: animation,
-              pos: pos,
-          });
-          return queueTransition(this);
-      };
       /**
        * Cancels the animation. The currentTime is set to 0 and the playState is set
        * to 'idle'.

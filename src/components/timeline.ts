@@ -30,11 +30,6 @@ export class Timeline {
    */
   get duration() {
     let duration = 0;
-    // Walk through all timelines and determine the longest duration.
-    this.timelines_.forEach(timeline => {
-      duration = Math.max(duration, timeline.animation.duration + timeline.pos);
-    });
-
     // Walk through all keyframes and determine the longest duration.
     // tslint:disable-next-line:forin
     for (const targetName in this.keyframes) {
@@ -95,12 +90,6 @@ export class Timeline {
    */
   playbackRate: number;
 
-  /**
-   * The sub-timelines contained within this timeline.
-   * @private
-   */
-  private timelines_: Array<{ pos: number; animation: ja.Animation }>;
-
   constructor(options?: Partial<ja.TimelineConfig>) {
     const self = this;
     // Ensure new in case js user forgets new or chooses to rebel against new :)
@@ -120,7 +109,6 @@ export class Timeline {
     >;
     self.playState = RUNNING;
     self.playbackRate = 1;
-    self.timelines_ = [];
 
     if (options) {
       self.configure(options);
@@ -128,20 +116,6 @@ export class Timeline {
     if (!self.id.indexOf('_')) {
       // If starts with _, it does not need to be registered globally.
     }
-  }
-
-  // tslint:disable-next-line:no-any
-  add(animation: ja.Animation, options?: any): this {
-    options = options || {};
-    let pos = this.getPosition_(options.$from);
-    if (pos == null) {
-      pos = this.duration;
-    }
-    this.timelines_.push({
-      animation,
-      pos,
-    });
-    return queueTransition(this);
   }
 
   /**

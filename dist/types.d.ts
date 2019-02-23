@@ -112,11 +112,6 @@ export namespace ja {
 
   export interface TimelineAnimation extends TimelineConfig {
     /**
-     * @public
-     */
-    add(animation: Animation, options?: any): this;
-
-    /**
      * Configure a tween from the (current) position for the duration specified.
      * @param targets The element, object, or selector to animate.
      * @param duration The duration in milliseconds of the tween.

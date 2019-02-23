@@ -27,10 +27,7 @@
     "url": "https://github.com/just-animate/just-animate"
   },
   "scripts": {
-    "build": "npm run copy:types && npm run build:lite:prod && npm run build:lite:dev && npm run build:full:prod && npm run build:full:dev",
-    "build:lite:debug": "rollup -w -c ./config/rollup-lite.umd.js --configDebug",
-    "build:lite:dev": "rollup -c ./config/rollup-lite.umd.js --configDebug",
-    "build:lite:prod": "rollup -c ./config/rollup-lite.umd.js",
+    "build": "npm run copy:types && npm run build:full:prod && npm run build:full:dev",
     "build:full:debug": "rollup -w -c ./config/rollup.umd.js --configDebug",
     "build:full:dev": "rollup -c ./config/rollup.umd.js --configDebug",
     "build:full:prod": "rollup -c ./config/rollup.umd.js",
@@ -39,8 +36,8 @@
     "format": "prettier --print-width 80 --single-quote --list-different --write \"src/**/*.ts\"",
     "lint": "tslint --project .",
     "start": "npm run clean && npm run lint && npm run build",
-    "test": "npm run build:lite:dev &&npm run build:full:dev && ./node_modules/.bin/cypress run",
-    "test:debug": "npm run build:lite:debug &npm run build:full:debug & ./node_modules/.bin/cypress open"
+    "test": "npm run build:full:dev && ./node_modules/.bin/cypress run",
+    "test:debug": "npm run build:full:debug & ./node_modules/.bin/cypress open"
   },
   "types": "./types/main",
   "typings": "./types/main",
