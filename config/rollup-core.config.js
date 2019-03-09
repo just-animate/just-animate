@@ -2,10 +2,12 @@ import typescript from 'rollup-plugin-typescript';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
 export default {
-  dest: 'dist/just-animate.js',
-  entry: 'src/main.ts',
-  format: 'iife',
-  moduleName: 'just',
+  input: 'src/main.ts',
+  output: {
+    file: 'dist/just-animate.js',
+    name: 'just',
+    format: 'iife',
+  },
   plugins: [
     typescript({
       declaration: false,
