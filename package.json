@@ -68,8 +68,6 @@
     "debug": "node_modules/.bin/mocha --require ts-node/register --reporter spec --watch ./tests/**/**.ts",
     "publish-alpha": "npm run rebuild && git push --follow-tags && npm publish --tag next"
   },
-  "types": "./types/main",
-  "typings": "./types/main",
   "typeRoots": [
     "node_modules/@types"
   ],

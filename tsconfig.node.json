@@ -3,7 +3,6 @@
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "declaration": true,
-    "declarationDir": "types",
     "forceConsistentCasingInFileNames": true,
     "inlineSourceMap": false,
     "newLine": "lf",

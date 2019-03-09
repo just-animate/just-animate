@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-    "declaration": false,
+    "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "inlineSourceMap": false,
     "module": "es2015",
