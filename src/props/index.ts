@@ -16,7 +16,7 @@ const CSSVAR = 3;
 
 const cssVarExp = /^\-\-[a-z0-9\-]+$/i;
 const viewbox = 'viewBox';
-const svgReadonly = [viewbox];
+const svgReadonly = 'rx ry viewBox transform x x1 x2 y y1 y2'.split(' ');
 const noHyphenate = [viewbox];
 
 export const propsPlugin: JustAnimatePlugin = {
